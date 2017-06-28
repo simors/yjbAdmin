@@ -18,7 +18,7 @@ export default class AppIndex extends Component {
 
   render() {
     return (
-      <Layout className="layout">
+      <Layout style={{height: '100%'}}>
         <Header>
           <Row>
             <Col span={2}>
