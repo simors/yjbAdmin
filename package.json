@@ -40,7 +40,6 @@
     "redux-persist-transform-filter": "^0.0.13",
     "redux-persist-transform-immutable": "^4.3.0",
     "redux-saga": "^0.15.4",
-    "redux-thunk": "^2.2.0",
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
