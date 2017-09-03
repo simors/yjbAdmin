@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import {store} from './store/persistStore'
+import {history} from './store/createStore'
+import App from './App'
 import './styles/main.scss'
 
 // Render Setup
@@ -8,11 +10,8 @@ import './styles/main.scss'
 const MOUNT_NODE = document.getElementById('root')
 
 let render = () => {
-  const App = require('./components/App').default
-  const routes = require('./routes/index').default
-
   ReactDOM.render(
-    <App store={store} routes={routes} />,
+    <App store={store} history={history}/>,
     MOUNT_NODE
   )
 }

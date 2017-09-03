@@ -7,7 +7,7 @@ import {
   Row,
   Col,
 } from 'antd'
-import {Link, IndexLink} from 'react-router'
+import {Link} from 'react-router-dom'
 
 const { Header, Footer, Sider, Content } = Layout
 
@@ -22,7 +22,7 @@ export default class AppIndex extends Component {
         <Header>
           <Row>
             <Col span={2}>
-              <IndexLink to="/">主页</IndexLink>
+              <Link to="/">主页</Link>
             </Col>
             <Col span={22}>
               <Link to="/about">关于我们</Link>

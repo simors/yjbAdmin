@@ -1,15 +1,13 @@
 // We only need to import the modules necessary for initial render
 import React from 'react'
-import { Route, IndexRoute } from 'react-router'
+import {Route} from 'react-router-dom'
 import AppIndex from '../components/AppIndex'
 import Home from '../components/Home'
 import About from '../components/About'
 
-const routes = (
-  <Route path="/" component={AppIndex}>
-    <IndexRoute component={Home}/>
-    <Route path="about" component={About}/>
-  </Route>
-)
+const rootRoutes = [
+  <Route key="home" path="/home" component={Home}/>,
+  <Route key="about" path="/about" component={About}/>
+]
 
-export default routes
+export default rootRoutes
