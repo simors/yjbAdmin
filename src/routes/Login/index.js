@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import {Button, Row, Form, Input} from 'antd'
-import styles from './login.scss'
+import './login.scss'
 
 const FormItem = Form.Item
 
@@ -24,9 +24,9 @@ class Login extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form
     return (
-      <div className={styles.form}>
-        <div className={styles.logo}>
-          <img src="../asset/image/logo.jpg"/>
+      <div className="form">
+        <div className="logo">
+          <img src={require("../../asset/image/logo.jpg")}/>
           <span>绿蚁网络</span>
         </div>
         <Form onSubmit={this.handleSubmit}>
@@ -60,3 +60,7 @@ class Login extends React.Component {
     )
   }
 }
+
+const LoginForm = Form.create()(Login)
+
+export default LoginForm
