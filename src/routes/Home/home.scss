@@ -1,0 +1,61 @@
+
+.layout {
+  position: relative;
+  height: 100vh;
+
+  .menuLayout {
+    width: 224px;
+    background: #3e3e3e;
+    position: absolute;
+    overflow: visible;
+    padding-bottom: 24px;
+    height: 100vh;
+    z-index: 520;
+    color: #999;
+
+    .logo {
+      text-align: center;
+      height: 40px;
+      line-height: 40px;
+      cursor: pointer;
+      margin: 28px 0;
+      overflow: hidden;
+
+      img {
+        width: 40px;
+        margin-right: 8px;
+      }
+
+      span {
+        vertical-align: text-bottom;
+        font-size: 16px;
+        text-transform: uppercase;
+        display: inline-block;
+      }
+    }
+  }
+
+  .contentLayout {
+    margin-left: 224px;
+    overflow: auto;
+    height: 100vh;
+  }
+
+  .bread {
+    height: 64px;
+    line-height: 64px;
+    padding: 0 24px;
+    margin-bottom: -24px;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
+    line-height: 48px;
+    text-align: center;
+    font-size: 12px;
+    background-color: #FFF;
+  }
+}

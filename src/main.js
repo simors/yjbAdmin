@@ -38,7 +38,7 @@ if (__DEV__) {
 
     // Setup hot module replacement
     module.hot.accept([
-      './components/App',
+      './App',
       './routes/index',
     ], () =>
       setImmediate(() => {

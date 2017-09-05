@@ -18,7 +18,7 @@ class App extends React.Component {
     return (
       <Provider store={this.props.store}>
         <ConnectedRouter history={this.props.history}>
-          <div style={{ height: '100%' }}>
+          <div>
             {rootRoutes}
           </div>
         </ConnectedRouter>
