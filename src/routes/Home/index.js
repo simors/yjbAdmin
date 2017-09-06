@@ -57,18 +57,16 @@ class Home extends Component {
           </aside>
           <div className="contentLayout">
             <Header style={{backgroundColor: '#FFF'}}>
-              <Row type="flex">
-                <Col span={4}>
-                  <div>后台管理系统Demo</div>
-                </Col>
-                <Col span={3} offset={17}>
+              <div className="header">
+                <div>后台管理系统Demo</div>
+                <div>
                   <Dropdown overlay={this.renderUserLoginMenu()}>
                     <a className="ant-dropdown-link" href="#">
                       <Icon type="user" /> simors <Icon type="caret-down" />
                     </a>
                   </Dropdown>
-                </Col>
-              </Row>
+                </div>
+              </div>
             </Header>
             <Layout>
               <Content>
