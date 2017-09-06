@@ -20,7 +20,7 @@ const AuthRoute = ({ component: Component, ...rest }) => (
 )
 
 const rootRoutes = [
-  <Switch>
+  <Switch key="rootSwitch">
     <AuthRoute key="home" exact path="/" component={Home}/>
     <Route key="login" path="/login" component={Login}/>
     <Route key="noMatch" component={NoMatch}/>

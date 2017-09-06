@@ -7,15 +7,40 @@ import {
   Row,
   Col,
   Breadcrumb,
+  Menu,
+  Dropdown,
+  Icon,
 } from 'antd'
-import {Link, Route} from 'react-router-dom'
+import {Link, Route, withRouter} from 'react-router-dom'
+import {fakeAuth} from '../../utils/AuthTool'
 import './home.scss'
 
 const {Header, Footer, Sider, Content} = Layout
 
-export default class Home extends Component {
+class Home extends Component {
   constructor(props) {
     super(props)
+  }
+
+  userMenuOnClick = ({key}) => {
+    let history = this.props.history
+    if (key == 'logout') {
+      console.log('user logout')
+      fakeAuth.signout(() => history.push('/login'))
+    }
+  }
+
+  renderUserLoginMenu() {
+    return (
+      <Menu onClick={this.userMenuOnClick}>
+        <Menu.Item key="profile">
+          个人信息
+        </Menu.Item>
+        <Menu.Item key="logout">
+          注销
+        </Menu.Item>
+      </Menu>
+    )
   }
 
   render() {
@@ -33,14 +58,15 @@ export default class Home extends Component {
           <div className="contentLayout">
             <Header style={{backgroundColor: '#FFF'}}>
               <Row type="flex">
-                <Col span={2}>
-                  <div>logo</div>
-                </Col>
-                <Col span={8}>
+                <Col span={4}>
                   <div>后台管理系统Demo</div>
                 </Col>
-                <Col span={6} offset={8}>
-                  <div>您好！simors！</div>
+                <Col span={3} offset={17}>
+                  <Dropdown overlay={this.renderUserLoginMenu()}>
+                    <a className="ant-dropdown-link" href="#">
+                      <Icon type="user" /> simors <Icon type="caret-down" />
+                    </a>
+                  </Dropdown>
                 </Col>
               </Row>
             </Header>
@@ -62,3 +88,5 @@ export default class Home extends Component {
     )
   }
 }
+
+export default withRouter(Home)
