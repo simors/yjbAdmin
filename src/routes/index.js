@@ -6,7 +6,7 @@ import Login from './Login'
 import Home from './Home'
 import NoMatch from './NoMatch'
 
-const AuthRoute = ({ component: Component, ...rest }) => (
+export const AuthRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={props => (
     fakeAuth.isAuthenticated ? (
       <Component {...props}/>

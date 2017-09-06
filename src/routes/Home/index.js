@@ -76,7 +76,7 @@ class Home extends Component {
                   <Breadcrumb.Item>User</Breadcrumb.Item>
                   <Breadcrumb.Item>Bill</Breadcrumb.Item>
                 </Breadcrumb>
-                <div style={{height: '1124px'}}></div>
+                <div className="content"></div>
               </Content>
               <Footer className="footer">
                 <div>版权所有 © 长沙绿蚁网络科技有限公司 2017</div>
