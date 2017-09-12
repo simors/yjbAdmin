@@ -28,7 +28,6 @@ class ComposeMenu extends React.Component {
   };
 
   render() {
-    let {match} = this.props
     return (
       <div style={{ flex: 1 }}>
         <Menu
@@ -40,7 +39,6 @@ class ComposeMenu extends React.Component {
         >
           <Menu.Item key="1">
             <Icon type="pie-chart" />
-            {/*<span><Link to={`${match.url}/dashboard`}>Dashboard</Link></span>*/}
             <span><Link to="/dashboard">Dashboard</Link></span>
           </Menu.Item>
           <Menu.Item key="2">

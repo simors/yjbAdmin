@@ -3,10 +3,15 @@
  */
 import React from 'react'
 import {Route, Switch} from 'react-router-dom'
+import AuthRoute from '../../routes/AuthRoute'
 import Dashboard from '../../components/Dashboard/Dashboard'
+import SysConfig from '../../components/System/SysConfig'
 
-export const contentRouter = (
+const ContentRouter = ({match}) => (
   <Switch>
-    <Route path="/dashboard" component={Dashboard}/>
+    <AuthRoute exact path="/sysconfig" component={SysConfig}/>
+    <AuthRoute path={match.url} component={Dashboard}/>
   </Switch>
 )
+
+export default ContentRouter

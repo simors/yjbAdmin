@@ -13,12 +13,10 @@ import {
   Icon,
 } from 'antd'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
-import {contentRouter} from './ContentRouter'
+import ContentRouter from './ContentRouter'
 import {fakeAuth} from '../../utils/AuthTool'
 import ComposeMenu from '../../components/Menu/ComposeMenu'
 import './home.scss'
-import Dashboard from '../../components/Dashboard/Dashboard'
-import SysConfig from '../../components/System/SysConfig'
 
 const {Header, Footer, Sider, Content} = Layout
 
@@ -82,8 +80,7 @@ class Home extends Component {
                   <Breadcrumb.Item>Bill</Breadcrumb.Item>
                 </Breadcrumb>
                 <div className="content">
-                  <Route path="/dashboard" component={Dashboard}/>
-                  <Route exact path="/sysconfig" component={SysConfig}/>
+                  <ContentRouter match={match}/>
                 </div>
               </Content>
               <Footer className="footer">
