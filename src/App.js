@@ -18,9 +18,7 @@ class App extends React.Component {
     return (
       <Provider store={this.props.store}>
         <ConnectedRouter history={this.props.history}>
-          <div>
-            {rootRoutes}
-          </div>
+          {rootRoutes}
         </ConnectedRouter>
       </Provider>
     )

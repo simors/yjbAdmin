@@ -2,6 +2,7 @@
  * Created by yangyang on 2017/9/3.
  */
 import React, {Component} from 'react'
+import {connect} from 'react-redux'
 import {
   Layout,
   Row,
@@ -11,9 +12,13 @@ import {
   Dropdown,
   Icon,
 } from 'antd'
-import {Link, Route, withRouter} from 'react-router-dom'
+import {Link, Route, withRouter, Switch} from 'react-router-dom'
+import {contentRouter} from './ContentRouter'
 import {fakeAuth} from '../../utils/AuthTool'
+import ComposeMenu from '../../components/Menu/ComposeMenu'
 import './home.scss'
+import Dashboard from '../../components/Dashboard/Dashboard'
+import SysConfig from '../../components/System/SysConfig'
 
 const {Header, Footer, Sider, Content} = Layout
 
@@ -44,6 +49,7 @@ class Home extends Component {
   }
 
   render() {
+    let {match} = this.props
     return (
       <div>
         <div className="layout">
@@ -53,16 +59,17 @@ class Home extends Component {
                 <img src={require('../../asset/image/logo.jpg')} />
                 <span>绿蚁网络</span>
               </div>
+              <ComposeMenu />
             </div>
           </aside>
           <div className="contentLayout">
             <Header style={{backgroundColor: '#FFF'}}>
               <div className="header">
-                <div>后台管理系统Demo</div>
+                <div className="headerTitle">后台管理系统Demo</div>
                 <div>
                   <Dropdown overlay={this.renderUserLoginMenu()}>
                     <a className="ant-dropdown-link" href="#">
-                      <Icon type="user" /> simors <Icon type="caret-down" />
+                      <Icon type="user" /> username <Icon type="caret-down" />
                     </a>
                   </Dropdown>
                 </div>
@@ -74,7 +81,10 @@ class Home extends Component {
                   <Breadcrumb.Item>User</Breadcrumb.Item>
                   <Breadcrumb.Item>Bill</Breadcrumb.Item>
                 </Breadcrumb>
-                <div className="content"></div>
+                <div className="content">
+                  <Route path="/dashboard" component={Dashboard}/>
+                  <Route exact path="/sysconfig" component={SysConfig}/>
+                </div>
               </Content>
               <Footer className="footer">
                 <div>版权所有 © 长沙绿蚁网络科技有限公司 2017</div>
@@ -87,4 +97,12 @@ class Home extends Component {
   }
 }
 
-export default withRouter(Home)
+const mapStateToProps = (appState, ownProps) => {
+  return {
+  }
+}
+
+const mapDispatchToProps = {
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Home))
