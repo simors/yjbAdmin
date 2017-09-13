@@ -4,7 +4,7 @@ import {createLogger} from 'redux-logger'
 import createHistory from 'history/createBrowserHistory'
 import { routerMiddleware } from 'react-router-redux'
 import makeRootReducer from './reducers'
-import rootSaga from '../saga/rootSaga'
+import rootSaga from './saga'
 
 export const history = createHistory()
 
