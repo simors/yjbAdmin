@@ -15,7 +15,7 @@ import {
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import ContentRouter from './ContentRouter'
 import {fakeAuth} from '../../utils/auth'
-import ComposeMenu from '../../components/Menu/ComposeMenu'
+import ComposeMenu from '../../components/Menu'
 import './home.scss'
 
 const {Header, Footer, Sider, Content} = Layout
