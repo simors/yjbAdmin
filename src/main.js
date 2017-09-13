@@ -40,6 +40,8 @@ if (__DEV__) {
     module.hot.accept([
       './App',
       './routes/index',
+      './saga/rootSaga',
+      './store/reducers',
     ], () =>
       setImmediate(() => {
         ReactDOM.unmountComponentAtNode(MOUNT_NODE)

@@ -1,6 +1,7 @@
 /**
- * Created by yangyang on 2017/6/28.
+ * Created by yangyang on 2017/9/13.
  */
+
 export function fetchDomain(payload) {
   let times = payload.times
   if (times == 1) {

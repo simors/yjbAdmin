@@ -2,7 +2,7 @@
  * Created by yangyang on 2017/9/4.
  */
 import React from 'react'
-import {fakeAuth} from '../../utils/AuthTool'
+import {fakeAuth} from '../../utils/auth'
 import {Redirect} from 'react-router-dom'
 import {Button, Row, Form, Input} from 'antd'
 import './login.scss'

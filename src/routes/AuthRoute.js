@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {withRouter, Route, Redirect} from 'react-router-dom'
-import {fakeAuth} from '../utils/AuthTool'
+import {fakeAuth} from '../utils/auth'
 
 const AuthRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={props => (

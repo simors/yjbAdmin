@@ -14,7 +14,7 @@ import {
 } from 'antd'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import ContentRouter from './ContentRouter'
-import {fakeAuth} from '../../utils/AuthTool'
+import {fakeAuth} from '../../utils/auth'
 import ComposeMenu from '../../components/Menu/ComposeMenu'
 import './home.scss'
 
