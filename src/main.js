@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import {store} from './store/persistStore'
 import {history} from './store/createStore'
 import App from './App'
-import './styles/main.scss'
+import './main.scss'
 
 // Render Setup
 // ------------------------------------
@@ -40,7 +40,7 @@ if (__DEV__) {
     module.hot.accept([
       './App',
       './routes/index',
-      './saga/rootSaga',
+      './store/saga',
       './store/reducers',
     ], () =>
       setImmediate(() => {
