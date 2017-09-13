@@ -7,11 +7,13 @@ import AuthRoute from '../../routes/AuthRoute'
 import Dashboard from '../../components/Dashboard/Dashboard'
 import SysConfig from '../../components/System/SysConfig'
 
-const ContentRouter = ({match}) => (
-  <Switch>
-    <AuthRoute exact path="/sysconfig" component={SysConfig}/>
-    <AuthRoute path={match.url} component={Dashboard}/>
-  </Switch>
-)
+const ContentRouter = ({match}) => {
+  return (
+    <Switch>
+      <Route exact path={match.url} component={Dashboard}/>
+      <Route exact path="/cabinet/list" component={SysConfig} />
+    </Switch>
+  )
+}
 
 export default ContentRouter

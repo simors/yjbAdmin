@@ -27,44 +27,79 @@ class ComposeMenu extends React.Component {
     this.setState({ current: e.key });
   };
 
+  onOpenChange = (openKeys) => {
+    const state = this.state;
+    const latestOpenKey = openKeys.find(key => !(state.openKeys.indexOf(key) > -1));
+    const latestCloseKey = state.openKeys.find(key => !(openKeys.indexOf(key) > -1));
+
+    let nextOpenKeys = [];
+    if (latestOpenKey) {
+      nextOpenKeys = this.getAncestorKeys(latestOpenKey).concat(latestOpenKey);
+    }
+    if (latestCloseKey) {
+      nextOpenKeys = this.getAncestorKeys(latestCloseKey);
+    }
+    this.setState({ openKeys: nextOpenKeys });
+  };
+
+  getAncestorKeys = (key) => {
+    const map = {
+      sub3: ['sub2'],
+    };
+    return map[key] || [];
+  };
+
   render() {
     return (
-      <div style={{ flex: 1 }}>
-        <Menu
-          defaultSelectedKeys={['1']}
-          defaultOpenKeys={['sub1']}
-          mode="inline"
-          theme="dark"
-          onClick={this.handleClick}
-        >
-          <Menu.Item key="1">
-            <Icon type="pie-chart" />
-            <span><Link to="/dashboard">Dashboard</Link></span>
-          </Menu.Item>
-          <Menu.Item key="2">
-            <Icon type="desktop" />
-            <span><Link to="/sysconfig">System Config</Link></span>
-          </Menu.Item>
-          <Menu.Item key="3">
-            <Icon type="inbox" />
-            <span>Option 3</span>
-          </Menu.Item>
-          <SubMenu key="sub1" title={<span><Icon type="mail" /><span>Navigation One</span></span>}>
-            <Menu.Item key="5"><Link to="/sysconfig">System Config</Link></Menu.Item>
-            <Menu.Item key="6">Option 6</Menu.Item>
-            <Menu.Item key="7">Option 7</Menu.Item>
-            <Menu.Item key="8">Option 8</Menu.Item>
-          </SubMenu>
-          <SubMenu key="sub2" title={<span><Icon type="appstore" /><span>Navigation Two</span></span>}>
-            <Menu.Item key="9">Option 9</Menu.Item>
-            <Menu.Item key="10">Option 10</Menu.Item>
-            <SubMenu key="sub3" title="Submenu">
-              <Menu.Item key="11">Option 11</Menu.Item>
-              <Menu.Item key="12">Option 12</Menu.Item>
-            </SubMenu>
-          </SubMenu>
-        </Menu>
-      </div>
+      <Menu
+        theme="dark"
+        mode="inline"
+        openKeys={this.state.openKeys}
+        selectedKeys={[this.state.current]}
+        onOpenChange={this.onOpenChange}
+        onClick={this.handleClick}
+        className="app-sider-menu"
+      >
+        <Menu.SubMenu key="/cabinet" title={<span><Icon type="laptop" />干衣柜综合管理</span>}>
+          <Menu.Item key="/cabinet/list"><Link to="/cabinet/list">干衣柜信息管理</Link></Menu.Item>
+        </Menu.SubMenu>
+
+        <Menu.SubMenu key="/site" title={<span><Icon type="laptop" />服务点综合管理</span>}>
+          <Menu.Item key="/site/list"><Link to="/site/list">服务点信息管理</Link></Menu.Item>
+          <Menu.Item key="/site/cabinet"><Link to="/example">服务点干衣柜管理</Link></Menu.Item>
+          <Menu.Item key="/site/investor"><Link to="/site/investor">投资人信息管理</Link></Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu key="/order" title={<span><Icon type="notification" />充值与订单管理</span>}>
+          <Menu.Item key="/order/deposit"><Link to="/order/deposit">用户充值管理</Link></Menu.Item>
+          <Menu.Item key="/order/list"><Link to="/order/list">订单信息管理</Link></Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu key="/settlement" title={<span><Icon type="notification" />结算报表</span>}>
+          <Menu.Item key="/settlement/list"><Link to="/settlement/list">服务点分成统计</Link></Menu.Item>
+          <Menu.Item key="/settlement/site"><Link to="/settlement/site">服务单位分成结算</Link></Menu.Item>
+          <Menu.Item key="/settlement/investor"><Link to="/settlement/investor">投资人分成结算</Link></Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu key="/promotion" title={<span><Icon type="notification" />营销活动</span>}>
+          <Menu.Item key="/promotion/list"><Link to="/promotion/list">活动管理</Link></Menu.Item>
+          <Menu.Item key="/promotion/deposit"><Link to="/promotion/deposit">发布充值活动</Link></Menu.Item>
+          <Menu.Item key="/promotion/point"><Link to="/promotion/point">发布积分活动</Link></Menu.Item>
+          <Menu.Item key="/promotion/bonus"><Link to="/promotion/bonus">发布红包活动</Link></Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu key="/user" title={<span><Icon type="notification" />用户管理</span>}>
+          <Menu.Item key="/user/list"><Link to="/user/list">用户信息管理</Link></Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu key="/message" title={<span><Icon type="notification" />消息推送</span>}>
+          <Menu.Item key="/message/system"><Link to="/message/system">系统消息</Link></Menu.Item>
+          <Menu.Item key="/message/promotion"><Link to="/message/promotion">营销类消息</Link></Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu key="/system" title={<span><Icon type="notification" />系统管理</span>}>
+          <Menu.Item key="/system/user"><Link to="/system/user">用户与角色管理</Link></Menu.Item>
+          <Menu.Item key="/system/role"><Link to="/system/role">角色与权限管理</Link></Menu.Item>
+          <Menu.Item key="/system/log"><Link to="/system/log">操作日志管理</Link></Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu key="/profit" title={<span><Icon type="notification" />投资收益</span>}>
+          <Menu.Item key="/profit/list"><Link to="/profit/list">投资收益管理</Link></Menu.Item>
+        </Menu.SubMenu>
+      </Menu>
     )
   }
 }

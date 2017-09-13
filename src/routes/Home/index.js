@@ -5,8 +5,6 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {
   Layout,
-  Row,
-  Col,
   Breadcrumb,
   Menu,
   Dropdown,
@@ -16,7 +14,7 @@ import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import ContentRouter from './ContentRouter'
 import {fakeAuth} from '../../utils/auth'
 import ComposeMenu from '../../components/Menu'
-import './home.scss'
+import './style.scss'
 
 const {Header, Footer, Sider, Content} = Layout
 
@@ -49,47 +47,37 @@ class Home extends Component {
   render() {
     let {match} = this.props
     return (
-      <div>
-        <div className="layout">
-          <aside className="menuLayout">
-            <div>
-              <div className="logo">
-                <img src={require('../../asset/image/logo.jpg')} />
-                <span>绿蚁网络</span>
-              </div>
-              <ComposeMenu />
-            </div>
-          </aside>
-          <div className="contentLayout">
-            <Header style={{backgroundColor: '#FFF'}}>
-              <div className="header">
-                <div className="headerTitle">后台管理系统Demo</div>
-                <div>
-                  <Dropdown overlay={this.renderUserLoginMenu()}>
-                    <a className="ant-dropdown-link" href="#">
-                      <Icon type="user" /> username <Icon type="caret-down" />
-                    </a>
-                  </Dropdown>
-                </div>
-              </div>
-            </Header>
-            <Layout>
-              <Content>
-                <Breadcrumb className="bread">
-                  <Breadcrumb.Item>User</Breadcrumb.Item>
-                  <Breadcrumb.Item>Bill</Breadcrumb.Item>
-                </Breadcrumb>
-                <div className="content">
-                  <ContentRouter match={match}/>
-                </div>
-              </Content>
-              <Footer className="footer">
-                <div>版权所有 © 长沙绿蚁网络科技有限公司 2017</div>
-              </Footer>
-            </Layout>
+      <Layout style={{height: "100%"}}>
+        <Sider width={224} className="sider-menu">
+          <div className="logo">
+            <img src={require('../../asset/image/logo.jpg')} />
+            <span>绿蚁网络</span>
           </div>
-        </div>
-      </div>
+          <ComposeMenu />
+        </Sider>
+        <Layout className="main">
+          <Header className="header">
+            <div className="headerTitle">后台管理系统Demo</div>
+            <div>
+              <Dropdown overlay={this.renderUserLoginMenu()}>
+                <a className="ant-dropdown-link" href="#">
+                  <Icon type="user" /> username <Icon type="caret-down" />
+                </a>
+              </Dropdown>
+            </div>
+          </Header>
+          <Content>
+            <Breadcrumb className="bread">
+              <Breadcrumb.Item>User</Breadcrumb.Item>
+              <Breadcrumb.Item>Bill</Breadcrumb.Item>
+            </Breadcrumb>
+            <div className="content">
+              <ContentRouter match={match}/>
+            </div>
+          </Content>
+          <Footer className="footer">版权所有 © 长沙绿蚁网络科技有限公司 2017</Footer>
+        </Layout>
+      </Layout>
     )
   }
 }
