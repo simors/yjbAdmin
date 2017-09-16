@@ -107,6 +107,7 @@ config.module.rules.push({
         loader: 'css-loader',
         options: {
           modules: true,
+          localIdentName: "[name]__[local]___[hash:base64:5]",
           sourceMap: project.sourcemaps,
           minimize: {
             autoprefixer: {

@@ -14,7 +14,7 @@ import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import ContentRouter from './ContentRouter'
 import {fakeAuth} from '../../utils/auth'
 import ComposeMenu from '../../components/Menu'
-import './style.scss'
+import style from './style.module.scss'
 
 const {Header, Footer, Sider, Content} = Layout
 
@@ -48,16 +48,16 @@ class Home extends Component {
     let {match} = this.props
     return (
       <Layout style={{height: "100%"}}>
-        <Sider width={224} className="sider-menu">
-          <div className="logo">
+        <Sider width={224} className={style.siderMenu}>
+          <div className={style.logo}>
             <img src={require('../../asset/image/logo.jpg')} />
             <span>绿蚁网络</span>
           </div>
           <ComposeMenu />
         </Sider>
-        <Layout className="main">
-          <Header className="header">
-            <div className="headerTitle">后台管理系统Demo</div>
+        <Layout className={style.main}>
+          <Header className={style.header}>
+            <div className={style.headerTitle}>后台管理系统Demo</div>
             <div>
               <Dropdown overlay={this.renderUserLoginMenu()}>
                 <a className="ant-dropdown-link" href="#">
@@ -67,15 +67,15 @@ class Home extends Component {
             </div>
           </Header>
           <Content>
-            <Breadcrumb className="bread">
+            <Breadcrumb className={style.bread}>
               <Breadcrumb.Item>User</Breadcrumb.Item>
               <Breadcrumb.Item>Bill</Breadcrumb.Item>
             </Breadcrumb>
-            <div className="content">
+            <div className={style.content}>
               <ContentRouter match={match}/>
             </div>
           </Content>
-          <Footer className="footer">版权所有 © 长沙绿蚁网络科技有限公司 2017</Footer>
+          <Footer className={style.footer}>版权所有 © 长沙绿蚁网络科技有限公司 2017</Footer>
         </Layout>
       </Layout>
     )
