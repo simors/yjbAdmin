@@ -97,8 +97,51 @@ const extractStyles = new ExtractTextPlugin({
   disable: __DEV__,
 })
 
+// local style, with '.module.sass/scss/css' suffix
 config.module.rules.push({
-  test: /\.(sass|scss|css)$/,
+  test: /\.module.(sass|scss|css)$/,
+  loader: extractStyles.extract({
+    fallback: 'style-loader',
+    use: [
+      {
+        loader: 'css-loader',
+        options: {
+          modules: true,
+          localIdentName: "[name]__[local]___[hash:base64:5]",
+          sourceMap: project.sourcemaps,
+          minimize: {
+            autoprefixer: {
+              add: true,
+              remove: true,
+              browsers: ['last 2 versions'],
+            },
+            discardComments: {
+              removeAll : true,
+            },
+            discardUnused: false,
+            mergeIdents: false,
+            reduceIdents: false,
+            safe: true,
+            sourcemap: project.sourcemaps,
+          },
+        },
+      },
+      {
+        loader: 'sass-loader',
+        options: {
+          sourceMap: project.sourcemaps,
+          includePaths: [
+            inProjectSrc('styles'),
+          ],
+        },
+      }
+    ],
+  })
+})
+
+// global style
+config.module.rules.push({
+  test: /^((?!\.module).)*(sass|scss|css)$/,
   loader: extractStyles.extract({
     fallback: 'style-loader',
     use: [
