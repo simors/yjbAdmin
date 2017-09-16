@@ -14,7 +14,7 @@ import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import ContentRouter from './ContentRouter'
 import {fakeAuth} from '../../utils/auth'
 import ComposeMenu from '../../components/Menu'
-import style from './style.module.scss'
+import style from './home.module.scss'
 
 const {Header, Footer, Sider, Content} = Layout
 
@@ -71,8 +71,10 @@ class Home extends Component {
               <Breadcrumb.Item>User</Breadcrumb.Item>
               <Breadcrumb.Item>Bill</Breadcrumb.Item>
             </Breadcrumb>
-            <div className={style.content}>
-              <ContentRouter match={match}/>
+            <div className={style.container}>
+              <div className={style.content}>
+                <ContentRouter match={match}/>
+              </div>
             </div>
           </Content>
           <Footer className={style.footer}>版权所有 © 长沙绿蚁网络科技有限公司 2017</Footer>
