@@ -12,7 +12,7 @@ import {withRouter, Link} from 'react-router-dom'
 
 const SubMenu = Menu.SubMenu
 
-class ComposeMenu extends React.Component {
+class SiderMenu extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -104,4 +104,4 @@ class ComposeMenu extends React.Component {
   }
 }
 
-export default withRouter(connect()(ComposeMenu))
+export default withRouter(connect()(SiderMenu))
