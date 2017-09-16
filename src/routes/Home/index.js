@@ -13,7 +13,7 @@ import {
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import ContentRouter from './ContentRouter'
 import {fakeAuth} from '../../utils/auth'
-import ComposeMenu from '../../components/Menu'
+import SiderMenu from '../../components/SiderMenu'
 import style from './home.module.scss'
 
 const {Header, Footer, Sider, Content} = Layout
@@ -53,7 +53,7 @@ class Home extends Component {
             <img src={require('../../asset/image/logo.jpg')} />
             <span>绿蚁网络</span>
           </div>
-          <ComposeMenu />
+          <SiderMenu />
         </Sider>
         <Layout className={style.main}>
           <Header className={style.header}>

@@ -5,26 +5,26 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import { Button } from 'antd'
-import {configAction, configSelector} from '../../utils/config'
+import {configAction, configSelector} from '../utils/config'
 
-class Dashboard extends React.Component {
+class SysConfig extends React.Component {
   constructor(props) {
     super(props)
   }
 
-  fetchDomain = () => {
-    this.props.requestDomain({times: 2})
+  fetchLocation = () => {
+    this.props.requestPosition()
   }
 
   render() {
     return (
       <div>
-        Dashboard
+        SysConfig
         <div style={{marginTop: 10}}>
-          <Button type="primary" onClick={this.fetchDomain}>获取域名</Button>
+          <Button type="primary" onClick={this.fetchLocation}>获取地理位置</Button>
         </div>
         <div style={{marginTop: 10}}>
-          {this.props.domain}
+          {this.props.location ? this.props.location.address : ''}
         </div>
       </div>
     )
@@ -32,9 +32,9 @@ class Dashboard extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let domain = configSelector.selectDomain(state)
+  let location = configSelector.selectLocation(state)
   return {
-    domain,
+    location,
   }
 }
 
@@ -42,4 +42,4 @@ const mapDispatchToProps = {
   ...configAction,
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SysConfig))
