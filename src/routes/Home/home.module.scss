@@ -1,6 +1,5 @@
 .siderMenu {
   background: #3e3e3e;
-  //position: absolute;
   overflow: auto;
   padding-bottom: 24px;
   color: #999;
@@ -40,28 +39,30 @@
       font-size: 2em;
     }
   }
-}
 
-.bread {
-  height: 64px;
-  line-height: 64px;
-  padding: 0 24px;
-  margin-bottom: -24px;
-  border: solid 1px red;
-}
+  .bread {
+    height: 64px;
+    line-height: 64px;
+    padding: 0 24px;
+  }
 
-.content {
-  padding: 20px;
-  border: solid 1px blue;
-}
+  .container {
+    background: #fff;
+    margin: 0 24px 24px;
+  }
 
-.footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 48px;
-  line-height: 48px;
-  text-align: center;
-  font-size: 12px;
-  background-color: #FFF;
+  .content {
+    padding: 24px;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
+    line-height: 48px;
+    text-align: center;
+    font-size: 12px;
+    background-color: #FFF;
+  }
 }
