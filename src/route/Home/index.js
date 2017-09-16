@@ -12,9 +12,9 @@ import {
 } from 'antd'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import ContentRouter from './ContentRouter'
-import {fakeAuth} from '../../utils/auth'
-import SiderMenu from '../../components/SiderMenu'
-import style from './home.module.scss'
+import {fakeAuth} from '../../util/auth'
+import SiderMenu from '../../component/SiderMenu'
+import style from './style.module.scss'
 
 const {Header, Footer, Sider, Content} = Layout
 
