@@ -6,7 +6,7 @@ import {Route, Switch} from 'react-router-dom'
 
 import Dashboard from '../../component/Dashboard'
 import SysConfig from '../../component/SysConfig'
-import SysUser from '../sysuser/SysUser'
+import SysUser from '../sysuser/'
 
 const ContentRouter = ({match}) => {
   return (

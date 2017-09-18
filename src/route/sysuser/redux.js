@@ -1,55 +1,55 @@
 import {createAction} from 'redux-actions';
 import {call, put, takeLatest} from 'redux-saga/effects';
 import {Record} from 'immutable';
-import {listSysUsers} from './api';
+import {listUser} from './api';
 
 // --- State
 
-const SysUserState = Record({
+const UserState = Record({
   users: null,
-}, "SysUserState");
+}, "UserState");
 
 // --- Selector
 
-export function selectSysUsers(appState) {
-  const sysuser = appState.sysuser;
-  return sysuser.users;
+export function selectUsers(appState) {
+  const state = appState.sysuser;
+  return state.users;
 }
 
 // --- Action
 
-const REQUEST_LIST_SYS_USERS = 'SysUser/REQUEST_LIST_SYS_USERS';
-const FINISH_LIST_SYS_USERS = 'SysUser/FINISH_LIST_SYS_USERS';
+const LIST_USER = 'SysUser/LIST_USER';
+const LIST_USER_DONE = 'SysUser/LIST_USER_DONE';
 
-export const actionListSysUsers = createAction(REQUEST_LIST_SYS_USERS);
-const finishListSysUsers = createAction(FINISH_LIST_SYS_USERS);
+export const dispatchListUser = createAction(LIST_USER);
+const dispatchListUserDone = createAction(LIST_USER_DONE);
 
 // --- Saga
 
-function* sagaListSysUsers(action) {
+function* sagaListUser(action) {
   let payload = action.payload;
-  const {r, users} = yield call(listSysUsers, payload);
+  const {r, users} = yield call(listUser, payload);
   if (!r) {
-    yield put(finishListSysUsers({users}));
+    yield put(dispatchListUserDone({users}));
   }
 }
 
 export const saga = [
-  takeLatest(REQUEST_LIST_SYS_USERS, sagaListSysUsers),
+  takeLatest(LIST_USER, sagaListUser),
 ];
 
 // --- Reducer
 
-const reduceListSysUsers = (state, action) => {
+const reduceListUser = (state, action) => {
   const users = action.payload.users;
   state = state.set('users', users);
   return state;
 };
 
-export const reducer = (state=SysUserState(), action) => {
+export const reducer = (state=UserState(), action) => {
   switch (action.type) {
-    case FINISH_LIST_SYS_USERS:
-      return reduceListSysUsers(state, action);
+    case LIST_USER_DONE:
+      return reduceListUser(state, action);
     default:
       return state;
   }
