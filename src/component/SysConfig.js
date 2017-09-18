@@ -6,6 +6,7 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import { Button } from 'antd'
 import {configAction, configSelector} from '../util/config'
+import {stationAction,stationSelector} from '../route/station/redux'
 
 class SysConfig extends React.Component {
   constructor(props) {
@@ -14,6 +15,7 @@ class SysConfig extends React.Component {
 
   componentWillMount(){
     this.props.requestAreaList()
+    this.props.requestStations()
   }
 
   fetchLocation = () => {
@@ -39,15 +41,18 @@ class SysConfig extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let location = configSelector.selectLocation(state)
   let areaList = configSelector.selectAreaList(state)
-  console.log('areaList======>',areaList)
+  let stations = stationSelector.selectStations(state)
+  console.log('stations======>',stations)
   return {
     location,
-    areaList
+    areaList,
+    stations
   }
 }
 
 const mapDispatchToProps = {
   ...configAction,
+  ...stationAction
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SysConfig))
