@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routerReducer} from 'react-router-redux'
-import {reducer as sysUserReducer} from '../route/sysuser/redux'
+import {reducer as sysUserReducer} from '../route/sysuser/'
 import {configReducer} from '../util/config'
 
 export const makeRootReducer = (asyncReducers) => {
