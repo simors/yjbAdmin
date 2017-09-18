@@ -3,7 +3,7 @@ import createSagaMiddleware, { END } from 'redux-saga'
 import {createLogger} from 'redux-logger'
 import createHistory from 'history/createBrowserHistory'
 import { routerMiddleware } from 'react-router-redux'
-import makeRootReducer from './reducers'
+import makeRootReducer from './reducer'
 import rootSaga from './saga'
 
 export const history = createHistory()
@@ -47,8 +47,8 @@ const createStore = (initialState = {}) => {
   store.close = () => store.dispatch(END)
 
   if (module.hot) {
-    module.hot.accept('./reducers', () => {
-      const reducers = require('./reducers').default
+    module.hot.accept('./reducer', () => {
+      const reducers = require('./reducer').default
       store.replaceReducer(reducers(store.asyncReducers))
     })
   }

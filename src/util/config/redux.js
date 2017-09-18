@@ -4,8 +4,8 @@
 import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
-import { call, put, takeEvery } from 'redux-saga/effects'
-import {fetchDomain, fetchPosition} from './cloud'
+import { call, put, takeEvery,takeLatest } from 'redux-saga/effects'
+import {fetchDomain, fetchPosition,fetchSubAreaList} from './cloud'
 
 /****  Model  ****/
 
@@ -13,6 +13,7 @@ export const ConfigRecord = Record({
   domain: undefined,
   appname: undefined,
   location: undefined,
+  areaList: undefined,
 }, "ConfigRecord")
 
 export const LocationRecord = Record({
@@ -50,15 +51,18 @@ const FETCH_DOMAIN = 'FETCH_DOMAIN'
 const FETCH_DOMAIN_SUCCESS = 'FETCH_DOMAIN_SUCCESS'
 const FETCH_POSITION = 'FETCH_POSITION'
 const FETCH_POSITION_SUCCESS = 'FETCH_POSITION_SUCCESS'
-
+const FETCH_AREALIST = 'FETCH_AREALIST'
+const FETCH_AREALIST_SUCCESS = 'FETCH_AREALIST_SUCCESS'
 /**** Action ****/
 
 export const configAction = {
   requestDomain: createAction(FETCH_DOMAIN),
   requestPosition: createAction(FETCH_POSITION),
+  requestAreaList: createAction(FETCH_AREALIST)
 }
 const requestDomainSuccess = createAction(FETCH_DOMAIN_SUCCESS)
 const requestPositionSuccess = createAction(FETCH_POSITION_SUCCESS)
+const requestAreaListSuccess = createAction(FETCH_AREALIST_SUCCESS)
 
 /**** Saga ****/
 
@@ -66,6 +70,12 @@ function* fetchDomainAction(action) {
   let payload = action.payload
   let domain = yield call(fetchDomain, payload)
   yield put(requestDomainSuccess({domain}))
+}
+
+function* fetchAreaListAction(action) {
+  let payload = action.payload
+  let areaList = yield call(fetchSubAreaList, payload)
+  yield put(requestAreaListSuccess({areaList: areaList}))
 }
 
 function* fetchPositionAction(action) {
@@ -76,7 +86,8 @@ function* fetchPositionAction(action) {
 
 export const configSaga = [
   takeEvery(FETCH_DOMAIN, fetchDomainAction),
-  takeEvery(FETCH_POSITION, fetchPositionAction)
+  takeEvery(FETCH_AREALIST, fetchAreaListAction),
+  takeEvery(FETCH_POSITION, fetchPositionAction),
 ]
 
 /**** Reducer ****/
@@ -89,6 +100,8 @@ export function configReducer(state = initialState, action) {
       return handleSaveDomain(state, action)
     case FETCH_POSITION_SUCCESS:
       return handleSaveLocation(state, action)
+    case FETCH_AREALIST_SUCCESS:
+      return handleSaveAreaList(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -107,6 +120,13 @@ function handleSaveLocation(state, action) {
   state = state.set('location', location)
   return state
 }
+
+function handleSaveAreaList(state, action) {
+  let areaList = action.payload.areaList
+  state = state.set('areaList', areaList)
+  return state
+}
+
 
 function onRehydrate(state, action) {
   var incoming = action.payload.CONFIG
@@ -136,7 +156,17 @@ function selectLocation(state) {
   return undefined
 }
 
+function selectAreaList(state){
+  let config = state.CONFIG
+  let areaList = config.areaList
+  if (areaList) {
+    return areaList
+  }
+  return undefined
+}
+
 export const configSelector = {
   selectDomain,
   selectLocation,
+  selectAreaList,
 }

@@ -4,10 +4,18 @@ import {store} from './store/persistStore'
 import {history} from './store/createStore'
 import App from './App'
 import './main.scss'
-
+import AV from 'leancloud-storage'
 // Render Setup
 // ------------------------------------
 const MOUNT_NODE = document.getElementById('root')
+
+var APP_ID = 'QApBtOkMNfNo0lGaHxKBSWXX-gzGzoHsz';
+var APP_KEY = 'znR6wk5JzFU0XIkgKxrM3fnH';
+
+AV.init({
+  appId: APP_ID,
+  appKey: APP_KEY
+});
 
 let render = () => {
   ReactDOM.render(
@@ -19,6 +27,7 @@ let render = () => {
 // Development Tools
 // ------------------------------------
 if (__DEV__) {
+
   if (module.hot) {
     const renderApp = render
     const renderError = (error) => {
@@ -39,11 +48,12 @@ if (__DEV__) {
     // Setup hot module replacement
     module.hot.accept([
       './App',
-      './routes/index',
+      './route/index',
       './store/saga',
-      './store/reducers',
+      './store/reducer',
     ], () =>
       setImmediate(() => {
+
         ReactDOM.unmountComponentAtNode(MOUNT_NODE)
         render()
       })

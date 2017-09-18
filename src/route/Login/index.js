@@ -2,10 +2,10 @@
  * Created by yangyang on 2017/9/4.
  */
 import React from 'react'
-import {fakeAuth} from '../../utils/auth'
+import {fakeAuth} from '../../util/auth'
 import {Redirect} from 'react-router-dom'
 import {Button, Row, Form, Input} from 'antd'
-import style from './login.module.scss'
+import style from './style.module.scss'
 
 const FormItem = Form.Item
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { ConnectedRouter } from 'react-router-redux'
 import { Provider } from 'react-redux'
 import PropTypes from 'prop-types'
-import rootRoutes from './routes'
+import rootRoutes from './route'
 
 class App extends React.Component {
   static propTypes = {
