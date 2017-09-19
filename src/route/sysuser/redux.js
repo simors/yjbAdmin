@@ -1,48 +1,92 @@
 import {createAction} from 'redux-actions';
 import {call, put, takeLatest} from 'redux-saga/effects';
-import {Record} from 'immutable';
-import {listUser} from './api';
+import {Record, List} from 'immutable';
+import * as api from './api';
 
 // --- State
 
 const UserState = Record({
-  users: null,
+  users: List(),
 }, "UserState");
+
+class User extends Record({
+  id: null,
+  name: null,
+  phoneNo: null,
+  note: null,
+  roles: null
+}, "User") {
+  static fromJsonApi(jsonData) {
+    let user = new User();
+    return user.withMutations((i) => {
+      i.set('id', jsonData.id);
+      i.set('name', jsonData.name);
+      i.set('phoneNo', jsonData.phoneNo);
+      i.set('note', jsonData.note);
+      i.set('roles', jsonData.roles);
+    })
+  }
+}
 
 // --- Selector
 
-export function selectUsers(appState) {
+function selectUsers(appState) {
   const state = appState.SYSUSER;
-  return state.users;
+  let users = [];
+  if (state.users.size > 0) {
+    state.users.forEach((i) => {
+      users.push(i);
+    })
+  }
+  return users;
 }
+
+export const selector = {
+  selectUsers,
+};
 
 // --- Action
 
-const LIST_USER = 'SysUser/LIST_USER';
-const LIST_USER_DONE = 'SysUser/LIST_USER_DONE';
+const LIST_USER = "SysUser/LIST_USER";
+const LIST_USER_DONE = "SysUser/LIST_USER_DONE";
+const SAVE_ROLE = "SysUser/SAVE_ROLE";
 
-export const dispatchListUser = createAction(LIST_USER);
-const dispatchListUserDone = createAction(LIST_USER_DONE);
+export const action = {
+  listUser: createAction(LIST_USER),
+  saveRole: createAction(SAVE_ROLE),
+};
+
+const listUserDone = createAction(LIST_USER_DONE);
 
 // --- Saga
 
 function* sagaListUser(action) {
-  let payload = action.payload;
-  const {r, users} = yield call(listUser, payload);
+  const {r, users: rawUsers} = yield call(api.listUser, action.payload);
   if (!r) {
-    yield put(dispatchListUserDone({users}));
+    // transform from http json response to an array of immutable.js Record
+    let users = [];
+    rawUsers.forEach((i) => {
+      users.push(User.fromJsonApi(i));
+    });
+
+    yield put(listUserDone({users}));
   }
+}
+
+function* sagaSaveRole(action) {
+  console.log("[DEBUG] ---> sagaSaveRole, action: ", action);
 }
 
 export const saga = [
   takeLatest(LIST_USER, sagaListUser),
+  takeLatest(SAVE_ROLE, sagaSaveRole),
 ];
 
 // --- Reducer
 
 const reduceListUser = (state, action) => {
   const users = action.payload.users;
-  state = state.set('users', users);
+  state = state.set('users', new List(users));
   return state;
 };
 

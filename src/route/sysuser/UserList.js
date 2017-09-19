@@ -12,28 +12,32 @@ const columns = [{
   dataIndex: "note",
 }];
 
-const rowSelection = {
-  type: 'radio',
-};
-
 const rowKey = (record) => {
   return record.id;
 };
 
-const UserList = (props) => {
-  console.log('[DEBUG] ---> UserList props: ', props);
-  let {users} = props;
-  if (users === null) {
-    users = [];
+class UserList extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.rowSelection = {
+      type: 'radio',
+      onSelect: this.props.onUserChange
+    };
   }
 
-  console.log('[DEBUG] ---> UserList users: ', users);
-
-  return (
-    <div>
-      <Table columns={columns} dataSource={users} rowKey={rowKey} rowSelection={rowSelection} />
-    </div>
-  );
-};
+  render() {
+    console.log('[DEBUG] ---> UserList render, props: ', this.props);
+    let {users} = this.props;
+    return (
+      <div>
+        <Table size="small" bordered
+               columns={columns} dataSource={users}
+               rowKey={rowKey} rowSelection={this.rowSelection}
+        />
+      </div>
+    );
+  }
+}
 
 export default UserList;

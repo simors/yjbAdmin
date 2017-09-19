@@ -1,0 +1,10 @@
+.UserRole {
+  display: flex;
+  flex-flow: column;
+
+  :global {
+    .ant-checkbox-group-item {
+      display: block;
+    }
+  }
+}
