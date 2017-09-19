@@ -33,7 +33,8 @@ export const StationDetailRecord = Record({
   adminId: undefined,
   adminName: undefined,
   adminPhone: undefined,
-  status: undefined
+  status: undefined,
+  deviceNo: undefined
 }, 'StationDetailRecord')
 
 export class StationDetail extends StationDetailRecord {
@@ -54,6 +55,8 @@ export class StationDetail extends StationDetailRecord {
       record.set('adminName', obj.adminName)
       record.set('adminPhone', obj.adminPhone)
       record.set('status', obj.status)
+      record.set('deviceNo', obj.deviceNo)
+
     })
   }
 }
@@ -93,33 +96,86 @@ export class ProfitSharing extends ProfitSharingRecord {
 
 const FETCH_STATIONS = 'FETCH_STATIONS'
 const FETCH_STATIONS_SUCCESS = 'FETCH_STATIONS_SUCCESS'
-
+const OPEN_STATION = 'OPEN_STATION'
+const OPEN_STATION_SUCCESS = 'OPEN_STATION_SUCCESS'
+const CLOSE_STATION = 'CLOSE_STATION'
+const CLOSE_STATION_SUCCESS = 'CLOSE_STATION_SUCCESS'
 /**** Action ****/
 
 export const stationAction = {
   requestStations: createAction(FETCH_STATIONS),
+  openStation: createAction(OPEN_STATION),
+  closeStation: createAction(CLOSE_STATION),
 
 }
 const requestStationsSuccess = createAction(FETCH_STATIONS_SUCCESS)
+const openStationSuccess = createAction(OPEN_STATION_SUCCESS)
+const closeStationSuccess = createAction(CLOSE_STATION_SUCCESS)
 
 /**** Saga ****/
 
 function* fetchStationsAction(action) {
   let payload = action.payload
-  let result = yield call(stationFuncs.fetchStations, payload)
+  let data = yield call(stationFuncs.fetchStations, payload)
   let stations = []
   let stationList = []
-  if(result&&result.length>0){
-    result.forEach((item)=>{
-      stationList.push(item.id)
-      stations.push(StationDetail.fromApi(item))
-    })
+  if(data.success){
+    if(data.stations&&data.stations.length>0){
+      data.stations.forEach((item)=>{
+        stationList.push(item.id)
+        stations.push(StationDetail.fromApi(item))
+      })
+    }
+    yield put(requestStationsSuccess({stations: stations, stationList: stationList}))
+    if(payload.success){
+      payload.success()
+    }
+  }else{
+    if(payload.error){
+      payload.error(data.error)
+    }
   }
-  yield put(requestStationsSuccess({stations: stations, stationList: stationList}))
+}
+
+function* openStationAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.openStation, payload)
+  if(data.success){
+    if(data.station){
+      yield put(openStationSuccess({station: StationDetail.fromApi(data.station)}))
+      if(payload.success){
+        payload.success()
+      }
+    }
+  }else{
+    if(payload.error){
+      payload.error(data.error)
+    }
+  }
+}
+
+function* closeStationAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.closeStation, payload)
+  if(data.success){
+    if(data.station){
+      yield put(closeStationSuccess({station: StationDetail.fromApi(data.station)}))
+      if(payload.success){
+        payload.success()
+      }
+    }
+  }else{
+    if(payload.error){
+      payload.error(data.error)
+    }
+  }
 }
 
 export const stationSaga = [
   takeEvery(FETCH_STATIONS, fetchStationsAction),
+  takeEvery(OPEN_STATION, openStationAction),
+  takeEvery(CLOSE_STATION, closeStationAction),
+
 
 ]
 
@@ -131,6 +187,10 @@ export function stationReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_STATIONS_SUCCESS:
       return handleSaveStations(state, action)
+    case OPEN_STATION_SUCCESS:
+      return handleSaveStation(state, action)
+    case CLOSE_STATION_SUCCESS:
+      return handleSaveStation(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -142,6 +202,12 @@ function handleSetAllStations(state, stations) {
   stations.forEach((item)=> {
     state = state.setIn(['allStations', item.id], item)
   })
+  return state
+}
+
+function handleSaveStation(state, action) {
+  let station = action.payload.station
+    state = state.setIn(['allStations', station.id], station)
   return state
 }
 

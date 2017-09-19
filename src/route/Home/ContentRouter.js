@@ -6,7 +6,8 @@ import {Route, Switch} from 'react-router-dom'
 
 import Dashboard from '../../component/Dashboard'
 import SysConfig from '../../component/SysConfig'
-import SysUser from '../sysuser/SysUser'
+import SysUser from '../sysuser/'
+import StationManager from '../station/StationManage'
 
 const ContentRouter = ({match}) => {
   return (
@@ -14,6 +15,7 @@ const ContentRouter = ({match}) => {
       <Route exact path={match.url} component={Dashboard}/>
       <Route exact path="/cabinet/list" component={SysConfig} />
       <Route exact path="/system/user" component={SysUser} />
+      <Route exact path="/site/list" component={StationManager} />
     </Switch>
   )
 }

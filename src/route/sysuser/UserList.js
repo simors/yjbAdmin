@@ -1,7 +1,5 @@
 import React from 'react';
 import {Table} from 'antd';
-import {List} from 'immutable';
-import SearchBox from './SearchBox';
 
 const columns = [{
   title: "姓名",
@@ -22,21 +20,20 @@ const rowKey = (record) => {
   return record.id;
 };
 
-const SysUserList = (props) => {
-  console.log('[DEBUG] ---> SysUserList props: ', props);
+const UserList = (props) => {
+  console.log('[DEBUG] ---> UserList props: ', props);
   let {users} = props;
   if (users === null) {
     users = [];
   }
 
-  console.log('[DEBUG] ---> SysUserList users: ', users);
+  console.log('[DEBUG] ---> UserList users: ', users);
 
   return (
     <div>
-      <SearchBox />
       <Table columns={columns} dataSource={users} rowKey={rowKey} rowSelection={rowSelection} />
     </div>
   );
 };
 
-export default SysUserList;
+export default UserList;

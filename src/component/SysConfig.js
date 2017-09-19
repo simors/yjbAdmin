@@ -15,7 +15,6 @@ class SysConfig extends React.Component {
 
   componentWillMount(){
     this.props.requestAreaList()
-    this.props.requestStations()
   }
 
   fetchLocation = () => {
@@ -41,18 +40,14 @@ class SysConfig extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let location = configSelector.selectLocation(state)
   let areaList = configSelector.selectAreaList(state)
-  let stations = stationSelector.selectStations(state)
-  console.log('stations======>',stations)
   return {
     location,
     areaList,
-    stations
   }
 }
 
 const mapDispatchToProps = {
   ...configAction,
-  ...stationAction
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SysConfig))
