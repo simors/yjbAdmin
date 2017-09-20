@@ -30,7 +30,7 @@ class User extends Record({
 
 // --- Selector
 
-function selectUsers(appState) {
+function selectUser(appState) {
   const state = appState.SYSUSER;
   let users = [];
   if (state.users.size > 0) {
@@ -42,7 +42,7 @@ function selectUsers(appState) {
 }
 
 export const selector = {
-  selectUsers,
+  selectUser,
 };
 
 // --- Action

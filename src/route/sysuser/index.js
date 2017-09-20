@@ -24,7 +24,11 @@ class User extends React.Component {
       console.log("[DEBUG] ---> updateUserSelection, selected: ", selected);
       console.log("[DEBUG] ---> updateUserSelection, selectedRows: ", selectedRows);
 
-      this.setState({curUser: {id: record.id, roles: record.roles}});
+      this.setState({
+        curUser: {
+          id: record.id,
+          roles: record.roles}
+      });
     };
 
     this.onRoleChange = (checkedValue) => {
@@ -80,7 +84,7 @@ class User extends React.Component {
 
 const mapStateToProps = (appState, ownProps) => {
   return {
-    users: selector.selectUsers(appState),
+    users: selector.selectUser(appState),
   };
 };
 
