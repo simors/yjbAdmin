@@ -28,17 +28,22 @@ class StationManage extends React.Component {
   }
 
   refresh(){
-    this.props.requestStations({...this.state})
+    // this.props.requestStations({...this.state})
   }
 
   setStatus(){
-    if(this.state.selectedRowId&&this.state.selectedRowData){
+    if(this.state.selectedRowId){
+      let data = undefined
+      this.props.stations.forEach((item,key)=>{
+        if(item.id==this.state.selectedRowId){
+          data = item
+        }
+    })
       let payload = {
         stationId: this.state.selectedRowId,
         success: ()=>{this.refresh()},
         error: ()=>{console.log('i m false')}
       }
-      let data = this.state.selectedRowData[0]
       if(data.status==1){
         this.props.closeStation(payload)
       }else{
