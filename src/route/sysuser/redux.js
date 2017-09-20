@@ -12,7 +12,7 @@ const UserState = Record({
 // --- Selector
 
 export function selectUsers(appState) {
-  const state = appState.sysuser;
+  const state = appState.SYSUSER;
   return state.users;
 }
 
