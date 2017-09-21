@@ -1,76 +1,60 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Row, Col} from 'antd';
+import {sagaAction, selector} from './redux';
 import UserTabHeader from './UserTabHeader';
 import UserRoleTabHeader from './UserRoleTabHeader';
 import UserOp from './UserOp';
 import UserFilter from './UserFilter';
 import UserList from './UserList';
 import UserRole from './UserRole';
-import {action, selector} from './redux';
+import UserDetail from './UserDetail';
 
 class User extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: -1,
-      userRoles: [],
+      id: -1,
+      roles: [],
       filter: {
         name: '',
         phoneNo: ''
       }
     };
-
-    this.onUserChange = (record, selected, selectedRows) => {
-      console.log("[DEBUG] ---> updateUserSelection, record: ", record);
-      console.log("[DEBUG] ---> updateUserSelection, selected: ", selected);
-      console.log("[DEBUG] ---> updateUserSelection, selectedRows: ", selectedRows);
-
-      this.setState({
-        userId: record.id,
-        userRoles: record.roles
-      });
-    };
-
-    this.onRoleChange = (checkedValue) => {
-      this.setState((prevState, props) => {
-        return {
-          ...prevState,
-          userRoles: checkedValue
-        };
-      });
-    };
-
-    this.onUserShow = () => {
-
-    };
-
-    this.onUserCreate = () => {
-
-    };
-
-    this.onUserEdit = () => {
-
-    };
-
-    this.onUserDelete = () => {
-
-    };
-
-    this.onUserSave = () => {
-      this.props.userSave({
-        id: this.state.userId,
-        roles: this.state.userRoles
-      });
-    };
   }
 
+  onUserChange = (record, selected, selectedRows) => {
+    console.log("[DEBUG] ---> updateUserSelection, record: ", record);
+    console.log("[DEBUG] ---> updateUserSelection, selected: ", selected);
+    console.log("[DEBUG] ---> updateUserSelection, selectedRows: ", selectedRows);
+
+    this.setState({
+      id: record.id,
+      roles: record.roles
+    });
+  };
+
+  onRoleChange = (checkedValue) => {
+    this.setState((prevState, props) => {
+      return {
+        ...prevState,
+        roles: checkedValue
+      };
+    });
+  };
+
+  onUserDetail = () => {
+    if (this.id !== -1) {
+      this.props.UserDetail_open({id: this.state.id});
+    }
+  };
+
   componentDidMount() {
-    this.props.userList();
+    this.props.UserList_fetch();
   }
 
   render() {
-    console.log('[DEBUG] ---> SysUser render, props: ', this.props);
+    console.log('[DEBUG] ---> User render, props: ', this.props);
     return (
       <div>
         <Row type="flex" gutter={24} align="bottom">
@@ -78,25 +62,26 @@ class User extends React.Component {
             <UserTabHeader />
           </Col>
           <Col lg={{span: 6}}>
-            <UserRoleTabHeader id={this.state.userId} onRoleSave={this.onUserSave} />
+            <UserRoleTabHeader id={this.state.id} />
           </Col>
         </Row>
         <Row type="flex" gutter={24}>
           <Col lg={{span: 18}}>
             <div style={{display: "flex", flexFlow: "column"}}>
-              <UserOp onShow={this.onUserShow} onCreate={this.onUserCreate}
-                      onEdit={this.onUserEdit} onDelete={this.onUserDelete}
+              <UserOp id={this.state.id}
+                      onDetail={this.onUserDetail}
               />
               <UserFilter />
-              <UserList users={this.props.users} onUserChange={this.onUserChange} />
+              <UserList users={this.props.UserList.users} onUserChange={this.onUserChange} />
             </div>
           </Col>
           <Col lg={{span: 6}}>
-            <UserRole id={this.state.userId} roles={this.state.userRoles}
-                      onRoleChange={this.onRoleChange}
+            <UserRole id={this.state.id} roles={this.state.roles}
+                      onChange={this.onRoleChange}
             />
           </Col>
         </Row>
+        <UserDetail />
       </div>
     )
   };
@@ -104,13 +89,15 @@ class User extends React.Component {
 
 const mapStateToProps = (appState, ownProps) => {
   return {
-    userIds: selector.userIds(appState),
-    users: selector.users(appState),
+    UserList: {
+      ids: selector.UserList.ids(appState),
+      users: selector.UserList.users(appState),
+    },
   };
 };
 
 const mapDispatchToProps = {
-  ...action
+  ...sagaAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(User);
