@@ -88,8 +88,10 @@ export async function closeInvestor(payload){
 
 export async function createInvestor(payload){
   try{
-    let stations = await AV.Cloud.run('stationCreateInvestor',payload)
-    return stations
+    console.log('payload====>',payload)
+    let investors = await AV.Cloud.run('stationCreateInvestor',payload)
+
+    return {success: true, investors: investors}
   }catch (err){
     return {success:false, error: err}
   }
@@ -97,8 +99,8 @@ export async function createInvestor(payload){
 
 export async function updateInvestor(payload){
   try{
-    let stations = await AV.Cloud.run('stationUpdateInvestor',payload)
-    return stations
+    let investors = await AV.Cloud.run('stationUpdateInvestor',payload)
+    return {success: true, investors: investors}
   }catch (err){
     return {success:false, error: err}
   }

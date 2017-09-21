@@ -92,8 +92,6 @@ export class ProfitSharing extends ProfitSharingRecord {
       record.set('stationName', obj.stationName)
       record.set('createdAt', obj.createdAt)
       record.set('status', obj.status)
-
-
     })
   }
 }
@@ -111,9 +109,10 @@ const CLOSE_STATION_SUCCESS = 'CLOSE_STATION_SUCCESS'
 const FETCH_INVESTORS = 'FETCH_INVESTORS'
 const FETCH_INVESTORS_SUCCESS = 'FETCH_INVESTORS_SUCCESS'
 const OPEN_INVESTOR = 'OPEN_INVESTOR'
-const OPEN_INVESTOR_SUCCESS = 'OPEN_INVESTOR_SUCCESS'
 const CLOSE_INVESTOR = 'CLOSE_INVESTOR'
-const CLOSE_INVESTOR_SUCCESS = 'CLOSE_INVESTOR_SUCCESS'
+const CREATE_INVESTOR = 'CREATE_INVESTOR'
+const UPDATE_INVESTOR = 'UPDATE_INVESTOR'
+
 /**** Action ****/
 
 export const stationAction = {
@@ -123,13 +122,13 @@ export const stationAction = {
   requestInvestors: createAction(FETCH_INVESTORS),
   openInvestor: createAction(OPEN_INVESTOR),
   closeInvestor: createAction(CLOSE_INVESTOR),
+  createInvestor: createAction(CREATE_INVESTOR),
+  updateInvestor: createAction(UPDATE_INVESTOR),
 }
 const requestStationsSuccess = createAction(FETCH_STATIONS_SUCCESS)
 const openStationSuccess = createAction(OPEN_STATION_SUCCESS)
 const closeStationSuccess = createAction(CLOSE_STATION_SUCCESS)
 const requestInvestorsSuccess = createAction(FETCH_INVESTORS_SUCCESS)
-const openInvestorSuccess = createAction(OPEN_INVESTOR_SUCCESS)
-const closeInvestorSuccess = createAction(CLOSE_INVESTOR_SUCCESS)
 
 /**** Saga ****/
 
@@ -216,8 +215,6 @@ function* fetchInvestorsAction(action) {
 function* openInvestorsAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.openInvestor, payload)
-  let investors = []
-  let investorList = []
   if(data.success){
     if(payload.success){
       payload.success()
@@ -232,8 +229,35 @@ function* openInvestorsAction(action) {
 function* closeInvestorsAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.closeInvestor, payload)
-  let investors = []
-  let investorList = []
+  if(data.success){
+    if(payload.success){
+      payload.success()
+    }
+  }else{
+    if(payload.error){
+      payload.error(data.error)
+    }
+  }
+}
+
+function* createInvestorsAction(action) {
+  let payload = action.payload
+  console.log('actionpayload=====>',payload)
+  let data = yield call(stationFuncs.createInvestor, payload)
+  if(data.success){
+    if(payload.success){
+      payload.success()
+    }
+  }else{
+    if(payload.error){
+      payload.error(data.error)
+    }
+  }
+}
+
+function* updateInvestorsAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.updateInvestor, payload)
   if(data.success){
     if(payload.success){
       payload.success()
@@ -246,12 +270,14 @@ function* closeInvestorsAction(action) {
 }
 
 export const stationSaga = [
-  takeEvery(FETCH_STATIONS, fetchStationsAction),
-  takeEvery(OPEN_STATION, openStationAction),
-  takeEvery(CLOSE_STATION, closeStationAction),
-  takeEvery(FETCH_INVESTORS, fetchInvestorsAction),
-  takeEvery(OPEN_INVESTOR, openInvestorsAction),
-  takeEvery(CLOSE_INVESTOR, closeInvestorsAction)
+  takeLatest(FETCH_STATIONS, fetchStationsAction),
+  takeLatest(OPEN_STATION, openStationAction),
+  takeLatest(CLOSE_STATION, closeStationAction),
+  takeLatest(FETCH_INVESTORS, fetchInvestorsAction),
+  takeLatest(OPEN_INVESTOR, openInvestorsAction),
+  takeLatest(CLOSE_INVESTOR, closeInvestorsAction),
+  takeLatest(CREATE_INVESTOR, createInvestorsAction),
+  takeLatest(UPDATE_INVESTOR, updateInvestorsAction)
 
 ]
 

@@ -12,6 +12,8 @@ import InvestorList from './InvestorList';
 import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from './redux';
 import {configSelector} from '../../util/config'
+import CreateInvestorModal from '../../component/station/CreateInvestorModal'
+
 const Option = Select.Option;
 
 class InvestorManage extends React.Component {
@@ -26,7 +28,9 @@ class InvestorManage extends React.Component {
       city: undefined,
       area: undefined,
       addr: undefined,
-      name: undefined
+      name: undefined,
+      createModalVisible: false,
+      modalKey: -1
     }
   }
 
@@ -240,6 +244,22 @@ class InvestorManage extends React.Component {
     )
   }
 
+  openCreateModal(){
+    this.props.requestStations({success:()=>{console.log('asasas')}})
+    this.setState({createModalVisible: true})
+  }
+
+  createInvestor(data){
+    let payload = {
+      ...data,
+      success:()=>{
+        this.setState({createModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
+      },
+      error: (err)=>{console.log('err===>',err.message)}
+    }
+    console.log('payload----------111',payload)
+    this.props.createInvestor(payload)
+  }
 
   render() {
     // console.log('[DEBUG] ---> SysUser props: ', this.props);
@@ -250,6 +270,7 @@ class InvestorManage extends React.Component {
           showDetail={()=> {
             console.log('hahahahahhaha')
           }}
+          add = {()=>{this.openCreateModal()}}
           setStatus={()=> {
             this.setStatus()
           }}
@@ -260,20 +281,32 @@ class InvestorManage extends React.Component {
         <InvestorList selectStation={(rowId, rowData)=> {
           this.selectInvestor(rowId, rowData)
         }} investors={this.props.investors}/>
+        <CreateInvestorModal
+        modalKey = {this.state.modalKey}
+        onOk = {(data)=>{this.createInvestor(data)}}
+        onCancel = {()=>{console.log('i, m cancel')
+          this.setState({createModalVisible: false})
+        }}
+        userList = {this.props.userList}
+        stationList = {this.props.stations}
+        modalVisible = {this.state.createModalVisible}
+        />
       </div>
     )
   };
 }
 
 const mapStateToProps = (state, ownProps) => {
-  // let stations = stationSelector.selectStations(state)
+  let stations = stationSelector.selectStations(state)
   let investors = stationSelector.selectInvestors(state)
-
+  let userList=[{id:'59c27b4b128fe10035923744', nickname:'绿蚁002'},{nickname:'绿蚁001', id: '59acdd051b69e600643de670'}]
   let areaList = configSelector.selectAreaList(state)
-  console.log('investors========>', investors)
+  // console.log('investors========>', investors)
   return {
     investors: investors,
     areaList: areaList,
+    stations: stations,
+    userList: userList
   };
 };
 
