@@ -1,17 +1,20 @@
 /**
+ * Created by lilu on 2017/9/21.
+ */
+/**
  * Created by lilu on 2017/9/18.
  */
 import React from 'react';
 import {connect} from 'react-redux';
 import {Row, Col, Input, Select, Button} from 'antd';
 import ContentHead from '../../component/ContentHead'
-import StationList from './StationList';
+import InvestorList from './InvestorList';
 import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from './redux';
 import {configSelector} from '../../util/config'
 const Option = Select.Option;
 
-class StationManage extends React.Component {
+class InvestorManage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -27,14 +30,14 @@ class StationManage extends React.Component {
     }
   }
 
-  selectStation(rowId, rowData) {
+  selectInvestor(rowId, rowData) {
     this.setState({selectedRowId: rowId, selectedRowData: rowData}, ()=> {
       console.log('selectRow========>', this.state.selectedRowId)
     })
   }
 
   componentWillMount() {
-    this.props.requestStations({
+    this.props.requestInvestors({
       success: ()=> {
         console.log('hahhahah')
       }
@@ -42,30 +45,31 @@ class StationManage extends React.Component {
   }
 
   refresh() {
-    // this.props.requestStations({...this.state})
+    this.props.requestInvestors({...this.state})
   }
 
   setStatus() {
     if (this.state.selectedRowId) {
       let data = undefined
-      this.props.stations.forEach((item, key)=> {
+      this.props.investors.forEach((item, key)=> {
         if (item.id == this.state.selectedRowId[0]) {
           data = item
         }
       })
+      console.log('data====>',data)
       let payload = {
-        stationId: this.state.selectedRowId,
+        investorId: data.id,
         success: ()=> {
           this.refresh()
         },
-        error: ()=> {
-          console.log('i m false')
+        error: (err)=> {
+          console.log('i m false',err.message)
         }
       }
       if (data.status == 1) {
-        this.props.closeStation(payload)
+        this.props.closeInvestor(payload)
       } else {
-        this.props.openStation(payload)
+        this.props.openInvestor(payload)
       }
     }
   }
@@ -241,7 +245,7 @@ class StationManage extends React.Component {
     // console.log('[DEBUG] ---> SysUser props: ', this.props);
     return (
       <div>
-        <ContentHead headTitle='服务点信息管理'/>
+        <ContentHead headTitle='投资人管理'/>
         <StationMenu
           showDetail={()=> {
             console.log('hahahahahhaha')
@@ -253,21 +257,22 @@ class StationManage extends React.Component {
             this.refresh()
           }}
         />
-        {this.renderSearchBar()}
-        <StationList selectStation={(rowId, rowData)=> {
-          this.selectStation(rowId, rowData)
-        }} stations={this.props.stations}/>
+        <InvestorList selectStation={(rowId, rowData)=> {
+          this.selectInvestor(rowId, rowData)
+        }} investors={this.props.investors}/>
       </div>
     )
   };
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let stations = stationSelector.selectStations(state)
+  // let stations = stationSelector.selectStations(state)
+  let investors = stationSelector.selectInvestors(state)
+
   let areaList = configSelector.selectAreaList(state)
-  console.log('areaList========>', areaList)
+  console.log('investors========>', investors)
   return {
-    stations: stations,
+    investors: investors,
     areaList: areaList,
   };
 };
@@ -277,6 +282,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(StationManage);
+export default connect(mapStateToProps, mapDispatchToProps)(InvestorManage);
 
 export {saga, reducer} from './redux';

@@ -60,8 +60,27 @@ export async function fetchProfitSharing(payload){
 
 export async function fetchInvestor(payload){
   try{
-    let stations = await AV.Cloud.run('stationFetchInvestor',payload)
-    return stations
+    let investors = await AV.Cloud.run('stationFetchInvestor',payload)
+    return {success: true, investors: investors}
+  }catch (err){
+    return {success:false, error: err}
+  }
+}
+
+export async function openInvestor(payload){
+  try{
+    console.log('payload=====>',payload)
+    let investors = await AV.Cloud.run('stationOpenInvestor',payload)
+    return {success: true, investors: investors}
+  }catch (err){
+    return {success:false, error: err}
+  }
+}
+
+export async function closeInvestor(payload){
+  try{
+    let investors = await AV.Cloud.run('stationCloseInvestor',payload)
+    return {success: true, investors: investors}
   }catch (err){
     return {success:false, error: err}
   }

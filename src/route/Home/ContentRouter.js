@@ -8,6 +8,7 @@ import Dashboard from '../../component/Dashboard'
 import SysConfig from '../../component/SysConfig'
 import SysUser from '../sysuser/'
 import StationManager from '../station/StationManage'
+import InvestorManager from '../station/InvestorManage'
 
 const ContentRouter = ({match}) => {
   return (
@@ -16,6 +17,7 @@ const ContentRouter = ({match}) => {
       <Route exact path="/cabinet/list" component={SysConfig} />
       <Route exact path="/system/user" component={SysUser} />
       <Route exact path="/site/list" component={StationManager} />
+      <Route exact path="/site/investor" component={InvestorManager} />
     </Switch>
   )
 }
