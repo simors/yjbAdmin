@@ -1,7 +1,7 @@
 import {createAction} from './util';
 import {call, put, takeLatest} from 'redux-saga/effects';
 import {Record, List, Map} from 'immutable';
-import * as api from './api';
+import * as api from './cloud';
 
 // --- Action
 
