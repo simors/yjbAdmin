@@ -1,10 +1,10 @@
 import sleep from '../../util/sleep';
 
-export async function listUser(payload) {
+export async function userList(payload) {
   try {
     await sleep(300);
     return {
-      r: 0,
+      success: true,
       users: [
         {id: 1, name: '刘德华', phoneNo: '18175181287', note: '暂无', roles: ['平台管理员', '服务点管理员']},
         {id: 2, name: '罗润兵', phoneNo: '18175181288', note: '暂无', roles: ['平台管理员', '服务点管理员', '服务点投资人']},
@@ -21,28 +21,111 @@ export async function listUser(payload) {
       ]
     };
   } catch (e) {
-    return {r: -1};
+    return {
+      success: false,
+      error: e
+    };
   }
 }
 
-export async function listRole(payload) {
-  try {
-    await sleep(300);
-    return {r: 0, roles: [
-      '平台管理员', '服务点管理员', '服务点投资人', '服务单位'
-    ]};
-  } catch (e) {
-    return {r: -1};
-  }
-}
-
-export async function showUser(payload) {
+export async function userShow(payload) {
   try {
     await sleep(500);
-    return {r: 0, user: {
-      id: 1, name: '刘德华', phoneNo: '13687338616', note: ''
-    }};
+    return {
+      success: true,
+      user: {
+        id: 1, name: '刘德华', phoneNo: '13687338616', note: '', roles: ['平台管理员', '服务点管理员']
+      }
+    };
   } catch (e) {
-    return {r: -1};
+    return {
+      success: false,
+      error: e
+    };
+  }
+}
+
+export async function userCreate(payload) {
+  try {
+    await sleep(500);
+    return {
+      success: true,
+      user: {
+        id: 1, name: '刘德华', phoneNo: '13687338616', note: '', roles: ['平台管理员', '服务点管理员']
+      }
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e
+    };
+  }
+}
+
+export async function userEdit(payload) {
+  try {
+    await sleep(500);
+    return {
+      success: true,
+      user: {
+        id: 1, name: '刘德华', phoneNo: '13687338616', note: '', roles: ['平台管理员', '服务点管理员']
+      }
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e
+    };
+  }
+}
+
+export async function userDelete(payload) {
+  try {
+    await sleep(500);
+    return {
+      success: true,
+      user: {
+        id: 1, name: '刘德华', phoneNo: '13687338616', note: '', roles: ['平台管理员', '服务点管理员']
+      }
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e
+    };
+  }
+}
+
+export async function userSave(payload) {
+  try {
+    await sleep(500);
+    return {
+      success: true,
+      user: {
+        id: 1, name: '刘德华', phoneNo: '13687338616', note: '', roles: ['平台管理员', '服务点管理员']
+      }
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e
+    };
+  }
+}
+
+export async function roleList(payload) {
+  try {
+    await sleep(300);
+    return {
+      success: true,
+      roles: [
+        '平台管理员', '服务点管理员', '服务点投资人', '服务单位'
+      ]
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e
+    };
   }
 }
