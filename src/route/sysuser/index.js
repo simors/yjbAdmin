@@ -13,9 +13,11 @@ class User extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      curUser: {
-        id: -1,
-        roles: []
+      userId: -1,
+      userRoles: [],
+      filter: {
+        name: '',
+        phoneNo: ''
       }
     };
 
@@ -24,27 +26,47 @@ class User extends React.Component {
       console.log("[DEBUG] ---> updateUserSelection, selected: ", selected);
       console.log("[DEBUG] ---> updateUserSelection, selectedRows: ", selectedRows);
 
-      this.setState({curUser: {id: record.id, roles: record.roles}});
+      this.setState({
+        userId: record.id,
+        userRoles: record.roles
+      });
     };
 
     this.onRoleChange = (checkedValue) => {
       this.setState((prevState, props) => {
         return {
-          curUser: {
-            ...prevState.curUser,
-            roles: checkedValue
-          }
+          ...prevState,
+          userRoles: checkedValue
         };
       });
     };
 
-    this.onRoleSave = () => {
-      this.props.saveRole(this.state.curUser);
+    this.onUserShow = () => {
+
+    };
+
+    this.onUserCreate = () => {
+
+    };
+
+    this.onUserEdit = () => {
+
+    };
+
+    this.onUserDelete = () => {
+
+    };
+
+    this.onUserSave = () => {
+      this.props.userSave({
+        id: this.state.userId,
+        roles: this.state.userRoles
+      });
     };
   }
 
   componentDidMount() {
-    this.props.listUser();
+    this.props.userList();
   }
 
   render() {
@@ -56,19 +78,21 @@ class User extends React.Component {
             <UserTabHeader />
           </Col>
           <Col lg={{span: 6}}>
-            <UserRoleTabHeader id={this.state.curUser.id} onRoleSave={this.onRoleSave} />
+            <UserRoleTabHeader id={this.state.userId} onRoleSave={this.onUserSave} />
           </Col>
         </Row>
         <Row type="flex" gutter={24}>
           <Col lg={{span: 18}}>
             <div style={{display: "flex", flexFlow: "column"}}>
-              <UserOp />
+              <UserOp onShow={this.onUserShow} onCreate={this.onUserCreate}
+                      onEdit={this.onUserEdit} onDelete={this.onUserDelete}
+              />
               <UserFilter />
               <UserList users={this.props.users} onUserChange={this.onUserChange} />
             </div>
           </Col>
           <Col lg={{span: 6}}>
-            <UserRole id={this.state.curUser.id} roles={this.state.curUser.roles}
+            <UserRole id={this.state.userId} roles={this.state.userRoles}
                       onRoleChange={this.onRoleChange}
             />
           </Col>
@@ -80,7 +104,8 @@ class User extends React.Component {
 
 const mapStateToProps = (appState, ownProps) => {
   return {
-    users: selector.selectUsers(appState),
+    userIds: selector.userIds(appState),
+    users: selector.users(appState),
   };
 };
 

@@ -10,6 +10,7 @@ import SysUser from '../sysuser/'
 import StationManager from '../station/StationManage'
 import Cabinet from '../Cabinet'
 import Order from '../Order'
+import InvestorManager from '../station/InvestorManage'
 
 const ContentRouter = ({match}) => {
   return (
@@ -20,6 +21,7 @@ const ContentRouter = ({match}) => {
       <Route exact path="/site/list" component={StationManager} />
       <Route exact path="/order/deposit" component={Order} />
       <Route exact path="/order/list" component={SysConfig} />
+      <Route exact path="/site/investor" component={InvestorManager} />
     </Switch>
   )
 }

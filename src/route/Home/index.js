@@ -15,12 +15,17 @@ import ContentRouter from './ContentRouter'
 import {fakeAuth} from '../../util/auth'
 import SiderMenu from '../../component/SiderMenu'
 import style from './style.module.scss'
+import {configAction} from '../../util/config'
 
 const {Header, Footer, Sider, Content} = Layout
 
 class Home extends Component {
   constructor(props) {
     super(props)
+  }
+
+  componentWillMount(){
+    this.props.requestAreaList()
   }
 
   userMenuOnClick = ({key}) => {
@@ -90,6 +95,7 @@ const mapStateToProps = (appState, ownProps) => {
 }
 
 const mapDispatchToProps = {
+  ...configAction
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Home))
