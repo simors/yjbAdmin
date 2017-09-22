@@ -6,12 +6,14 @@ import { all } from 'redux-saga/effects'
 import {stationSaga} from '../route/station/redux'
 import {saga as sysUserSaga} from '../route/sysuser/'
 import {configSaga} from '../util/config'
+import {saga as cabinetSaga} from '../route/Cabinet'
 
 
 export default function* rootSaga() {
   yield all([
     ...sysUserSaga,
     ...configSaga,
-    ...stationSaga
+    ...stationSaga,
+    ...cabinetSaga,
   ])
 }
