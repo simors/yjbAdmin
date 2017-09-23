@@ -99,6 +99,8 @@ export async function createInvestor(payload){
 
 export async function updateInvestor(payload){
   try{
+    console.log('payload====>',payload)
+
     let investors = await AV.Cloud.run('stationUpdateInvestor',payload)
     return {success: true, investors: investors}
   }catch (err){

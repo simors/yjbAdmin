@@ -1,10 +1,13 @@
 /**
+ * Created by lilu on 2017/9/22.
+ */
+/**
  * Created by lilu on 2017/9/21.
  */
 
 import AV from 'leancloud-storage'
 import React, {PropTypes, Component} from 'react'
-import { Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
+import {Row,Col,message, Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
 
 //import {checkBox} from '../../common/checkBox'
 const FormItem = Form.Item
@@ -18,7 +21,7 @@ const formItemLayout = {
     span: 14
   }
 }
-class CreateInvestorModal extends Component {
+class UpdateInvestorModal extends Component {
   constructor(props) {
     super(props)
 
@@ -33,14 +36,40 @@ class CreateInvestorModal extends Component {
       selectedRowKeys: [],
       selectTags: [],
       tagList: [],
-      newTag: ''
+      newTag: '',
+      station: undefined,
+      user: undefined
     }
   }
+
+
+
+
 
   componentWillReceiveProps(newProps) {
   }
 
   componentDidMount() {
+    // this.props.form.validateFields((errors) => {
+    //   if (errors) {
+    //     return
+    //   }
+    //   // console.log('=======>',{...this.props.form.getFieldsValue()})
+    //   let data =this.props.form.getFieldsValue()
+    //   console.log('data======>',data)
+    //   // let count = this.state.count - 1
+    //   let user = {}
+    //   this.props.userList.forEach((item)=>{
+    //     if(item.id==data.userId){}
+    //     user = item
+    //   })
+    //   let station = {}
+    //   this.props.stationList.forEach((item)=>{
+    //     if(item.id==data.stationId){}
+    //     station = item
+    //   })
+    //   this.setState({user: user, station: station})
+    // })
     // console.log('data', this.props.data
   }
 
@@ -66,9 +95,6 @@ class CreateInvestorModal extends Component {
     }
   }
 
-
-
-
   handleOk() {
 
     this.props.form.validateFields((errors) => {
@@ -85,6 +111,7 @@ class CreateInvestorModal extends Component {
 
 
   render() {
+    let investor = this.props.investor
     return (
       <Modal
         title='新建投资人'
@@ -103,10 +130,7 @@ class CreateInvestorModal extends Component {
         <Form layout="horizontal">
           <FormItem label='投资人' hasFeedback {...formItemLayout}>
             {this.props.form.getFieldDecorator('userId', {
-              // getValueFromEvent:(e)=>{
-              //  let value=this.setTrimValue(e.target.value)
-              //  return value
-              //},
+              initialValue: investor?investor.shareholderId:undefined,
               rules: [
                 {
                   required: true,
@@ -115,12 +139,13 @@ class CreateInvestorModal extends Component {
               ]
             })(
               <Select allowClear={true} style={{width: 140}} >
-              {this.userList()}
-            </Select>
+                {this.userList()}
+              </Select>
             )}
           </FormItem>
           <FormItem label='投资服务点：' hasFeedback {...formItemLayout}>
             {this.props.form.getFieldDecorator('stationId', {
+              initialValue: investor?investor.stationId:undefined,
               rules: [
                 {
                   required: true,
@@ -131,16 +156,24 @@ class CreateInvestorModal extends Component {
               {this.stationList()}
             </Select>)}
           </FormItem>
+          <Row>
+            <Col span={12}>
+              <div>{this.state.station?this.state.station.addr:''}</div>
+            </Col>
+            <Col span={12}>
+              <div>{this.state.user?this.state.user.nickname:''}</div>
+            </Col>
+          </Row>
           <FormItem label='投资金额：' hasFeedback {...formItemLayout}>
-          {this.props.form.getFieldDecorator('investment', {
-          initialValue: 0,
-          rules: [
-          {
-          required: true,
-          message: '投资金额未填写'
-          }
-          ]
-          })(<InputNumber />)}
+            {this.props.form.getFieldDecorator('investment', {
+              initialValue: investor?investor.investment:undefined,
+              rules: [
+                {
+                  required: true,
+                  message: '投资金额未填写'
+                }
+              ]
+            })(<InputNumber />)}
           </FormItem>
         </Form>
       </Modal>
@@ -152,4 +185,4 @@ class CreateInvestorModal extends Component {
 
 
 
-export default Form.create()(CreateInvestorModal)
+export default Form.create()(UpdateInvestorModal)
