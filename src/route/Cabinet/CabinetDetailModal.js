@@ -15,6 +15,7 @@ import {
   Modal,
   Radio,
 } from 'antd'
+import QRCode from 'qrcode.react'
 import style from './cabinet.module.scss'
 
 const RadioGroup = Radio.Group
@@ -32,19 +33,19 @@ class CabinetDetailModal extends React.PureComponent {
                visible={this.props.visible}
                onOk={this.props.onOk}
                onCancel={this.props.onCancel}>
-          <Row type='flex' gutter={16} align='middle'>
+          <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>编号</Col>
             <Col span={6}>
               <Input disabled={true} defaultValue={this.props.cabinet.deviceNo} />
             </Col>
           </Row>
-          <Row type='flex' gutter={16} align='middle'>
+          <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>干衣柜位置</Col>
             <Col span={12}>
               <Input disabled={true} defaultValue={this.props.cabinet.deviceAddr} />
             </Col>
           </Row>
-          <Row type='flex' gutter={16} align='middle'>
+          <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>状态</Col>
             <Col span={18}>
               <RadioGroup value={this.props.cabinet.status}>
@@ -55,6 +56,15 @@ class CabinetDetailModal extends React.PureComponent {
                 <Radio value={cabinetStatus.DEVICE_STATUS_MAINTAIN}>维修保养</Radio>
                 <Radio value={cabinetStatus.DEVICE_STATUS_UNREGISTER}>未注册</Radio>
               </RadioGroup>
+            </Col>
+          </Row>
+          <Row className={style.modalItem} type='flex' gutter={16} >
+            <Col span={4}>二维码</Col>
+            <Col span={6}>
+              <QRCode id="qrcode" value={"http://dev.yiijiabao.com/openDevice?deviceNo=" + this.props.cabinet.deviceNo} />
+            </Col>
+            <Col>
+              <a href="">下载二维码</a>
             </Col>
           </Row>
         </Modal>
