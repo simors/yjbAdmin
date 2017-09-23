@@ -368,10 +368,16 @@ function selectInvestors(state) {
   return investors
 }
 
+function selectStationById(state, stationId) {
+  let station = state.STATION
+  let stationRecord = station.getIn(['allStations', stationId])
+
+  return stationRecord.toJS()
+}
 
 
 export const stationSelector = {
   selectStations,
-  selectInvestors
-
+  selectInvestors,
+  selectStationById
 }

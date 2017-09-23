@@ -50,6 +50,7 @@ class DivisionCascader extends PureComponent {
                 options={options}
                 placeholder="省／市／区"
                 defaultValue={this.props.defaultValue}
+                value={this.props.value}
                 changeOnSelect
                 disabled={this.props.disabled}
                 onChange={this.props.onChange} />
@@ -60,7 +61,7 @@ class DivisionCascader extends PureComponent {
 DivisionCascader.defaultProps = {
   disabled: false,
   defaultValue: ['430000', '430100', '430104'],   //湖南省／长沙市／岳麓区
-
+  onChange: () => {},
 }
 
 export default DivisionCascader
