@@ -18,6 +18,7 @@ import {
 import style from './cabinet.module.scss'
 import CabinetSearchForm from './CabinetSearchForm'
 import CabinetDetailModal from './CabinetDetailModal'
+import CabinetEditModal from './CabinetEditModal'
 
 const ButtonGroup = Button.Group
 
@@ -58,6 +59,7 @@ class Cabinet extends Component {
     this.state = {
       showCabinetDetailModal: false,
       selectCabinet: undefined,
+      showCabinetEditModal: false,
     }
   }
 
@@ -87,6 +89,19 @@ class Cabinet extends Component {
     })
   }
 
+  showEditModal = () => {
+    if(this.state.selectCabinet) {
+      this.setState({
+        showCabinetEditModal: true,
+      })
+    }
+  }
+  hideEditModal = () => {
+    this.setState({
+      showCabinetEditModal: false,
+    })
+  }
+
   render() {
     const rowSelection = {
       type: 'radio',
@@ -100,8 +115,7 @@ class Cabinet extends Component {
         <div className={style.operation}>
           <ButtonGroup>
             <Button icon="info-circle-o" onClick={this.showDetail}>查看</Button>
-            <Button icon="edit">编辑</Button>
-            <Button icon="edit">批量编辑</Button>
+            <Button icon="link" onClick={this.showEditModal}>关联服务点</Button>
             <Button icon="reload">刷新</Button>
           </ButtonGroup>
         </div>
@@ -116,6 +130,9 @@ class Cabinet extends Component {
         <CabinetDetailModal visible={this.state.showCabinetDetailModal}
                             cabinet={this.state.selectCabinet}
                             onOk={this.hideDetail} onCancel={this.hideDetail}/>
+        <CabinetEditModal visible={this.state.showCabinetEditModal}
+                          cabinet={this.state.selectCabinet}
+                          onOk={this.hideEditModal} onCancel={this.hideEditModal}/>
       </div>
     )
   }

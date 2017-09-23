@@ -4,7 +4,6 @@
 import AV from 'leancloud-storage'
 
 export async function fetchCabinetsApi(payload) {
-  console.log("fetchCabinetsApi payload", payload)
   try {
     let cabinetList = await AV.Cloud.run('deviceFetchDevices', payload)
     return cabinetList
