@@ -1,5 +1,7 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {Table} from 'antd';
+import {sagaAction, selector} from './redux';
 
 const columns = [{
   title: "姓名",
@@ -26,6 +28,10 @@ class UserList extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.props.UserList_fetch();
+  }
+
   render() {
     console.log('[DEBUG] ---> UserList render, props: ', this.props);
     let {users} = this.props;
@@ -40,4 +46,15 @@ class UserList extends React.Component {
   }
 }
 
-export default UserList;
+const mapStateToProps = (appState, ownProps) => {
+  return {
+    ids: selector.UserList.ids(appState),
+    users: selector.UserList.users(appState),
+  };
+};
+
+const mapDispatchToProps = {
+  ...sagaAction,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserList);

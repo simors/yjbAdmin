@@ -49,10 +49,6 @@ class User extends React.Component {
     }
   };
 
-  componentDidMount() {
-    this.props.UserList_fetch();
-  }
-
   render() {
     console.log('[DEBUG] ---> User render, props: ', this.props);
     return (
@@ -72,7 +68,7 @@ class User extends React.Component {
                       onDetail={this.onUserDetail}
               />
               <UserFilter />
-              <UserList users={this.props.UserList.users} onUserChange={this.onUserChange} />
+              <UserList onUserChange={this.onUserChange} />
             </div>
           </Col>
           <Col lg={{span: 6}}>
@@ -87,19 +83,10 @@ class User extends React.Component {
   };
 }
 
-const mapStateToProps = (appState, ownProps) => {
-  return {
-    UserList: {
-      ids: selector.UserList.ids(appState),
-      users: selector.UserList.users(appState),
-    },
-  };
-};
-
 const mapDispatchToProps = {
   ...sagaAction,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(User);
+export default connect(null, mapDispatchToProps)(User);
 
 export {saga, reducer} from './redux';
