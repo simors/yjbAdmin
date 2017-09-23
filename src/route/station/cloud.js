@@ -51,8 +51,8 @@ export async function closeStation(payload){
 
 export async function fetchProfitSharing(payload){
   try{
-    let stations = AV.Cloud.run('stationFetchProfitSharing',payload)
-    return stations
+    let partners = await AV.Cloud.run('stationFetchProfitSharing',payload)
+    return {success: true, partners: partners}
   }catch (err){
     return {success:false, error: err}
   }

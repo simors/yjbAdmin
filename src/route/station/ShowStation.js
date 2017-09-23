@@ -1,21 +1,22 @@
 /**
+ * Created by lilu on 2017/9/23.
+ */
+/**
+ * Created by lilu on 2017/9/21.
+ */
+/**
  * Created by lilu on 2017/9/18.
  */
 import React from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
 import {Row, Col, Input, Select, Button} from 'antd';
 import ContentHead from '../../component/ContentHead'
-import StationList from './StationList';
-import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from './redux';
 import {configSelector} from '../../util/config'
-import createBrowserHistory from 'history/createBrowserHistory'
-
-const history = createBrowserHistory()
+import PartnerList from './PartnerList'
 const Option = Select.Option;
 
-class StationManage extends React.Component {
+class ShowStation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -27,49 +28,51 @@ class StationManage extends React.Component {
       city: undefined,
       area: undefined,
       addr: undefined,
-      name: undefined
+      name: undefined,
+      createModalVisible: false,
+      updateModalVisible: false,
+      modalKey: -1,
+      partnerList: []
     }
   }
 
-  selectStation(rowId, rowData) {
+  selectInvestor(rowId, rowData) {
     this.setState({selectedRowId: rowId, selectedRowData: rowData}, ()=> {
       console.log('selectRow========>', this.state.selectedRowId)
     })
   }
 
   componentWillMount() {
-    this.props.requestStations({
-      success: ()=> {
-        console.log('hahhahah')
-      }
-    });
+    // console.log('hahahahah',this.props.match)
+    this.props.requestPartners({stationId:this.props.match.params.id,success:()=>{
+    }})
   }
 
   refresh() {
-    // this.props.requestStations({...this.state})
   }
 
   setStatus() {
     if (this.state.selectedRowId) {
       let data = undefined
-      this.props.stations.forEach((item, key)=> {
+      this.props.investors.forEach((item, key)=> {
         if (item.id == this.state.selectedRowId[0]) {
           data = item
         }
       })
+      console.log('data====>',data)
       let payload = {
-        stationId: this.state.selectedRowId,
+        investorId: data.id,
         success: ()=> {
           this.refresh()
         },
-        error: ()=> {
-          console.log('i m false')
+        error: (err)=> {
+          console.log('i m false',err.message)
         }
       }
       if (data.status == 1) {
-        this.props.closeStation(payload)
+        this.props.closeInvestor(payload)
       } else {
-        this.props.openStation(payload)
+        this.props.openInvestor(payload)
       }
     }
   }
@@ -240,41 +243,124 @@ class StationManage extends React.Component {
     )
   }
 
+  openCreateModal(){
+    this.props.requestStations({success:()=>{console.log('asasas')}})
+    this.setState({createModalVisible: true})
+  }
+
+  openUpdateModal(){
+    this.props.requestStations({success:()=>{console.log('asasas')}})
+    this.setState({updateModalVisible: true})
+  }
+
+  createInvestor(data){
+    let payload = {
+      ...data,
+      success:()=>{
+        this.setState({createModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
+      },
+      error: (err)=>{console.log('err===>',err.message)}
+    }
+    console.log('payload----------111',payload)
+    this.props.createInvestor(payload)
+  }
+
+  updateInvestor(data){
+    let payload = {
+      ...data,
+      investorId: this.state.selectedRowId[0],
+      success:()=>{
+        this.setState({updateModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
+      },
+      error: (err)=>{console.log('err===>',err.message)}
+    }
+    console.log('payload----------111',payload)
+    // this.setState({updateModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
+
+    this.props.updateInvestor(payload)
+  }
 
   render() {
-    // console.log('[DEBUG] ---> SysUser props: ', this.props);
+    // console.log('[DEBUG] ---> SysUser props: ', this.state.partnerList);
+    // let plate = {id:'platform',shareholderName:'平台', royalty: this.props.station?this.props.station.platformProp:0}
+    // let partnerList = this.state.partnerList.splice(0,0,plate)
     return (
       <div>
-        <ContentHead headTitle='服务点信息管理'/>
-        <StationMenu
-          showDetail={()=> {
-            this.props.history.push({
-              pathname: '/site/detail/'+(this.state.selectedRowId?this.state.selectedRowId[0]:''),
-            })
-          }}
-          setStatus={()=> {
-            this.setStatus()
-          }}
-          refresh={()=> {
-            this.refresh()
-          }}
-        />
-        {this.renderSearchBar()}
-        <StationList selectStation={(rowId, rowData)=> {
-          this.selectStation(rowId, rowData)
-        }} stations={this.props.stations}/>
+        <ContentHead headTitle='编辑服务点'/>
+        <Row>
+          <Col span = {6}>
+            <p>服务点管理</p>
+            </Col>
+          <Col span = {6}>
+            <p>{this.props.station.name}</p>
+          </Col>
+          <Col span = {6}>
+            <p>管理员</p>
+          </Col>
+          <Col span = {6}>
+            <p>{this.props.station.adminName+''+this.props.station.adminPhone}</p>
+          </Col>
+          </Row>
+        <Row>
+          <Col span = {4}>
+            <p>服务点地址</p>
+          </Col>
+          <Col span = {20}>
+            <p>{this.props.station.province+' '+this.props.station.city+'  '+this.props.station.area+ '  ' + this.props.station.addr}</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col span = {4}>
+            <p>干衣柜单价</p>
+          </Col>
+          <Col span = {4}>
+            <p>{this.props.station.unitPrice+'元每分钟'}</p>
+          </Col>
+          <Col span = {4}>
+            <p>干衣柜押金</p>
+          </Col>
+          <Col span = {4}>
+            <p>{this.props.station.deposit+'元'}</p>
+          </Col>
+          <Col span = {4}>
+            <p>电费单价</p>
+          </Col>
+          <Col span = {4}>
+            <p>{this.props.station.powerUnitPrice+''+'元／度'}</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={4}>
+            <h5>服务点分成</h5>
+            </Col>
+          <Col span={4}>
+          <Button onClick={()=>{this.props.createPartner({shareholderId:'3213123xxx123123xx',shareholderName:'test',royalty:0.5})}}>添加服务点</Button>
+        </Col>
+          <Col span={4}>
+            <p >{'平台分成:'+this.props.station.platformProp*100 +'%'}</p>
+          </Col>
+        </Row>
+        <PartnerList  type='show' partners={this.props.partners}/>
       </div>
     )
+
   };
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let stations = stationSelector.selectStations(state)
-  let areaList = configSelector.selectAreaList(state)
-  console.log('areaList========>', areaList)
+  // console.log('ownporsoss.......aaa',ownProps)
+ let areaList = configSelector.selectAreaList(state)
+  let station = stationSelector.selectStation(state,ownProps.match.params.id)
+  let partners = stationSelector.selectPartners(state)
+  // let station={name:'123',adminName:'321'}
+  // console.log('areaList========>', areaList)
+  console.log('partners========>', partners)
+
   return {
-    stations: stations,
+    station: station,
     areaList: areaList,
+    partners: partners
+
   };
 };
 
@@ -283,6 +369,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(StationManage);
+export default connect(mapStateToProps, mapDispatchToProps)(ShowStation);
 
 export {saga, reducer} from './redux';

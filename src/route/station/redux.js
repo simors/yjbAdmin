@@ -52,9 +52,9 @@ export class StationDetail extends StationDetailRecord {
       record.set('platformProp', obj.platformProp)
       record.set('powerUnitPrice', obj.powerUnitPrice)
       record.set('unitPrice', obj.unitPrice)
-      record.set('adminId', obj.admin.id)
-      record.set('adminName', obj.admin.nickname)
-      record.set('adminPhone', obj.admin.mobilePhoneNumber)
+      record.set('adminId', obj.adminId?obj.adminId:obj.admin.id)
+      record.set('adminName', obj.adminName?obj.adminName:obj.admin.nickname)
+      record.set('adminPhone', obj.adminPhone?obj.adminPhone:obj.admin.mobilePhoneNumber)
       record.set('status', obj.status)
       record.set('deviceNo', obj.deviceNo)
       record.set('createdAt', obj.createdAt)
@@ -69,8 +69,8 @@ export const ProfitSharingRecord = Record({
   royalty: undefined,
   investment: undefined,
   shareholderId: undefined,
-  sharehlderName: undefined,
-  sharehlderPhone: undefined,
+  shareholderName: undefined,
+  shareholderPhone: undefined,
   stationId: undefined,
   stationName: undefined,
   createdAt: undefined,
@@ -86,8 +86,8 @@ export class ProfitSharing extends ProfitSharingRecord {
       record.set('royalty', obj.royalty)
       record.set('investment', obj.investment)
       record.set('shareholderId', obj.shareholderId)
-      record.set('sharehlderName', obj.sharehlderName)
-      record.set('sharehlderPhone', obj.sharehlderPhone)
+      record.set('shareholderName', obj.shareholderName)
+      record.set('shareholderPhone', obj.shareholderPhone)
       record.set('stationId', obj.stationId)
       record.set('stationName', obj.stationName)
       record.set('createdAt', obj.createdAt)
@@ -112,6 +112,10 @@ const OPEN_INVESTOR = 'OPEN_INVESTOR'
 const CLOSE_INVESTOR = 'CLOSE_INVESTOR'
 const CREATE_INVESTOR = 'CREATE_INVESTOR'
 const UPDATE_INVESTOR = 'UPDATE_INVESTOR'
+const FETCH_PARTNERS = 'FETCH_PARTNERS'
+const FETCH_PARTNERS_SUCCESS = 'FETCH_PARTNERS_SUCCESS'
+const CREATE_PARTNER = 'CREATE_PARTNER'
+const CREATE_PARTNER_SUCCESS = 'CREATE_PARTNER_SUCCESS'
 
 /**** Action ****/
 
@@ -124,11 +128,17 @@ export const stationAction = {
   closeInvestor: createAction(CLOSE_INVESTOR),
   createInvestor: createAction(CREATE_INVESTOR),
   updateInvestor: createAction(UPDATE_INVESTOR),
+  requestPartners: createAction(FETCH_PARTNERS),
+  createPartner: createAction(CREATE_PARTNER),
 }
+
 const requestStationsSuccess = createAction(FETCH_STATIONS_SUCCESS)
 const openStationSuccess = createAction(OPEN_STATION_SUCCESS)
 const closeStationSuccess = createAction(CLOSE_STATION_SUCCESS)
 const requestInvestorsSuccess = createAction(FETCH_INVESTORS_SUCCESS)
+const requestPartnersSuccess = createAction(FETCH_PARTNERS_SUCCESS)
+const createPartnerSuccess = createAction(CREATE_PARTNER_SUCCESS)
+
 
 /**** Saga ****/
 
@@ -269,6 +279,39 @@ function* updateInvestorsAction(action) {
   }
 }
 
+function* fetchPartnersAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.fetchProfitSharing, payload)
+  let partners = []
+  let partnerList = []
+  if(data.success){
+    if(data.partners&&data.partners.length>0){
+      data.partners.forEach((item)=>{
+        partnerList.push(item.shareholderId)
+        partners.push(ProfitSharing.fromApi(item))
+      })
+    }
+    yield put(requestPartnersSuccess({partners: partners, partnerList: partnerList}))
+    if(payload.success){
+      payload.success()
+    }
+  }else{
+    if(payload.error){
+      payload.error(data.error)
+    }
+  }
+}
+
+function* createPartnerAction(action) {
+  let payload = action.payload
+  console.log('actionpayload=====>',payload)
+  let partner = ProfitSharing.fromApi(payload)
+  yield put(createPartnerSuccess({partner:partner}))
+    if(payload.success){
+      payload.success()
+    }
+}
+
 export const stationSaga = [
   takeLatest(FETCH_STATIONS, fetchStationsAction),
   takeLatest(OPEN_STATION, openStationAction),
@@ -277,7 +320,9 @@ export const stationSaga = [
   takeLatest(OPEN_INVESTOR, openInvestorsAction),
   takeLatest(CLOSE_INVESTOR, closeInvestorsAction),
   takeLatest(CREATE_INVESTOR, createInvestorsAction),
-  takeLatest(UPDATE_INVESTOR, updateInvestorsAction)
+  takeLatest(UPDATE_INVESTOR, updateInvestorsAction),
+  takeLatest(FETCH_PARTNERS, fetchPartnersAction),
+  takeLatest(CREATE_PARTNER, createPartnerAction)
 
 ]
 
@@ -295,6 +340,10 @@ export function stationReducer(state = initialState, action) {
       return handleSaveStation(state, action)
     case FETCH_INVESTORS_SUCCESS:
       return handleSaveInvestors(state, action)
+    case FETCH_PARTNERS_SUCCESS:
+      return handleSavePartners(state, action)
+    case CREATE_PARTNER_SUCCESS:
+      return handleSavePartner(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -317,7 +366,7 @@ function handleSaveStation(state, action) {
 
 function handleSetAllPartners(state, partners) {
   partners.forEach((item)=> {
-    state = state.setIn(['allPartners', item.id], item)
+    state = state.setIn(['allPartners', item.shareholderId], item)
   })
   return state
 }
@@ -353,12 +402,46 @@ function handleSaveInvestors(state, action) {
   return state
 }
 
+function handleSavePartners(state, action) {
+  let partners = action.payload.partners
+  let partnerList = action.payload.partnerList
+  if(partnerList && partnerList.length>0){
+    state = state.set('partnerList', new List(partnerList))
+    state = handleSetAllPartners(state,partners)
+  }else{
+    state = state.set('partnerList', new List())
+  }
+  return state
+}
+
+function handleSavePartner(state, action) {
+  let partner = action.payload.partner
+  state = state.setIn(['allPartners',partner.shareholderId],partner)
+  let _partnerList = state.partnerList|| new List()
+  // console.log('partnerList====~~~~~~~~~~~~~~~',partnerList)
+  // console.log('partner====~~~~~~~~~~~~~~~',partner.shareholderId)
+  let partnerList = _partnerList.toJS()
+  if(partnerList&&partnerList.length){
+    // console.log('i m here')
+    partnerList.push( partner.shareholderId)
+    // console.log('partnerList====~~~~~~~~~~~~~~~',new List(partnerList))
+
+  }
+  state = state.set('partnerList', new List(partnerList))
+  return state
+}
 
 function onRehydrate(state, action) {
   var incoming = action.payload.STATION
   if (!incoming) return state
 
-  // let allStations = incoming.allStations
+  let allStations = Map(incoming.allStations)
+  allStations.map((value, key)=> {
+    if (value && key) {
+      let commentInfo = StationDetail.fromApi(value)
+      state = state.setIn(['allStations', key], commentInfo)
+    }
+  })
   // if (allStations) {
   //   state = state.set('allStations', allStations)
   // }
@@ -381,6 +464,14 @@ function selectStations(state) {
   return stations
 }
 
+function selectStation(state,stationId) {
+  let station = state.STATION
+  // console.log('stationId=====>',stationId)
+  let stationInfo = station.getIn(['allStations',stationId])
+  // console.log('stationInfo==>',stationInfo)
+  return stationInfo
+}
+
 function selectInvestors(state) {
   let station = state.STATION
   let investorList = station.investorList
@@ -394,10 +485,23 @@ function selectInvestors(state) {
   return investors
 }
 
-
+function selectPartners(state) {
+  let station = state.STATION
+  let partnerList = station.partnerList
+  let partners = []
+  if(partnerList&&partnerList.size>0){
+    partnerList.forEach((item)=>{
+      let partnerInfo = station.getIn(['allPartners',item])
+      partners.push(partnerInfo.toJS())
+    })
+  }
+  return partners
+}
 
 export const stationSelector = {
   selectStations,
-  selectInvestors
+  selectInvestors,
+  selectStation,
+  selectPartners
 
 }
