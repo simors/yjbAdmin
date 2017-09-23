@@ -10,12 +10,15 @@ const columns = [{
 }, {
   title: "省",
   dataIndex: "province",
+  render: (text,record)=>{return(<p>{record.province.label}</p>)}
 }, {
   title: "市",
   dataIndex: "city",
+  render: (text,record)=>{return(<p>{record.city.label}</p>)}
 }, {
   title: "区",
   dataIndex: "area",
+  render: (text,record)=>{return(<p>{record.area.label}</p>)}
 }, {
   title: "服务点地址",
   dataIndex: "addr",

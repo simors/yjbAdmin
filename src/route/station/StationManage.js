@@ -11,7 +11,7 @@ import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from './redux';
 import {configSelector} from '../../util/config'
 import createBrowserHistory from 'history/createBrowserHistory'
-
+import DivisionCascader from '../../component/DivisionCascader'
 const history = createBrowserHistory()
 const Option = Select.Option;
 
@@ -27,7 +27,8 @@ class StationManage extends React.Component {
       city: undefined,
       area: undefined,
       addr: undefined,
-      name: undefined
+      name: undefined,
+      division: []
     }
   }
 
@@ -78,27 +79,6 @@ class StationManage extends React.Component {
     this.setState({status: parseInt(value)})
   }
 
-  provinceList() {
-    if (this.props.areaList && this.props.areaList.length > 0) {
-      let provinceList = this.props.areaList.map((item, key)=> {
-        return <Option key={key} value={key}>{item.area_name}</Option>
-      })
-      return provinceList
-    } else {
-      return null
-    }
-  }
-
-  cityList() {
-    if (this.state.province && this.state.province.sub.length > 0) {
-      let cityList = this.state.province.sub.map((item, key)=> {
-        return <Option key={key} value={key}>{item.area_name}</Option>
-      })
-      return cityList
-    } else {
-      return null
-    }
-  }
 
   areaList() {
     if (this.state.city && this.state.city.sub.length > 0) {
@@ -111,32 +91,11 @@ class StationManage extends React.Component {
     }
   }
 
-  provinceChange(value) {
-    console.log('value========>', value)
-    this.setState({province: this.props.areaList[value]}, ()=> {
-      console.log('this.state.province', this.state.province)
-    })
-  }
-
-  cityChange(value) {
-    console.log('value========>', value)
-    this.setState({city: this.state.province.sub[value]}, ()=> {
-      console.log('this.state.city', this.state.city)
-    })
-  }
-
-  areaChange(value) {
-    console.log('value========>', value)
-    this.setState({area: this.state.city.sub[value]}, ()=> {
-      console.log('this.state.city', this.state.area)
-    })
-  }
-
   search() {
     let payload = {
-      province: this.state.province ? this.state.province.area_name : undefined,
-      city: this.state.city ? this.state.city.area_name : undefined,
-      area: this.state.area ? this.state.area.area_name : undefined,
+      province: this.state.division[0],
+      city:this.state.division[1],
+      area: this.state.division[2],
       status: this.state.status != undefined ? this.state.status : undefined,
       addr: this.state.addr,
       name: this.state.name,
@@ -150,6 +109,13 @@ class StationManage extends React.Component {
     this.props.requestStations(payload)
   }
 
+  setDivision(value){
+    if(value&&value.length){
+      this.setState({
+        division: value
+      },()=>{console.log('state',this.state.division)})
+    }
+  }
 
   clearSearch() {
     this.setState({
@@ -158,10 +124,11 @@ class StationManage extends React.Component {
       city: undefined,
       area: undefined,
       addr: undefined,
-      name: undefined
+      name: undefined,
+      division: []
     })
-    this.props.requestStations()
-
+    this.props.requestStations( {success: ()=> {
+      console.log('hahhahah')}})
   }
 
   renderSearchBar() {
@@ -192,30 +159,14 @@ class StationManage extends React.Component {
           <Col span={2}>
             <div>省市区</div>
           </Col>
-          <Col span={3}>
-            <Select allowClear={true} style={{width: 80}} onChange={(value)=> {
-              this.provinceChange(value)
-            }}>
-              <Option key='all'>无</Option>
-              {this.provinceList()}
-            </Select>
-          </Col>
-          <Col span={3}>
-            <Select allowClear={true} defaultValue='' style={{width: 80}} onChange={(value)=> {
-              this.cityChange(value)
-            }}>
-              <Option key='all'>无</Option>
-              {this.cityList()}
-            </Select>
-          </Col>
-          <Col span={3}>
-            <Select allowClear={true} defaultValue='' style={{width: 80}} onChange={(value)=> {
-              this.areaChange(value)
-            }}>
-              <Option key='all'>无</Option>
-              {this.areaList()}
-            </Select>
-          </Col>
+          <Col span={9}>
+          <DivisionCascader
+            defaultValue = {this.state.division}
+            onChange={(key,value)=>{
+              this.setDivision(key)
+              console.log('value===>',value,key)}}
+          />
+            </Col>
           <Col span={2}>
             <div>地址</div>
           </Col>
@@ -260,6 +211,7 @@ class StationManage extends React.Component {
           }}
         />
         {this.renderSearchBar()}
+
         <StationList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
         }} stations={this.props.stations}/>
