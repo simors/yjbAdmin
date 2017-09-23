@@ -1,4 +1,7 @@
 /**
+ * Created by lilu on 2017/9/23.
+ */
+/**
  * Created by lilu on 2017/9/22.
  */
 /**
@@ -124,7 +127,6 @@ class UpdateInvestorModal extends Component {
           })
           this.props.onCancel()
         }}
-        okText="提交"
         wrapClassName='vertical-center-modal'
         key={this.props.modalKey}
       >
@@ -159,22 +161,22 @@ class UpdateInvestorModal extends Component {
           </FormItem>
           <Row>
             <Col span={12}>
-          <FormItem label='投资金额：' hasFeedback {...formItemLayout}>
-            {this.props.form.getFieldDecorator('investment', {
-              initialValue: investor?investor.investment:undefined,
-              rules: [
-                {
-                  required: true,
-                  message: '投资金额未填写'
-                }
-              ]
-            })(<InputNumber />)}
-          </FormItem>
-              </Col>
+              <FormItem label='投资金额：' hasFeedback {...formItemLayout}>
+                {this.props.form.getFieldDecorator('investment', {
+                  initialValue: investor?investor.investment:undefined,
+                  rules: [
+                    {
+                      required: true,
+                      message: '投资金额未填写'
+                    }
+                  ]
+                })(<InputNumber />)}
+              </FormItem>
+            </Col>
             <Col span={6}>
               <p style={{color:'grey'}}>{'投资占比：'+(this.props.investor?this.props.investor.royalty*100 +'%':'')}</p>
-              </Col>
-            </Row>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     )
