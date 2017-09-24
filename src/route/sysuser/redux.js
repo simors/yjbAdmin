@@ -3,12 +3,44 @@ import {call, put, takeLatest} from 'redux-saga/effects';
 import {Record, List, Map} from 'immutable';
 import * as api from './cloud';
 
+// --- State
+
+class User extends Record({
+  id: null,
+  name: null,
+  password: null,
+  phoneNo: null,
+  note: null,
+  roles: null
+}, "User") {
+  static fromJsonApi(json) {
+    let user = new User();
+    return user.withMutations((m) => {
+      m.set("id", json.id);
+      m.set("name", json.name);
+      m.set("password", json.password);
+      m.set("phoneNo", json.phoneNo);
+      m.set("note", json.note);
+      m.set("roles", json.roles);
+    })
+  }
+}
+
+const UserState = Record({
+  UserList: Map(),
+  UserDetail: Map(),
+  UserCreate: Map(),
+  UserDelete: Map(),
+  UserEdit: Map(),
+}, "UserState");
+
 // --- Action
 
 const SAGA_User_update = "SAGA@sysuser/User/update";
 const SAGA_UserList_fetch = "SAGA@sysuser/UserList/fetch";
 const SAGA_UserDetail_open = "SAGA@sysuser/UserDetail/open";
 const SAGA_UserDetail_close = "SAGA@sysuser/UserDetail/close";
+
 export const sagaAction = {
   User_update: createAction(SAGA_User_update),
   UserList_fetch: createAction(SAGA_UserList_fetch),
@@ -16,7 +48,7 @@ export const sagaAction = {
   UserDetail_close: createAction(SAGA_UserDetail_close),
 };
 
-const REDUCER_User_update = "REDUCER@sysuser/User/update"
+const REDUCER_User_update = "REDUCER@sysuser/User/update";
 const REDUCER_UserList_fetch = "REDUCER@sysuser/UserList/fetch";
 const REDUCER_UserDetail_open = "REDUCER@sysuser/UserDetail/open";
 const REDUCER_UserDetail_close = "REDUCER@sysuser/UserDetail/close";
@@ -106,71 +138,6 @@ export const saga = [
   takeLatest(SAGA_UserDetail_close, saga_UserDetail_close),
 ];
 
-// --- State
-
-const UserState = Record({
-  UserList: Map(),
-  UserDetail: Map(),
-  UserCreate: Map(),
-  UserDelete: Map(),
-  UserEdit: Map(),
-}, "UserState");
-
-class User extends Record({
-  id: null,
-  name: null,
-  password: null,
-  phoneNo: null,
-  note: null,
-  roles: null
-}, "User") {
-  static fromJsonApi(json) {
-    let user = new User();
-    return user.withMutations((m) => {
-      m.set("id", json.id);
-      m.set("name", json.name);
-      m.set("password", json.password);
-      m.set("phoneNo", json.phoneNo);
-      m.set("note", json.note);
-      m.set("roles", json.roles);
-    })
-  }
-}
-
-// --- Selector
-
-function select_UserList_ids(appState) {
-  const state = appState.SYSUSER;
-  return state.getIn(["UserList", "ids"], List()).toArray();
-}
-
-function select_UserList_users(appState) {
-  const state = appState.SYSUSER;
-  return state.getIn(["UserList", "users"], Map()).toArray();
-}
-
-function select_UserDetail_visible(appState) {
-  const state = appState.SYSUSER;
-  return state.getIn(["UserDetail", "visible"], false);
-}
-
-function select_UserDetail_data(appState) {
-  const state = appState.SYSUSER;
-  return state.getIn(["UserDetail", "data"], Map()).toJS();
-}
-
-export const selector = {
-  UserList: {
-    ids: select_UserList_ids,
-    users: select_UserList_users,
-  },
-  UserDetail: {
-    visible: select_UserDetail_visible,
-    data: select_UserDetail_data,
-  },
-
-};
-
 // --- Reducer
 
 function reduce_UserList_fetch(state, action) {
@@ -232,4 +199,38 @@ export const reducer = (state=UserState(), action) => {
     default:
       return state;
   }
+};
+
+// --- Selector
+
+function select_UserList_ids(appState) {
+  const state = appState.SYSUSER;
+  return state.getIn(["UserList", "ids"], List()).toArray();
+}
+
+function select_UserList_users(appState) {
+  const state = appState.SYSUSER;
+  return state.getIn(["UserList", "users"], Map()).toArray();
+}
+
+function select_UserDetail_visible(appState) {
+  const state = appState.SYSUSER;
+  return state.getIn(["UserDetail", "visible"], false);
+}
+
+function select_UserDetail_data(appState) {
+  const state = appState.SYSUSER;
+  return state.getIn(["UserDetail", "data"], Map()).toJS();
+}
+
+export const selector = {
+  UserList: {
+    ids: select_UserList_ids,
+    users: select_UserList_users,
+  },
+  UserDetail: {
+    visible: select_UserDetail_visible,
+    data: select_UserDetail_data,
+  },
+
 };

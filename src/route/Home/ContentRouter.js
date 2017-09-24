@@ -6,7 +6,7 @@ import {Route, Switch} from 'react-router-dom'
 
 import Dashboard from '../../component/Dashboard'
 import SysConfig from '../../component/SysConfig'
-import SysUser from '../sysuser/'
+import {SysUser} from '../sysuser/'
 import StationManager from '../station/StationManage'
 import Cabinet from '../Cabinet'
 import Order from '../Order'
