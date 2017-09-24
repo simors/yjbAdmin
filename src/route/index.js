@@ -9,7 +9,7 @@ import NoMatch from './NoMatch'
 const rootRoutes = (
   <Switch>
     <Route exact path="/login" component={Login}/>
-    <Route path="/" component={Home}/>
+    <AuthRoute path="/" component={Home}/>
     <Route component={NoMatch}/>
   </Switch>
 )
