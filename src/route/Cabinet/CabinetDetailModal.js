@@ -29,6 +29,13 @@ class CabinetDetailModal extends React.PureComponent {
     super(props)
   }
 
+  downloadQRCode = () => {
+    let canvas = this.refs.qrcode._canvas
+    const a = document.getElementById('download')
+    let url = canvas.toDataURL()
+    a.setAttribute('href', url)
+  }
+
   render() {
     if(this.props.cabinet) {
       return (
@@ -87,11 +94,12 @@ class CabinetDetailModal extends React.PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} >
             <Col span={4}>二维码</Col>
             <Col span={6}>
-              <QRCode id="qrcode" value={"http://dev.yiijiabao.com/openDevice?deviceNo=" + this.props.cabinet.deviceNo} />
+              <QRCode ref="qrcode" value={"http://dev.yiijiabao.com/openDevice?deviceNo=" + this.props.cabinet.deviceNo} />
             </Col>
             <Col>
-              <a href="">下载二维码</a>
+              <a href="" id="download" download={this.props.cabinet.deviceNo} onClick={this.downloadQRCode}>下载二维码</a>
             </Col>
+            <div classID=""></div>
           </Row>
         </Modal>
       )
