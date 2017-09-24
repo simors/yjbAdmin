@@ -18,7 +18,7 @@ class UserDetail extends React.Component {
   }
 
   onClose = () => {
-    this.props.UserDetail_close();
+    this.props.sagaUserDetailModalHide();
   };
 
   render() {

@@ -29,7 +29,7 @@ class UserList extends React.Component {
   }
 
   componentDidMount() {
-    this.props.UserList_fetch();
+    this.props.sagaUserListDataGet();
   }
 
   render() {

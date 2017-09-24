@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Row, Col} from 'antd';
-import {sagaAction, selector} from './redux';
+import {sagaAction} from './redux';
 import UserTabHeader from './UserTabHeader';
 import UserRoleTabHeader from './UserRoleTabHeader';
 import UserOp from './UserOp';
@@ -43,12 +43,6 @@ class SysUser extends React.Component {
     });
   };
 
-  onUserDetail = () => {
-    if (this.id !== -1) {
-      this.props.UserDetail_open({id: this.state.id});
-    }
-  };
-
   render() {
     console.log('[DEBUG] ---> User render, props: ', this.props);
     return (
@@ -64,9 +58,7 @@ class SysUser extends React.Component {
         <Row type="flex" gutter={24}>
           <Col lg={{span: 18}}>
             <div style={{display: "flex", flexFlow: "column"}}>
-              <UserOp id={this.state.id}
-                      onDetail={this.onUserDetail}
-              />
+              <UserOp id={this.state.id}/>
               <UserFilter />
               <UserList onUserChange={this.onUserChange} />
             </div>

@@ -26,7 +26,7 @@ class User extends Record({
   }
 }
 
-const UserState = Record({
+const State = Record({
   UserList: Map(),
   UserDetail: Map(),
   UserCreate: Map(),
@@ -36,65 +36,43 @@ const UserState = Record({
 
 // --- Action
 
-const SAGA_User_update = "SAGA@sysuser/User/update";
-const SAGA_UserList_fetch = "SAGA@sysuser/UserList/fetch";
-const SAGA_UserDetail_open = "SAGA@sysuser/UserDetail/open";
-const SAGA_UserDetail_close = "SAGA@sysuser/UserDetail/close";
+const SAGA_USER_LIST_DATA_GET          = "SAGA@SysUser/UserList/data/get";
+const SAGA_USER_DETAIL_MODAL_SHOW      = "SAGA@SysUser/UserDetail/modal/show";
+const SAGA_USER_DETAIL_MODAL_HIDE      = "SAGA@SysUser/UserDetail/modal/hide";
+const SAGA_USER_DETAIL_MODAL_DATA_GET  = "SAGA@SysUser/UserDetail/modal/data/get";
+
+const REDUCE_USER_LIST_DATA            = "REDUCE@SysUser/UserList/data";
+const REDUCE_USER_DETAIL_MODAL_SHOW    = "REDUCE@SysUser/UserDetail/modal/show";
+const REDUCE_USER_DETAIL_MODAL_HIDE    = "REDUCE@SysUser/UserDetail/modal/hide";
+const REDUCE_USER_DETAIL_MODAL_DATA    = "REDUCE@SysUser/UserDetail/modal/data";
 
 export const sagaAction = {
-  User_update: createAction(SAGA_User_update),
-  UserList_fetch: createAction(SAGA_UserList_fetch),
-  UserDetail_open: createAction(SAGA_UserDetail_open),
-  UserDetail_close: createAction(SAGA_UserDetail_close),
+  sagaUserListDataGet: createAction(SAGA_USER_LIST_DATA_GET),
+  sagaUserDetailModalShow: createAction(SAGA_USER_DETAIL_MODAL_SHOW),
+  sagaUserDetailModalHide: createAction(SAGA_USER_DETAIL_MODAL_HIDE),
+  sagaUserDetailModalDataGet: createAction(SAGA_USER_DETAIL_MODAL_DATA_GET),
 };
 
-const REDUCER_User_update = "REDUCER@sysuser/User/update";
-const REDUCER_UserList_fetch = "REDUCER@sysuser/UserList/fetch";
-const REDUCER_UserDetail_open = "REDUCER@sysuser/UserDetail/open";
-const REDUCER_UserDetail_close = "REDUCER@sysuser/UserDetail/close";
-const REDUCER_UserDetail_set = "REDUCER@sysuser/UserDetail/set";
-
 const reducerAction = {
-  User_update: createAction(REDUCER_User_update),
-  UserList_fetch: createAction(REDUCER_UserList_fetch),
-  UserDetail_open: createAction(REDUCER_UserDetail_open),
-  UserDetail_close: createAction(REDUCER_UserDetail_close),
-  UserDetail_set: createAction(REDUCER_UserDetail_set),
+  reduceUserListData: createAction(REDUCE_USER_LIST_DATA),
+  reduceUserDetailModalShow: createAction(REDUCE_USER_DETAIL_MODAL_SHOW),
+  reduceUserDetailModalHide: createAction(REDUCE_USER_DETAIL_MODAL_HIDE),
+  reduceUserDetailModalData: createAction(REDUCE_USER_DETAIL_MODAL_DATA),
 };
 
 // --- Saga
 
-function* saga_User_update(action) {
+function* sagaUserListDataGet(action) {
   const payload = action.payload;
 
-  const res = yield call(api.User_update, payload);
-  if (res.success) {
-    let user = User.fromJsonApi(res.user);
-
-    yield put(reducerAction.User_update({user}));
-    yield put(sagaAction.UserList_fetch());
-
-    if (payload.onSuccess) {
-      payload.onSuccess();
-    }
-  } else {
-    if (payload.onFailure) {
-      payload.onFailure();
-    }
-  }
-}
-
-function* saga_UserList_fetch(action) {
-  const payload = action.payload;
-
-  const res = yield call(api.User_fetch, payload);
+  const res = yield call(api.getUserList, payload);
   if (res.success) {
     let users = [];
     res.users.forEach((i) => {
       users.push(User.fromJsonApi(i));
     });
 
-    yield put(reducerAction.UserList_fetch({users}));
+    yield put(reducerAction.reduceUserListData({users}));
 
     if (payload.onSuccess) {
       payload.onSuccess();
@@ -106,16 +84,25 @@ function* saga_UserList_fetch(action) {
   }
 }
 
-function* saga_UserDetail_open(action) {
+function* sagaUserDetailModalShow(action) {
   const payload = action.payload;
 
-  yield put(reducerAction.UserDetail_open());
+  yield put(reducerAction.reduceUserDetailModalShow());
+  yield put(sagaAction.sagaUserDetailModalDataGet(payload));
+}
 
-  const res = yield call(api.User_detail, payload);
+function* sagaUserDetailModalHide(action) {
+  yield put(reducerAction.reduceUserDetailModalHide());
+}
+
+function* sagaUserDetailModalDataGet(action) {
+  const payload = action.payload;
+
+  const res = yield call(api.getUserDetail, payload);
   if (res.success) {
     const user = User.fromJsonApi(res.user);
 
-    yield put(reducerAction.UserDetail_set({user}));
+    yield put(reducerAction.reduceUserDetailModalData({user}));
 
     if (payload.onSuccess) {
       payload.onSuccess();
@@ -127,20 +114,16 @@ function* saga_UserDetail_open(action) {
   }
 }
 
-function* saga_UserDetail_close(action) {
-  yield put(reducerAction.UserDetail_close());
-}
-
 export const saga = [
-  takeLatest(SAGA_User_update, saga_User_update),
-  takeLatest(SAGA_UserList_fetch, saga_UserList_fetch),
-  takeLatest(SAGA_UserDetail_open, saga_UserDetail_open),
-  takeLatest(SAGA_UserDetail_close, saga_UserDetail_close),
+  takeLatest(SAGA_USER_LIST_DATA_GET, sagaUserListDataGet),
+  takeLatest(SAGA_USER_DETAIL_MODAL_SHOW, sagaUserDetailModalShow),
+  takeLatest(SAGA_USER_DETAIL_MODAL_HIDE, sagaUserDetailModalHide),
+  takeLatest(SAGA_USER_DETAIL_MODAL_DATA_GET, sagaUserDetailModalDataGet),
 ];
 
 // --- Reducer
 
-function reduce_UserList_fetch(state, action) {
+function reduceUserListData(state, action) {
   const payload = action.payload;
   const rawUsers = payload.users; // an array of immutable.js Record
 
@@ -165,7 +148,7 @@ function reduce_UserList_fetch(state, action) {
   });
 }
 
-function reduce_UserDetail_open(state, action) {
+function reduceUserDetailModalShow(state, action) {
   const payload = action.payload;
 
   return state.withMutations((m) => {
@@ -173,11 +156,11 @@ function reduce_UserDetail_open(state, action) {
   })
 }
 
-function reduce_UserDetail_close(state, action) {
+function reduceUserDetailModalHide(state, action) {
   return state.setIn(["UserDetail", "visible"], false);
 }
 
-function reduce_UserDetail_set(state, action) {
+function reduceUserDetailModalData(state, action) {
   const payload = action.payload;
   const user = payload.user;
 
@@ -186,16 +169,16 @@ function reduce_UserDetail_set(state, action) {
   })
 }
 
-export const reducer = (state=UserState(), action) => {
+export const reducer = (state=State(), action) => {
   switch (action.type) {
-    case REDUCER_UserList_fetch:
-      return reduce_UserList_fetch(state, action);
-    case REDUCER_UserDetail_open:
-      return reduce_UserDetail_open(state, action);
-    case REDUCER_UserDetail_close:
-      return reduce_UserDetail_close(state, action);
-    case REDUCER_UserDetail_set:
-      return reduce_UserDetail_set(state, action);
+    case REDUCE_USER_LIST_DATA:
+      return reduceUserListData(state, action);
+    case REDUCE_USER_DETAIL_MODAL_SHOW:
+      return reduceUserDetailModalShow(state, action);
+    case REDUCE_USER_DETAIL_MODAL_HIDE:
+      return reduceUserDetailModalHide(state, action);
+    case REDUCE_USER_DETAIL_MODAL_DATA:
+      return reduceUserDetailModalData(state, action);
     default:
       return state;
   }
@@ -203,34 +186,33 @@ export const reducer = (state=UserState(), action) => {
 
 // --- Selector
 
-function select_UserList_ids(appState) {
+function selectUserList_ids(appState) {
   const state = appState.SYSUSER;
   return state.getIn(["UserList", "ids"], List()).toArray();
 }
 
-function select_UserList_users(appState) {
+function selectUserList_users(appState) {
   const state = appState.SYSUSER;
   return state.getIn(["UserList", "users"], Map()).toArray();
 }
 
-function select_UserDetail_visible(appState) {
+function selectUserDetail_visible(appState) {
   const state = appState.SYSUSER;
   return state.getIn(["UserDetail", "visible"], false);
 }
 
-function select_UserDetail_data(appState) {
+function selectUserDetail_data(appState) {
   const state = appState.SYSUSER;
   return state.getIn(["UserDetail", "data"], Map()).toJS();
 }
 
 export const selector = {
   UserList: {
-    ids: select_UserList_ids,
-    users: select_UserList_users,
+    ids: selectUserList_ids,
+    users: selectUserList_users,
   },
   UserDetail: {
-    visible: select_UserDetail_visible,
-    data: select_UserDetail_data,
+    visible: selectUserDetail_visible,
+    data: selectUserDetail_data,
   },
-
 };

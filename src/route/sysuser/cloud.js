@@ -1,6 +1,6 @@
 import sleep from '../../util/sleep';
 
-export async function User_fetch(payload) {
+export async function getUserList(payload) {
   try {
     await sleep(300);
     return {
@@ -28,7 +28,7 @@ export async function User_fetch(payload) {
   }
 }
 
-export async function User_detail(payload) {
+export async function getUserDetail(payload) {
   try {
     await sleep(500);
     return {
@@ -45,7 +45,7 @@ export async function User_detail(payload) {
   }
 }
 
-export async function User_create(payload) {
+export async function createUser(payload) {
   try {
     await sleep(500);
     return {
@@ -62,7 +62,7 @@ export async function User_create(payload) {
   }
 }
 
-export async function User_delete(payload) {
+export async function deleteUser(payload) {
   try {
     await sleep(500);
     return {
@@ -79,7 +79,7 @@ export async function User_delete(payload) {
   }
 }
 
-export async function User_update(payload) {
+export async function updateUser(payload) {
   try {
     await sleep(500);
     return {
