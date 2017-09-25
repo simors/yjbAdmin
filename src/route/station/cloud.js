@@ -109,3 +109,46 @@ export async function updateInvestor(payload){
   }
 }
 
+export async function createPartner(payload){
+  try{
+    console.log('payload====>',payload)
+
+    let partner = await AV.Cloud.run('stationCreatePartner',payload)
+    return {success: true, partner: partner}
+  }catch (err){
+    return {success:false, error: err}
+  }
+}
+
+export async function updatePartner(payload){
+  try{
+    console.log('payload====>',payload)
+
+    let partner = await AV.Cloud.run('stationUpdatePartner',payload)
+    return {success: true, partner: partner}
+  }catch (err){
+    return {success:false, error: err}
+  }
+}
+
+export async function openPartner(payload){
+  try{
+    console.log('payload====>',payload)
+
+    let partner = await AV.Cloud.run('stationOpenPartner',payload)
+    return {success: true, partner: partner}
+  }catch (err){
+    return {success:false, error: err}
+  }
+}
+
+export async function closePartner(payload){
+  try{
+    console.log('payload====>',payload)
+
+    let partner = await AV.Cloud.run('stationClosePartner',payload)
+    return {success: true, partner: partner}
+  }catch (err){
+    return {success:false, error: err}
+  }
+}

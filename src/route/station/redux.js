@@ -287,7 +287,7 @@ function* fetchPartnersAction(action) {
   if(data.success){
     if(data.partners&&data.partners.length>0){
       data.partners.forEach((item)=>{
-        partnerList.push(item.shareholderId)
+        partnerList.push(item.id)
         partners.push(ProfitSharing.fromApi(item))
       })
     }
@@ -305,11 +305,16 @@ function* fetchPartnersAction(action) {
 function* createPartnerAction(action) {
   let payload = action.payload
   console.log('actionpayload=====>',payload)
-  let partner = ProfitSharing.fromApi(payload)
-  yield put(createPartnerSuccess({partner:partner}))
+  let data = yield call(stationFuncs.createPartner, payload)
+  if(data.success){
     if(payload.success){
       payload.success()
     }
+  }else{
+    if(payload.error){
+      payload.error(data.error)
+    }
+  }
 }
 
 export const stationSaga = [
@@ -342,8 +347,6 @@ export function stationReducer(state = initialState, action) {
       return handleSaveInvestors(state, action)
     case FETCH_PARTNERS_SUCCESS:
       return handleSavePartners(state, action)
-    case CREATE_PARTNER_SUCCESS:
-      return handleSavePartner(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -366,7 +369,7 @@ function handleSaveStation(state, action) {
 
 function handleSetAllPartners(state, partners) {
   partners.forEach((item)=> {
-    state = state.setIn(['allPartners', item.shareholderId], item)
+    state = state.setIn(['allPartners', item.id], item)
   })
   return state
 }
@@ -411,23 +414,6 @@ function handleSavePartners(state, action) {
   }else{
     state = state.set('partnerList', new List())
   }
-  return state
-}
-
-function handleSavePartner(state, action) {
-  let partner = action.payload.partner
-  state = state.setIn(['allPartners',partner.shareholderId],partner)
-  let _partnerList = state.partnerList|| new List()
-  // console.log('partnerList====~~~~~~~~~~~~~~~',partnerList)
-  // console.log('partner====~~~~~~~~~~~~~~~',partner.shareholderId)
-  let partnerList = _partnerList.toJS()
-  if(partnerList&&partnerList.length){
-    // console.log('i m here')
-    partnerList.push( partner.shareholderId)
-    // console.log('partnerList====~~~~~~~~~~~~~~~',new List(partnerList))
-
-  }
-  state = state.set('partnerList', new List(partnerList))
   return state
 }
 

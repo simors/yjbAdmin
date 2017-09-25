@@ -14,6 +14,8 @@ import ContentHead from '../../component/ContentHead'
 import {stationAction, stationSelector} from './redux';
 import {configSelector} from '../../util/config'
 import PartnerList from './PartnerList'
+import CreatePartnerModal from '../../component/station/CreatePartnerModal'
+
 const Option = Select.Option;
 
 class ShowStation extends React.Component {
@@ -49,6 +51,8 @@ class ShowStation extends React.Component {
   }
 
   refresh() {
+    this.props.requestPartners({stationId:this.props.match.params.id,success:()=>{
+    }})
   }
 
   setStatus() {
@@ -244,25 +248,26 @@ class ShowStation extends React.Component {
   }
 
   openCreateModal(){
-    this.props.requestStations({success:()=>{console.log('asasas')}})
+    // this.props.requestStations({success:()=>{console.log('asasas')}})
     this.setState({createModalVisible: true})
   }
 
   openUpdateModal(){
-    this.props.requestStations({success:()=>{console.log('asasas')}})
+    // this.props.requestStations({success:()=>{console.log('asasas')}})
     this.setState({updateModalVisible: true})
   }
 
-  createInvestor(data){
+  createPartner(data){
     let payload = {
       ...data,
+      stationId: this.props.match.params.id,
       success:()=>{
         this.setState({createModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
       },
       error: (err)=>{console.log('err===>',err.message)}
     }
     console.log('payload----------111',payload)
-    this.props.createInvestor(payload)
+    this.props.createPartner(payload)
   }
 
   updateInvestor(data){
@@ -306,7 +311,7 @@ class ShowStation extends React.Component {
             <p>服务点地址</p>
           </Col>
           <Col span = {20}>
-            <p>{this.props.station.province+' '+this.props.station.city+'  '+this.props.station.area+ '  ' + this.props.station.addr}</p>
+            <p>{(this.props.station.province?this.props.station.province.label:'')+' '+(this.props.station.city?this.props.station.city.label:'')+'  '+(this.props.station.area?this.props.station.area.label:'')+ '  ' + this.props.station.addr}</p>
           </Col>
         </Row>
         <Row>
@@ -334,13 +339,23 @@ class ShowStation extends React.Component {
             <h5>服务点分成</h5>
             </Col>
           <Col span={4}>
-          <Button onClick={()=>{this.props.createPartner({shareholderId:'3213123xxx123123xx',shareholderName:'test',royalty:0.5})}}>添加服务点</Button>
+          <Button onClick={()=>{this.openCreateModal()}}>添加分成方</Button>
         </Col>
           <Col span={4}>
             <p >{'平台分成:'+this.props.station.platformProp*100 +'%'}</p>
           </Col>
         </Row>
         <PartnerList  type='show' partners={this.props.partners}/>
+        <CreatePartnerModal
+          modalKey = {this.state.modalKey}
+          onOk = {(data)=>{this.createPartner(data)}}
+          onCancel = {()=>{console.log('i, m cancel')
+            this.setState({createModalVisible: false})
+          }}
+          userList = {this.props.userList}
+          stationList = {this.props.stations}
+          modalVisible = {this.state.createModalVisible}
+        />
       </div>
     )
 
@@ -349,7 +364,9 @@ class ShowStation extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   // console.log('ownporsoss.......aaa',ownProps)
- let areaList = configSelector.selectAreaList(state)
+  let userList=[{id:'59c27b4b128fe10035923744', nickname:'绿蚁002'},{nickname:'绿蚁001', id: '59acdd051b69e600643de670'}]
+
+  let areaList = configSelector.selectAreaList(state)
   let station = stationSelector.selectStation(state,ownProps.match.params.id)
   let partners = stationSelector.selectPartners(state)
   // let station={name:'123',adminName:'321'}
@@ -359,7 +376,8 @@ const mapStateToProps = (state, ownProps) => {
   return {
     station: station,
     areaList: areaList,
-    partners: partners
+    partners: partners,
+    userList: userList
 
   };
 };
