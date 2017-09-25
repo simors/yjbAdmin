@@ -88,10 +88,10 @@ class UpdatePartnerModal extends Component {
   render() {
     return (
       <Modal
-        title='新建投资人'
+        title='编辑分成方'
         visible={this.props.modalVisible}
-        onOk={()=> {
-          this.handleOk()
+        onOk={(data)=> {
+          this.handleOk(data)
         }}
         onCancel={()=> {
           this.setState({

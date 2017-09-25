@@ -272,6 +272,7 @@ class EditStation extends React.Component {
     let payload = {
       ...data,
       stationId: this.props.match.params.id,
+      partnerId: this.state.selectedPartner.id,
       success:()=>{
         this.setState({updateModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
       },
@@ -356,7 +357,7 @@ class EditStation extends React.Component {
         />
         <UpdatePartnerModal
           modalKey = {this.state.modalKey}
-          onOk = {()=>{this.updatePartner()}}
+          onOk = {(data)=>{this.updatePartner(data)}}
           onCancel = {()=>{console.log('i, m cancel')
             this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1})
           }}

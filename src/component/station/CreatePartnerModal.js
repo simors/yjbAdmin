@@ -87,7 +87,7 @@ class CreatePartnerModal extends Component {
   render() {
     return (
       <Modal
-        title='新建投资人'
+        title='新建分成方'
         visible={this.props.modalVisible}
         onOk={()=> {
           this.handleOk()
