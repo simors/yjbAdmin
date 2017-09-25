@@ -12,3 +12,13 @@ export async function fetchCabinetsApi(payload) {
     throw error
   }
 }
+
+export async function associateWithStationApi(payload) {
+  try {
+    let cabinet = await AV.Cloud.run('deviceAssociateWithStation', payload)
+    return cabinet
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}

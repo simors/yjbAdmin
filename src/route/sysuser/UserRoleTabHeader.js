@@ -2,7 +2,7 @@ import React from 'react';
 import {Button} from 'antd';
 
 const UserRoleTabHeader = (props) => {
-  const {id, onRoleSave: onSave} = props;
+  const {id, onSave} = props;
   return (
     <div style={{display: "flex", flexFlow: "column"}}>
       <div style={{display: "flex", alignItems: "flex-end"}}>

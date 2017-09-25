@@ -17,12 +17,23 @@ import {
 } from 'antd'
 import QRCode from 'qrcode.react'
 import style from './cabinet.module.scss'
+import DivisionCascader from '../../component/DivisionCascader'
+import {stationSelector} from '../station/redux'
 
 const RadioGroup = Radio.Group
+const Option = Select.Option
+
 
 class CabinetDetailModal extends React.PureComponent {
   constructor(props) {
     super(props)
+  }
+
+  downloadQRCode = () => {
+    let canvas = this.refs.qrcode._canvas
+    const a = document.getElementById('download')
+    let url = canvas.toDataURL()
+    a.setAttribute('href', url)
   }
 
   render() {
@@ -39,6 +50,28 @@ class CabinetDetailModal extends React.PureComponent {
               <Input disabled={true} defaultValue={this.props.cabinet.deviceNo} />
             </Col>
           </Row>
+          <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
+            <Col span={4}>服务点</Col>
+            <Col span={10}>
+              <DivisionCascader disabled={true}
+                                value={[this.props.station.province.value, this.props.station.city.value, this.props.station.area.value]} />
+            </Col>
+            <Col span={6}>
+              <Select disabled={true} value={this.props.station.id} style={{width: 120}}>
+                <Option value={this.props.station.id}>{this.props.station.name}</Option>
+              </Select>
+            </Col>
+          </Row>
+          <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
+            <Col span={4}></Col>
+            <Col span={10}>
+              <span>{"服务网点地址：" + this.props.station.addr}</span>
+            </Col>
+            <Col>
+              <span>{"管理员：" + this.props.station.adminName + "  " + this.props.station.adminPhone}</span>
+            </Col>
+          </Row>
+
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>干衣柜位置</Col>
             <Col span={12}>
@@ -61,11 +94,12 @@ class CabinetDetailModal extends React.PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} >
             <Col span={4}>二维码</Col>
             <Col span={6}>
-              <QRCode id="qrcode" value={"http://dev.yiijiabao.com/openDevice?deviceNo=" + this.props.cabinet.deviceNo} />
+              <QRCode ref="qrcode" value={"http://dev.yiijiabao.com/openDevice?deviceNo=" + this.props.cabinet.deviceNo} />
             </Col>
             <Col>
-              <a href="">下载二维码</a>
+              <a href="" id="download" download={this.props.cabinet.deviceNo} onClick={this.downloadQRCode}>下载二维码</a>
             </Col>
+            <div classID=""></div>
           </Row>
         </Modal>
       )
@@ -75,4 +109,15 @@ class CabinetDetailModal extends React.PureComponent {
   }
 }
 
-export default CabinetDetailModal
+const mapStateToProps = (appState, ownProps) => {
+  let cabinet = ownProps.cabinet
+  let station = undefined
+  if(cabinet) {
+    station = stationSelector.selectStationById(appState, ownProps.cabinet.stationId)
+  }
+  return {
+    station: station
+  }
+}
+
+export default connect(mapStateToProps)(CabinetDetailModal)

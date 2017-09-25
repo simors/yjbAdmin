@@ -12,7 +12,7 @@ const createStore = (initialState = {}) => {
   // ======================================================
   // Middleware Configuration
   // ======================================================
-  const logger = createLogger({predicate: (getState, action) => __DEV__})
+  const logger = createLogger({predicate: (getState, action) => __DEV__ || __STAGE__})
   const routeMiddleware = routerMiddleware(history)
   const sagaMiddleware = createSagaMiddleware()
   const middleware = [routeMiddleware, sagaMiddleware, logger]
@@ -23,7 +23,7 @@ const createStore = (initialState = {}) => {
   const enhancers = []
   let composeEnhancers = compose
 
-  if (__DEV__) {
+  if (__DEV__ || __STAGE__) {
     if (typeof window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ === 'function') {
       composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     }

@@ -5,16 +5,14 @@ import {history} from './store/createStore'
 import App from './App'
 import './main.scss'
 import AV from 'leancloud-storage'
+import appConfig from './util/appConfig'
 // Render Setup
 // ------------------------------------
 const MOUNT_NODE = document.getElementById('root')
 
-var APP_ID = 'QApBtOkMNfNo0lGaHxKBSWXX-gzGzoHsz';
-var APP_KEY = 'znR6wk5JzFU0XIkgKxrM3fnH';
-
 AV.init({
-  appId: APP_ID,
-  appKey: APP_KEY
+  appId: appConfig.LC_APP_ID,
+  appKey: appConfig.LC_APP_KEY
 });
 
 let render = () => {
@@ -26,7 +24,7 @@ let render = () => {
 
 // Development Tools
 // ------------------------------------
-if (__DEV__) {
+if (__DEV__ || __STAGE__) {
 
   if (module.hot) {
     const renderApp = render

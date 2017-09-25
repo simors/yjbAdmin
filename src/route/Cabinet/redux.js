@@ -5,7 +5,7 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
-import {fetchCabinetsApi, } from './cloud'
+import {fetchCabinetsApi, associateWithStationApi} from './cloud'
 
 /****  Model  ****/
 export const CabinetRecord = Record({
@@ -40,6 +40,8 @@ const CabinetState = Record({
 /**** Constant ****/
 const FETCH_CABINETS = "FETCH_CABINETS"
 const FETCH_CABINETS_SUCCESS = "FETCH_CABINETS_SUCCESS"
+const ASSOCIATE_WITH_STATION = "ASSOCIATE_WITH_STATION"
+const UPDATE_CABINET = "UPDATE_CABINET"
 
 export const cabinetStatus = {
   DEVICE_STATUS_IDLE : 0,           //空闲
@@ -53,6 +55,8 @@ export const cabinetStatus = {
 /**** Action ****/
 export const fetchCabinetsAction = createAction(FETCH_CABINETS)
 const fetchCabinetsSuccessAction = createAction(FETCH_CABINETS_SUCCESS)
+export const associateWithStationAction = createAction(ASSOCIATE_WITH_STATION)
+const updateCabinetAction = createAction(UPDATE_CABINET)
 
 /**** Saga ****/
 function* fetchCabinets(action) {
@@ -65,8 +69,27 @@ function* fetchCabinets(action) {
   yield put(fetchCabinetsSuccessAction({cabinetList: cabinetList}))
 }
 
+function* associateWithStation(action) {
+  let payload = action.payload
+
+  try {
+    let cabinet = yield call(associateWithStationApi, payload)
+    let cabinetRecord = Cabinet.fromApi(cabinet)
+    if(payload.success) {
+      payload.success()
+    }
+    yield put(updateCabinetAction({cabinet: cabinetRecord}))
+  } catch (error) {
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+
+}
+
 export const saga = [
   takeLatest(FETCH_CABINETS, fetchCabinets),
+  takeLatest(ASSOCIATE_WITH_STATION, associateWithStation),
 ]
 
 /**** Reducer ****/
@@ -76,6 +99,8 @@ export function reducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_CABINETS_SUCCESS:
       return handleSaveCabinets(state, action)
+    case UPDATE_CABINET:
+      return handleUpdateCabinet(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -86,6 +111,19 @@ export function reducer(state = initialState, action) {
 function handleSaveCabinets(state, action) {
   let cabinetList = action.payload.cabinetList
   state = state.set('cabinets', cabinetList)
+  return state
+}
+
+function handleUpdateCabinet(state, action) {
+  let cabinet = action.payload.cabinet
+  let cabinets = state.get('cabinets')
+  let index = cabinets.findIndex((value) => {
+    return value.id === cabinet.id
+  })
+  if(index != -1) {
+    cabinets = cabinets.set(index, cabinet)
+    state = state.set('cabinets', cabinets)
+  }
   return state
 }
 
