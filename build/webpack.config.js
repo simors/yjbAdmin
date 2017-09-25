@@ -8,6 +8,7 @@ const inProject = path.resolve.bind(path, project.basePath)
 const inProjectSrc = (file) => inProject(project.srcDir, file)
 
 const __DEV__ = project.env === 'development'
+const __STAGE__ = project.env === 'stage'
 const __TEST__ = project.env === 'test'
 const __PROD__ = project.env === 'production'
 
@@ -23,7 +24,7 @@ const config = {
   devtool: project.sourcemaps ? 'source-map' : false,
   output: {
     path: inProject(project.outDir),
-    filename: __DEV__ ? '[name].js' : '[name].[chunkhash].js',
+    filename: __DEV__ || __STAGE__ ? '[name].js' : '[name].[chunkhash].js',
     publicPath: project.publicPath,
   },
   resolve: {
@@ -41,6 +42,7 @@ const config = {
     new webpack.DefinePlugin(Object.assign({
       'process.env': { NODE_ENV: JSON.stringify(project.env) },
       __DEV__,
+      __STAGE__,
       __TEST__,
       __PROD__,
     }, project.globals))
@@ -94,7 +96,7 @@ config.module.rules.push({
 const extractStyles = new ExtractTextPlugin({
   filename: 'styles/[name].[contenthash].css',
   allChunks: true,
-  disable: __DEV__,
+  disable: __DEV__ || __STAGE__,
 })
 
 // local style, with '.module.sass/scss/css' suffix
@@ -226,7 +228,7 @@ config.plugins.push(new HtmlWebpackPlugin({
 
 // Development Tools
 // ------------------------------------
-if (__DEV__) {
+if (__DEV__ || __STAGE__) {
   config.entry.main.push(
     `webpack-hot-middleware/client.js?path=${config.output.publicPath}__webpack_hmr`
   )
