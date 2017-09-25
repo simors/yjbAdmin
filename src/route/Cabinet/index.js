@@ -18,6 +18,7 @@ import {
 import style from './cabinet.module.scss'
 import CabinetSearchForm from './CabinetSearchForm'
 import CabinetDetailModal from './CabinetDetailModal'
+import CabinetAssociateModal from './CabinetAssociateModal'
 import CabinetEditModal from './CabinetEditModal'
 
 const ButtonGroup = Button.Group
@@ -28,6 +29,7 @@ class Cabinet extends Component {
     this.state = {
       showCabinetDetailModal: false,
       selectCabinet: undefined,
+      showCabinetAssociateModal: false,
       showCabinetEditModal: false,
     }
   }
@@ -46,11 +48,7 @@ class Cabinet extends Component {
       })
     }
   }
-  hideDetail = () => {
-    this.setState({
-      showCabinetDetailModal: false,
-    })
-  }
+
   showRowDetail(record) {
     this.setState({
       selectCabinet: record,
@@ -61,12 +59,14 @@ class Cabinet extends Component {
   showEditModal(record) {
     this.setState({
       selectCabinet: record,
-      showCabinetEditModal: true,
+      showCabinetAssociateModal: true,
     })
   }
-  hideEditModal = () => {
+
+  showRowEditModal(record) {
     this.setState({
-      showCabinetEditModal: false,
+      selectCabinet: record,
+      showCabinetEditModal: true,
     })
   }
 
@@ -106,11 +106,18 @@ class Cabinet extends Component {
             break
         }
       }},
+      // TODO: 通过权限生成操作按钮
       { title: '操作', key: 'action', render: (record) => {
         if(record.status === cabinetStatus.DEVICE_STATUS_UNREGISTER) {
           return (<a style={{color: `red`}} onClick={() => {this.showEditModal(record)}}>关联</a>)
         }
-        return (<a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>)
+        return (
+        <span>
+          <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
+          <span className="ant-divider" />
+          <a style={{color: `blue`}} onClick={() => {this.showRowEditModal(record)}}>编辑</a>
+        </span>
+        )
       }}
     ];
     return (
@@ -131,10 +138,14 @@ class Cabinet extends Component {
                dataSource={this.props.cabinetList}/>
         <CabinetDetailModal visible={this.state.showCabinetDetailModal}
                             cabinet={this.state.selectCabinet}
-                            onOk={this.hideDetail} onCancel={this.hideDetail}/>
+                            onOk={() => {this.setState({showCabinetDetailModal: false})}}
+                            onCancel={() => {this.setState({showCabinetDetailModal: false})}}/>
+        <CabinetAssociateModal visible={this.state.showCabinetAssociateModal}
+                          cabinet={this.state.selectCabinet}
+                          onCancel={() => {this.setState({showCabinetAssociateModal: false})}}/>
         <CabinetEditModal visible={this.state.showCabinetEditModal}
                           cabinet={this.state.selectCabinet}
-                          onCancel={this.hideEditModal}/>
+                          onCancel={() => {this.setState({showCabinetEditModal: false})}} />
       </div>
     )
   }
