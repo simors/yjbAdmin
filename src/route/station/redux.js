@@ -115,7 +115,9 @@ const UPDATE_INVESTOR = 'UPDATE_INVESTOR'
 const FETCH_PARTNERS = 'FETCH_PARTNERS'
 const FETCH_PARTNERS_SUCCESS = 'FETCH_PARTNERS_SUCCESS'
 const CREATE_PARTNER = 'CREATE_PARTNER'
-const CREATE_PARTNER_SUCCESS = 'CREATE_PARTNER_SUCCESS'
+const UPDATE_PARTNER = 'UPDATE_PARTNER'
+const OPEN_PARTNER = 'OPEN_PARTNER'
+const CLOSE_PARTNER = 'CLOSE_PARTNER'
 
 /**** Action ****/
 
@@ -130,6 +132,9 @@ export const stationAction = {
   updateInvestor: createAction(UPDATE_INVESTOR),
   requestPartners: createAction(FETCH_PARTNERS),
   createPartner: createAction(CREATE_PARTNER),
+  updatePartner: createAction(UPDATE_PARTNER),
+  openPartner: createAction(OPEN_PARTNER),
+  closePartner: createAction(CLOSE_PARTNER)
 }
 
 const requestStationsSuccess = createAction(FETCH_STATIONS_SUCCESS)
@@ -137,7 +142,6 @@ const openStationSuccess = createAction(OPEN_STATION_SUCCESS)
 const closeStationSuccess = createAction(CLOSE_STATION_SUCCESS)
 const requestInvestorsSuccess = createAction(FETCH_INVESTORS_SUCCESS)
 const requestPartnersSuccess = createAction(FETCH_PARTNERS_SUCCESS)
-const createPartnerSuccess = createAction(CREATE_PARTNER_SUCCESS)
 
 
 /**** Saga ****/
@@ -304,7 +308,6 @@ function* fetchPartnersAction(action) {
 
 function* createPartnerAction(action) {
   let payload = action.payload
-  console.log('actionpayload=====>',payload)
   let data = yield call(stationFuncs.createPartner, payload)
   if(data.success){
     if(payload.success){
@@ -317,6 +320,47 @@ function* createPartnerAction(action) {
   }
 }
 
+function* updatePartnerAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.updatePartner, payload)
+  if(data.success){
+    if(payload.success){
+      payload.success()
+    }
+  }else{
+    if(payload.error){
+      payload.error(data.error)
+    }
+  }
+}
+
+function* openPartnerAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.openPartner, payload)
+  if(data.success){
+    if(payload.success){
+      payload.success()
+    }
+  }else{
+    if(payload.error){
+      payload.error(data.error)
+    }
+  }
+}
+
+function* closePartnerAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.closePartner, payload)
+  if(data.success){
+    if(payload.success){
+      payload.success()
+    }
+  }else{
+    if(payload.error){
+      payload.error(data.error)
+    }
+  }
+}
 export const stationSaga = [
   takeLatest(FETCH_STATIONS, fetchStationsAction),
   takeLatest(OPEN_STATION, openStationAction),
@@ -327,7 +371,11 @@ export const stationSaga = [
   takeLatest(CREATE_INVESTOR, createInvestorsAction),
   takeLatest(UPDATE_INVESTOR, updateInvestorsAction),
   takeLatest(FETCH_PARTNERS, fetchPartnersAction),
-  takeLatest(CREATE_PARTNER, createPartnerAction)
+  takeLatest(CREATE_PARTNER, createPartnerAction),
+  takeLatest(UPDATE_PARTNER, updatePartnerAction),
+  takeLatest(OPEN_PARTNER, openPartnerAction),
+  takeLatest(CLOSE_PARTNER, closePartnerAction),
+
 
 ]
 

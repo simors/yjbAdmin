@@ -6,25 +6,6 @@
 import React from 'react';
 import {Table, Button} from 'antd';
 
-const columns = [{
-  title: "分成方",
-  dataIndex: "shareholderName",
-}, {
-  title: "分成比例",
-  dataIndex: "royalty",
-}, {
-  title: '操作',
-  render: (text, record)=> {
-    return (
-      <div>
-        <Button onClick={()=>{this.props.editPartner()}}>编辑</Button>
-        <Button onClick={()=>{this.props.delectPartner()}}>删除</Button>
-      </div>
-    )
-  }
-}
-];
-
 const showColumns = [{
   title: "分成方",
   dataIndex: "shareholderName",
@@ -42,10 +23,31 @@ const rowKey = (record) => {
 
 const PartnerList = (props) => {
   // console.log('[DEBUG] ---> UserList props: ', props);
-  let {partners, selectStation,type} = props;
+  let {editPartner, partners, selectStation,type, delectPartner} = props;
   if (partners === null) {
     partners = [];
   }
+
+  const columns = [{
+    title: "分成方",
+    dataIndex: "shareholderName",
+  }, {
+    title: "分成比例",
+    dataIndex: "royalty",
+  }, {
+    title: '操作',
+    render: (text, record)=> {
+      console.log('record=====>',record)
+      return (
+        <div>
+          <Button onClick={()=>{editPartner(record)}}>编辑</Button>
+          <Button onClick={()=>{delectPartner()}}>删除</Button>
+        </div>
+      )
+    }
+  }
+  ];
+
   const rowSelection = {
     type: 'radio',
     onChange: (rowKey, rowData)=> {

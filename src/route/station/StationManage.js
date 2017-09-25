@@ -200,7 +200,12 @@ class StationManage extends React.Component {
         <StationMenu
           showDetail={()=> {
             this.props.history.push({
-              pathname: '/site/detail/'+(this.state.selectedRowId?this.state.selectedRowId[0]:''),
+              pathname: '/site/showStation/'+(this.state.selectedRowId?this.state.selectedRowId[0]:''),
+            })
+          }}
+          set={()=> {
+            this.props.history.push({
+              pathname: '/site/editStation/'+(this.state.selectedRowId?this.state.selectedRowId[0]:''),
             })
           }}
           setStatus={()=> {
