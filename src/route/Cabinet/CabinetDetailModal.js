@@ -54,7 +54,7 @@ class CabinetDetailModal extends React.PureComponent {
             <Col span={4}>服务点</Col>
             <Col span={10}>
               <DivisionCascader disabled={true}
-                                value={[this.props.station.province.value, this.props.station.city.value, this.props.station.area.value]} />
+                                defaultValue={[this.props.station.province.value, this.props.station.city.value, this.props.station.area.value]} />
             </Col>
             <Col span={6}>
               <Select disabled={true} value={this.props.station.id} style={{width: 120}}>

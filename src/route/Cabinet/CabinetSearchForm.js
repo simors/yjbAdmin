@@ -20,6 +20,9 @@ const FormItem = Form.Item
 const Option = Select.Option
 
 class SearchForm extends Component {
+  constructor(props) {
+    super(props)
+  }
 
   componentWillMount() {
     this.props.requestStations({})
@@ -38,7 +41,7 @@ class SearchForm extends Component {
         limit: 10,
         isRefresh: true,
       })
-    });
+    })
   }
 
   render() {

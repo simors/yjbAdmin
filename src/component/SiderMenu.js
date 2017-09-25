@@ -66,7 +66,6 @@ class SiderMenu extends React.Component {
 
         <Menu.SubMenu key="/site" title={<span><Icon type="laptop" />服务点综合管理</span>}>
           <Menu.Item key="/site/list"><Link to="/site/list">服务点信息管理</Link></Menu.Item>
-          <Menu.Item key="/site/cabinet"><Link to="/example">服务点干衣柜管理</Link></Menu.Item>
           <Menu.Item key="/site/investor"><Link to="/site/investor">投资人信息管理</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/order" title={<span><Icon type="notification" />充值与订单管理</span>}>
