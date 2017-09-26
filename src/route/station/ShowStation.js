@@ -286,6 +286,7 @@ class ShowStation extends React.Component {
   }
 
   render() {
+    let station = this.props.station
     // console.log('[DEBUG] ---> SysUser props: ', this.state.partnerList);
     // let plate = {id:'platform',shareholderName:'平台', royalty: this.props.station?this.props.station.platformProp:0}
     // let partnerList = this.state.partnerList.splice(0,0,plate)
@@ -297,13 +298,13 @@ class ShowStation extends React.Component {
             <p>服务点管理</p>
             </Col>
           <Col span = {6}>
-            <p>{this.props.station.name}</p>
+            <p>{station?station.name:''}</p>
           </Col>
           <Col span = {6}>
             <p>管理员</p>
           </Col>
           <Col span = {6}>
-            <p>{this.props.station.adminName+''+this.props.station.adminPhone}</p>
+            <p>{station?(station.adminName+''+this.props.station.adminPhone):''}</p>
           </Col>
           </Row>
         <Row>
@@ -311,7 +312,7 @@ class ShowStation extends React.Component {
             <p>服务点地址</p>
           </Col>
           <Col span = {20}>
-            <p>{(this.props.station.province?this.props.station.province.label:'')+' '+(this.props.station.city?this.props.station.city.label:'')+'  '+(this.props.station.area?this.props.station.area.label:'')+ '  ' + this.props.station.addr}</p>
+            <p>{station?((this.props.station.province?this.props.station.province.label:'')+' '+(this.props.station.city?this.props.station.city.label:'')+'  '+(this.props.station.area?this.props.station.area.label:'')+ '  ' + this.props.station.addr):''}</p>
           </Col>
         </Row>
         <Row>
@@ -319,19 +320,19 @@ class ShowStation extends React.Component {
             <p>干衣柜单价</p>
           </Col>
           <Col span = {4}>
-            <p>{this.props.station.unitPrice+'元每分钟'}</p>
+            <p>{station?(this.props.station.unitPrice+'元每分钟'):''}</p>
           </Col>
           <Col span = {4}>
             <p>干衣柜押金</p>
           </Col>
           <Col span = {4}>
-            <p>{this.props.station.deposit+'元'}</p>
+            <p>{station?(this.props.station.deposit+'元'):''}</p>
           </Col>
           <Col span = {4}>
             <p>电费单价</p>
           </Col>
           <Col span = {4}>
-            <p>{this.props.station.powerUnitPrice+''+'元／度'}</p>
+            <p>{station?(this.props.station.powerUnitPrice+''+'元／度'):''}</p>
           </Col>
         </Row>
         <Row>
@@ -342,7 +343,7 @@ class ShowStation extends React.Component {
           <Button onClick={()=>{this.openCreateModal()}}>添加分成方</Button>
         </Col>
           <Col span={4}>
-            <p >{'平台分成:'+this.props.station.platformProp*100 +'%'}</p>
+            <p >{'平台分成:'+station?(this.props.station.platformProp*100):'' +'%'}</p>
           </Col>
         </Row>
         <PartnerList  type='show' partners={this.props.partners}/>
@@ -353,7 +354,6 @@ class ShowStation extends React.Component {
             this.setState({createModalVisible: false})
           }}
           userList = {this.props.userList}
-          stationList = {this.props.stations}
           modalVisible = {this.state.createModalVisible}
         />
       </div>
@@ -368,10 +368,11 @@ const mapStateToProps = (state, ownProps) => {
 
   let areaList = configSelector.selectAreaList(state)
   let station = stationSelector.selectStation(state,ownProps.match.params.id)
+  console.log('stationnoredux====>',station)
   let partners = stationSelector.selectPartners(state)
   // let station={name:'123',adminName:'321'}
   // console.log('areaList========>', areaList)
-  console.log('partners========>', partners)
+  // console.log('partners========>', partners)
 
   return {
     station: station,

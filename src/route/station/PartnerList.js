@@ -37,7 +37,7 @@ const PartnerList = (props) => {
   }, {
     title: '操作',
     render: (text, record)=> {
-      console.log('record=====>',record)
+      // console.log('record=====>',record)
       return (
         <div>
           <Button onClick={()=>{editPartner(record)}}>编辑</Button>
