@@ -38,7 +38,7 @@ class CabinetEditModal extends PureComponent {
                onOk={this.onSubmit}
                onCancel={this.props.onCancel}
                footer={null}>
-          <CabinetEditForm cabinet={this.props.cabinet} />
+          <CabinetEditForm cabinet={this.props.cabinet} onSubmit={this.props.onCancel} />
         </Modal>
       )
     } else {

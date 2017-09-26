@@ -5,7 +5,7 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
-import {fetchCabinetsApi, associateWithStationApi} from './cloud'
+import {fetchCabinetsApi, associateWithStationApi, modifyCabinetApi} from './cloud'
 
 /****  Model  ****/
 export const CabinetRecord = Record({
@@ -42,6 +42,7 @@ const FETCH_CABINETS = "FETCH_CABINETS"
 const FETCH_CABINETS_SUCCESS = "FETCH_CABINETS_SUCCESS"
 const ASSOCIATE_WITH_STATION = "ASSOCIATE_WITH_STATION"
 const UPDATE_CABINET = "UPDATE_CABINET"
+const MODIFY_CABINET = "MODIFY_CABINET"
 
 export const cabinetStatus = {
   DEVICE_STATUS_IDLE : 0,           //空闲
@@ -57,6 +58,7 @@ export const fetchCabinetsAction = createAction(FETCH_CABINETS)
 const fetchCabinetsSuccessAction = createAction(FETCH_CABINETS_SUCCESS)
 export const associateWithStationAction = createAction(ASSOCIATE_WITH_STATION)
 const updateCabinetAction = createAction(UPDATE_CABINET)
+export const modifyCabinetAction = createAction(MODIFY_CABINET)
 
 /**** Saga ****/
 function* fetchCabinets(action) {
@@ -87,9 +89,33 @@ function* associateWithStation(action) {
 
 }
 
+function* modifyCabinet(action) {
+  let payload = action.payload
+
+  let modifyPayload = {
+    deviceNo: payload.deviceNo,
+    stationId: payload.stationId,
+    deviceAddr: payload.deviceAddr,
+    status: payload.status,
+  }
+  try {
+    let cabinet = yield call(modifyCabinetApi, modifyPayload)
+    let cabinetRecord = Cabinet.fromApi(cabinet)
+    if(payload.success) {
+      payload.success()
+    }
+    yield put(updateCabinetAction({cabinet: cabinetRecord}))
+  } catch (error) {
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const saga = [
   takeLatest(FETCH_CABINETS, fetchCabinets),
   takeLatest(ASSOCIATE_WITH_STATION, associateWithStation),
+  takeLatest(MODIFY_CABINET, modifyCabinet)
 ]
 
 /**** Reducer ****/
