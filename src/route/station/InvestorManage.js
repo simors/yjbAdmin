@@ -62,14 +62,14 @@ class InvestorManage extends React.Component {
           data = item
         }
       })
-      console.log('data====>',data)
+      console.log('data====>', data)
       let payload = {
         investorId: data.id,
         success: ()=> {
           this.refresh()
         },
         error: (err)=> {
-          console.log('i m false',err.message)
+          console.log('i m false', err.message)
         }
       }
       if (data.status == 1) {
@@ -246,38 +246,54 @@ class InvestorManage extends React.Component {
     )
   }
 
-  openCreateModal(){
-    this.props.requestStations({success:()=>{console.log('asasas')}})
+  openCreateModal() {
+    this.props.requestStations({
+      success: ()=> {
+        console.log('asasas')
+      }
+    })
     this.setState({createModalVisible: true})
   }
 
-  openUpdateModal(){
-    this.props.requestStations({success:()=>{console.log('asasas')}})
+  openUpdateModal() {
+    this.props.requestStations({
+      success: ()=> {
+        console.log('asasas')
+      }
+    })
     this.setState({updateModalVisible: true})
   }
 
-  createInvestor(data){
+  createInvestor(data) {
     let payload = {
       ...data,
-      success:()=>{
-        this.setState({createModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
+      success: ()=> {
+        this.setState({createModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+          this.refresh()
+        })
       },
-      error: (err)=>{console.log('err===>',err.message)}
+      error: (err)=> {
+        console.log('err===>', err.message)
+      }
     }
-    console.log('payload----------111',payload)
+    console.log('payload----------111', payload)
     this.props.createInvestor(payload)
   }
 
-  updateInvestor(data){
+  updateInvestor(data) {
     let payload = {
       ...data,
       investorId: this.state.selectedRowId[0],
-      success:()=>{
-        this.setState({updateModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
+      success: ()=> {
+        this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+          this.refresh()
+        })
       },
-      error: (err)=>{console.log('err===>',err.message)}
+      error: (err)=> {
+        console.log('err===>', err.message)
+      }
     }
-    console.log('payload----------111',payload)
+    console.log('payload----------111', payload)
     // this.setState({updateModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
 
     this.props.updateInvestor(payload)
@@ -292,8 +308,12 @@ class InvestorManage extends React.Component {
           showDetail={()=> {
             console.log('hahahahahhaha')
           }}
-          add = {()=>{this.openCreateModal()}}
-          set = {()=>{this.openUpdateModal()}}
+          add={()=> {
+            this.openCreateModal()
+          }}
+          set={()=> {
+            this.openUpdateModal()
+          }}
           setStatus={()=> {
             this.setStatus()
           }}
@@ -305,25 +325,31 @@ class InvestorManage extends React.Component {
           this.selectInvestor(rowId, rowData)
         }} investors={this.props.investors}/>
         <CreateInvestorModal
-        modalKey = {this.state.modalKey}
-        onOk = {(data)=>{this.createInvestor(data)}}
-        onCancel = {()=>{console.log('i, m cancel')
-          this.setState({createModalVisible: false})
-        }}
-        userList = {this.props.userList}
-        stationList = {this.props.stations}
-        modalVisible = {this.state.createModalVisible}
+          modalKey={this.state.modalKey}
+          onOk={(data)=> {
+            this.createInvestor(data)
+          }}
+          onCancel={()=> {
+            console.log('i, m cancel')
+            this.setState({createModalVisible: false})
+          }}
+          userList={this.props.userList}
+          stationList={this.props.stations}
+          modalVisible={this.state.createModalVisible}
         />
         <UpdateInvestorModal
-          modalKey = {this.state.modalKey}
-          onOk = {(data)=>{this.updateInvestor(data)}}
-          onCancel = {()=>{console.log('i, m cancel')
+          modalKey={this.state.modalKey}
+          onOk={(data)=> {
+            this.updateInvestor(data)
+          }}
+          onCancel={()=> {
+            console.log('i, m cancel')
             this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1})
           }}
-          investor = {this.state.selectedRowData?this.state.selectedRowData[0]:undefined}
-          userList = {this.props.userList}
-          stationList = {this.props.stations}
-          modalVisible = {this.state.updateModalVisible}
+          investor={this.state.selectedRowData ? this.state.selectedRowData[0] : undefined}
+          userList={this.props.userList}
+          stationList={this.props.stations}
+          modalVisible={this.state.updateModalVisible}
         />
       </div>
     )
@@ -333,7 +359,10 @@ class InvestorManage extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let investors = stationSelector.selectInvestors(state)
-  let userList=[{id:'59c27b4b128fe10035923744', nickname:'绿蚁002'},{nickname:'绿蚁001', id: '59acdd051b69e600643de670'}]
+  let userList = [{id: '59c27b4b128fe10035923744', nickname: '绿蚁002'}, {
+    nickname: '绿蚁001',
+    id: '59acdd051b69e600643de670'
+  }]
   let areaList = configSelector.selectAreaList(state)
   // console.log('investors========>', investors)
   return {

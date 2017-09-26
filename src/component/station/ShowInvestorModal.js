@@ -10,7 +10,22 @@
 
 import AV from 'leancloud-storage'
 import React, {PropTypes, Component} from 'react'
-import {Row,Col,message, Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
+import {
+  Row,
+  Col,
+  message,
+  Form,
+  Input,
+  InputNumber,
+  Radio,
+  Modal,
+  Checkbox,
+  Upload,
+  Table,
+  Icon,
+  Button,
+  Select
+} from 'antd'
 
 //import {checkBox} from '../../common/checkBox'
 const FormItem = Form.Item
@@ -44,9 +59,6 @@ class UpdateInvestorModal extends Component {
       user: undefined
     }
   }
-
-
-
 
 
   componentWillReceiveProps(newProps) {
@@ -105,7 +117,7 @@ class UpdateInvestorModal extends Component {
         return
       }
       // console.log('=======>',{...this.props.form.getFieldsValue()})
-      let data =this.props.form.getFieldsValue()
+      let data = this.props.form.getFieldsValue()
       // console.log('data======>',data)
       // let count = this.state.count - 1
       this.props.onOk(data)
@@ -123,8 +135,7 @@ class UpdateInvestorModal extends Component {
           this.handleOk()
         }}
         onCancel={()=> {
-          this.setState({
-          })
+          this.setState({})
           this.props.onCancel()
         }}
         wrapClassName='vertical-center-modal'
@@ -133,7 +144,7 @@ class UpdateInvestorModal extends Component {
         <Form layout="horizontal">
           <FormItem label='投资人' hasFeedback {...formItemLayout}>
             {this.props.form.getFieldDecorator('userId', {
-              initialValue: investor?investor.shareholderId:undefined,
+              initialValue: investor ? investor.shareholderId : undefined,
               rules: [
                 {
                   required: true,
@@ -141,21 +152,21 @@ class UpdateInvestorModal extends Component {
                 }
               ]
             })(
-              <Select allowClear={true} style={{width: 140}} >
+              <Select allowClear={true} style={{width: 140}}>
                 {this.userList()}
               </Select>
             )}
           </FormItem>
           <FormItem label='投资服务点：' hasFeedback {...formItemLayout}>
             {this.props.form.getFieldDecorator('stationId', {
-              initialValue: investor?investor.stationId:undefined,
+              initialValue: investor ? investor.stationId : undefined,
               rules: [
                 {
                   required: true,
                   message: '投资服务点未选择'
                 }
               ]
-            })( <Select allowClear={true} style={{width: 140}} >
+            })(<Select allowClear={true} style={{width: 140}}>
               {this.stationList()}
             </Select>)}
           </FormItem>
@@ -163,7 +174,7 @@ class UpdateInvestorModal extends Component {
             <Col span={12}>
               <FormItem label='投资金额：' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('investment', {
-                  initialValue: investor?investor.investment:undefined,
+                  initialValue: investor ? investor.investment : undefined,
                   rules: [
                     {
                       required: true,
@@ -174,7 +185,8 @@ class UpdateInvestorModal extends Component {
               </FormItem>
             </Col>
             <Col span={6}>
-              <p style={{color:'grey'}}>{'投资占比：'+(this.props.investor?this.props.investor.royalty*100 +'%':'')}</p>
+              <p
+                style={{color: 'grey'}}>{'投资占比：' + (this.props.investor ? this.props.investor.royalty * 100 + '%' : '')}</p>
             </Col>
           </Row>
         </Form>
@@ -182,9 +194,6 @@ class UpdateInvestorModal extends Component {
     )
   }
 }
-
-
-
 
 
 export default Form.create()(UpdateInvestorModal)

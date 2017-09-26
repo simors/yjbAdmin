@@ -5,7 +5,7 @@
 
 import AV from 'leancloud-storage'
 import React, {PropTypes, Component} from 'react'
-import { Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
+import {Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
 
 //import {checkBox} from '../../common/checkBox'
 const FormItem = Form.Item
@@ -68,8 +68,6 @@ class UpdatePartnerModal extends Component {
   }
 
 
-
-
   handleOk() {
 
     this.props.form.validateFields((errors) => {
@@ -77,7 +75,7 @@ class UpdatePartnerModal extends Component {
         return
       }
       // console.log('=======>',{...this.props.form.getFieldsValue()})
-      let data =this.props.form.getFieldsValue()
+      let data = this.props.form.getFieldsValue()
       // console.log('data======>',data)
       // let count = this.state.count - 1
       this.props.onOk(data)
@@ -94,8 +92,7 @@ class UpdatePartnerModal extends Component {
           this.handleOk(data)
         }}
         onCancel={()=> {
-          this.setState({
-          })
+          this.setState({})
           this.props.onCancel()
         }}
         wrapClassName='vertical-center-modal'
@@ -108,7 +105,7 @@ class UpdatePartnerModal extends Component {
               //  let value=this.setTrimValue(e.target.value)
               //  return value
               //},
-              initialValue: this.props.partner?this.props.partner.shareholderId:'',
+              initialValue: this.props.partner ? this.props.partner.shareholderId : '',
               rules: [
                 {
                   required: true,
@@ -116,14 +113,14 @@ class UpdatePartnerModal extends Component {
                 }
               ]
             })(
-              <Select allowClear={true} style={{width: 140}} >
+              <Select allowClear={true} style={{width: 140}}>
                 {this.userList()}
               </Select>
             )}
           </FormItem>
           <FormItem label='分成比例：' hasFeedback {...formItemLayout}>
             {this.props.form.getFieldDecorator('royalty', {
-              initialValue: this.props.partner?this.props.partner.royalty:0,
+              initialValue: this.props.partner ? this.props.partner.royalty : 0,
               rules: [
                 {
                   required: true,
@@ -137,9 +134,6 @@ class UpdatePartnerModal extends Component {
     )
   }
 }
-
-
-
 
 
 export default Form.create()(UpdatePartnerModal)

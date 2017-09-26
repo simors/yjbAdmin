@@ -46,13 +46,17 @@ class ShowStation extends React.Component {
 
   componentWillMount() {
     // console.log('hahahahah',this.props.match)
-    this.props.requestPartners({stationId:this.props.match.params.id,success:()=>{
-    }})
+    this.props.requestPartners({
+      stationId: this.props.match.params.id, success: ()=> {
+      }
+    })
   }
 
   refresh() {
-    this.props.requestPartners({stationId:this.props.match.params.id,success:()=>{
-    }})
+    this.props.requestPartners({
+      stationId: this.props.match.params.id, success: ()=> {
+      }
+    })
   }
 
   setStatus() {
@@ -63,14 +67,14 @@ class ShowStation extends React.Component {
           data = item
         }
       })
-      console.log('data====>',data)
+      console.log('data====>', data)
       let payload = {
         investorId: data.id,
         success: ()=> {
           this.refresh()
         },
         error: (err)=> {
-          console.log('i m false',err.message)
+          console.log('i m false', err.message)
         }
       }
       if (data.status == 1) {
@@ -247,39 +251,47 @@ class ShowStation extends React.Component {
     )
   }
 
-  openCreateModal(){
+  openCreateModal() {
     // this.props.requestStations({success:()=>{console.log('asasas')}})
     this.setState({createModalVisible: true})
   }
 
-  openUpdateModal(){
+  openUpdateModal() {
     // this.props.requestStations({success:()=>{console.log('asasas')}})
     this.setState({updateModalVisible: true})
   }
 
-  createPartner(data){
+  createPartner(data) {
     let payload = {
       ...data,
       stationId: this.props.match.params.id,
-      success:()=>{
-        this.setState({createModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
+      success: ()=> {
+        this.setState({createModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+          this.refresh()
+        })
       },
-      error: (err)=>{console.log('err===>',err.message)}
+      error: (err)=> {
+        console.log('err===>', err.message)
+      }
     }
-    console.log('payload----------111',payload)
+    console.log('payload----------111', payload)
     this.props.createPartner(payload)
   }
 
-  updateInvestor(data){
+  updateInvestor(data) {
     let payload = {
       ...data,
       investorId: this.state.selectedRowId[0],
-      success:()=>{
-        this.setState({updateModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
+      success: ()=> {
+        this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+          this.refresh()
+        })
       },
-      error: (err)=>{console.log('err===>',err.message)}
+      error: (err)=> {
+        console.log('err===>', err.message)
+      }
     }
-    console.log('payload----------111',payload)
+    console.log('payload----------111', payload)
     // this.setState({updateModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
 
     this.props.updateInvestor(payload)
@@ -294,67 +306,72 @@ class ShowStation extends React.Component {
       <div>
         <ContentHead headTitle='编辑服务点'/>
         <Row>
-          <Col span = {6}>
+          <Col span={6}>
             <p>服务点管理</p>
-            </Col>
-          <Col span = {6}>
-            <p>{station?station.name:''}</p>
           </Col>
-          <Col span = {6}>
+          <Col span={6}>
+            <p>{station ? station.name : ''}</p>
+          </Col>
+          <Col span={6}>
             <p>管理员</p>
           </Col>
-          <Col span = {6}>
-            <p>{station?(station.adminName+''+this.props.station.adminPhone):''}</p>
-          </Col>
-          </Row>
-        <Row>
-          <Col span = {4}>
-            <p>服务点地址</p>
-          </Col>
-          <Col span = {20}>
-            <p>{station?((this.props.station.province?this.props.station.province.label:'')+' '+(this.props.station.city?this.props.station.city.label:'')+'  '+(this.props.station.area?this.props.station.area.label:'')+ '  ' + this.props.station.addr):''}</p>
+          <Col span={6}>
+            <p>{station ? (station.adminName + '' + this.props.station.adminPhone) : ''}</p>
           </Col>
         </Row>
         <Row>
-          <Col span = {4}>
+          <Col span={4}>
+            <p>服务点地址</p>
+          </Col>
+          <Col span={20}>
+            <p>{station ? ((this.props.station.province ? this.props.station.province.label : '') + ' ' + (this.props.station.city ? this.props.station.city.label : '') + '  ' + (this.props.station.area ? this.props.station.area.label : '') + '  ' + this.props.station.addr) : ''}</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={4}>
             <p>干衣柜单价</p>
           </Col>
-          <Col span = {4}>
-            <p>{station?(this.props.station.unitPrice+'元每分钟'):''}</p>
+          <Col span={4}>
+            <p>{station ? (this.props.station.unitPrice + '元每分钟') : ''}</p>
           </Col>
-          <Col span = {4}>
+          <Col span={4}>
             <p>干衣柜押金</p>
           </Col>
-          <Col span = {4}>
-            <p>{station?(this.props.station.deposit+'元'):''}</p>
+          <Col span={4}>
+            <p>{station ? (this.props.station.deposit + '元') : ''}</p>
           </Col>
-          <Col span = {4}>
+          <Col span={4}>
             <p>电费单价</p>
           </Col>
-          <Col span = {4}>
-            <p>{station?(this.props.station.powerUnitPrice+''+'元／度'):''}</p>
+          <Col span={4}>
+            <p>{station ? (this.props.station.powerUnitPrice + '' + '元／度') : ''}</p>
           </Col>
         </Row>
         <Row>
           <Col span={4}>
             <h5>服务点分成</h5>
-            </Col>
+          </Col>
           <Col span={4}>
-          <Button onClick={()=>{this.openCreateModal()}}>添加分成方</Button>
-        </Col>
+            <Button onClick={()=> {
+              this.openCreateModal()
+            }}>添加分成方</Button>
+          </Col>
           <Col span={4}>
-            <p >{'平台分成:'+station?(this.props.station.platformProp*100):'' +'%'}</p>
+            <p >{'平台分成:' + station ? (this.props.station.platformProp * 100) : '' + '%'}</p>
           </Col>
         </Row>
-        <PartnerList  type='show' partners={this.props.partners}/>
+        <PartnerList type='show' partners={this.props.partners}/>
         <CreatePartnerModal
-          modalKey = {this.state.modalKey}
-          onOk = {(data)=>{this.createPartner(data)}}
-          onCancel = {()=>{console.log('i, m cancel')
+          modalKey={this.state.modalKey}
+          onOk={(data)=> {
+            this.createPartner(data)
+          }}
+          onCancel={()=> {
+            console.log('i, m cancel')
             this.setState({createModalVisible: false})
           }}
-          userList = {this.props.userList}
-          modalVisible = {this.state.createModalVisible}
+          userList={this.props.userList}
+          modalVisible={this.state.createModalVisible}
         />
       </div>
     )
@@ -364,11 +381,14 @@ class ShowStation extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   // console.log('ownporsoss.......aaa',ownProps)
-  let userList=[{id:'59c27b4b128fe10035923744', nickname:'绿蚁002'},{nickname:'绿蚁001', id: '59acdd051b69e600643de670'}]
+  let userList = [{id: '59c27b4b128fe10035923744', nickname: '绿蚁002'}, {
+    nickname: '绿蚁001',
+    id: '59acdd051b69e600643de670'
+  }]
 
   let areaList = configSelector.selectAreaList(state)
-  let station = stationSelector.selectStation(state,ownProps.match.params.id)
-  console.log('stationnoredux====>',station)
+  let station = stationSelector.selectStation(state, ownProps.match.params.id)
+  console.log('stationnoredux====>', station)
   let partners = stationSelector.selectPartners(state)
   // let station={name:'123',adminName:'321'}
   // console.log('areaList========>', areaList)

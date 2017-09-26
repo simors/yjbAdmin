@@ -4,7 +4,7 @@
 
 import AV from 'leancloud-storage'
 import React, {PropTypes, Component} from 'react'
-import { Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
+import {Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
 
 //import {checkBox} from '../../common/checkBox'
 const FormItem = Form.Item
@@ -67,8 +67,6 @@ class CreatePartnerModal extends Component {
   }
 
 
-
-
   handleOk() {
 
     this.props.form.validateFields((errors) => {
@@ -76,7 +74,7 @@ class CreatePartnerModal extends Component {
         return
       }
       // console.log('=======>',{...this.props.form.getFieldsValue()})
-      let data =this.props.form.getFieldsValue()
+      let data = this.props.form.getFieldsValue()
       // console.log('data======>',data)
       // let count = this.state.count - 1
       this.props.onOk(data)
@@ -93,8 +91,7 @@ class CreatePartnerModal extends Component {
           this.handleOk()
         }}
         onCancel={()=> {
-          this.setState({
-          })
+          this.setState({})
           this.props.onCancel()
         }}
         wrapClassName='vertical-center-modal'
@@ -114,7 +111,7 @@ class CreatePartnerModal extends Component {
                 }
               ]
             })(
-              <Select allowClear={true} style={{width: 140}} >
+              <Select allowClear={true} style={{width: 140}}>
                 {this.userList()}
               </Select>
             )}
@@ -135,9 +132,6 @@ class CreatePartnerModal extends Component {
     )
   }
 }
-
-
-
 
 
 export default Form.create()(CreatePartnerModal)

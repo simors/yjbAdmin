@@ -5,7 +5,7 @@
 import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
-import { call, put, takeEvery,takeLatest } from 'redux-saga/effects'
+import {call, put, takeEvery, takeLatest} from 'redux-saga/effects'
 import * as stationFuncs from './cloud'
 
 /****  Model  ****/
@@ -52,9 +52,9 @@ export class StationDetail extends StationDetailRecord {
       record.set('platformProp', obj.platformProp)
       record.set('powerUnitPrice', obj.powerUnitPrice)
       record.set('unitPrice', obj.unitPrice)
-      record.set('adminId', obj.adminId?obj.adminId:obj.admin.id)
-      record.set('adminName', obj.adminName?obj.adminName:obj.admin.nickname)
-      record.set('adminPhone', obj.adminPhone?obj.adminPhone:obj.admin.mobilePhoneNumber)
+      record.set('adminId', obj.adminId ? obj.adminId : obj.admin.id)
+      record.set('adminName', obj.adminName ? obj.adminName : obj.admin.nickname)
+      record.set('adminPhone', obj.adminPhone ? obj.adminPhone : obj.admin.mobilePhoneNumber)
       record.set('status', obj.status)
       record.set('deviceNo', obj.deviceNo)
       record.set('createdAt', obj.createdAt)
@@ -95,7 +95,6 @@ export class ProfitSharing extends ProfitSharingRecord {
     })
   }
 }
-
 
 
 /**** Constant ****/
@@ -151,19 +150,19 @@ function* fetchStationsAction(action) {
   let data = yield call(stationFuncs.fetchStations, payload)
   let stations = []
   let stationList = []
-  if(data.success){
-    if(data.stations&&data.stations.length>0){
-      data.stations.forEach((item)=>{
+  if (data.success) {
+    if (data.stations && data.stations.length > 0) {
+      data.stations.forEach((item)=> {
         stationList.push(item.id)
         stations.push(StationDetail.fromApi(item))
       })
     }
     yield put(requestStationsSuccess({stations: stations, stationList: stationList}))
-    if(payload.success){
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -172,15 +171,15 @@ function* fetchStationsAction(action) {
 function* openStationAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.openStation, payload)
-  if(data.success){
-    if(data.station){
+  if (data.success) {
+    if (data.station) {
       yield put(openStationSuccess({station: StationDetail.fromApi(data.station)}))
-      if(payload.success){
+      if (payload.success) {
         payload.success()
       }
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -189,15 +188,15 @@ function* openStationAction(action) {
 function* closeStationAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.closeStation, payload)
-  if(data.success){
-    if(data.station){
+  if (data.success) {
+    if (data.station) {
       yield put(closeStationSuccess({station: StationDetail.fromApi(data.station)}))
-      if(payload.success){
+      if (payload.success) {
         payload.success()
       }
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -208,19 +207,19 @@ function* fetchInvestorsAction(action) {
   let data = yield call(stationFuncs.fetchInvestor, payload)
   let investors = []
   let investorList = []
-  if(data.success){
-    if(data.investors&&data.investors.length>0){
-      data.investors.forEach((item)=>{
+  if (data.success) {
+    if (data.investors && data.investors.length > 0) {
+      data.investors.forEach((item)=> {
         investorList.push(item.id)
         investors.push(ProfitSharing.fromApi(item))
       })
     }
     yield put(requestInvestorsSuccess({investors: investors, investorList: investorList}))
-    if(payload.success){
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -229,12 +228,12 @@ function* fetchInvestorsAction(action) {
 function* openInvestorsAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.openInvestor, payload)
-  if(data.success){
-    if(payload.success){
+  if (data.success) {
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -243,12 +242,12 @@ function* openInvestorsAction(action) {
 function* closeInvestorsAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.closeInvestor, payload)
-  if(data.success){
-    if(payload.success){
+  if (data.success) {
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -256,14 +255,14 @@ function* closeInvestorsAction(action) {
 
 function* createInvestorsAction(action) {
   let payload = action.payload
-  console.log('actionpayload=====>',payload)
+  console.log('actionpayload=====>', payload)
   let data = yield call(stationFuncs.createInvestor, payload)
-  if(data.success){
-    if(payload.success){
+  if (data.success) {
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -272,12 +271,12 @@ function* createInvestorsAction(action) {
 function* updateInvestorsAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.updateInvestor, payload)
-  if(data.success){
-    if(payload.success){
+  if (data.success) {
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -288,19 +287,19 @@ function* fetchPartnersAction(action) {
   let data = yield call(stationFuncs.fetchProfitSharing, payload)
   let partners = []
   let partnerList = []
-  if(data.success){
-    if(data.partners&&data.partners.length>0){
-      data.partners.forEach((item)=>{
+  if (data.success) {
+    if (data.partners && data.partners.length > 0) {
+      data.partners.forEach((item)=> {
         partnerList.push(item.id)
         partners.push(ProfitSharing.fromApi(item))
       })
     }
     yield put(requestPartnersSuccess({partners: partners, partnerList: partnerList}))
-    if(payload.success){
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -309,12 +308,12 @@ function* fetchPartnersAction(action) {
 function* createPartnerAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.createPartner, payload)
-  if(data.success){
-    if(payload.success){
+  if (data.success) {
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -323,12 +322,12 @@ function* createPartnerAction(action) {
 function* updatePartnerAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.updatePartner, payload)
-  if(data.success){
-    if(payload.success){
+  if (data.success) {
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -337,12 +336,12 @@ function* updatePartnerAction(action) {
 function* openPartnerAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.openPartner, payload)
-  if(data.success){
-    if(payload.success){
+  if (data.success) {
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -351,12 +350,12 @@ function* openPartnerAction(action) {
 function* closePartnerAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.closePartner, payload)
-  if(data.success){
-    if(payload.success){
+  if (data.success) {
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -411,7 +410,7 @@ function handleSetAllStations(state, stations) {
 
 function handleSaveStation(state, action) {
   let station = action.payload.station
-    state = state.setIn(['allStations', station.id], station)
+  state = state.setIn(['allStations', station.id], station)
   return state
 }
 
@@ -432,10 +431,10 @@ function handleSetAllInvestors(state, investors) {
 function handleSaveStations(state, action) {
   let stations = action.payload.stations
   let stationList = action.payload.stationList
-  if(stationList&&stationList.length>0){
+  if (stationList && stationList.length > 0) {
     state = state.set('stationList', new List(stationList))
-    state = handleSetAllStations(state,stations)
-  }else{
+    state = handleSetAllStations(state, stations)
+  } else {
     state = state.set('stationList', new List())
   }
   return state
@@ -444,10 +443,10 @@ function handleSaveStations(state, action) {
 function handleSaveInvestors(state, action) {
   let investors = action.payload.investors
   let investorList = action.payload.investorList
-  if(investorList && investorList.length>0){
+  if (investorList && investorList.length > 0) {
     state = state.set('investorList', new List(investorList))
-    state = handleSetAllInvestors(state,investors)
-  }else{
+    state = handleSetAllInvestors(state, investors)
+  } else {
     state = state.set('investorList', new List())
   }
   return state
@@ -456,10 +455,10 @@ function handleSaveInvestors(state, action) {
 function handleSavePartners(state, action) {
   let partners = action.payload.partners
   let partnerList = action.payload.partnerList
-  if(partnerList && partnerList.length>0){
+  if (partnerList && partnerList.length > 0) {
     state = state.set('partnerList', new List(partnerList))
-    state = handleSetAllPartners(state,partners)
-  }else{
+    state = handleSetAllPartners(state, partners)
+  } else {
     state = state.set('partnerList', new List())
   }
   return state
@@ -489,19 +488,19 @@ function selectStations(state) {
   let station = state.STATION
   let stationList = station.stationList
   let stations = []
-  if(stationList&&stationList.size>0){
-    stationList.forEach((item)=>{
-      let stationInfo = station.getIn(['allStations',item])
+  if (stationList && stationList.size > 0) {
+    stationList.forEach((item)=> {
+      let stationInfo = station.getIn(['allStations', item])
       stations.push(stationInfo.toJS())
     })
   }
   return stations
 }
 
-function selectStation(state,stationId) {
+function selectStation(state, stationId) {
   let station = state.STATION
   // console.log('stationId=====>',stationId)
-  let stationInfo = station.getIn(['allStations',stationId])
+  let stationInfo = station.getIn(['allStations', stationId])
   // console.log('stationInfo==>',stationInfo)
   return stationInfo
 }
@@ -510,9 +509,9 @@ function selectInvestors(state) {
   let station = state.STATION
   let investorList = station.investorList
   let investors = []
-  if(investorList&&investorList.size>0){
-    investorList.forEach((item)=>{
-      let investorInfo = station.getIn(['allInvestors',item])
+  if (investorList && investorList.size > 0) {
+    investorList.forEach((item)=> {
+      let investorInfo = station.getIn(['allInvestors', item])
       investors.push(investorInfo.toJS())
     })
   }
@@ -523,9 +522,9 @@ function selectPartners(state) {
   let station = state.STATION
   let partnerList = station.partnerList
   let partners = []
-  if(partnerList&&partnerList.size>0){
-    partnerList.forEach((item)=>{
-      let partnerInfo = station.getIn(['allPartners',item])
+  if (partnerList && partnerList.size > 0) {
+    partnerList.forEach((item)=> {
+      let partnerInfo = station.getIn(['allPartners', item])
       partners.push(partnerInfo.toJS())
     })
   }

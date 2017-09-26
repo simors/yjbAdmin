@@ -4,7 +4,7 @@
 
 import AV from 'leancloud-storage'
 import React, {PropTypes, Component} from 'react'
-import { Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
+import {Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
 
 //import {checkBox} from '../../common/checkBox'
 const FormItem = Form.Item
@@ -67,8 +67,6 @@ class CreateInvestorModal extends Component {
   }
 
 
-
-
   handleOk() {
 
     this.props.form.validateFields((errors) => {
@@ -76,7 +74,7 @@ class CreateInvestorModal extends Component {
         return
       }
       // console.log('=======>',{...this.props.form.getFieldsValue()})
-      let data =this.props.form.getFieldsValue()
+      let data = this.props.form.getFieldsValue()
       // console.log('data======>',data)
       // let count = this.state.count - 1
       this.props.onOk(data)
@@ -93,8 +91,7 @@ class CreateInvestorModal extends Component {
           this.handleOk()
         }}
         onCancel={()=> {
-          this.setState({
-          })
+          this.setState({})
           this.props.onCancel()
         }}
         wrapClassName='vertical-center-modal'
@@ -114,9 +111,9 @@ class CreateInvestorModal extends Component {
                 }
               ]
             })(
-              <Select allowClear={true} style={{width: 140}} >
-              {this.userList()}
-            </Select>
+              <Select allowClear={true} style={{width: 140}}>
+                {this.userList()}
+              </Select>
             )}
           </FormItem>
           <FormItem label='投资服务点：' hasFeedback {...formItemLayout}>
@@ -127,29 +124,26 @@ class CreateInvestorModal extends Component {
                   message: '投资服务点未选择'
                 }
               ]
-            })( <Select allowClear={true} style={{width: 140}} >
+            })(<Select allowClear={true} style={{width: 140}}>
               {this.stationList()}
             </Select>)}
           </FormItem>
           <FormItem label='投资金额：' hasFeedback {...formItemLayout}>
-          {this.props.form.getFieldDecorator('investment', {
-          initialValue: 0,
-          rules: [
-          {
-          required: true,
-          message: '投资金额未填写'
-          }
-          ]
-          })(<InputNumber />)}
+            {this.props.form.getFieldDecorator('investment', {
+              initialValue: 0,
+              rules: [
+                {
+                  required: true,
+                  message: '投资金额未填写'
+                }
+              ]
+            })(<InputNumber />)}
           </FormItem>
         </Form>
       </Modal>
     )
   }
 }
-
-
-
 
 
 export default Form.create()(CreateInvestorModal)

@@ -94,7 +94,7 @@ class StationManage extends React.Component {
   search() {
     let payload = {
       province: this.state.division[0],
-      city:this.state.division[1],
+      city: this.state.division[1],
       area: this.state.division[2],
       status: this.state.status != undefined ? this.state.status : undefined,
       addr: this.state.addr,
@@ -109,11 +109,13 @@ class StationManage extends React.Component {
     this.props.requestStations(payload)
   }
 
-  setDivision(value){
-    if(value&&value.length){
+  setDivision(value) {
+    if (value && value.length) {
       this.setState({
         division: value
-      },()=>{console.log('state',this.state.division)})
+      }, ()=> {
+        console.log('state', this.state.division)
+      })
     }
   }
 
@@ -127,8 +129,11 @@ class StationManage extends React.Component {
       name: undefined,
       division: []
     })
-    this.props.requestStations( {success: ()=> {
-      console.log('hahhahah')}})
+    this.props.requestStations({
+      success: ()=> {
+        console.log('hahhahah')
+      }
+    })
   }
 
   renderSearchBar() {
@@ -160,13 +165,14 @@ class StationManage extends React.Component {
             <div>省市区</div>
           </Col>
           <Col span={9}>
-          <DivisionCascader
-            defaultValue = {this.state.division}
-            onChange={(key,value)=>{
-              this.setDivision(key)
-              console.log('value===>',value,key)}}
-          />
-            </Col>
+            <DivisionCascader
+              defaultValue={this.state.division}
+              onChange={(key, value)=> {
+                this.setDivision(key)
+                console.log('value===>', value, key)
+              }}
+            />
+          </Col>
           <Col span={2}>
             <div>地址</div>
           </Col>
@@ -200,12 +206,12 @@ class StationManage extends React.Component {
         <StationMenu
           showDetail={()=> {
             this.props.history.push({
-              pathname: '/site/showStation/'+(this.state.selectedRowId?this.state.selectedRowId[0]:''),
+              pathname: '/site/showStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),
             })
           }}
           set={()=> {
             this.props.history.push({
-              pathname: '/site/editStation/'+(this.state.selectedRowId?this.state.selectedRowId[0]:''),
+              pathname: '/site/editStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),
             })
           }}
           setStatus={()=> {
