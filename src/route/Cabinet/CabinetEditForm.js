@@ -12,14 +12,22 @@ import {
   Form,
   Select,
   Radio,
+  message,
 } from 'antd'
 import style from './cabinet.module.scss'
-import {cabinetStatus} from './redux'
+import {cabinetStatus, modifyCabinetAction} from './redux'
 import StationSelect from '../station/StationSelect'
 
 const FormItem = Form.Item
 const RadioGroup = Radio.Group
 
+function hasErrors(fieldsError) {
+  return Object.keys(fieldsError).some(field => fieldsError[field])
+}
+
+function hasChanges(initialValues, fieldsValue) {
+  return Object.keys(fieldsValue).some(field => fieldsValue[field] != initialValues[field])
+}
 
 class EditForm extends PureComponent {
   constructor(props) {
@@ -29,18 +37,36 @@ class EditForm extends PureComponent {
     }
   }
 
+  componentDidMount() {
+    // To disabled submit button at the beginning.
+    this.props.form.validateFields()
+  }
+
   handleSubmit = (e) => {
     e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (err) {
         return
       }
-      console.log("handleSubmit", values)
+      this.props.modifyCabinetAction({
+        deviceNo: values.deviceNo,
+        stationId: values.stationId,
+        deviceAddr: values.deviceAddr,
+        status: values.status,
+        success: () => {
+          message.success("修改成功")
+          this.props.onSubmit()
+        },
+        error: (error) => {
+          message.error("修改失败")
+          console.log(error)
+        }
+      })
     })
   }
 
   render() {
-    const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form
+    const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched, getFieldsValue } = this.props.form
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -92,12 +118,14 @@ class EditForm extends PureComponent {
           )}
         </FormItem>
         <FormItem wrapperCol={{offset: 20}}>
-          <Button type="primary" htmlType="submit">提交</Button>
+          <Button type="primary" htmlType="submit"
+                  disabled={!hasChanges(this.props.cabinet, getFieldsValue()) || hasErrors(getFieldsError())}>
+            提交
+          </Button>
         </FormItem>
       </Form>
     )
   }
-
 }
 
 const CabinetEditForm = Form.create()(EditForm)
@@ -108,7 +136,7 @@ const mapStateToProps = (appState, ownProps) => {
 }
 
 const mapDispatchToProps = {
-
+  modifyCabinetAction
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CabinetEditForm)

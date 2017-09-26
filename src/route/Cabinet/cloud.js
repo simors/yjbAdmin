@@ -22,3 +22,13 @@ export async function associateWithStationApi(payload) {
     throw error
   }
 }
+
+export async function modifyCabinetApi(payload) {
+  try {
+    let cabinet = await AV.Cloud.run('deviceUpdateDevice', payload)
+    return cabinet
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
