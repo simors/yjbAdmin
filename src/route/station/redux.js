@@ -105,6 +105,10 @@ const OPEN_STATION = 'OPEN_STATION'
 const OPEN_STATION_SUCCESS = 'OPEN_STATION_SUCCESS'
 const CLOSE_STATION = 'CLOSE_STATION'
 const CLOSE_STATION_SUCCESS = 'CLOSE_STATION_SUCCESS'
+const CREATE_STATION = 'CREATE_STATION'
+const CREATE_STATION_SUCCESS = 'CREATE_STATION_SUCCESS'
+const UPDATE_STATION = 'UPDATE_STATION'
+const UPDATE_STATION_SUCCESS = 'UPDATE_STATION_SUCCESS'
 const FETCH_INVESTORS = 'FETCH_INVESTORS'
 const FETCH_INVESTORS_SUCCESS = 'FETCH_INVESTORS_SUCCESS'
 const OPEN_INVESTOR = 'OPEN_INVESTOR'
@@ -124,6 +128,8 @@ export const stationAction = {
   requestStations: createAction(FETCH_STATIONS),
   openStation: createAction(OPEN_STATION),
   closeStation: createAction(CLOSE_STATION),
+  createStation: createAction(CREATE_STATION),
+  updateStation: createAction(UPDATE_STATION),
   requestInvestors: createAction(FETCH_INVESTORS),
   openInvestor: createAction(OPEN_INVESTOR),
   closeInvestor: createAction(CLOSE_INVESTOR),
@@ -133,7 +139,8 @@ export const stationAction = {
   createPartner: createAction(CREATE_PARTNER),
   updatePartner: createAction(UPDATE_PARTNER),
   openPartner: createAction(OPEN_PARTNER),
-  closePartner: createAction(CLOSE_PARTNER)
+  closePartner: createAction(CLOSE_PARTNER),
+  updateStation: createAction(UPDATE_STATION)
 }
 
 const requestStationsSuccess = createAction(FETCH_STATIONS_SUCCESS)
@@ -141,6 +148,8 @@ const openStationSuccess = createAction(OPEN_STATION_SUCCESS)
 const closeStationSuccess = createAction(CLOSE_STATION_SUCCESS)
 const requestInvestorsSuccess = createAction(FETCH_INVESTORS_SUCCESS)
 const requestPartnersSuccess = createAction(FETCH_PARTNERS_SUCCESS)
+const createStationSuccess = createAction(CREATE_STATION_SUCCESS)
+const updateStationSuccess = createAction(UPDATE_STATION_SUCCESS)
 
 
 /**** Saga ****/
@@ -360,6 +369,41 @@ function* closePartnerAction(action) {
     }
   }
 }
+
+function* createStationAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.createStation, payload)
+
+  if (data.success) {
+    let station = StationDetail.fromApi(data.station)
+    yield put(createStationSuccess({station: station}))
+    if (payload.success) {
+      payload.success(station.id)
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+function* updateStationAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.updateStation, payload)
+
+  if (data.success) {
+    let station = StationDetail.fromApi(data.station)
+    yield put(updateStationSuccess({station: station}))
+    if (payload.success) {
+      payload.success(station.id)
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
 export const stationSaga = [
   takeLatest(FETCH_STATIONS, fetchStationsAction),
   takeLatest(OPEN_STATION, openStationAction),
@@ -374,6 +418,8 @@ export const stationSaga = [
   takeLatest(UPDATE_PARTNER, updatePartnerAction),
   takeLatest(OPEN_PARTNER, openPartnerAction),
   takeLatest(CLOSE_PARTNER, closePartnerAction),
+  takeLatest(CREATE_STATION, createStationAction),
+  takeLatest(UPDATE_STATION, updateStationAction),
 
 
 ]
@@ -386,6 +432,10 @@ export function stationReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_STATIONS_SUCCESS:
       return handleSaveStations(state, action)
+    case CREATE_STATION_SUCCESS:
+      return handleSaveStation(state, action)
+    case UPDATE_STATION_SUCCESS:
+      return handleSaveStation(state, action)
     case OPEN_STATION_SUCCESS:
       return handleSaveStation(state, action)
     case CLOSE_STATION_SUCCESS:
@@ -394,6 +444,7 @@ export function stationReducer(state = initialState, action) {
       return handleSaveInvestors(state, action)
     case FETCH_PARTNERS_SUCCESS:
       return handleSavePartners(state, action)
+
     case REHYDRATE:
       return onRehydrate(state, action)
     default:

@@ -15,6 +15,7 @@ export async function fetchStations(payload) {
 
 export async function createStation(payload) {
   try {
+    console.log('payload=====>',payload)
     let station = await AV.Cloud.run('stationCreateStation', payload)
 
     return {success: true, station: station}
@@ -25,8 +26,8 @@ export async function createStation(payload) {
 
 export async function updateStation(payload) {
   try {
-    let stations = await AV.Cloud.run('stationUpdateStation', payload)
-    return stations
+    let station = await AV.Cloud.run('stationUpdateStation', payload)
+    return {success: true, station: station}
   } catch (err) {
     return {success: false, error: err}
   }

@@ -214,6 +214,7 @@ class StationManage extends React.Component {
               pathname: '/site/editStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),
             })
           }}
+          add={()=>{this.props.history.push({pathname: '/site/addStation'})}}
           setStatus={()=> {
             this.setStatus()
           }}
