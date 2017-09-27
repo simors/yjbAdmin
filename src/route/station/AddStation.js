@@ -16,10 +16,10 @@ const Option = Select.Option;
 const FormItem = Form.Item
 const formItemLayout = {
   labelCol: {
-    span: 12
+    span: 16
   },
   wrapperCol: {
-    span: 12
+    span: 8
   }
 }
 
@@ -69,10 +69,15 @@ class AddStation extends React.Component {
       stationId: this.props.match.params.id, success: ()=> {
       }
     })
+    this.props.testFetchUsers({
+      success: ()=> {
+      }
+    })
   }
 
   userList() {
     if (this.props.userList && this.props.userList.length > 0) {
+      console.log('this.props.userList',this.props.userList)
       let userList = this.props.userList.map((item, key)=> {
         return <Option key={key} value={item.id}>{item.nickname}</Option>
       })
@@ -114,7 +119,6 @@ class AddStation extends React.Component {
     // let partnerList = this.state.partnerList.splice(0,0,plate)
     return (
       <div>
-        <ContentHead headTitle='编辑服务点'/>
         <Form layout="horizontal">
           <Row>
             <Col span={12}>
@@ -136,7 +140,7 @@ class AddStation extends React.Component {
               </FormItem>
             </Col>
             <Col span={12}>
-              <FormItem label='投资人' hasFeedback {...formItemLayout}>
+              <FormItem label='管理员' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('adminId', {
                   rules: [
                     {
@@ -264,11 +268,11 @@ class AddStation extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   // console.log('ownporsoss.......aaa',ownProps)
-  let userList = [{id: '59c27b4b128fe10035923744', nickname: '绿蚁002'}, {
-    nickname: '绿蚁001',
-    id: '59acdd051b69e600643de670'
-  }]
-
+  // let userList = [{id: '59c27b4b128fe10035923744', nickname: '绿蚁002'}, {
+  //   nickname: '绿蚁001',
+  //   id: '59acdd051b69e600643de670'
+  // }]
+  let userList = stationSelector.selectUsers(state)
   let areaList = configSelector.selectAreaList(state)
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   console.log('stationnoredux====>', station)

@@ -12,8 +12,10 @@ import {stationAction, stationSelector} from './redux';
 import {configSelector} from '../../util/config'
 import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
+
 const history = createBrowserHistory()
 const Option = Select.Option;
+const ButtonGroup = Button.Group
 
 class StationManage extends React.Component {
   constructor(props) {
@@ -202,7 +204,6 @@ class StationManage extends React.Component {
     // console.log('[DEBUG] ---> SysUser props: ', this.props);
     return (
       <div>
-        <ContentHead headTitle='服务点信息管理'/>
         <StationMenu
           showDetail={()=> {
             this.props.history.push({

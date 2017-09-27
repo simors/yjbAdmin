@@ -48,6 +48,10 @@ class InvestorManage extends React.Component {
         console.log('hahhahah')
       }
     });
+    this.props.testFetchUsers({
+      success: ()=> {
+      }
+    })
   }
 
   refresh() {
@@ -303,7 +307,6 @@ class InvestorManage extends React.Component {
     // console.log('[DEBUG] ---> SysUser props: ', this.props);
     return (
       <div>
-        <ContentHead headTitle='投资人管理'/>
         <StationMenu
           showDetail={()=> {
             console.log('hahahahahhaha')
@@ -359,10 +362,7 @@ class InvestorManage extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let investors = stationSelector.selectInvestors(state)
-  let userList = [{id: '59c27b4b128fe10035923744', nickname: '绿蚁002'}, {
-    nickname: '绿蚁001',
-    id: '59acdd051b69e600643de670'
-  }]
+  let userList = stationSelector.selectUsers(state)
   let areaList = configSelector.selectAreaList(state)
   // console.log('investors========>', investors)
   return {

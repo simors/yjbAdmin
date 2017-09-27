@@ -5,6 +5,7 @@ import React from 'react';
 import {Button} from 'antd';
 import style from './StationMenu.module.scss';
 import {Link} from 'react-router-dom'
+const ButtonGroup = Button.Group
 
 export default class ContentHead extends React.Component {
   constructor(props) {
@@ -14,6 +15,7 @@ export default class ContentHead extends React.Component {
   render() {
     return (
       <div className={style.stationMenu}>
+        <ButtonGroup>
         <Button onClick={()=> {
           this.props.showDetail()
         }} icon="info-circle-o">查看</Button>
@@ -29,6 +31,7 @@ export default class ContentHead extends React.Component {
         <Button onClick={()=> {
           this.props.refresh()
         }} icon="reload">刷新</Button>
+          </ButtonGroup>
       </div>
     )
   }

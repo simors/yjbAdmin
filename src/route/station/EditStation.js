@@ -4,7 +4,7 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Input, Select, Button, Form, InputNumber} from 'antd';
+import {Row, Col, Input, Select, Button, Form, InputNumber, message, Spin} from 'antd';
 import ContentHead from '../../component/ContentHead'
 import {stationAction, stationSelector} from './redux';
 import {configSelector} from '../../util/config'
@@ -17,10 +17,10 @@ const Option = Select.Option;
 const FormItem = Form.Item
 const formItemLayout = {
   labelCol: {
-    span: 6
+    span: 12
   },
   wrapperCol: {
-    span: 14
+    span: 12
   }
 }
 
@@ -41,7 +41,8 @@ class EditStation extends React.Component {
       updateModalVisible: false,
       selectedPartner: undefined,
       modalKey: -1,
-      partnerList: []
+      partnerList: [],
+      spinShow: false
     }
   }
 
@@ -49,6 +50,10 @@ class EditStation extends React.Component {
     // console.log('hahahahah',this.props.match)
     this.props.requestPartners({
       stationId: this.props.match.params.id, success: ()=> {
+      }
+    })
+    this.props.testFetchUsers({
+      success: ()=> {
       }
     })
   }
@@ -170,29 +175,35 @@ class EditStation extends React.Component {
       ...data,
       stationId: this.props.match.params.id,
       success: ()=> {
-        this.setState({createModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+        this.setState({spinShow: false, createModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+          message.success('提交成功')
           this.refresh()
         })
       },
       error: (err)=> {
+        message.error('提交失败')
         console.log('err===>', err.message)
       }
     }
-    console.log('payload----------111', payload)
+    this.setState({spinShow: true})
+
     this.props.createPartner(payload)
   }
 
   updatePartner(data) {
+    this.setState({spinShow: true})
     let payload = {
       ...data,
       stationId: this.props.match.params.id,
       partnerId: this.state.selectedPartner.id,
       success: ()=> {
-        this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+        this.setState({spinShow: false,updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+          message.success('提交成功')
           this.refresh()
         })
       },
       error: (err)=> {
+        message.error('提交失败')
         console.log('err===>', err.message)
       }
     }
@@ -204,6 +215,7 @@ class EditStation extends React.Component {
 
   submitStation() {
     this.props.form.validateFields((errors) => {
+      this.setState({spinShow: true})
       if (errors) {
         return
       }
@@ -216,9 +228,12 @@ class EditStation extends React.Component {
         city: this.state.city,
         area: this.state.area,
         success: (stationId)=> {
+          this.setState({spinShow: false})
+          message.success('提交成功')
           this.props.history.push({pathname: '/site/editStation/' + stationId})
         },
         error: (err)=> {
+          message.error('提交失败')
           console.log(err.message)
         }
       }
@@ -249,7 +264,7 @@ class EditStation extends React.Component {
     // let partnerList = this.state.partnerList.splice(0,0,plate)
     return (
       <div>
-        <ContentHead headTitle='编辑服务点'/>
+        <Spin size='large' spinning={this.state.spinShow}>
         <Form layout="horizontal">
           <Row>
             <Col span={12}>
@@ -272,7 +287,7 @@ class EditStation extends React.Component {
               </FormItem>
             </Col>
             <Col span={12}>
-              <FormItem label='投资人' hasFeedback {...formItemLayout}>
+              <FormItem label='管理员' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('adminId', {
                   initialValue: station ? station.adminId : '',
                   rules: [
@@ -306,7 +321,7 @@ class EditStation extends React.Component {
                     }
                   ]
                 })(
-                  <DivisionCascader defaultValue={['120000', '120100', '120101']} onChange={(value, label)=> {
+                  <DivisionCascader defaultValue={division} onChange={(value, label)=> {
                     this.selectDivision(value, label)
                   }}/>
                 )}
@@ -333,7 +348,7 @@ class EditStation extends React.Component {
             </Col>
           </Row>
           <Row>
-            <Col span={6}>
+            <Col span={8}>
               <FormItem label='干衣柜单价：' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('unitPrice', {
                   initialValue: station ? station.unitPrice : 0,
@@ -346,7 +361,7 @@ class EditStation extends React.Component {
                 })(<InputNumber />)}
               </FormItem>
             </Col>
-            <Col span={6}>
+            <Col span={8}>
               <FormItem label='干衣柜押金：' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('deposit', {
                   initialValue: station ? station.deposit : 0,
@@ -359,7 +374,7 @@ class EditStation extends React.Component {
                 })(<InputNumber />)}
               </FormItem>
             </Col>
-            <Col span={6}>
+            <Col span={8}>
               <FormItem label='电费单价：' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('powerUnitPrice', {
                   initialValue: station ? station.powerUnitPrice : 0,
@@ -372,6 +387,8 @@ class EditStation extends React.Component {
                 })(<InputNumber />)}
               </FormItem>
             </Col>
+            </Row>
+            <Row>
             <Col span={6}>
               <FormItem label='平台分成比例：' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('platformProp', {
@@ -439,6 +456,7 @@ class EditStation extends React.Component {
           stationList={this.props.stations}
           modalVisible={this.state.updateModalVisible}
         />
+          </Spin>
       </div>
     )
 
@@ -447,10 +465,7 @@ class EditStation extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   // console.log('ownporsoss.......aaa',ownProps)
-  let userList = [{id: '59c27b4b128fe10035923744', nickname: '绿蚁002'}, {
-    nickname: '绿蚁001',
-    id: '59acdd051b69e600643de670'
-  }]
+  let userList = stationSelector.selectUsers(state)
 
   let areaList = configSelector.selectAreaList(state)
   let station = stationSelector.selectStation(state, ownProps.match.params.id)

@@ -17,6 +17,7 @@ export const StationRecord = Record({
   allPartners: Map(),
   investorList: List(),
   allInvestors: Map(),
+  userList: List()
 }, "StationRecord")
 
 export const StationDetailRecord = Record({
@@ -121,6 +122,8 @@ const CREATE_PARTNER = 'CREATE_PARTNER'
 const UPDATE_PARTNER = 'UPDATE_PARTNER'
 const OPEN_PARTNER = 'OPEN_PARTNER'
 const CLOSE_PARTNER = 'CLOSE_PARTNER'
+const TEST_FETCH_USER = 'TEST_FETCH_USER'
+const TEST_FETCH_USER_SUCCESS = 'TEST_FETCH_USER_SUCCESS'
 
 /**** Action ****/
 
@@ -140,7 +143,8 @@ export const stationAction = {
   updatePartner: createAction(UPDATE_PARTNER),
   openPartner: createAction(OPEN_PARTNER),
   closePartner: createAction(CLOSE_PARTNER),
-  updateStation: createAction(UPDATE_STATION)
+  updateStation: createAction(UPDATE_STATION),
+  testFetchUsers: createAction(TEST_FETCH_USER)
 }
 
 const requestStationsSuccess = createAction(FETCH_STATIONS_SUCCESS)
@@ -150,6 +154,7 @@ const requestInvestorsSuccess = createAction(FETCH_INVESTORS_SUCCESS)
 const requestPartnersSuccess = createAction(FETCH_PARTNERS_SUCCESS)
 const createStationSuccess = createAction(CREATE_STATION_SUCCESS)
 const updateStationSuccess = createAction(UPDATE_STATION_SUCCESS)
+const testUsersSuccess = createAction(TEST_FETCH_USER_SUCCESS)
 
 
 /**** Saga ****/
@@ -404,6 +409,22 @@ function* updateStationAction(action) {
   }
 }
 
+function* testFetchUserList(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.testUserList, payload)
+
+  if (data.success) {
+    yield put(testUsersSuccess({users: data.userList}))
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
 export const stationSaga = [
   takeLatest(FETCH_STATIONS, fetchStationsAction),
   takeLatest(OPEN_STATION, openStationAction),
@@ -420,6 +441,7 @@ export const stationSaga = [
   takeLatest(CLOSE_PARTNER, closePartnerAction),
   takeLatest(CREATE_STATION, createStationAction),
   takeLatest(UPDATE_STATION, updateStationAction),
+  takeLatest(TEST_FETCH_USER, testFetchUserList),
 
 
 ]
@@ -444,7 +466,8 @@ export function stationReducer(state = initialState, action) {
       return handleSaveInvestors(state, action)
     case FETCH_PARTNERS_SUCCESS:
       return handleSavePartners(state, action)
-
+    case TEST_FETCH_USER_SUCCESS:
+      return handleSaveUsers(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -515,6 +538,14 @@ function handleSavePartners(state, action) {
   return state
 }
 
+
+function handleSaveUsers(state, action){
+  let users = action.payload.users
+    state = state.set('userList', new List(users))
+  return state
+}
+
+
 function onRehydrate(state, action) {
   var incoming = action.payload.STATION
   if (!incoming) return state
@@ -582,6 +613,13 @@ function selectPartners(state) {
   return partners
 }
 
+function selectUsers(state) {
+  let station = state.STATION
+  let partnerList = station.userList
+
+  return partnerList.toJS() || []
+}
+
 function selectStationById(state, stationId) {
   let station = state.STATION
   let stationRecord = station.getIn(['allStations', stationId])
@@ -595,5 +633,6 @@ export const stationSelector = {
   selectInvestors,
   selectStation,
   selectPartners,
-  selectStationById
+  selectStationById,
+  selectUsers
 }
