@@ -6,9 +6,6 @@ import {Route} from 'react-router-dom'
 import {checkAuth} from '../util/auth'
 
 const AuthRoute = ({component: Component, ...rest}) => {
-
-  console.log("AuthRouter: ", rest);
-
   const {location: from} = rest;
 
   const loginComponent = checkAuth(from);

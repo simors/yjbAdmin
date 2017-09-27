@@ -31,19 +31,5 @@ export function checkAuth(from) { // from is an location object
   const token = curUser.getSessionToken();
   store.dispatch(authAction.autoLogin({token}));
 
-  // const token = curUser.getSessionToken();
-  //
-  // const payload = {
-  //   userInfo: {
-  //     userId: curUser.id,
-  //     ...curUser.attributes,
-  //     createAt: curUser.createdAt.valueOf(),
-  //     updateAt: curUser.updatedAt.valueOf(),
-  //   },
-  //   token
-  // };
-  //
-  // store.dispatch(authAction.loginSuccess(payload));
-
   return <Loading from={from}/>;
 }

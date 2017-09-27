@@ -1,5 +1,4 @@
 import AV from 'leancloud-storage';
-import sleep from '../sleep';
 
 export async function loginWithMobilePhone(payload) {
   try {
@@ -7,7 +6,6 @@ export async function loginWithMobilePhone(payload) {
 
     const user = await AV.User.logInWithMobilePhone(phone, password);
     const token = user.getSessionToken();
-    console.log("------> loginWithMobilePhone: ", user);
 
     return ({
       userInfo: {
@@ -19,7 +17,6 @@ export async function loginWithMobilePhone(payload) {
       token
     });
   } catch (e) {
-    console.log("---> exception: ", e);
     throw e;
   }
 }
