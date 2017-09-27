@@ -69,8 +69,8 @@ class SiderMenu extends React.Component {
           <Menu.Item key="/site/investor"><Link to="/site/investor">投资人信息管理</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/order" title={<span><Icon type="notification" />充值与订单管理</span>}>
-          <Menu.Item key="/order/deposit"><Link to="/order/deposit">用户充值管理</Link></Menu.Item>
           <Menu.Item key="/order/list"><Link to="/order/list">订单信息管理</Link></Menu.Item>
+          <Menu.Item key="/order/deposit"><Link to="/order/deposit">用户充值管理</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/settlement" title={<span><Icon type="notification" />结算报表</span>}>
           <Menu.Item key="/settlement/list"><Link to="/settlement/list">服务点分成统计</Link></Menu.Item>

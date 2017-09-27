@@ -2,29 +2,20 @@
  * Created by yangyang on 2017/9/11.
  */
 import React from 'react'
-import {connect} from 'react-redux'
-import {withRouter, Route, Redirect} from 'react-router-dom'
-import {fakeAuth} from '../util/auth'
+import {Route} from 'react-router-dom'
+import {checkAuth} from '../util/auth'
 
-const AuthRoute = ({ component: Component, ...rest }) => (
-  <Route {...rest} render={props => (
-    fakeAuth.isAuthenticated ? (
-      <Component {...props}/>
-    ) : (
-      <Redirect to={{
-        pathname: '/login',
-        state: { from: props.location }
-      }}/>
-    )
-  )}/>
-)
+const AuthRoute = ({component: Component, ...rest}) => {
+  const {location: from} = rest;
 
-const mapStateToProps = (appState, ownProps) => {
-  return {
+  const loginComponent = checkAuth(from);
+  if (loginComponent !== null) {
+    return loginComponent;
   }
-}
 
-const mapDispatchToProps = {
-}
+  return (
+    <Route {...rest} render={(props) => (<Component {...props}/>)}/>
+  );
+};
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AuthRoute));
+export default AuthRoute;

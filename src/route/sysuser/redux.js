@@ -22,7 +22,7 @@ class User extends Record({
       m.set("phoneNo", json.phoneNo);
       m.set("note", json.note);
       m.set("roles", json.roles);
-    })
+    });
   }
 }
 

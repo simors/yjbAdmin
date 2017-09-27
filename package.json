@@ -7,6 +7,7 @@
     "clean": "rimraf dist",
     "compile": "node build/scripts/compile",
     "build": "npm run clean && cross-env NODE_ENV=production npm run compile",
+    "build-stage": "npm run clean && cross-env NODE_ENV=stage npm run compile",
     "start": "cross-env NODE_ENV=development node build/scripts/start",
     "start-stage": "cross-env NODE_ENV=stage node build/scripts/start"
   },
@@ -48,6 +49,8 @@
     "immutable": "^3.8.1",
     "jquery": "^3.2.1",
     "leancloud-storage": "^3.2.0",
+    "mathjs": "^3.16.3",
+    "moment": "^2.18.1",
     "node-sass": "^4.5.3",
     "object-assign": "^4.1.1",
     "popper.js": "^1.12.5",

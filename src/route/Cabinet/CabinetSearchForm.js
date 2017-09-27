@@ -1,7 +1,7 @@
 /**
  * Created by wanpeng on 2017/9/22.
  */
-import React, {Component} from 'react'
+import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
 import {
   Button,
@@ -19,7 +19,7 @@ import {stationSelector, stationAction} from '../station/redux'
 const FormItem = Form.Item
 const Option = Select.Option
 
-class SearchForm extends Component {
+class SearchForm extends PureComponent {
   constructor(props) {
     super(props)
   }
@@ -29,20 +29,20 @@ class SearchForm extends Component {
   }
 
   handleSubmit = (e) => {
-    e.preventDefault()
-    this.props.form.validateFields((err, values) => {
-      if (err) {
-        return
-      }
-      this.props.fetchCabinetsAction({
-        deviceNo: values.deviceNo || undefined,
-        stationId: values.stationId == 'all'? undefined : values.stationId,
-        status: !values.status || values.status == 'all'? undefined : Number(values.status),
-        limit: 10,
-        isRefresh: true,
-      })
+  e.preventDefault()
+  this.props.form.validateFields((err, values) => {
+    if (err) {
+      return
+    }
+    this.props.fetchCabinetsAction({
+      deviceNo: values.deviceNo || undefined,
+      stationId: values.stationId == 'all'? undefined : values.stationId,
+      status: !values.status || values.status == 'all'? undefined : Number(values.status),
+      limit: 10,
+      isRefresh: true,
     })
-  }
+  })
+}
 
   render() {
     const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form

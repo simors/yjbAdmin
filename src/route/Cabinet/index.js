@@ -1,7 +1,7 @@
 /**
  * Created by wanpeng on 2017/9/19.
  */
-import React, {Component} from 'react'
+import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import {fetchCabinetsAction, selectCabinets, cabinetStatus} from './redux'
@@ -23,7 +23,7 @@ import CabinetEditModal from './CabinetEditModal'
 
 const ButtonGroup = Button.Group
 
-class Cabinet extends Component {
+class Cabinet extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
