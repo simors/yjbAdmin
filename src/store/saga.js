@@ -7,6 +7,7 @@ import {stationSaga} from '../route/station/redux'
 import {saga as sysUserSaga} from '../route/sysuser/'
 import {configSaga} from '../util/config'
 import {saga as cabinetSaga} from '../route/Cabinet'
+import {saga as orderSaga} from '../route/Order'
 
 
 export default function* rootSaga() {
@@ -15,5 +16,6 @@ export default function* rootSaga() {
     ...configSaga,
     ...stationSaga,
     ...cabinetSaga,
+    ...orderSaga,
   ])
 }

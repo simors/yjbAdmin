@@ -19,8 +19,8 @@ const ContentRouter = ({match}) => {
       <Route exact path="/cabinet/list" component={Cabinet} />
       <Route exact path="/system/user" component={SysUser} />
       <Route exact path="/site/list" component={StationManager} />
-      <Route exact path="/order/deposit" component={Order} />
-      <Route exact path="/order/list" component={SysConfig} />
+      <Route exact path="/order/list" component={Order} />
+      <Route exact path="/order/deposit" component={SysConfig} />
       <Route exact path="/site/investor" component={InvestorManager} />
     </Switch>
   )

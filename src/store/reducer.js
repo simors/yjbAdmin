@@ -4,6 +4,7 @@ import {stationReducer} from '../route/station/redux'
 import {reducer as sysUserReducer} from '../route/sysuser/'
 import {configReducer} from '../util/config'
 import {reducer as cabinetReducer} from '../route/Cabinet'
+import {reducer as orderReducer} from '../route/Order'
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
@@ -12,6 +13,7 @@ export const makeRootReducer = (asyncReducers) => {
     SYSUSER: sysUserReducer,
     STATION: stationReducer,
     CABINET: cabinetReducer,
+    ORDER: orderReducer,
     ...asyncReducers
   })
 }
