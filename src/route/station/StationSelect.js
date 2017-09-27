@@ -45,16 +45,16 @@ class StationSelect extends React.Component {
     let provinceCode = station.province.value
     let cityCode = station.city.value
     let areaCode = station.area.value
-    if(this.state.division == undefined) {
+    if (this.state.division == undefined) {
       return true
     }
-    if(this.state.division[0] && this.state.division[0] != provinceCode) {
+    if (this.state.division[0] && this.state.division[0] != provinceCode) {
       return false
     }
-    if(this.state.division[1] && this.state.division[1] != cityCode) {
+    if (this.state.division[1] && this.state.division[1] != cityCode) {
       return false
     }
-    if(this.state.division[2] && this.state.division[2] != areaCode) {
+    if (this.state.division[2] && this.state.division[2] != areaCode) {
       return false
     }
     return true
@@ -88,11 +88,11 @@ class StationSelect extends React.Component {
   render() {
     return (
       <div style={{display: 'flex'}}>
-        <DivisionCascader disabled={false} onChange={this.onDivisionChange} />
-        <Select style={{width: 120}} notFoundContent="无服务点" value={this.state.stationId}  onChange={this.onSelectChange} >
+        <DivisionCascader disabled={false} onChange={this.onDivisionChange}/>
+        <Select style={{width: 120}} notFoundContent="无服务点" value={this.state.stationId} onChange={this.onSelectChange}>
           {
             this.props.stationList.map((station, index) => {
-              if(this.inDivision(station)) {
+              if (this.inDivision(station)) {
                 return <Option key={index} value={station.id}>{station.name}</Option>
               }
             })

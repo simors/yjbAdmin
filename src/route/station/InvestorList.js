@@ -23,17 +23,16 @@ const columns = [{
 }, {
   title: "投资占比",
   dataIndex: "royalty",
-  render: (text,record)=>{
-    return <p>{record.royalty*100+'%'}</p>
+  render: (text, record)=> {
+    return <p>{record.royalty * 100 + '%'}</p>
   }
 }, {
   title: "状态",
   dataIndex: "status",
-  render:(text,record)=>{
-    return <p>{record.status?'正常':'已停用'}</p>
+  render: (text, record)=> {
+    return <p>{record.status ? '正常' : '已停用'}</p>
   }
 }];
-
 
 
 const rowKey = (record) => {
@@ -41,22 +40,23 @@ const rowKey = (record) => {
 };
 
 
-
 const InvestorList = (props) => {
   // console.log('[DEBUG] ---> UserList props: ', props);
-  let {investors,selectStation} = props;
+  let {investors, selectStation} = props;
   if (investors === null) {
     investors = [];
   }
   const rowSelection = {
     type: 'radio',
-    onChange: (rowKey,rowData)=>{selectStation(rowKey,rowData)},
+    onChange: (rowKey, rowData)=> {
+      selectStation(rowKey, rowData)
+    },
   };
   // console.log('[DEBUG] ---> UserList users: ', stations);
 
   return (
     <div>
-      <Table columns={columns} dataSource={investors} rowKey={rowKey} rowSelection={rowSelection} />
+      <Table columns={columns} dataSource={investors} rowKey={rowKey} rowSelection={rowSelection}/>
     </div>
   );
 };

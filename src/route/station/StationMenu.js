@@ -14,11 +14,21 @@ export default class ContentHead extends React.Component {
   render() {
     return (
       <div className={style.stationMenu}>
-        <Button  onClick={()=>{this.props.showDetail()}} icon="info-circle-o">查看</Button>
-        <Button  onClick={()=>{this.props.showDetail()}} icon="plus-circle-o">新增</Button>
-        <Button  onClick={()=>{this.props.showDetail()}} icon="edit">编辑</Button>
-        <Button  onClick={()=>{this.props.setStatus()}} icon="minus-circle-o">启用／停用</Button>
-        <Button  onClick={()=>{this.props.refresh()}} icon="reload">刷新</Button>
+        <Button onClick={()=> {
+          this.props.showDetail()
+        }} icon="info-circle-o">查看</Button>
+        <Button onClick={()=> {
+          this.props.add()
+        }} icon="plus-circle-o">新增</Button>
+        <Button onClick={()=> {
+          this.props.set()
+        }} icon="edit">编辑</Button>
+        <Button onClick={()=> {
+          this.props.setStatus()
+        }} icon="minus-circle-o">启用／停用</Button>
+        <Button onClick={()=> {
+          this.props.refresh()
+        }} icon="reload">刷新</Button>
       </div>
     )
   }

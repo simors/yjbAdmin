@@ -5,7 +5,7 @@
 import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
-import { call, put, takeEvery,takeLatest } from 'redux-saga/effects'
+import {call, put, takeEvery, takeLatest} from 'redux-saga/effects'
 import * as stationFuncs from './cloud'
 
 /****  Model  ****/
@@ -52,9 +52,9 @@ export class StationDetail extends StationDetailRecord {
       record.set('platformProp', obj.platformProp)
       record.set('powerUnitPrice', obj.powerUnitPrice)
       record.set('unitPrice', obj.unitPrice)
-      record.set('adminId', obj.adminId)
-      record.set('adminName', obj.adminName)
-      record.set('adminPhone', obj.adminPhone)
+      record.set('adminId', obj.adminId ? obj.adminId : obj.admin.id)
+      record.set('adminName', obj.adminName ? obj.adminName : obj.admin.nickname)
+      record.set('adminPhone', obj.adminPhone ? obj.adminPhone : obj.admin.mobilePhoneNumber)
       record.set('status', obj.status)
       record.set('deviceNo', obj.deviceNo)
       record.set('createdAt', obj.createdAt)
@@ -69,8 +69,8 @@ export const ProfitSharingRecord = Record({
   royalty: undefined,
   investment: undefined,
   shareholderId: undefined,
-  sharehlderName: undefined,
-  sharehlderPhone: undefined,
+  shareholderName: undefined,
+  shareholderPhone: undefined,
   stationId: undefined,
   stationName: undefined,
   createdAt: undefined,
@@ -86,18 +86,15 @@ export class ProfitSharing extends ProfitSharingRecord {
       record.set('royalty', obj.royalty)
       record.set('investment', obj.investment)
       record.set('shareholderId', obj.shareholderId)
-      record.set('sharehlderName', obj.sharehlderName)
-      record.set('sharehlderPhone', obj.sharehlderPhone)
+      record.set('shareholderName', obj.shareholderName)
+      record.set('shareholderPhone', obj.shareholderPhone)
       record.set('stationId', obj.stationId)
       record.set('stationName', obj.stationName)
       record.set('createdAt', obj.createdAt)
       record.set('status', obj.status)
-
-
     })
   }
 }
-
 
 
 /**** Constant ****/
@@ -108,28 +105,52 @@ const OPEN_STATION = 'OPEN_STATION'
 const OPEN_STATION_SUCCESS = 'OPEN_STATION_SUCCESS'
 const CLOSE_STATION = 'CLOSE_STATION'
 const CLOSE_STATION_SUCCESS = 'CLOSE_STATION_SUCCESS'
+const CREATE_STATION = 'CREATE_STATION'
+const CREATE_STATION_SUCCESS = 'CREATE_STATION_SUCCESS'
+const UPDATE_STATION = 'UPDATE_STATION'
+const UPDATE_STATION_SUCCESS = 'UPDATE_STATION_SUCCESS'
 const FETCH_INVESTORS = 'FETCH_INVESTORS'
 const FETCH_INVESTORS_SUCCESS = 'FETCH_INVESTORS_SUCCESS'
 const OPEN_INVESTOR = 'OPEN_INVESTOR'
-const OPEN_INVESTOR_SUCCESS = 'OPEN_INVESTOR_SUCCESS'
 const CLOSE_INVESTOR = 'CLOSE_INVESTOR'
-const CLOSE_INVESTOR_SUCCESS = 'CLOSE_INVESTOR_SUCCESS'
+const CREATE_INVESTOR = 'CREATE_INVESTOR'
+const UPDATE_INVESTOR = 'UPDATE_INVESTOR'
+const FETCH_PARTNERS = 'FETCH_PARTNERS'
+const FETCH_PARTNERS_SUCCESS = 'FETCH_PARTNERS_SUCCESS'
+const CREATE_PARTNER = 'CREATE_PARTNER'
+const UPDATE_PARTNER = 'UPDATE_PARTNER'
+const OPEN_PARTNER = 'OPEN_PARTNER'
+const CLOSE_PARTNER = 'CLOSE_PARTNER'
+
 /**** Action ****/
 
 export const stationAction = {
   requestStations: createAction(FETCH_STATIONS),
   openStation: createAction(OPEN_STATION),
   closeStation: createAction(CLOSE_STATION),
+  createStation: createAction(CREATE_STATION),
+  updateStation: createAction(UPDATE_STATION),
   requestInvestors: createAction(FETCH_INVESTORS),
   openInvestor: createAction(OPEN_INVESTOR),
   closeInvestor: createAction(CLOSE_INVESTOR),
+  createInvestor: createAction(CREATE_INVESTOR),
+  updateInvestor: createAction(UPDATE_INVESTOR),
+  requestPartners: createAction(FETCH_PARTNERS),
+  createPartner: createAction(CREATE_PARTNER),
+  updatePartner: createAction(UPDATE_PARTNER),
+  openPartner: createAction(OPEN_PARTNER),
+  closePartner: createAction(CLOSE_PARTNER),
+  updateStation: createAction(UPDATE_STATION)
 }
+
 const requestStationsSuccess = createAction(FETCH_STATIONS_SUCCESS)
 const openStationSuccess = createAction(OPEN_STATION_SUCCESS)
 const closeStationSuccess = createAction(CLOSE_STATION_SUCCESS)
 const requestInvestorsSuccess = createAction(FETCH_INVESTORS_SUCCESS)
-const openInvestorSuccess = createAction(OPEN_INVESTOR_SUCCESS)
-const closeInvestorSuccess = createAction(CLOSE_INVESTOR_SUCCESS)
+const requestPartnersSuccess = createAction(FETCH_PARTNERS_SUCCESS)
+const createStationSuccess = createAction(CREATE_STATION_SUCCESS)
+const updateStationSuccess = createAction(UPDATE_STATION_SUCCESS)
+
 
 /**** Saga ****/
 
@@ -138,19 +159,19 @@ function* fetchStationsAction(action) {
   let data = yield call(stationFuncs.fetchStations, payload)
   let stations = []
   let stationList = []
-  if(data.success){
-    if(data.stations&&data.stations.length>0){
-      data.stations.forEach((item)=>{
+  if (data.success) {
+    if (data.stations && data.stations.length > 0) {
+      data.stations.forEach((item)=> {
         stationList.push(item.id)
         stations.push(StationDetail.fromApi(item))
       })
     }
     yield put(requestStationsSuccess({stations: stations, stationList: stationList}))
-    if(payload.success){
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -159,15 +180,15 @@ function* fetchStationsAction(action) {
 function* openStationAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.openStation, payload)
-  if(data.success){
-    if(data.station){
+  if (data.success) {
+    if (data.station) {
       yield put(openStationSuccess({station: StationDetail.fromApi(data.station)}))
-      if(payload.success){
+      if (payload.success) {
         payload.success()
       }
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -176,15 +197,15 @@ function* openStationAction(action) {
 function* closeStationAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.closeStation, payload)
-  if(data.success){
-    if(data.station){
+  if (data.success) {
+    if (data.station) {
       yield put(closeStationSuccess({station: StationDetail.fromApi(data.station)}))
-      if(payload.success){
+      if (payload.success) {
         payload.success()
       }
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -195,19 +216,19 @@ function* fetchInvestorsAction(action) {
   let data = yield call(stationFuncs.fetchInvestor, payload)
   let investors = []
   let investorList = []
-  if(data.success){
-    if(data.investors&&data.investors.length>0){
-      data.investors.forEach((item)=>{
+  if (data.success) {
+    if (data.investors && data.investors.length > 0) {
+      data.investors.forEach((item)=> {
         investorList.push(item.id)
         investors.push(ProfitSharing.fromApi(item))
       })
     }
     yield put(requestInvestorsSuccess({investors: investors, investorList: investorList}))
-    if(payload.success){
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -216,14 +237,12 @@ function* fetchInvestorsAction(action) {
 function* openInvestorsAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.openInvestor, payload)
-  let investors = []
-  let investorList = []
-  if(data.success){
-    if(payload.success){
+  if (data.success) {
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
@@ -232,26 +251,176 @@ function* openInvestorsAction(action) {
 function* closeInvestorsAction(action) {
   let payload = action.payload
   let data = yield call(stationFuncs.closeInvestor, payload)
-  let investors = []
-  let investorList = []
-  if(data.success){
-    if(payload.success){
+  if (data.success) {
+    if (payload.success) {
       payload.success()
     }
-  }else{
-    if(payload.error){
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+function* createInvestorsAction(action) {
+  let payload = action.payload
+  console.log('actionpayload=====>', payload)
+  let data = yield call(stationFuncs.createInvestor, payload)
+  if (data.success) {
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+function* updateInvestorsAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.updateInvestor, payload)
+  if (data.success) {
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+function* fetchPartnersAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.fetchProfitSharing, payload)
+  let partners = []
+  let partnerList = []
+  if (data.success) {
+    if (data.partners && data.partners.length > 0) {
+      data.partners.forEach((item)=> {
+        partnerList.push(item.id)
+        partners.push(ProfitSharing.fromApi(item))
+      })
+    }
+    yield put(requestPartnersSuccess({partners: partners, partnerList: partnerList}))
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+function* createPartnerAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.createPartner, payload)
+  if (data.success) {
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+function* updatePartnerAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.updatePartner, payload)
+  if (data.success) {
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+function* openPartnerAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.openPartner, payload)
+  if (data.success) {
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+function* closePartnerAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.closePartner, payload)
+  if (data.success) {
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+function* createStationAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.createStation, payload)
+
+  if (data.success) {
+    let station = StationDetail.fromApi(data.station)
+    yield put(createStationSuccess({station: station}))
+    if (payload.success) {
+      payload.success(station.id)
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+function* updateStationAction(action) {
+  let payload = action.payload
+  let data = yield call(stationFuncs.updateStation, payload)
+
+  if (data.success) {
+    let station = StationDetail.fromApi(data.station)
+    yield put(updateStationSuccess({station: station}))
+    if (payload.success) {
+      payload.success(station.id)
+    }
+  } else {
+    if (payload.error) {
       payload.error(data.error)
     }
   }
 }
 
 export const stationSaga = [
-  takeEvery(FETCH_STATIONS, fetchStationsAction),
-  takeEvery(OPEN_STATION, openStationAction),
-  takeEvery(CLOSE_STATION, closeStationAction),
-  takeEvery(FETCH_INVESTORS, fetchInvestorsAction),
-  takeEvery(OPEN_INVESTOR, openInvestorsAction),
-  takeEvery(CLOSE_INVESTOR, closeInvestorsAction)
+  takeLatest(FETCH_STATIONS, fetchStationsAction),
+  takeLatest(OPEN_STATION, openStationAction),
+  takeLatest(CLOSE_STATION, closeStationAction),
+  takeLatest(FETCH_INVESTORS, fetchInvestorsAction),
+  takeLatest(OPEN_INVESTOR, openInvestorsAction),
+  takeLatest(CLOSE_INVESTOR, closeInvestorsAction),
+  takeLatest(CREATE_INVESTOR, createInvestorsAction),
+  takeLatest(UPDATE_INVESTOR, updateInvestorsAction),
+  takeLatest(FETCH_PARTNERS, fetchPartnersAction),
+  takeLatest(CREATE_PARTNER, createPartnerAction),
+  takeLatest(UPDATE_PARTNER, updatePartnerAction),
+  takeLatest(OPEN_PARTNER, openPartnerAction),
+  takeLatest(CLOSE_PARTNER, closePartnerAction),
+  takeLatest(CREATE_STATION, createStationAction),
+  takeLatest(UPDATE_STATION, updateStationAction),
+
 
 ]
 
@@ -263,12 +432,19 @@ export function stationReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_STATIONS_SUCCESS:
       return handleSaveStations(state, action)
+    case CREATE_STATION_SUCCESS:
+      return handleSaveStation(state, action)
+    case UPDATE_STATION_SUCCESS:
+      return handleSaveStation(state, action)
     case OPEN_STATION_SUCCESS:
       return handleSaveStation(state, action)
     case CLOSE_STATION_SUCCESS:
       return handleSaveStation(state, action)
     case FETCH_INVESTORS_SUCCESS:
       return handleSaveInvestors(state, action)
+    case FETCH_PARTNERS_SUCCESS:
+      return handleSavePartners(state, action)
+
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -285,7 +461,7 @@ function handleSetAllStations(state, stations) {
 
 function handleSaveStation(state, action) {
   let station = action.payload.station
-    state = state.setIn(['allStations', station.id], station)
+  state = state.setIn(['allStations', station.id], station)
   return state
 }
 
@@ -306,10 +482,10 @@ function handleSetAllInvestors(state, investors) {
 function handleSaveStations(state, action) {
   let stations = action.payload.stations
   let stationList = action.payload.stationList
-  if(stationList&&stationList.length>0){
+  if (stationList && stationList.length > 0) {
     state = state.set('stationList', new List(stationList))
-    state = handleSetAllStations(state,stations)
-  }else{
+    state = handleSetAllStations(state, stations)
+  } else {
     state = state.set('stationList', new List())
   }
   return state
@@ -318,21 +494,38 @@ function handleSaveStations(state, action) {
 function handleSaveInvestors(state, action) {
   let investors = action.payload.investors
   let investorList = action.payload.investorList
-  if(investorList && investorList.length>0){
+  if (investorList && investorList.length > 0) {
     state = state.set('investorList', new List(investorList))
-    state = handleSetAllInvestors(state,investors)
-  }else{
+    state = handleSetAllInvestors(state, investors)
+  } else {
     state = state.set('investorList', new List())
   }
   return state
 }
 
+function handleSavePartners(state, action) {
+  let partners = action.payload.partners
+  let partnerList = action.payload.partnerList
+  if (partnerList && partnerList.length > 0) {
+    state = state.set('partnerList', new List(partnerList))
+    state = handleSetAllPartners(state, partners)
+  } else {
+    state = state.set('partnerList', new List())
+  }
+  return state
+}
 
 function onRehydrate(state, action) {
   var incoming = action.payload.STATION
   if (!incoming) return state
 
-  // let allStations = incoming.allStations
+  let allStations = Map(incoming.allStations)
+  allStations.map((value, key)=> {
+    if (value && key) {
+      let commentInfo = StationDetail.fromApi(value)
+      state = state.setIn(['allStations', key], commentInfo)
+    }
+  })
   // if (allStations) {
   //   state = state.set('allStations', allStations)
   // }
@@ -346,26 +539,47 @@ function selectStations(state) {
   let station = state.STATION
   let stationList = station.stationList
   let stations = []
-  if(stationList&&stationList.size>0){
-    stationList.forEach((item)=>{
-      let stationInfo = station.getIn(['allStations',item])
+  if (stationList && stationList.size > 0) {
+    stationList.forEach((item)=> {
+      let stationInfo = station.getIn(['allStations', item])
       stations.push(stationInfo.toJS())
     })
   }
   return stations
 }
 
+function selectStation(state, stationId) {
+  let station = state.STATION
+  // console.log('stationId=====>',stationId)
+  let stationInfo = station.getIn(['allStations', stationId])
+  // console.log('stationInfo==>',stationInfo)
+  return stationInfo
+}
+
 function selectInvestors(state) {
   let station = state.STATION
   let investorList = station.investorList
   let investors = []
-  if(investorList&&investorList.size>0){
-    investorList.forEach((item)=>{
-      let investorInfo = station.getIn(['allInvestors',item])
+  if (investorList && investorList.size > 0) {
+    investorList.forEach((item)=> {
+      let investorInfo = station.getIn(['allInvestors', item])
       investors.push(investorInfo.toJS())
     })
   }
   return investors
+}
+
+function selectPartners(state) {
+  let station = state.STATION
+  let partnerList = station.partnerList
+  let partners = []
+  if (partnerList && partnerList.size > 0) {
+    partnerList.forEach((item)=> {
+      let partnerInfo = station.getIn(['allPartners', item])
+      partners.push(partnerInfo.toJS())
+    })
+  }
+  return partners
 }
 
 function selectStationById(state, stationId) {
@@ -379,5 +593,7 @@ function selectStationById(state, stationId) {
 export const stationSelector = {
   selectStations,
   selectInvestors,
+  selectStation,
+  selectPartners,
   selectStationById
 }
