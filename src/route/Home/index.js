@@ -16,6 +16,7 @@ import {fakeAuth} from '../../util/auth'
 import SiderMenu from '../../component/SiderMenu'
 import style from './style.module.scss'
 import {configAction} from '../../util/config'
+import {authAction} from '../../util/auth/'
 
 const {Header, Footer, Sider, Content} = Layout
 
@@ -32,7 +33,12 @@ class Home extends Component {
     let history = this.props.history
     if (key == 'logout') {
       console.log('user logout')
-      fakeAuth.signout(() => history.push('/login'))
+      // fakeAuth.signout(() => history.push('/login'))
+      this.props.logout({
+        onSuccess: () => {
+          history.push('/login');
+        }
+      });
     }
   }
 
@@ -95,7 +101,8 @@ const mapStateToProps = (appState, ownProps) => {
 }
 
 const mapDispatchToProps = {
-  ...configAction
+  ...configAction,
+  ...authAction,
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Home))
