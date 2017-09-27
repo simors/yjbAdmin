@@ -87,7 +87,7 @@ class EditForm extends PureComponent {
             <Input disabled={true} />
           )}
         </FormItem>
-        <FormItem {...formItemLayout} label="服务点">
+        <FormItem hasFeedback {...formItemLayout} label="服务点">
           {getFieldDecorator("stationId", {
             rules: [{ required: true, message: '请指定服务网点！' }],
             initialValue: this.props.cabinet.stationId,
@@ -95,7 +95,7 @@ class EditForm extends PureComponent {
             <StationSelect />
           )}
         </FormItem>
-        <FormItem {...formItemLayout} label="干衣柜位置">
+        <FormItem hasFeedback {...formItemLayout} label="干衣柜位置">
           {getFieldDecorator("deviceAddr", {
             rules: [{ required: true, message: '请输入干衣柜位置!' }],
             initialValue: this.props.cabinet.deviceAddr,
@@ -103,7 +103,7 @@ class EditForm extends PureComponent {
             <Input />
           )}
         </FormItem>
-        <FormItem {...formItemLayout} label="状态">
+        <FormItem hasFeedback {...formItemLayout} label="状态">
           {getFieldDecorator("status", {
             rules: [{ required: true, message: '请选择干衣柜状态！' }],
             initialValue: this.props.cabinet.status,

@@ -9,8 +9,8 @@ const LC_DEV_APP_ID = 'QApBtOkMNfNo0lGaHxKBSWXX-gzGzoHsz'      //开发环境
 const LC_DEV_APP_KEY = 'znR6wk5JzFU0XIkgKxrM3fnH'
 const LC_STAGE_APP_ID = 'HFRm8OUW9tNj2qxz6LuBExBa-gzGzoHsz'    //预上线环境
 const LC_STAGE_APP_KEY = 'E9kbn52mW5NL8u15c7Xywf2B'
-const LC_PRO_APP_ID = ''                                       //生产环境
-const LC_PRO_APP_KEY = ''
+const LC_PRO_APP_ID = 'HFRm8OUW9tNj2qxz6LuBExBa-gzGzoHsz'      //生产环境
+const LC_PRO_APP_KEY = 'E9kbn52mW5NL8u15c7Xywf2B'
 
 if(__DEV__) {          //开发环境
   LC_APP_ID = LC_DEV_APP_ID
