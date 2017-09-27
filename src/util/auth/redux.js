@@ -110,7 +110,6 @@ function* sagaLoginWithMobilePhone(action) {
 
     console.log("登录成功：", info);
   } catch (e) {
-    // yield put(logoutSuccess({}));
     console.log("登录失败：", e);
   }
 }
@@ -127,7 +126,6 @@ function* sagaAutoLogin(action) {
 
     console.log("自动登录成功：", info);
   } catch(e) {
-    // yield put(logoutSuccess({}));
     console.log("自动登录失败：", e);
   }
 
@@ -180,8 +178,6 @@ function reduceLoaded(state, action) {
 
 function reduceLoginSuccess(state, action) {
   const {userInfo, token} = action.payload;
-
-  console.log("----> reduceLoginSuccess", action);
 
   return state.withMutations((m) => {
     m.set("activeUserId", userInfo.userId);
