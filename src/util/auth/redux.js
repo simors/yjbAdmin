@@ -7,32 +7,32 @@ import * as authCloud from './cloud';
 // --- model
 
 class UserInfo extends Record({
-  userId: null,
-  email: null,
-  emailVerified: null,
-  mobilePhoneNumber: null,
-  mobilePhoneVerified: null,
-  authData: null,
-  username: null,     // unused for now, maybe for wechat id later
-  nickname: null,     // wechat nickname
-  avatar: null,
-  sex: null,          // gender
-  language: null,
-  country: null,
-  province: null,
-  city: null,
-  idNumber: null,
-  idName: null,       // real name
-  createdAt: null,
-  updatedAt: null,
-  type: null,         // user type, e.g. system admin, platform admin, etc.
+  id: undefined,
+  email: undefined,
+  emailVerified: undefined,
+  mobilePhoneNumber: undefined,
+  mobilePhoneVerified: undefined,
+  authData: undefined,
+  username: undefined,            // unused for now, maybe for wechat id later
+  nickname: undefined,            // wechat nickname
+  avatar: undefined,
+  sex: undefined,                 // gender
+  language: undefined,
+  country: undefined,
+  province: undefined,
+  city: undefined,
+  idNumber: undefined,
+  idName: undefined,              // real name
+  createdAt: undefined,
+  updatedAt: undefined,
+  type: undefined,                // user type, e.g. system admin, platform admin, etc.
   roles: List(),
 }, 'UserInfo') {
   static fromJsonApi(json) {
     let info = new UserInfo();
 
     return info.withMutations((m) => {
-      m.set('userId', json.userId);
+      m.set('id', json.objectId);
       m.set('email', json.email);
       m.set('emailVerified', json.emailVerified);
       m.set('mobilePhoneNumber', json.mobilePhoneNumber);
@@ -56,12 +56,12 @@ class UserInfo extends Record({
   }
 }
 
-class UserState extends Record({
+class AuthState extends Record({
   loaded: false,      // whether auto login has finished
-  activeUserId: null, // current login user
-  token: null,        // current login user token
+  activeUserId: undefined, // current login user
+  token: undefined,        // current login user token
   profiles: Map(),    // cached user info list
-}, 'UserState') {
+}, 'AuthState') {
 
 }
 
@@ -153,7 +153,7 @@ export const authSaga = [
 
 // --- reducer
 
-const initialState = new UserState();
+const initialState = new AuthState();
 
 export function authReducer(state=initialState, action) {
   switch(action.type) {
@@ -178,9 +178,9 @@ function reduceLoginSuccess(state, action) {
   const {userInfo, token} = action.payload;
 
   return state.withMutations((m) => {
-    m.set('activeUserId', userInfo.userId);
+    m.set('activeUserId', userInfo.id);
     m.set('token', token);
-    m.setIn(['profiles', userInfo.userId], userInfo);
+    m.setIn(['profiles', userInfo.id], userInfo);
   });
 }
 
@@ -188,8 +188,8 @@ function reduceLogoutSuccess(state, action) {
   const activeUserId = state.get('activeUserId');
 
   return state.withMutations((m) => {
-    m.set('activeUserId', null);
-    m.set('token', null);
+    m.set('activeUserId', undefined);
+    m.set('token', undefined);
     m.deleteIn(['profiles', activeUserId]);
   });
 }
@@ -212,10 +212,10 @@ function reduceRehydrate(state, action) {
   // convert from plain json dict to immutable.js Map
   const profiles = Map(incoming.profiles);
   try {
-    for (let [userId, profile] of profiles) {
-      if (userId && profile) {
+    for (let [id, profile] of profiles) {
+      if (id && profile) {
         const userInfo = new UserInfo({...profile});
-        state = state.setIn(['profiles', userId], userInfo);
+        state = state.setIn(['profiles', id], userInfo);
       }
     }
   } catch (e) {
@@ -244,21 +244,21 @@ function selectActiveUserIdAndToken(appState) {
 
 function selectIsUserLoggedIn(appState) {
   const activeUserId = selectActiveUserIdAndToken(appState).activeUserId;
-  return activeUserId !== null;
+  return activeUserId !== undefined;
 }
 
-function selectUserInfoById(appState, userId) {
-  return appState.AUTH.getIn(['profiles', userId], null);
+function selectUserInfoById(appState, id) {
+  return appState.AUTH.getIn(['profiles', id], undefined);
 }
 
-function selectUserInfoByIds(appState, userIds) {
+function selectUserInfoByIds(appState, ids) {
   let infos = [];
 
-  userIds.forEach((id) => {
+  ids.forEach((id) => {
     const info = selectUserInfoById(appState, id);
 
     // TODO: invalid user id ?
-    if (info !== null) {
+    if (info !== undefined) {
       infos.push(info.toJS());
     }
   });
@@ -269,7 +269,7 @@ function selectUserInfoByIds(appState, userIds) {
 function selectActiveUserInfo(appState) {
   const activeUserId = selectActiveUserId(appState);
 
-  return activeUserId !== null ? appState.AUTH.getUserInfoById(activeUserId) : null;
+  return activeUserId !== undefined ? appState.AUTH.selectUserInfoById(activeUserId) : undefined;
 }
 
 function selectToken(appState) {
