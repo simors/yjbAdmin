@@ -26,8 +26,6 @@ export function checkAuth(from) { // from is an location object
   }
 
   // re-auth with the server
-  console.log("---> curUser: ", curUser);
-
   const token = curUser.getSessionToken();
   store.dispatch(authAction.autoLogin({token}));
 

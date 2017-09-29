@@ -98,8 +98,6 @@ function* sagaLoginWithMobilePhone(action) {
     // }
     const user = yield call(authCloud.loginWithMobilePhone, payload);
 
-    console.log("---> sagaLoginWithMobilePhone", user);
-
     const info = UserInfo.fromJsonApi(user.userInfo);
 
     yield put(authAction.loginSuccess({userInfo: info, token: user.token}));
@@ -108,9 +106,9 @@ function* sagaLoginWithMobilePhone(action) {
       payload.onSuccess();
     }
 
-    console.log("登录成功：", info);
+    console.log("login succeeded：", info);
   } catch (e) {
-    console.log("登录失败：", e);
+    console.log("login failed：", e);
   }
 }
 
@@ -124,9 +122,9 @@ function* sagaAutoLogin(action) {
 
     yield put(authAction.loginSuccess({userInfo: info, token: user.token}));
 
-    console.log("自动登录成功：", info);
+    console.log("auto login succeeded：", info);
   } catch(e) {
-    console.log("自动登录失败：", e);
+    console.log("auto login failed：", e);
   }
 
   yield put(loaded({}));
