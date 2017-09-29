@@ -26,7 +26,7 @@ class UserInfo extends Record({
   createdAt: undefined,
   updatedAt: undefined,
   type: undefined,                // user type, e.g. system admin, platform admin, etc.
-  roles: List(),
+  roles: List(),                  // List<RoleInfo>
 }, 'UserInfo') {
   static fromJson(j) {
     let info = new UserInfo();
@@ -57,20 +57,28 @@ class UserInfo extends Record({
 }
 
 class RoleInfo extends Record({
-  roleId: undefined,
-  displayName: undefined,
+  code: undefined,
+  perms: List(),                // List<PermissionInfo>
 }, 'RoleInfo') {
   static fromJson(j) {
+    let role = new RoleInfo();
 
+    return role.withMutations((m) => {
+      m.set('code', j.code);
+      m.set('perms', new List(j.perms));
+    })
   }
 }
 
 class PermissionInfo extends Record({
-  permissionId: undefined,
-  displayName: undefined,
+  code: undefined,
 }, 'PermissionInfo') {
   static fromJson(j) {
+    let perm = new PermissionInfo();
 
+    return perm.withMutations((m) => {
+      m.set('code', j.code);
+    })
   }
 }
 
@@ -78,7 +86,7 @@ class AuthState extends Record({
   loaded: false,              // whether auto login has finished
   activeUserId: undefined,    // current login user
   token: undefined,           // current login user token
-  users: Map(),               // cached user info list
+  users: Map(),               // cached user info list, Map<id, UserInfo>
 }, 'AuthState') {
 
 }
