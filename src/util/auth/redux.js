@@ -28,39 +28,56 @@ class UserInfo extends Record({
   type: undefined,                // user type, e.g. system admin, platform admin, etc.
   roles: List(),
 }, 'UserInfo') {
-  static fromJsonApi(json) {
+  static fromJson(j) {
     let info = new UserInfo();
 
     return info.withMutations((m) => {
-      m.set('id', json.objectId);
-      m.set('email', json.email);
-      m.set('emailVerified', json.emailVerified);
-      m.set('mobilePhoneNumber', json.mobilePhoneNumber);
-      m.set('mobilePhoneVerified', json.mobilePhoneVerified);
-      m.set('authData', json.authData);
-      m.set('username', json.username);
-      m.set('nickname', json.nickname);
-      m.set('avatar', json.avatar);
-      m.set('sex', json.sex);
-      m.set('language', json.language);
-      m.set('country', json.country);
-      m.set('province', json.province);
-      m.set('city', json.city);
-      m.set('idNumber', json.idNumber);
-      m.set('idName', json.idName);
-      m.set('createdAt', json.createdAt);
-      m.set('updatedAt', json.updatedAt);
-      m.set('type', json.type);
-      m.set('roles', new List(json.roles));
+      m.set('id', j.objectId);
+      m.set('email', j.email);
+      m.set('emailVerified', j.emailVerified);
+      m.set('mobilePhoneNumber', j.mobilePhoneNumber);
+      m.set('mobilePhoneVerified', j.mobilePhoneVerified);
+      m.set('authData', j.authData);
+      m.set('username', j.username);
+      m.set('nickname', j.nickname);
+      m.set('avatar', j.avatar);
+      m.set('sex', j.sex);
+      m.set('language', j.language);
+      m.set('country', j.country);
+      m.set('province', j.province);
+      m.set('city', j.city);
+      m.set('idNumber', j.idNumber);
+      m.set('idName', j.idName);
+      m.set('createdAt', j.createdAt);
+      m.set('updatedAt', j.updatedAt);
+      m.set('type', j.type);
+      m.set('roles', new List(j.roles));
     });
   }
 }
 
+class RoleInfo extends Record({
+  roleId: undefined,
+  displayName: undefined,
+}, 'RoleInfo') {
+  static fromJson(j) {
+  }
+}
+
+class PermissionInfo extends Record({
+  permissionId: undefined,
+  displayName: undefined,
+}, 'PermissionInfo') {
+  static fromJson(j) {
+
+  }
+}
+
 class AuthState extends Record({
-  loaded: false,      // whether auto login has finished
-  activeUserId: undefined, // current login user
-  token: undefined,        // current login user token
-  profiles: Map(),    // cached user info list
+  loaded: false,              // whether auto login has finished
+  activeUserId: undefined,    // current login user
+  token: undefined,           // current login user token
+  profiles: Map(),            // cached user info list
 }, 'AuthState') {
 
 }
@@ -86,7 +103,7 @@ export const authAction = {
 const loaded = createAction(LOADED);
 const logoutSuccess = createAction(LOGOUT_SUCCESS);
 
-// saga
+// --- saga
 
 function* sagaLoginWithMobilePhone(action) {
   const payload = action.payload;
