@@ -27,31 +27,31 @@ class UserInfo extends Record({
   updatedAt: null,
   type: null,         // user type, e.g. system admin, platform admin, etc.
   roles: List(),
-}, "UserInfo") {
+}, 'UserInfo') {
   static fromJsonApi(json) {
     let info = new UserInfo();
 
     return info.withMutations((m) => {
-      m.set("userId", json.userId);
-      m.set("email", json.email);
-      m.set("emailVerified", json.emailVerified);
-      m.set("mobilePhoneNumber", json.mobilePhoneNumber);
-      m.set("mobilePhoneVerified", json.mobilePhoneVerified);
-      m.set("authData", json.authData);
-      m.set("username", json.username);
-      m.set("nickname", json.nickname);
-      m.set("avatar", json.avatar);
-      m.set("sex", json.sex);
-      m.set("language", json.language);
-      m.set("country", json.country);
-      m.set("province", json.province);
-      m.set("city", json.city);
-      m.set("idNumber", json.idNumber);
-      m.set("idName", json.idName);
-      m.set("createdAt", json.createdAt);
-      m.set("updatedAt", json.updatedAt);
-      m.set("type", json.type);
-      m.set("roles", new List(json.roles));
+      m.set('userId', json.userId);
+      m.set('email', json.email);
+      m.set('emailVerified', json.emailVerified);
+      m.set('mobilePhoneNumber', json.mobilePhoneNumber);
+      m.set('mobilePhoneVerified', json.mobilePhoneVerified);
+      m.set('authData', json.authData);
+      m.set('username', json.username);
+      m.set('nickname', json.nickname);
+      m.set('avatar', json.avatar);
+      m.set('sex', json.sex);
+      m.set('language', json.language);
+      m.set('country', json.country);
+      m.set('province', json.province);
+      m.set('city', json.city);
+      m.set('idNumber', json.idNumber);
+      m.set('idName', json.idName);
+      m.set('createdAt', json.createdAt);
+      m.set('updatedAt', json.updatedAt);
+      m.set('type', json.type);
+      m.set('roles', new List(json.roles));
     });
   }
 }
@@ -61,18 +61,18 @@ class UserState extends Record({
   activeUserId: null, // current login user
   token: null,        // current login user token
   profiles: Map(),    // cached user info list
-}, "UserState") {
+}, 'UserState') {
 
 }
 
 /**** Constant ****/
 
-const LOADED = "AUTH@LOADED";
-const LOGIN_WITH_MOBILE_PHONE = "LOGIN_WITH_MOBILE_PHONE";
-const AUTO_LOGIN = "AUTO_LOGIN";
-const LOGIN_SUCCESS = "LOGIN_SUCCESS";
-const LOGOUT = "LOGOUT";
-const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+const LOADED = 'AUTH@LOADED';
+const LOGIN_WITH_MOBILE_PHONE = 'LOGIN_WITH_MOBILE_PHONE';
+const AUTO_LOGIN = 'AUTO_LOGIN';
+const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+const LOGOUT = 'LOGOUT';
+const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
 /**** Action ****/
 
@@ -106,9 +106,9 @@ function* sagaLoginWithMobilePhone(action) {
       payload.onSuccess();
     }
 
-    console.log("login succeeded：", info);
+    console.log('login succeeded：', info);
   } catch (e) {
-    console.log("login failed：", e);
+    console.log('login failed：', e);
   }
 }
 
@@ -122,9 +122,9 @@ function* sagaAutoLogin(action) {
 
     yield put(authAction.loginSuccess({userInfo: info, token: user.token}));
 
-    console.log("auto login succeeded：", info);
+    console.log('auto login succeeded：', info);
   } catch(e) {
-    console.log("auto login failed：", e);
+    console.log('auto login failed：', e);
   }
 
   yield put(loaded({}));
@@ -171,26 +171,26 @@ export function authReducer(state=initialState, action) {
 }
 
 function reduceLoaded(state, action) {
-  return state.set("loaded", true);
+  return state.set('loaded', true);
 }
 
 function reduceLoginSuccess(state, action) {
   const {userInfo, token} = action.payload;
 
   return state.withMutations((m) => {
-    m.set("activeUserId", userInfo.userId);
-    m.set("token", token);
-    m.setIn(["profiles", userInfo.userId], userInfo);
+    m.set('activeUserId', userInfo.userId);
+    m.set('token', token);
+    m.setIn(['profiles', userInfo.userId], userInfo);
   });
 }
 
 function reduceLogoutSuccess(state, action) {
-  const activeUserId = state.get("activeUserId");
+  const activeUserId = state.get('activeUserId');
 
   return state.withMutations((m) => {
-    m.set("activeUserId", null);
-    m.set("token", null);
-    m.deleteIn(["profiles", activeUserId]);
+    m.set('activeUserId', null);
+    m.set('token', null);
+    m.deleteIn(['profiles', activeUserId]);
   });
 }
 
@@ -248,7 +248,7 @@ function selectIsUserLoggedIn(appState) {
 }
 
 function selectUserInfoById(appState, userId) {
-  return appState.AUTH.getIn(["profiles", userId], null);
+  return appState.AUTH.getIn(['profiles', userId], null);
 }
 
 function selectUserInfoByIds(appState, userIds) {
