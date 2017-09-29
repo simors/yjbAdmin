@@ -58,14 +58,14 @@ class UserInfo extends Record({
 
 class RoleInfo extends Record({
   code: undefined,
-  perms: List(),                // List<PermissionInfo>
+  permissions: List(),        // List<PermissionInfo>
 }, 'RoleInfo') {
   static fromJson(j) {
     let role = new RoleInfo();
 
     return role.withMutations((m) => {
       m.set('code', j.code);
-      m.set('perms', new List(j.perms));
+      m.set('permissions', new List(j.permissions));
     })
   }
 }
@@ -86,7 +86,9 @@ class AuthState extends Record({
   loaded: false,              // whether auto login has finished
   activeUserId: undefined,    // current login user
   token: undefined,           // current login user token
-  users: Map(),               // cached user info list, Map<id, UserInfo>
+  users: Map(),               // Map<id, UserInfo>
+  roles: Map(),               // Map<id, RoleInfo>
+  permissions: Map(),         // Map<id, PermissionInfo>
 }, 'AuthState') {
 
 }
