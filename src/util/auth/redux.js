@@ -61,6 +61,7 @@ class RoleInfo extends Record({
   displayName: undefined,
 }, 'RoleInfo') {
   static fromJson(j) {
+
   }
 }
 
@@ -77,7 +78,7 @@ class AuthState extends Record({
   loaded: false,              // whether auto login has finished
   activeUserId: undefined,    // current login user
   token: undefined,           // current login user token
-  profiles: Map(),            // cached user info list
+  users: Map(),            // cached user info list
 }, 'AuthState') {
 
 }
@@ -115,7 +116,7 @@ function* sagaLoginWithMobilePhone(action) {
     // }
     const user = yield call(authCloud.loginWithMobilePhone, payload);
 
-    const info = UserInfo.fromJsonApi(user.userInfo);
+    const info = UserInfo.fromJson(user.userInfo);
 
     yield put(authAction.loginSuccess({userInfo: info, token: user.token}));
 
@@ -135,7 +136,7 @@ function* sagaAutoLogin(action) {
   try {
     const user = yield call(authCloud.become, payload);
 
-    const info = UserInfo.fromJsonApi(user.userInfo);
+    const info = UserInfo.fromJson(user.userInfo);
 
     yield put(authAction.loginSuccess({userInfo: info, token: user.token}));
 
@@ -197,7 +198,7 @@ function reduceLoginSuccess(state, action) {
   return state.withMutations((m) => {
     m.set('activeUserId', userInfo.id);
     m.set('token', token);
-    m.setIn(['profiles', userInfo.id], userInfo);
+    m.setIn(['users', userInfo.id], userInfo);
   });
 }
 
@@ -207,7 +208,7 @@ function reduceLogoutSuccess(state, action) {
   return state.withMutations((m) => {
     m.set('activeUserId', undefined);
     m.set('token', undefined);
-    m.deleteIn(['profiles', activeUserId]);
+    m.deleteIn(['users', activeUserId]);
   });
 }
 
@@ -227,16 +228,16 @@ function reduceRehydrate(state, action) {
   state = state.set('token', incoming.token);
 
   // convert from plain json dict to immutable.js Map
-  const profiles = Map(incoming.profiles);
+  const users = Map(incoming.users);
   try {
-    for (let [id, profile] of profiles) {
+    for (let [id, profile] of users) {
       if (id && profile) {
         const userInfo = new UserInfo({...profile});
-        state = state.setIn(['profiles', id], userInfo);
+        state = state.setIn(['users', id], userInfo);
       }
     }
   } catch (e) {
-    profiles.clear();
+    users.clear();
   }
 
   return state;
@@ -265,7 +266,7 @@ function selectIsUserLoggedIn(appState) {
 }
 
 function selectUserInfoById(appState, id) {
-  return appState.AUTH.getIn(['profiles', id], undefined);
+  return appState.AUTH.getIn(['users', id], undefined);
 }
 
 function selectUserInfoByIds(appState, ids) {
