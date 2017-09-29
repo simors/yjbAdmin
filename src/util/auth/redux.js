@@ -78,7 +78,7 @@ class AuthState extends Record({
   loaded: false,              // whether auto login has finished
   activeUserId: undefined,    // current login user
   token: undefined,           // current login user token
-  users: Map(),            // cached user info list
+  users: Map(),               // cached user info list
 }, 'AuthState') {
 
 }
@@ -116,15 +116,13 @@ function* sagaLoginWithMobilePhone(action) {
     // }
     const user = yield call(authCloud.loginWithMobilePhone, payload);
 
-    const info = UserInfo.fromJson(user.userInfo);
-
-    yield put(authAction.loginSuccess({userInfo: info, token: user.token}));
+    yield put(authAction.loginSuccess({user}));
 
     if (payload.onSuccess) {
       payload.onSuccess();
     }
 
-    console.log('login succeeded：', info);
+    console.log('login succeeded：', user);
   } catch (e) {
     console.log('login failed：', e);
   }
@@ -136,11 +134,9 @@ function* sagaAutoLogin(action) {
   try {
     const user = yield call(authCloud.become, payload);
 
-    const info = UserInfo.fromJson(user.userInfo);
+    yield put(authAction.loginSuccess({user}));
 
-    yield put(authAction.loginSuccess({userInfo: info, token: user.token}));
-
-    console.log('auto login succeeded：', info);
+    console.log('auto login succeeded：', user);
   } catch(e) {
     console.log('auto login failed：', e);
   }
@@ -193,12 +189,15 @@ function reduceLoaded(state, action) {
 }
 
 function reduceLoginSuccess(state, action) {
-  const {userInfo, token} = action.payload;
+  const {user} = action.payload;
+
+  const info = UserInfo.fromJson(user.userInfo);
+  const token = user.token;
 
   return state.withMutations((m) => {
-    m.set('activeUserId', userInfo.id);
+    m.set('activeUserId', info.id);
     m.set('token', token);
-    m.setIn(['users', userInfo.id], userInfo);
+    m.setIn(['users', info.id], info);
   });
 }
 
