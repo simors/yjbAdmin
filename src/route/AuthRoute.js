@@ -9,7 +9,7 @@ const AuthRoute = ({component: Component, ...rest}) => {
   const {location: from} = rest;
 
   const loginComponent = checkAuth(from);
-  if (loginComponent !== null) {
+  if (loginComponent !== undefined) {
     return loginComponent;
   }
 

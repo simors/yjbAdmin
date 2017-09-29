@@ -4,77 +4,77 @@ import {Record, Map, List} from 'immutable';
 import {REHYDRATE} from 'redux-persist/constants';
 import * as authCloud from './cloud';
 
-/****  Model  ****/
+// --- model
 
 class UserInfo extends Record({
-  userId: null,
-  email: null,
-  emailVerified: null,
-  mobilePhoneNumber: null,
-  mobilePhoneVerified: null,
-  authData: null,
-  username: null,     // unused for now, maybe for wechat id later
-  nickname: null,     // wechat nickname
-  avatar: null,
-  sex: null,          // gender
-  language: null,
-  country: null,
-  province: null,
-  city: null,
-  idNumber: null,
-  idName: null,       // real name
-  createdAt: null,
-  updatedAt: null,
-  type: null,         // user type, e.g. system admin, platform admin, etc.
+  id: undefined,
+  email: undefined,
+  emailVerified: undefined,
+  mobilePhoneNumber: undefined,
+  mobilePhoneVerified: undefined,
+  authData: undefined,
+  username: undefined,            // unused for now, maybe for wechat id later
+  nickname: undefined,            // wechat nickname
+  avatar: undefined,
+  sex: undefined,                 // gender
+  language: undefined,
+  country: undefined,
+  province: undefined,
+  city: undefined,
+  idNumber: undefined,
+  idName: undefined,              // real name
+  createdAt: undefined,
+  updatedAt: undefined,
+  type: undefined,                // user type, e.g. system admin, platform admin, etc.
   roles: List(),
-}, "UserInfo") {
+}, 'UserInfo') {
   static fromJsonApi(json) {
     let info = new UserInfo();
 
     return info.withMutations((m) => {
-      m.set("userId", json.userId);
-      m.set("email", json.email);
-      m.set("emailVerified", json.emailVerified);
-      m.set("mobilePhoneNumber", json.mobilePhoneNumber);
-      m.set("mobilePhoneVerified", json.mobilePhoneVerified);
-      m.set("authData", json.authData);
-      m.set("username", json.username);
-      m.set("nickname", json.nickname);
-      m.set("avatar", json.avatar);
-      m.set("sex", json.sex);
-      m.set("language", json.language);
-      m.set("country", json.country);
-      m.set("province", json.province);
-      m.set("city", json.city);
-      m.set("idNumber", json.idNumber);
-      m.set("idName", json.idName);
-      m.set("createdAt", json.createdAt);
-      m.set("updatedAt", json.updatedAt);
-      m.set("type", json.type);
-      m.set("roles", new List(json.roles));
+      m.set('id', json.objectId);
+      m.set('email', json.email);
+      m.set('emailVerified', json.emailVerified);
+      m.set('mobilePhoneNumber', json.mobilePhoneNumber);
+      m.set('mobilePhoneVerified', json.mobilePhoneVerified);
+      m.set('authData', json.authData);
+      m.set('username', json.username);
+      m.set('nickname', json.nickname);
+      m.set('avatar', json.avatar);
+      m.set('sex', json.sex);
+      m.set('language', json.language);
+      m.set('country', json.country);
+      m.set('province', json.province);
+      m.set('city', json.city);
+      m.set('idNumber', json.idNumber);
+      m.set('idName', json.idName);
+      m.set('createdAt', json.createdAt);
+      m.set('updatedAt', json.updatedAt);
+      m.set('type', json.type);
+      m.set('roles', new List(json.roles));
     });
   }
 }
 
-class UserState extends Record({
+class AuthState extends Record({
   loaded: false,      // whether auto login has finished
-  activeUserId: null, // current login user
-  token: null,        // current login user token
+  activeUserId: undefined, // current login user
+  token: undefined,        // current login user token
   profiles: Map(),    // cached user info list
-}, "UserState") {
+}, 'AuthState') {
 
 }
 
-/**** Constant ****/
+// --- constant
 
-const LOADED = "AUTH@LOADED";
-const LOGIN_WITH_MOBILE_PHONE = "LOGIN_WITH_MOBILE_PHONE";
-const AUTO_LOGIN = "AUTO_LOGIN";
-const LOGIN_SUCCESS = "LOGIN_SUCCESS";
-const LOGOUT = "LOGOUT";
-const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+const LOADED = 'AUTH@LOADED';
+const LOGIN_WITH_MOBILE_PHONE = 'LOGIN_WITH_MOBILE_PHONE';
+const AUTO_LOGIN = 'AUTO_LOGIN';
+const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+const LOGOUT = 'LOGOUT';
+const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
-/**** Action ****/
+// --- action
 
 export const authAction = {
   loginWithMobilePhone: createAction(LOGIN_WITH_MOBILE_PHONE),
@@ -86,7 +86,7 @@ export const authAction = {
 const loaded = createAction(LOADED);
 const logoutSuccess = createAction(LOGOUT_SUCCESS);
 
-/**** Saga ****/
+// saga
 
 function* sagaLoginWithMobilePhone(action) {
   const payload = action.payload;
@@ -98,8 +98,6 @@ function* sagaLoginWithMobilePhone(action) {
     // }
     const user = yield call(authCloud.loginWithMobilePhone, payload);
 
-    console.log("---> sagaLoginWithMobilePhone", user);
-
     const info = UserInfo.fromJsonApi(user.userInfo);
 
     yield put(authAction.loginSuccess({userInfo: info, token: user.token}));
@@ -108,9 +106,9 @@ function* sagaLoginWithMobilePhone(action) {
       payload.onSuccess();
     }
 
-    console.log("登录成功：", info);
+    console.log('login succeeded：', info);
   } catch (e) {
-    console.log("登录失败：", e);
+    console.log('login failed：', e);
   }
 }
 
@@ -124,9 +122,9 @@ function* sagaAutoLogin(action) {
 
     yield put(authAction.loginSuccess({userInfo: info, token: user.token}));
 
-    console.log("自动登录成功：", info);
+    console.log('auto login succeeded：', info);
   } catch(e) {
-    console.log("自动登录失败：", e);
+    console.log('auto login failed：', e);
   }
 
   yield put(loaded({}));
@@ -153,9 +151,9 @@ export const authSaga = [
   takeLatest(LOGOUT, sagaLogout),
 ];
 
-/**** Reducer ****/
+// --- reducer
 
-const initialState = new UserState();
+const initialState = new AuthState();
 
 export function authReducer(state=initialState, action) {
   switch(action.type) {
@@ -173,26 +171,26 @@ export function authReducer(state=initialState, action) {
 }
 
 function reduceLoaded(state, action) {
-  return state.set("loaded", true);
+  return state.set('loaded', true);
 }
 
 function reduceLoginSuccess(state, action) {
   const {userInfo, token} = action.payload;
 
   return state.withMutations((m) => {
-    m.set("activeUserId", userInfo.userId);
-    m.set("token", token);
-    m.setIn(["profiles", userInfo.userId], userInfo);
+    m.set('activeUserId', userInfo.id);
+    m.set('token', token);
+    m.setIn(['profiles', userInfo.id], userInfo);
   });
 }
 
 function reduceLogoutSuccess(state, action) {
-  const activeUserId = state.get("activeUserId");
+  const activeUserId = state.get('activeUserId');
 
   return state.withMutations((m) => {
-    m.set("activeUserId", null);
-    m.set("token", null);
-    m.deleteIn(["profiles", activeUserId]);
+    m.set('activeUserId', undefined);
+    m.set('token', undefined);
+    m.deleteIn(['profiles', activeUserId]);
   });
 }
 
@@ -214,10 +212,10 @@ function reduceRehydrate(state, action) {
   // convert from plain json dict to immutable.js Map
   const profiles = Map(incoming.profiles);
   try {
-    for (let [userId, profile] of profiles) {
-      if (userId && profile) {
+    for (let [id, profile] of profiles) {
+      if (id && profile) {
         const userInfo = new UserInfo({...profile});
-        state = state.setIn(['profiles', userId], userInfo);
+        state = state.setIn(['profiles', id], userInfo);
       }
     }
   } catch (e) {
@@ -227,7 +225,7 @@ function reduceRehydrate(state, action) {
   return state;
 }
 
-/**** Selector ****/
+// --- selector
 
 function selectLoaded(appState) {
   return appState.AUTH.loaded;
@@ -246,21 +244,21 @@ function selectActiveUserIdAndToken(appState) {
 
 function selectIsUserLoggedIn(appState) {
   const activeUserId = selectActiveUserIdAndToken(appState).activeUserId;
-  return activeUserId !== null;
+  return activeUserId !== undefined;
 }
 
-function selectUserInfoById(appState, userId) {
-  return appState.AUTH.getIn(["profiles", userId], null);
+function selectUserInfoById(appState, id) {
+  return appState.AUTH.getIn(['profiles', id], undefined);
 }
 
-function selectUserInfoByIds(appState, userIds) {
+function selectUserInfoByIds(appState, ids) {
   let infos = [];
 
-  userIds.forEach((id) => {
+  ids.forEach((id) => {
     const info = selectUserInfoById(appState, id);
 
     // TODO: invalid user id ?
-    if (info !== null) {
+    if (info !== undefined) {
       infos.push(info.toJS());
     }
   });
@@ -271,7 +269,7 @@ function selectUserInfoByIds(appState, userIds) {
 function selectActiveUserInfo(appState) {
   const activeUserId = selectActiveUserId(appState);
 
-  return activeUserId !== null ? appState.AUTH.getUserInfoById(activeUserId) : null;
+  return activeUserId !== undefined ? appState.AUTH.selectUserInfoById(activeUserId) : undefined;
 }
 
 function selectToken(appState) {
