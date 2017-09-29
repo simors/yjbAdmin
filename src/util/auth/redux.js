@@ -4,7 +4,7 @@ import {Record, Map, List} from 'immutable';
 import {REHYDRATE} from 'redux-persist/constants';
 import * as authCloud from './cloud';
 
-/****  Model  ****/
+// --- model
 
 class UserInfo extends Record({
   userId: null,
@@ -65,7 +65,7 @@ class UserState extends Record({
 
 }
 
-/**** Constant ****/
+// --- constant
 
 const LOADED = 'AUTH@LOADED';
 const LOGIN_WITH_MOBILE_PHONE = 'LOGIN_WITH_MOBILE_PHONE';
@@ -74,7 +74,7 @@ const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 const LOGOUT = 'LOGOUT';
 const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
-/**** Action ****/
+// --- action
 
 export const authAction = {
   loginWithMobilePhone: createAction(LOGIN_WITH_MOBILE_PHONE),
@@ -86,7 +86,7 @@ export const authAction = {
 const loaded = createAction(LOADED);
 const logoutSuccess = createAction(LOGOUT_SUCCESS);
 
-/**** Saga ****/
+// saga
 
 function* sagaLoginWithMobilePhone(action) {
   const payload = action.payload;
@@ -151,7 +151,7 @@ export const authSaga = [
   takeLatest(LOGOUT, sagaLogout),
 ];
 
-/**** Reducer ****/
+// --- reducer
 
 const initialState = new UserState();
 
@@ -225,7 +225,7 @@ function reduceRehydrate(state, action) {
   return state;
 }
 
-/**** Selector ****/
+// --- selector
 
 function selectLoaded(appState) {
   return appState.AUTH.loaded;
