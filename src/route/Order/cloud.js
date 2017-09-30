@@ -4,7 +4,6 @@
 import AV from 'leancloud-storage'
 
 export async function fetchOrdersApi(payload) {
-  console.log("fetchOrdersApi: ", payload)
   try {
     let orders = await AV.Cloud.run('orderFetchOrders', payload)
     return orders

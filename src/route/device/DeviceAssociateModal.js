@@ -15,14 +15,14 @@ import {
   Radio,
   message,
 } from 'antd'
-import style from './cabinet.module.scss'
+import style from './device.module.scss'
 import DivisionCascader from '../../component/DivisionCascader'
 import {stationSelector, stationAction} from '../station/redux'
-import {associateWithStationAction} from './redux'
+import {actions} from './redux'
 
 const Option = Select.Option
 
-class CabinetAssociateModal extends PureComponent {
+class DeviceAssociateModal extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -69,7 +69,7 @@ class CabinetAssociateModal extends PureComponent {
   onSubmit = (e) => {
     this.props.associateWithStationAction({
       stationId: this.state.selectedStaionId,
-      deviceNo: this.props.cabinet.deviceNo,
+      deviceNo: this.props.device.deviceNo,
       success: () => {
         message.success("服务点关联成功")
         this.props.onCancel()
@@ -82,7 +82,7 @@ class CabinetAssociateModal extends PureComponent {
   }
 
   render() {
-    if(this.props.cabinet) {
+    if(this.props.device) {
       return (
         <Modal title="关联服务网点"
                width={720}
@@ -92,7 +92,7 @@ class CabinetAssociateModal extends PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>编号</Col>
             <Col span={6}>
-              <Input disabled={true} defaultValue={this.props.cabinet.deviceNo} />
+              <Input disabled={true} defaultValue={this.props.device.deviceNo} />
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
@@ -129,8 +129,8 @@ const mapStateToProps = (appState, ownProps) => {
 }
 
 const mapDispatchToProps = {
+  ...actions,
   requestStations: stationAction.requestStations,
-  associateWithStationAction,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CabinetAssociateModal)
+export default connect(mapStateToProps, mapDispatchToProps)(DeviceAssociateModal)

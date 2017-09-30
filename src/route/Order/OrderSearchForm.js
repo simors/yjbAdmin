@@ -15,7 +15,7 @@ import {
 } from 'antd'
 import style from './order.module.scss'
 import {stationSelector, stationAction} from '../station/redux'
-import {OrderStatus, fetchOrdersAction} from './redux'
+import {OrderStatus, actions} from './redux'
 
 const FormItem = Form.Item
 const RangePicker = DatePicker.RangePicker
@@ -122,7 +122,7 @@ const mapStateToProps = (appState, ownProps) => {
 }
 
 const mapDispatchToProps = {
-  fetchOrdersAction,
+  ...actions,
   ...stationAction,
 }
 

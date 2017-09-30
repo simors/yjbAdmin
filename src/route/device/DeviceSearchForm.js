@@ -12,8 +12,8 @@ import {
   Form,
   Select,
 } from 'antd'
-import style from './cabinet.module.scss'
-import {cabinetStatus, fetchCabinetsAction} from './redux'
+import style from './device.module.scss'
+import {deviceStatus, actions} from './redux'
 import {stationSelector, stationAction} from '../station/redux'
 
 const FormItem = Form.Item
@@ -34,7 +34,7 @@ class SearchForm extends PureComponent {
     if (err) {
       return
     }
-    this.props.fetchCabinetsAction({
+    this.props.fetchDevicesAction({
       deviceNo: values.deviceNo || undefined,
       stationId: values.stationId == 'all'? undefined : values.stationId,
       status: !values.status || values.status == 'all'? undefined : Number(values.status),
@@ -69,12 +69,12 @@ class SearchForm extends PureComponent {
           {getFieldDecorator("status", {})(
             <Select style={{width: 120}} placeholder="选择状态">
               <Option value="all">全部</Option>
-              <Option value={cabinetStatus.DEVICE_STATUS_IDLE.toString()}>空闲</Option>
-              <Option value={cabinetStatus.DEVICE_STATUS_OCCUPIED.toString()}>使用中</Option>
-              <Option value={cabinetStatus.DEVICE_STATUS_OFFLINE.toString()}>下线</Option>
-              <Option value={cabinetStatus.DEVICE_STATUS_FAULT.toString()}>故障</Option>
-              <Option value={cabinetStatus.DEVICE_STATUS_MAINTAIN.toString()}>维修保养</Option>
-              <Option value={cabinetStatus.DEVICE_STATUS_UNREGISTER.toString()}>未注册</Option>
+              <Option value={deviceStatus.DEVICE_STATUS_IDLE.toString()}>空闲</Option>
+              <Option value={deviceStatus.DEVICE_STATUS_OCCUPIED.toString()}>使用中</Option>
+              <Option value={deviceStatus.DEVICE_STATUS_OFFLINE.toString()}>下线</Option>
+              <Option value={deviceStatus.DEVICE_STATUS_FAULT.toString()}>故障</Option>
+              <Option value={deviceStatus.DEVICE_STATUS_MAINTAIN.toString()}>维修保养</Option>
+              <Option value={deviceStatus.DEVICE_STATUS_UNREGISTER.toString()}>未注册</Option>
             </Select>
           )}
         </FormItem>
@@ -86,7 +86,7 @@ class SearchForm extends PureComponent {
   }
 }
 
-const CabinetSearchForm = Form.create()(SearchForm)
+const DeviceSearchForm = Form.create()(SearchForm)
 
 const mapStateToProps = (appState, ownProps) => {
   let stationList = stationSelector.selectStations(appState)
@@ -96,8 +96,8 @@ const mapStateToProps = (appState, ownProps) => {
 }
 
 const mapDispatchToProps = {
-  fetchCabinetsAction,
+  ...actions,
   requestStations: stationAction.requestStations,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CabinetSearchForm)
+export default connect(mapStateToProps, mapDispatchToProps)(DeviceSearchForm)

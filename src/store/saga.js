@@ -6,8 +6,8 @@ import {authSaga} from '../util/auth/'
 import {stationSaga} from '../route/station/redux'
 import {saga as sysUserSaga} from '../route/sysuser/'
 import {configSaga} from '../util/config'
-import {saga as cabinetSaga} from '../route/Cabinet'
-import {saga as orderSaga} from '../route/Order'
+import {orderSaga} from '../route/Order'
+import {deviceSaga} from '../route/device'
 
 export default function* rootSaga() {
   yield all([
@@ -15,7 +15,7 @@ export default function* rootSaga() {
     ...sysUserSaga,
     ...configSaga,
     ...stationSaga,
-    ...cabinetSaga,
     ...orderSaga,
+    ...deviceSaga,
   ])
 }

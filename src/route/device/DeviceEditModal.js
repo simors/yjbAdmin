@@ -4,23 +4,12 @@
 import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
 import {
-  Button,
-  Table,
-  Row,
-  Col,
-  Input,
-  Form,
-  Select,
   Modal,
-  Radio,
-  message,
 } from 'antd'
-import style from './cabinet.module.scss'
-import CabinetEditForm from './CabinetEditForm'
-const FormItem = Form.Item
+import DeviceEditForm from './DeviceEditForm'
 
 
-class CabinetEditModal extends PureComponent {
+class DeviceEditModal extends PureComponent {
   constructor(props) {
     super(props)
   }
@@ -30,7 +19,7 @@ class CabinetEditModal extends PureComponent {
   }
 
   render() {
-    if(this.props.cabinet) {
+    if(this.props.device) {
       return (
         <Modal title="编辑干衣柜"
                width={720}
@@ -38,7 +27,7 @@ class CabinetEditModal extends PureComponent {
                onOk={this.onSubmit}
                onCancel={this.props.onCancel}
                footer={null}>
-          <CabinetEditForm cabinet={this.props.cabinet} onSubmit={this.props.onCancel} />
+          <DeviceEditForm device={this.props.device} onSubmit={this.props.onCancel} />
         </Modal>
       )
     } else {
@@ -56,4 +45,4 @@ const mapStateToProps = (appState, ownProps) => {
 const mapDispatchToProps = {
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CabinetEditModal)
+export default connect(mapStateToProps, mapDispatchToProps)(DeviceEditModal)

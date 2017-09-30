@@ -9,23 +9,23 @@ import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
 import {fetchOrdersApi} from './cloud'
 
 /****  Model  ****/
-export const OrderRecord = Record({
+const OrderRecord = Record({
   id: undefined,                //订单id
   orderNo: undefined,           //订单编号
   status: undefined,            //订单状态
   start: undefined,             //下单时间
   end: undefined,               //结束时间
   amount: undefined,            //订单金额
-  stationId: undefined,         //服务点id
-  stationName: undefined,       //服务点名称
+  // stationId: undefined,         //服务点id
+  // stationName: undefined,       //服务点名称
   deviceId: undefined,          //干衣柜id
-  deviceNo: undefined,          //干衣柜编号
+  // deviceNo: undefined,          //干衣柜编号
   userId: undefined,            //用户id
-  nickname: undefined,          //用户昵称
-  mobilePhoneNumber: undefined, //用户手机号码
+  // nickname: undefined,          //用户昵称
+  // mobilePhoneNumber: undefined, //用户手机号码
 }, 'OrderRecord')
 
-export class Order extends OrderRecord {
+class Order extends OrderRecord {
   static fromApi(obj) {
     let order = new OrderRecord()
     return order.withMutations((record) => {
@@ -35,18 +35,19 @@ export class Order extends OrderRecord {
       record.set('start', obj.createTime)
       record.set('end', obj.endTime)
       record.set('amount', obj.amount)
-      record.set('stationId', obj.device.station.id)
-      record.set('stationName', obj.device.station.name)
+      // record.set('stationId', obj.device.station.id)
+      // record.set('stationName', obj.device.station.name)
       record.set('deviceId', obj.device.id)
-      record.set('deviceNo', obj.device.deviceNo)
+      // record.set('deviceNo', obj.device.deviceNo)
       record.set('userId', obj.user.id)
-      record.set('nickname', obj.user.nickname)
-      record.set('mobilePhoneNumber', obj.user.mobilePhoneNumber)
+      // record.set('nickname', obj.user.nickname)
+      // record.set('mobilePhoneNumber', obj.user.mobilePhoneNumber)
     })
   }
 }
 
 const OrderState = Record({
+  orders: Map(),            //订单信息 健为orderId，值为OrderRecord
   orderList: List()
 }, 'OrderState')
 /**** Constant ****/
@@ -59,8 +60,12 @@ export const OrderStatus = {
   ORDER_STATUS_PAID : 2,        //已支付
 }
 /**** Action ****/
-export const fetchOrdersAction = createAction(FETCH_ORDERS)
 const fetchOrdersSuccessAction = createAction(FETCH_ORDERS_SUCCESS)
+
+export const actions = {
+  fetchOrdersAction: createAction(FETCH_ORDERS),
+  fetchOrdersSuccessAction,
+}
 /**** Saga ****/
 function* fetchOrders(action) {
   console.log("fetchOrders saga", action)
@@ -98,7 +103,8 @@ export const saga = [
 ]
 /**** Reducer ****/
 const initialState = OrderState()
-  export function reducer(state = initialState, action) {
+
+export function reducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_ORDERS_SUCCESS:
       return handleSaveOrders(state, action)
@@ -128,8 +134,22 @@ function onRehydrate(state, action) {
 }
 
 /**** Selector ****/
-export function selectOrders(state) {
+function selectOrders(state) {
   let orderList = state.ORDER.orderList
 
   return orderList.toJS()
+}
+
+function selectOrderById(state, orderId) {
+  if(!orderId) {
+    return undefined
+  }
+
+  let orderRecord = state.ORDER.getIn(['orders', orderId])
+  return orderRecord? orderRecord.toJS() : undefined
+}
+
+export const selector = {
+  selectOrders,
+  selectOrderById,
 }

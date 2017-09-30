@@ -5,17 +5,12 @@ import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
 import {
   Button,
-  Table,
-  Row,
-  Col,
   Input,
   Form,
-  Select,
   Radio,
   message,
 } from 'antd'
-import style from './cabinet.module.scss'
-import {cabinetStatus, modifyCabinetAction} from './redux'
+import {deviceStatus, actions} from './redux'
 import StationSelect from '../station/StationSelect'
 
 const FormItem = Form.Item
@@ -48,7 +43,7 @@ class EditForm extends PureComponent {
       if (err) {
         return
       }
-      this.props.modifyCabinetAction({
+      this.props.modifyDeviceAction({
         deviceNo: values.deviceNo,
         stationId: values.stationId,
         deviceAddr: values.deviceAddr,
@@ -82,7 +77,7 @@ class EditForm extends PureComponent {
         <FormItem {...formItemLayout} label="编号">
           {getFieldDecorator("deviceNo", {
             rules: [{ required: true}],
-            initialValue: this.props.cabinet.deviceNo,
+            initialValue: this.props.device.deviceNo,
           })(
             <Input disabled={true} />
           )}
@@ -90,7 +85,7 @@ class EditForm extends PureComponent {
         <FormItem hasFeedback {...formItemLayout} label="服务点">
           {getFieldDecorator("stationId", {
             rules: [{ required: true, message: '请指定服务网点！' }],
-            initialValue: this.props.cabinet.stationId,
+            initialValue: this.props.device.stationId,
           })(
             <StationSelect />
           )}
@@ -98,7 +93,7 @@ class EditForm extends PureComponent {
         <FormItem hasFeedback {...formItemLayout} label="干衣柜位置">
           {getFieldDecorator("deviceAddr", {
             rules: [{ required: true, message: '请输入干衣柜位置!' }],
-            initialValue: this.props.cabinet.deviceAddr,
+            initialValue: this.props.device.deviceAddr,
           })(
             <Input />
           )}
@@ -106,20 +101,20 @@ class EditForm extends PureComponent {
         <FormItem hasFeedback {...formItemLayout} label="状态">
           {getFieldDecorator("status", {
             rules: [{ required: true, message: '请选择干衣柜状态！' }],
-            initialValue: this.props.cabinet.status,
+            initialValue: this.props.device.status,
           })(
             <RadioGroup>
-              <Radio disabled={true} value={cabinetStatus.DEVICE_STATUS_IDLE}>空闲</Radio>
-              <Radio value={cabinetStatus.DEVICE_STATUS_OCCUPIED}>使用中</Radio>
-              <Radio disabled={true} value={cabinetStatus.DEVICE_STATUS_OFFLINE}>下线</Radio>
-              <Radio value={cabinetStatus.DEVICE_STATUS_FAULT}>故障</Radio>
-              <Radio value={cabinetStatus.DEVICE_STATUS_MAINTAIN}>维修保养</Radio>
+              <Radio disabled={true} value={deviceStatus.DEVICE_STATUS_IDLE}>空闲</Radio>
+              <Radio value={deviceStatus.DEVICE_STATUS_OCCUPIED}>使用中</Radio>
+              <Radio disabled={true} value={deviceStatus.DEVICE_STATUS_OFFLINE}>下线</Radio>
+              <Radio value={deviceStatus.DEVICE_STATUS_FAULT}>故障</Radio>
+              <Radio value={deviceStatus.DEVICE_STATUS_MAINTAIN}>维修保养</Radio>
             </RadioGroup>
           )}
         </FormItem>
         <FormItem wrapperCol={{offset: 20}}>
           <Button type="primary" htmlType="submit"
-                  disabled={!hasChanges(this.props.cabinet, getFieldsValue()) || hasErrors(getFieldsError())}>
+                  disabled={!hasChanges(this.props.device, getFieldsValue()) || hasErrors(getFieldsError())}>
             提交
           </Button>
         </FormItem>
@@ -128,7 +123,7 @@ class EditForm extends PureComponent {
   }
 }
 
-const CabinetEditForm = Form.create()(EditForm)
+const DeviceEditForm = Form.create()(EditForm)
 
 const mapStateToProps = (appState, ownProps) => {
   return {
@@ -136,7 +131,7 @@ const mapStateToProps = (appState, ownProps) => {
 }
 
 const mapDispatchToProps = {
-  modifyCabinetAction
+  ...actions,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CabinetEditForm)
+export default connect(mapStateToProps, mapDispatchToProps)(DeviceEditForm)
