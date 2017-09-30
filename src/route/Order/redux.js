@@ -5,8 +5,10 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
-
 import {fetchOrdersApi} from './cloud'
+import {deviceActions} from '../device'
+import {stationSelector} from '../station/redux'
+import {deviceSelector} from '../device'
 
 /****  Model  ****/
 const OrderRecord = Record({
@@ -16,10 +18,7 @@ const OrderRecord = Record({
   start: undefined,             //下单时间
   end: undefined,               //结束时间
   amount: undefined,            //订单金额
-  // stationId: undefined,         //服务点id
-  // stationName: undefined,       //服务点名称
   deviceId: undefined,          //干衣柜id
-  // deviceNo: undefined,          //干衣柜编号
   userId: undefined,            //用户id
   // nickname: undefined,          //用户昵称
   // mobilePhoneNumber: undefined, //用户手机号码
@@ -53,6 +52,9 @@ const OrderState = Record({
 /**** Constant ****/
 const FETCH_ORDERS = 'FETCH_ORDERS'
 const FETCH_ORDERS_SUCCESS = 'FETCH_ORDERS_SUCCESS'
+const UPDATE_ORDER_LIST = 'UPDATE_ORDER_LIST'
+const SAVE_ORDER = 'SAVE_ORDER'
+const SAVE_ORDERS = 'SAVE_ORDERS'
 
 export const OrderStatus = {
   ORDER_STATUS_UNPAID : 0,      //未支付
@@ -61,36 +63,54 @@ export const OrderStatus = {
 }
 /**** Action ****/
 const fetchOrdersSuccessAction = createAction(FETCH_ORDERS_SUCCESS)
+const updateOrderList = createAction(UPDATE_ORDER_LIST)
 
 export const actions = {
   fetchOrdersAction: createAction(FETCH_ORDERS),
   fetchOrdersSuccessAction,
+  saveOrder: createAction(SAVE_ORDER),
+  saverOrders: createAction(SAVE_ORDERS)
 }
 /**** Saga ****/
 function* fetchOrders(action) {
-  console.log("fetchOrders saga", action)
   let payload = action.payload
 
   try {
-    let orderPayload = {
+    let apiPayload = {
       start: payload.start,
       end: payload.end,
       status: payload.status,
       mobilePhoneNumber: payload.mobilePhoneNumber,
       stationId: payload.stationId,
       limit: payload.limit,
-      isRefresh: payload.isRefresh,
+      isRefresh: payload.isRefresh || true,
       lastStartTime: payload.lastStartTime || undefined
     }
-    let orders = yield call(fetchOrdersApi, orderPayload)
-    let orderList = List()
+    let orders = yield call(fetchOrdersApi, apiPayload)
+    yield put(updateOrderList({orders: orders, isRefresh: apiPayload.isRefresh}))
+    let devices = new Set()
+    let stations = new Set()
     orders.forEach((order) => {
-      orderList = orderList.push(Order.fromApi(order))
+      let device = order.device
+      let station = device? device.station : undefined
+      if(device) {
+        devices.add(device)
+      }
+      if(station) {
+        stations.add(station)
+      }
     })
+    if(devices.size > 0) {
+      yield put(deviceActions.saveDevices({ devices }))
+    }
+    if(stations.size > 0) {
+      //TODO 保存station信息
+      // yield put()
+    }
+
     if(payload.success) {
       payload.success()
     }
-    yield put(fetchOrdersSuccessAction({orderList: orderList}))
   } catch (error) {
     if(payload.error) {
       payload.error(error)
@@ -106,8 +126,14 @@ const initialState = OrderState()
 
 export function reducer(state = initialState, action) {
   switch (action.type) {
+    case SAVE_ORDER:
+      return handleSaveOrder(state, action)
+    case SAVE_ORDERS:
+      return handleSaveOrders(state, action)
     case FETCH_ORDERS_SUCCESS:
       return handleSaveOrders(state, action)
+    case UPDATE_ORDER_LIST:
+      return handleUpdateOrderList(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -115,8 +141,35 @@ export function reducer(state = initialState, action) {
   }
 }
 
+function handleSaveOrder(state, action) {
+  let order = action.payload.order
+  let orderRecord = Order.fromApi(order)
+  state = state.setIn(['orders', order.id], orderRecord)
+  return state
+}
+
 function handleSaveOrders(state, action) {
-  let orderList = action.payload.orderList
+  let orders = action.payload.orders
+
+  orders.forEach((order) => {
+    let orderRecord = Order.fromApi(order)
+    state = state.setIn(['orders', order.id], orderRecord)
+  })
+  return state
+}
+
+function handleUpdateOrderList(state, action) {
+  let orders = action.payload.orders
+  let isRefresh = action.payload.isRefresh
+  let orderList = List()
+  if(!isRefresh) {
+    orderList = state.get('orderList')
+  }
+  orders.forEach((order) => {
+    let orderRecord = Order.fromApi(order)
+    state = state.setIn(['orders', order.id], orderRecord)
+    orderList = orderList.push(order.id)
+  })
   state = state.set('orderList', orderList)
   return state
 }
@@ -134,13 +187,7 @@ function onRehydrate(state, action) {
 }
 
 /**** Selector ****/
-function selectOrders(state) {
-  let orderList = state.ORDER.orderList
-
-  return orderList.toJS()
-}
-
-function selectOrderById(state, orderId) {
+function selectOrder(state, orderId) {
   if(!orderId) {
     return undefined
   }
@@ -149,7 +196,22 @@ function selectOrderById(state, orderId) {
   return orderRecord? orderRecord.toJS() : undefined
 }
 
+function selectOrderList(state) {
+  let orderList = state.ORDER.get('orderList')
+
+  let orderInfoList = []
+  orderList.toArray().forEach((orderId) => {
+    let orderInfo = selectOrder(state, orderId)
+    let deviceInfo = orderInfo? deviceSelector.selectDevice(state, orderInfo.deviceId) : undefined
+    let stationInfo = deviceInfo? stationSelector.selectStationById(state, deviceInfo.stationId) : undefined
+    orderInfo.deviceNo = deviceInfo? deviceInfo.deviceNo: undefined
+    orderInfo.stationName = stationInfo? stationInfo.name : undefined
+    orderInfoList.push(orderInfo)
+  })
+  return orderInfoList
+}
+
 export const selector = {
-  selectOrders,
-  selectOrderById,
+  selectOrder,
+  selectOrderList,
 }

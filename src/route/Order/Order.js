@@ -99,7 +99,8 @@ class Order extends PureComponent {
 }
 
 const mapStateToProps = (appState, ownProps) => {
-  let orderList = selector.selectOrders(appState)
+  let orderList = selector.selectOrderList(appState)
+  console.log("orderList:", orderList)
   return {
     orderList: orderList,
   }

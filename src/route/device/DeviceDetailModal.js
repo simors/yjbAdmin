@@ -108,7 +108,7 @@ class DeviceDetailModal extends React.PureComponent {
 
 const mapStateToProps = (appState, ownProps) => {
   let device = ownProps.device
-  let station = device? stationSelector.selectStation(appState, device.stationId) : undefined
+  let station = device? stationSelector.selectStationById(appState, device.stationId) : undefined
   return {
     station: station
   }

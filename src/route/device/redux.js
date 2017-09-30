@@ -242,8 +242,8 @@ function selectDeviceList(state) {
   let deviceInfoList = []
   deviceList.toArray().forEach((deviceId) => {
     let deviceInfo = selectDevice(state, deviceId)
-    let station = deviceInfo? stationSelector.selectStation(state, deviceInfo.stationId) : undefined
-    deviceInfo.stationName =station? station.name : undefined
+    let station = deviceInfo? stationSelector.selectStationById(state, deviceInfo.stationId) : undefined
+    deviceInfo.stationName = station? station.name : undefined
     deviceInfoList.push(deviceInfo)
   })
   return deviceInfoList
