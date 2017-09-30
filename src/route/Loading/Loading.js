@@ -12,7 +12,7 @@ class Loading extends React.Component {
 
   render() {
     if (this.props.loaded) {
-      if (this.props.activeUserId !== null) {
+      if (this.props.activeUserId !== undefined) {
         return (
           <Redirect to={this.props.from}/>
         );

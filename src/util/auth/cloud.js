@@ -8,13 +8,8 @@ export async function loginWithMobilePhone(payload) {
     const token = user.getSessionToken();
 
     return ({
-      userInfo: {
-        userId: user.id,
-        ...user.attributes,
-        createAt: user.createdAt.valueOf(),
-        updateAt: user.updatedAt.valueOf(),
-      },
-      token
+      userInfo: {...user.toJSON()},
+      token,
     });
   } catch (e) {
     throw e;
@@ -27,14 +22,10 @@ export async function become(payload) {
 
     const user = await AV.User.become(oldToken);
     const token = user.getSessionToken();
+
     return ({
-      userInfo: {
-        userId: user.id,
-        ...user.attributes,
-        createAt: user.createdAt.valueOf(),
-        updateAt: user.updatedAt.valueOf(),
-      },
-      token
+      userInfo: {...user.toJSON()},
+      token,
     });
   } catch (e) {
     throw e;

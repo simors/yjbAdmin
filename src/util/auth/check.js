@@ -11,12 +11,12 @@ export function checkAuth(from) { // from is an location object
   // TODO: check rehydration
 
   const activeUserId = authSelector.selectActiveUserId(appState);
-  if (activeUserId !== null) { // already authenticated
-    return null;
+  if (activeUserId !== undefined) { // already authenticated
+    return undefined;
   }
 
   const curUser = AV.User.current();
-  if (curUser === null) { // the first time access
+  if (curUser === undefined) { // the first time access
     return (
       <Redirect to={{
         pathname: '/login',
@@ -26,8 +26,6 @@ export function checkAuth(from) { // from is an location object
   }
 
   // re-auth with the server
-  console.log("---> curUser: ", curUser);
-
   const token = curUser.getSessionToken();
   store.dispatch(authAction.autoLogin({token}));
 
