@@ -12,11 +12,10 @@ import {
 } from 'antd'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import ContentRouter from './ContentRouter'
-import {fakeAuth} from '../../util/auth'
 import SiderMenu from '../../component/SiderMenu'
 import style from './style.module.scss'
 import {configAction} from '../../util/config'
-import {authAction} from '../../util/auth/'
+import {action as authAction} from '../../util/auth/'
 
 const {Header, Footer, Sider, Content} = Layout
 
@@ -33,7 +32,6 @@ class Home extends Component {
     let history = this.props.history
     if (key == 'logout') {
       console.log('user logout')
-      // fakeAuth.signout(() => history.push('/login'))
       this.props.logout({
         onSuccess: () => {
           history.push('/login');
