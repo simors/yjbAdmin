@@ -16,7 +16,7 @@ export function checkAuth(from) { // from is an location object
   }
 
   const curUser = AV.User.current();
-  if (curUser === undefined) { // the first time access
+  if (curUser == undefined) { // the first time access, undefined or null
     return (
       <Redirect to={{
         pathname: '/login',
