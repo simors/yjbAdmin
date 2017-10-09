@@ -38,8 +38,8 @@ class UserDetail extends React.Component {
             {...formItemLayout}
             label="姓名"
           > {
-            getFieldDecorator('username', {
-              initialValue: this.props.user.mobilePhoneNumber,
+            getFieldDecorator('idName', {
+              initialValue: this.props.user.idName,
             })(
               <Input disabled />
             )}
@@ -48,7 +48,7 @@ class UserDetail extends React.Component {
             {...formItemLayout}
             label="手机号码"
           > {
-            getFieldDecorator('username', {
+            getFieldDecorator('mobilePhoneNumber', {
               initialValue: this.props.user.mobilePhoneNumber,
             })(
               <Input disabled />

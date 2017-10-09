@@ -13,3 +13,5 @@ class UserCreate extends React.Component {
   }
 }
 
+export default connect(null, null)(UserCreate);
+
