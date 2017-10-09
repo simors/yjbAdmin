@@ -4,15 +4,6 @@ import {Modal, Button, Form, Input} from 'antd';
 import {action, selector} from "./redux";
 import {selector as authSelector} from "../../util/auth/";
 
-const formItemLayout = {
-  labelCol: {
-    span: 6
-  },
-  wrapperCol: {
-    span: 12
-  }
-};
-
 class UserDetail extends React.Component {
   constructor(props) {
     super(props);
@@ -24,10 +15,20 @@ class UserDetail extends React.Component {
 
   render() {
     const {getFieldDecorator} = this.props.form;
+
+    const formItemLayout = {
+      labelCol: {
+        span: 6
+      },
+      wrapperCol: {
+        span: 14
+      }
+    };
+
     return (
       <Modal visible={this.props.visible}
-             title="用户信息"
-             onCancel={this.onHideModal}
+             title="用户详情"
+             closable={false}
              footer={[
                <Button key="1" type="primary" onClick={this.onHideModal}>
                  关闭
@@ -42,7 +43,8 @@ class UserDetail extends React.Component {
               initialValue: this.props.user.idName,
             })(
               <Input disabled />
-            )}
+            )
+          }
           </Form.Item>
           <Form.Item
             {...formItemLayout}
@@ -52,17 +54,19 @@ class UserDetail extends React.Component {
               initialValue: this.props.user.mobilePhoneNumber,
             })(
               <Input disabled />
-            )}
+            )
+          }
           </Form.Item>
           <Form.Item
             {...formItemLayout}
             label="备注"
           > {
             getFieldDecorator('note', {
-              initialValue: this.props.user.note ? this.props.user.note : "暂无",
+              initialValue: this.props.user.note ? this.props.user.note : '',
             })(
               <Input.TextArea autosize={{ minRows: 2, maxRows: 6 }} disabled />
-            )}
+            )
+          }
           </Form.Item>
         </Form>
       </Modal>

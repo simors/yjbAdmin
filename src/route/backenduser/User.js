@@ -7,6 +7,7 @@ import UserFilter from './UserFilter';
 import UserList from './UserList';
 import UserRole from './UserRole';
 import UserDetail from './UserDetail';
+import UserCreate from './UserCreate';
 
 class User extends React.Component {
   constructor(props) {
@@ -37,6 +38,7 @@ class User extends React.Component {
           </Col>
         </Row>
         <UserDetail/>
+        <UserCreate/>
       </div>
     )
   };

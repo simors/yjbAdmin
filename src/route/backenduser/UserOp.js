@@ -14,7 +14,7 @@ class UserOp extends React.Component {
   };
 
   onCreate = () => {
-
+    this.props.showUserCreateModal({});
   };
 
   onEdit = () => {

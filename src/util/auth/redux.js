@@ -105,6 +105,9 @@ const LOGOUT = 'AUTH/LOGOUT';
 const LOGOUT_DONE = 'AUTH/LOGOUT_DONE';
 const FETCH_USER_LIST = 'AUTH/FETCH_USER_LIST';
 const FETCH_USER_LIST_DONE = 'AUTH/FETCH_USER_LIST_DONE';
+const CREATE_USER = 'AUTH/CREATE_USER';
+const DELETE_USER = 'AUTH/DELETE_USER';
+const UPDATE_USER = 'AUTH/UPDATE_USER';
 
 // --- action
 
@@ -113,12 +116,16 @@ export const action = {
   loginWithToken: createAction(LOGIN_WITH_TOKEN),
   logout: createAction(LOGOUT),
   fetchUserList: createAction(FETCH_USER_LIST),
+  createUser: createAction(CREATE_USER),
+  deleteUser: createAction(DELETE_USER),
+  updateUser: createAction(UPDATE_USER),
 };
 
 const loadDone = createAction(LOAD_DONE);
 const loginDone = createAction(LOGIN_DONE);
 const logoutDone = createAction(LOGOUT_DONE);
 const fetchUserListDone = createAction(FETCH_USER_LIST_DONE);
+
 
 // --- saga
 
