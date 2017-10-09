@@ -10,10 +10,10 @@ class UserList extends React.Component {
 
     this.columns = [{
       title: "姓名",
-      dataIndex: "name",
+      dataIndex: "idName",
     }, {
       title: "手机号码",
-      dataIndex: "phone",
+      dataIndex: "mobilePhoneNumber",
     }, {
       title: "备注",
       dataIndex: "note",
