@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Row, Col, Modal, Button, Form, Input, Select, Checkbox} from 'antd';
 import {action, selector} from './redux';
+import {action as authAction} from '../../util/auth/';
 import style from './UserCreate.module.scss';
 
 const kRoles = [
@@ -17,12 +18,19 @@ class UserCreate extends React.Component {
 
     this.state = {
       confirmDirty: false,
+      loading: false,
     };
   }
 
   onHideModal = () => {
     this.props.hideUserCreateModal();
     this.props.form.resetFields();
+    this.setState((prevState, props) => {
+      return {
+        ...prevState,
+        loading: false,
+      };
+    });
   };
 
   handleSubmit = (e) => {
@@ -32,9 +40,28 @@ class UserCreate extends React.Component {
         return;
       }
 
-      console.log('Received values of form: ', values);
+      this.setState((prevState, props) => {
+        return {
+          ...prevState,
+          loading: true,
+        };
+      });
 
-
+      this.props.createUser({
+        params: values,
+        onSuccess: () => {
+          this.props.hideUserCreateModal({});
+          this.props.fetchUserList({});
+        },
+        onComplete: () => {
+          this.setState((prevState, props) => {
+            return {
+              ...prevState,
+              loading: false,
+            };
+          });
+        },
+      });
     });
   };
 
@@ -85,7 +112,9 @@ class UserCreate extends React.Component {
              title='新建用户'
              closable={false}
              footer={[
-               <Button key='1' type='primary' onClick={this.handleSubmit}>
+               <Button key='1' type='primary' onClick={this.handleSubmit}
+                       loading={this.state.loading}
+               >
                  创建
                </Button>,
                <Button key='2' type='primary' onClick={this.onHideModal}>
@@ -108,7 +137,7 @@ class UserCreate extends React.Component {
             {...formItemLayout}
             label='手机号'
           > {
-            getFieldDecorator('phone', {
+            getFieldDecorator('mobilePhoneNumber', {
               rules: [{ required: true, message: '请输入手机号码!' }],
             })(
               <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
@@ -191,6 +220,7 @@ const mapStateToProps = (appState, ownProps) => {
 
 const mapDispatchToProps = {
   ...action,
+  ...authAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(UserCreate));
