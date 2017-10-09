@@ -46,19 +46,60 @@ export async function fetchUserList(payload) {
     return {
       success: true,
       users: [
-        {objectId: 1, idName: '刘德华', mobilePhoneNumber: '18175181287', note: '暂无', roles: ['平台管理员', '服务点管理员']},
-        {objectId: 2, idName: '罗润兵', mobilePhoneNumber: '18175181288', note: '暂无', roles: ['平台管理员', '服务点管理员', '服务点投资人']},
-        {objectId: 3, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '暂无', roles: ['服务点投资人', '服务点管理员', '服务单位']},
-        {objectId: 4, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '暂无', roles: ['平台管理员', '服务单位', '服务点管理员']},
-        {objectId: 5, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '暂无', roles: ['平台管理员', '服务单位', '服务点投资人']},
-        {objectId: 6, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '暂无', roles: ['服务点管理员', '服务单位']},
-        {objectId: 7, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '暂无', roles: ['服务点投资人', '服务点管理员']},
-        {objectId: 8, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '暂无', roles: ['平台管理员', '服务点管理员']},
-        {objectId: 9, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '暂无', roles: ['平台管理员', '服务点管理员']},
-        {objectId: 10, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '暂无', roles: ['平台管理员', '服务点管理员']},
-        {objectId: 11, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '暂无', roles: ['平台管理员', '服务点管理员']},
-        {objectId: 12, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '暂无', roles: ['平台管理员', '服务点管理员']},
+        {objectId: 1, idName: '刘德华', mobilePhoneNumber: '18175181287', note: '', roles: [100, 200]},
+        {objectId: 2, idName: '罗润兵', mobilePhoneNumber: '18175181288', note: '', roles: [100, 200, 300]},
+        {objectId: 3, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '', roles: [100, 400]},
+        {objectId: 4, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '', roles: [300, 200]},
+        {objectId: 5, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '', roles: [400, 100, 300]},
       ]
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e
+    };
+  }
+}
+
+export async function createUser(payload) {
+  try {
+    await sleep(500);
+    return {
+      success: true,
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e
+    };
+  }
+}
+
+export async function deleteUser(payload) {
+  try {
+    await sleep(500);
+    return {
+      success: true,
+      user: {
+        id: 1, name: '刘德华', phoneNo: '13687338616', note: '', roles: ['平台管理员', '服务点管理员']
+      }
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e
+    };
+  }
+}
+
+export async function updateUser(payload) {
+  try {
+    await sleep(500);
+    return {
+      success: true,
+      user: {
+        id: 1, name: '张学友', phoneNo: '13687338616', note: '', roles: ['平台管理员', '服务点管理员']
+      }
     };
   } catch (e) {
     return {

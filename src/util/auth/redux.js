@@ -105,6 +105,9 @@ const LOGOUT = 'AUTH/LOGOUT';
 const LOGOUT_DONE = 'AUTH/LOGOUT_DONE';
 const FETCH_USER_LIST = 'AUTH/FETCH_USER_LIST';
 const FETCH_USER_LIST_DONE = 'AUTH/FETCH_USER_LIST_DONE';
+const CREATE_USER = 'AUTH/CREATE_USER';
+const DELETE_USER = 'AUTH/DELETE_USER';
+const UPDATE_USER = 'AUTH/UPDATE_USER';
 
 // --- action
 
@@ -113,6 +116,9 @@ export const action = {
   loginWithToken: createAction(LOGIN_WITH_TOKEN),
   logout: createAction(LOGOUT),
   fetchUserList: createAction(FETCH_USER_LIST),
+  createUser: createAction(CREATE_USER),
+  deleteUser: createAction(DELETE_USER),
+  updateUser: createAction(UPDATE_USER),
 };
 
 const loadDone = createAction(LOAD_DONE);
@@ -127,6 +133,9 @@ export const saga = [
   takeLatest(LOGIN_WITH_TOKEN, sagaLoginWithToken),
   takeLatest(LOGOUT, sagaLogout),
   takeLatest(FETCH_USER_LIST, sagaFetchUserList),
+  takeLatest(CREATE_USER, sagaCreateUser),
+  takeLatest(DELETE_USER, sagaDeleteUser),
+  takeLatest(UPDATE_USER, sagaUpdateUser),
 ];
 
 function* sagaLoginWithMobilePhone(action) {
@@ -147,7 +156,15 @@ function* sagaLoginWithMobilePhone(action) {
 
     console.log('login succeeded：', login);
   } catch (e) {
+    if (payload.onFailure) {
+      payload.onFailure();
+    }
+
     console.log('login failed：', e);
+  }
+
+  if (payload.onComplete) {
+    payload.onComplete();
   }
 }
 
@@ -159,12 +176,24 @@ function* sagaLoginWithToken(action) {
 
     yield put(loginDone({login}));
 
+    if (payload.onSuccess) {
+      payload.onSuccess();
+    }
+
     console.log('login with token succeeded：', login);
   } catch(e) {
+    if (payload.onFailure) {
+      payload.onFailure();
+    }
+
     console.log('login with token failed：', e);
   }
 
   yield put(loadDone({}));
+
+  if (payload.onComplete) {
+    payload.onComplete();
+  }
 }
 
 function* sagaLogout(action) {
@@ -172,13 +201,20 @@ function* sagaLogout(action) {
 
   try {
     yield call(api.logout, payload);
+
+    if (payload.onSuccess) {
+      payload.onSuccess();
+    }
   } catch (e) {
+    if (payload.onFailure) {
+      payload.onFailure();
+    }
   }
 
   yield put(logoutDone({}));
 
-  if (payload.onSuccess) {
-    payload.onSuccess();
+  if (payload.onComplete) {
+    payload.onComplete();
   }
 }
 
@@ -196,6 +232,67 @@ function* sagaFetchUserList(action) {
     if (payload.onFailure) {
       payload.onFailure();
     }
+  }
+
+  if (payload.onComplete) {
+    payload.onComplete();
+  }
+}
+
+function* sagaCreateUser(action) {
+  const payload = action.payload;
+
+  const res = yield call(api.createUser, payload);
+  if (res.success) {
+    if (payload.onSuccess) {
+      payload.onSuccess();
+    }
+  } else {
+    if (payload.onFailure) {
+      payload.onFailure();
+    }
+  }
+
+  if (payload.onComplete) {
+    payload.onComplete();
+  }
+}
+
+function* sagaDeleteUser(action) {
+  const payload = action.payload;
+
+  const res = yield call(api.deleteUser, payload);
+  if (res.success) {
+    if (payload.onSuccess) {
+      payload.onSuccess();
+    }
+  } else {
+    if (payload.onFailure) {
+      payload.onFailure();
+    }
+  }
+
+  if (payload.onComplete) {
+    payload.onComplete();
+  }
+}
+
+function* sagaUpdateUser(action) {
+  const payload = action.payload;
+
+  const res = yield call(api.updateUser, payload);
+  if (res.success) {
+    if (payload.onSuccess) {
+      payload.onSuccess();
+    }
+  } else {
+    if (payload.onFailure) {
+      payload.onFailure();
+    }
+  }
+
+  if (payload.onComplete) {
+    payload.onComplete();
   }
 }
 

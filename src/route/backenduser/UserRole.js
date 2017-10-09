@@ -5,7 +5,12 @@ import {action, selector} from './redux';
 import {action as authAction} from '../../util/auth/';
 import style from './UserRole.module.scss';
 
-const kRoles = ['平台管理员', '服务点管理员', '服务点投资人', '服务单位'];
+const kRoles = [
+  {label: '平台管理员', value: 100},
+  {label: '服务点管理员', value: 200},
+  {label: '服务点投资人', value: 300},
+  {label: '服务单位', value: 400}
+];
 
 class UserRole extends React.Component {
   constructor(props) {
