@@ -1,4 +1,6 @@
 .siderMenu {
+  display: flex;
+  flex-flow: column;
   background: #3e3e3e;
   overflow: auto;
   padding-bottom: 24px;

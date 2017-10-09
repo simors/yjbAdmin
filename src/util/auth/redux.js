@@ -2,11 +2,11 @@ import {call, put, takeLatest} from 'redux-saga/effects';
 import {createAction} from 'redux-actions';
 import {Record, Map, List} from 'immutable';
 import {REHYDRATE} from 'redux-persist/constants';
-import * as authCloud from './cloud';
+import * as api from './cloud';
 
 // --- model
 
-class UserInfo extends Record({
+class User extends Record({
   id: undefined,
   email: undefined,
   emailVerified: undefined,
@@ -26,10 +26,11 @@ class UserInfo extends Record({
   createdAt: undefined,
   updatedAt: undefined,
   type: undefined,                // user type, e.g. system admin, platform admin, etc.
+  note: undefined,                // note for this user
   roles: List(),                  // List<RoleInfo>
-}, 'UserInfo') {
+}, 'User') {
   static fromJson(j) {
-    let info = new UserInfo();
+    let info = new User();
 
     return info.withMutations((m) => {
       m.set('id', j.objectId);
@@ -51,17 +52,18 @@ class UserInfo extends Record({
       m.set('createdAt', j.createdAt);
       m.set('updatedAt', j.updatedAt);
       m.set('type', j.type);
+      m.set('note', j.note);
       m.set('roles', new List(j.roles));
     });
   }
 }
 
-class RoleInfo extends Record({
+class Role extends Record({
   code: undefined,
-  permissions: List(),        // List<PermissionInfo>
-}, 'RoleInfo') {
+  permissions: List(),        // List<Permission>
+}, 'Role') {
   static fromJson(j) {
-    let role = new RoleInfo();
+    let role = new Role();
 
     return role.withMutations((m) => {
       m.set('code', j.code);
@@ -70,11 +72,11 @@ class RoleInfo extends Record({
   }
 }
 
-class PermissionInfo extends Record({
+class Permission extends Record({
   code: undefined,
-}, 'PermissionInfo') {
+}, 'Permission') {
   static fromJson(j) {
-    let perm = new PermissionInfo();
+    let perm = new Permission();
 
     return perm.withMutations((m) => {
       m.set('code', j.code);
@@ -83,110 +85,134 @@ class PermissionInfo extends Record({
 }
 
 class AuthState extends Record({
-  loaded: false,              // whether auto login has finished
+  loading: true,              // whether login with token has finished
   activeUserId: undefined,    // current login user
   token: undefined,           // current login user token
-  users: Map(),               // Map<id, UserInfo>
-  roles: Map(),               // Map<id, RoleInfo>
-  permissions: Map(),         // Map<id, PermissionInfo>
+  users: Map(),               // Map<id, User>, id is objectId from leancloud
+  roles: Map(),               // Map<id, Role>, id is objectId from leancloud
+  permissions: Map(),         // Map<id, Permission>, id is objectId from leancloud
 }, 'AuthState') {
 
 }
 
 // --- constant
 
-const LOADED = 'SAGA@AUTH/LOADED';
-const LOGIN_WITH_MOBILE_PHONE = 'SAGA@AUTH/LOGIN_WITH_MOBILE_PHONE';
-const AUTO_LOGIN = 'SAGA@AUTH/AUTO_LOGIN';
-const LOGIN_SUCCESS = 'SAGA@AUTH/LOGIN_SUCCESS';
-const LOGOUT = 'SAGA@AUTH/LOGOUT';
-const LOGOUT_SUCCESS = 'SAGA@AUTH/LOGOUT_SUCCESS';
+const LOAD_DONE = 'AUTH/LOAD_DONE';
+const LOGIN_WITH_MOBILE_PHONE = 'AUTH/LOGIN_WITH_MOBILE_PHONE';
+const LOGIN_WITH_TOKEN = 'AUTH/LOGIN_WITH_TOKEN';
+const LOGIN_DONE = 'AUTH/LOGIN_DONE';
+const LOGOUT = 'AUTH/LOGOUT';
+const LOGOUT_DONE = 'AUTH/LOGOUT_DONE';
+const FETCH_USER_LIST = 'AUTH/FETCH_USER_LIST';
+const FETCH_USER_LIST_DONE = 'AUTH/FETCH_USER_LIST_DONE';
 
 // --- action
 
-export const authAction = {
+export const action = {
   loginWithMobilePhone: createAction(LOGIN_WITH_MOBILE_PHONE),
-  autoLogin: createAction(AUTO_LOGIN),
+  loginWithToken: createAction(LOGIN_WITH_TOKEN),
   logout: createAction(LOGOUT),
-  loginSuccess: createAction(LOGIN_SUCCESS),
+  fetchUserList: createAction(FETCH_USER_LIST),
 };
 
-const loaded = createAction(LOADED);
-const logoutSuccess = createAction(LOGOUT_SUCCESS);
+const loadDone = createAction(LOAD_DONE);
+const loginDone = createAction(LOGIN_DONE);
+const logoutDone = createAction(LOGOUT_DONE);
+const fetchUserListDone = createAction(FETCH_USER_LIST_DONE);
 
 // --- saga
+
+export const saga = [
+  takeLatest(LOGIN_WITH_MOBILE_PHONE, sagaLoginWithMobilePhone),
+  takeLatest(LOGIN_WITH_TOKEN, sagaLoginWithToken),
+  takeLatest(LOGOUT, sagaLogout),
+  takeLatest(FETCH_USER_LIST, sagaFetchUserList),
+];
 
 function* sagaLoginWithMobilePhone(action) {
   const payload = action.payload;
 
   try {
-    // result user: {
+    // result user = {
     //   userInfo,
     //   token
     // }
-    const user = yield call(authCloud.loginWithMobilePhone, payload);
+    const login = yield call(api.loginWithMobilePhone, payload);
 
-    yield put(authAction.loginSuccess({user}));
+    yield put(loginDone({login}));
 
     if (payload.onSuccess) {
       payload.onSuccess();
     }
 
-    console.log('login succeeded：', user);
+    console.log('login succeeded：', login);
   } catch (e) {
     console.log('login failed：', e);
   }
 }
 
-function* sagaAutoLogin(action) {
+function* sagaLoginWithToken(action) {
   const payload = action.payload;
 
   try {
-    const user = yield call(authCloud.become, payload);
+    const login = yield call(api.become, payload);
 
-    yield put(authAction.loginSuccess({user}));
+    yield put(loginDone({login}));
 
-    console.log('auto login succeeded：', user);
+    console.log('login with token succeeded：', login);
   } catch(e) {
-    console.log('auto login failed：', e);
+    console.log('login with token failed：', e);
   }
 
-  yield put(loaded({}));
+  yield put(loadDone({}));
 }
 
 function* sagaLogout(action) {
   const payload = action.payload;
 
   try {
-    yield call(authCloud.logout, payload);
+    yield call(api.logout, payload);
   } catch (e) {
   }
 
-  yield put(logoutSuccess({}));
+  yield put(logoutDone({}));
 
   if (payload.onSuccess) {
     payload.onSuccess();
   }
 }
 
-export const authSaga = [
-  takeLatest(LOGIN_WITH_MOBILE_PHONE, sagaLoginWithMobilePhone),
-  takeLatest(AUTO_LOGIN, sagaAutoLogin),
-  takeLatest(LOGOUT, sagaLogout),
-];
+function* sagaFetchUserList(action) {
+  const payload = action.payload;
+
+  const res = yield call(api.fetchUserList, payload);
+  if (res.success) {
+    yield put(fetchUserListDone({users: res.users}));
+
+    if (payload.onSuccess) {
+      payload.onSuccess();
+    }
+  } else {
+    if (payload.onFailure) {
+      payload.onFailure();
+    }
+  }
+}
 
 // --- reducer
 
 const initialState = new AuthState();
 
-export function authReducer(state=initialState, action) {
+export function reducer(state=initialState, action) {
   switch(action.type) {
-    case LOADED:
-      return reduceLoaded(state, action);
-    case LOGIN_SUCCESS:
-      return reduceLoginSuccess(state, action);
-    case LOGOUT_SUCCESS:
-      return reduceLogoutSuccess(state, action);
+    case LOAD_DONE:
+      return reduceLoadDone(state, action);
+    case LOGIN_DONE:
+      return reduceLoginDone(state, action);
+    case LOGOUT_DONE:
+      return reduceLogoutDone(state, action);
+    case FETCH_USER_LIST_DONE:
+      return reduceFetchUserListDone(state, action);
     case REHYDRATE:
       return reduceRehydrate(state, action);
     default:
@@ -194,30 +220,47 @@ export function authReducer(state=initialState, action) {
   }
 }
 
-function reduceLoaded(state, action) {
-  return state.set('loaded', true);
+function reduceLoadDone(state, action) {
+  return state.set('loading', false);
 }
 
-function reduceLoginSuccess(state, action) {
-  const {user} = action.payload;
+function reduceLoginDone(state, action) {
+  const {login} = action.payload;
 
-  const info = UserInfo.fromJson(user.userInfo);
-  const token = user.token;
+  const user = User.fromJson(login.user);
+  const token = login.token;
 
   return state.withMutations((m) => {
-    m.set('activeUserId', info.id);
+    m.set('activeUserId', user.id);
     m.set('token', token);
-    m.setIn(['users', info.id], info);
+    m.setIn(['users', user.id], user);
   });
 }
 
-function reduceLogoutSuccess(state, action) {
+function reduceLogoutDone(state, action) {
   const activeUserId = state.get('activeUserId');
 
   return state.withMutations((m) => {
     m.set('activeUserId', undefined);
     m.set('token', undefined);
     m.deleteIn(['users', activeUserId]);
+  });
+}
+
+function reduceFetchUserListDone(state, action) {
+  const {users: jsonUsers} = action.payload;
+
+  let users = new Map();
+
+  users = users.withMutations((m) => {
+    jsonUsers.forEach((i) => {
+      const user = User.fromJson(i);
+      m.set(user.id, user);
+    })
+  });
+
+  return state.withMutations((m) => {
+    m.setIn(["users"], users);
   });
 }
 
@@ -241,7 +284,7 @@ function reduceRehydrate(state, action) {
   try {
     for (let [id, profile] of users) {
       if (id && profile) {
-        const userInfo = new UserInfo({...profile});
+        const userInfo = new User({...profile});
         state = state.setIn(['users', id], userInfo);
       }
     }
@@ -254,62 +297,59 @@ function reduceRehydrate(state, action) {
 
 // --- selector
 
-function selectLoaded(appState) {
-  return appState.AUTH.loaded;
+export const selector = {
+  selectLoading,
+  selectActiveUserId,
+  selectActiveUser,
+  selectToken,
+  selectIsUserLoggedIn,
+  selectUser,
+  selectUserById,
+  selectUserByIds,
+};
+
+function selectLoading(appState) {
+  return appState.AUTH.loading;
 }
 
 function selectActiveUserId(appState) {
   return appState.AUTH.activeUserId;
 }
 
-function selectActiveUserIdAndToken(appState) {
-  return {
-    activeUserId: appState.AUTH.activeUserId,
-    token: appState.AUTH.token
-  };
-}
-
-function selectIsUserLoggedIn(appState) {
-  const activeUserId = selectActiveUserIdAndToken(appState).activeUserId;
-  return activeUserId !== undefined;
-}
-
-function selectUserInfoById(appState, id) {
-  return appState.AUTH.getIn(['users', id], undefined);
-}
-
-function selectUserInfoByIds(appState, ids) {
-  let infos = [];
-
-  ids.forEach((id) => {
-    const info = selectUserInfoById(appState, id);
-
-    // TODO: invalid user id ?
-    if (info !== undefined) {
-      infos.push(info.toJS());
-    }
-  });
-
-  return infos;
-}
-
-function selectActiveUserInfo(appState) {
+function selectActiveUser(appState) {
   const activeUserId = selectActiveUserId(appState);
 
-  return activeUserId !== undefined ? appState.AUTH.selectUserInfoById(activeUserId) : undefined;
+  return activeUserId !== undefined ? selectUserById(appState, activeUserId) : undefined;
 }
 
 function selectToken(appState) {
-  let AUTH = appState.AUTH;
-  return AUTH.token;
+  return appState.AUTH.token;
 }
 
-export const authSelector = {
-  selectLoaded,
-  selectActiveUserId,
-  selectIsUserLoggedIn,
-  selectUserInfoById,
-  selectUserInfoByIds,
-  selectActiveUserInfo,
-  selectToken,
-};
+function selectIsUserLoggedIn(appState) {
+  const activeUserId = selectActiveUserId(appState);
+  return activeUserId !== undefined;
+}
+
+function selectUser(appState) {
+  return appState.AUTH.getIn(['users'], new Map()).toArray();
+}
+
+function selectUserById(appState, id) {
+  return appState.AUTH.getIn(['users', id], undefined);
+}
+
+function selectUserByIds(appState, ids) {
+  let users = [];
+
+  ids.forEach((id) => {
+    const user = selectUserById(appState, id);
+
+    // TODO: invalid user id ?
+    if (user !== undefined) {
+      users.push(user.toJS());
+    }
+  });
+
+  return users;
+}

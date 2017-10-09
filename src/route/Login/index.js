@@ -3,10 +3,9 @@
  */
 import React from 'react'
 import {connect} from 'react-redux'
-import {fakeAuth} from '../../util/auth'
 import {Redirect} from 'react-router-dom'
 import {Button, Row, Form, Input} from 'antd'
-import {authAction} from '../../util/auth/'
+import {action as authAction} from '../../util/auth/'
 import style from './style.module.scss'
 
 const FormItem = Form.Item

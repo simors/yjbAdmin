@@ -92,7 +92,6 @@ class SiderMenu extends React.Component {
         </Menu.SubMenu>
         <Menu.SubMenu key="/system" title={<span><Icon type="notification" />系统管理</span>}>
           <Menu.Item key="/system/user"><Link to="/system/user">用户与角色管理</Link></Menu.Item>
-          <Menu.Item key="/system/role"><Link to="/system/role">角色与权限管理</Link></Menu.Item>
           <Menu.Item key="/system/log"><Link to="/system/log">操作日志管理</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/profit" title={<span><Icon type="notification" />投资收益</span>}>

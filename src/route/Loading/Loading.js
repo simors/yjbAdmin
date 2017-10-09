@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter, Redirect} from 'react-router-dom';
 import {Spin} from 'antd';
-import {authSelector} from '../../util/auth';
+import {selector as authSelector} from '../../util/auth';
 import style from './Loading.module.scss';
 
 class Loading extends React.Component {
@@ -11,7 +11,7 @@ class Loading extends React.Component {
   }
 
   render() {
-    if (this.props.loaded) {
+    if (!this.props.loading) {
       if (this.props.activeUserId !== undefined) {
         return (
           <Redirect to={this.props.from}/>
@@ -36,7 +36,7 @@ class Loading extends React.Component {
 
 const mapStateToProps = (appState, ownProps) => {
   return {
-    loaded: authSelector.selectLoaded(appState),
+    loading: authSelector.selectLoading(appState),
     activeUserId: authSelector.selectActiveUserId(appState),
   }
 };

@@ -1,7 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Modal, Button, Form, Input} from 'antd';
-import {sagaAction, selector} from "./redux";
+import {action, selector} from "./redux";
+import {selector as authSelector} from "../../util/auth/";
 
 const formItemLayout = {
   labelCol: {
@@ -17,19 +18,18 @@ class UserDetail extends React.Component {
     super(props);
   }
 
-  onClose = () => {
-    this.props.sagaUserDetailModalHide();
+  onHideModal = () => {
+    this.props.hideUserDetailModal();
   };
 
   render() {
-    console.log('[DEBUG] ---> UserDetail render, props: ', this.props);
     const {getFieldDecorator} = this.props.form;
     return (
       <Modal visible={this.props.visible}
              title="用户信息"
-             onCancel={this.onClose}
+             onCancel={this.onHideModal}
              footer={[
-               <Button key="1" type="primary" onClick={this.onClose}>
+               <Button key="1" type="primary" onClick={this.onHideModal}>
                  关闭
                </Button>
              ]}>
@@ -39,28 +39,17 @@ class UserDetail extends React.Component {
             label="姓名"
           > {
             getFieldDecorator('username', {
-              initialValue: this.props.data.name,
+              initialValue: this.props.user.mobilePhoneNumber,
             })(
               <Input disabled />
             )}
           </Form.Item>
           <Form.Item
             {...formItemLayout}
-            label="密码"
-          > {
-            getFieldDecorator('password', {
-              initialValue: this.props.data.password,
-            })(
-              <Input disabled />
-            )
-          }
-          </Form.Item>
-          <Form.Item
-            {...formItemLayout}
             label="手机号码"
           > {
             getFieldDecorator('username', {
-              initialValue: this.props.data.phoneNo,
+              initialValue: this.props.user.mobilePhoneNumber,
             })(
               <Input disabled />
             )}
@@ -70,7 +59,7 @@ class UserDetail extends React.Component {
             label="备注"
           > {
             getFieldDecorator('note', {
-              initialValue: this.props.data.note ? this.props.data.note : "暂无",
+              initialValue: this.props.user.note ? this.props.user.note : "暂无",
             })(
               <Input.TextArea autosize={{ minRows: 2, maxRows: 6 }} disabled />
             )}
@@ -82,14 +71,22 @@ class UserDetail extends React.Component {
 }
 
 const mapStateToProps = (appState, ownProps) => {
+  const visible = selector.selectUserDetailModalVisible(appState);
+  const selectedUserIds = selector.selectSelectedUserIds(appState);
+  let user = {};
+  if (selectedUserIds.length === 1) {
+    const id = selectedUserIds[0];
+    user = authSelector.selectUserById(appState, id);
+  }
+
   return {
-    visible: selector.UserDetail.visible(appState),
-    data: selector.UserDetail.data(appState),
+    visible,
+    user,
   };
 };
 
 const mapDispatchToProps = {
-  ...sagaAction,
+  ...action,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(UserDetail));
