@@ -6,5 +6,8 @@
     .ant-checkbox-group-item {
       display: block;
     }
+    .ant-checkbox-wrapper+.ant-checkbox-wrapper {
+      margin-left: 0;
+    }
   }
 }
