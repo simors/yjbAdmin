@@ -5,7 +5,7 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
-import {fetchOrdersApi} from './cloud'
+import {fetchOrdersApi, fetchRechargesApi} from './cloud'
 import {deviceActions} from '../device'
 import {stationSelector} from '../station/redux'
 import {deviceSelector} from '../device'
@@ -34,10 +34,7 @@ class Order extends OrderRecord {
       record.set('start', obj.createTime)
       record.set('end', obj.endTime)
       record.set('amount', obj.amount)
-      // record.set('stationId', obj.device.station.id)
-      // record.set('stationName', obj.device.station.name)
       record.set('deviceId', obj.device.id)
-      // record.set('deviceNo', obj.device.deviceNo)
       record.set('userId', obj.user.id)
       // record.set('nickname', obj.user.nickname)
       // record.set('mobilePhoneNumber', obj.user.mobilePhoneNumber)
@@ -45,16 +42,42 @@ class Order extends OrderRecord {
   }
 }
 
+const RechargeRecord = Record({
+  id: undefined,                  //充值记录id
+  orderNo: undefined,             //充值单号
+  userId: undefined,              //充值用户id
+  amount: undefined,              //充值金额
+  dealTime: undefined,            //充值时间
+}, 'RechargeRecord')
+
+class Recharge extends RechargeRecord {
+  static fromApi(obj) {
+    let recharge = new RechargeRecord()
+    return recharge.withMutations((record) => {
+      record.set('id', obj.id)
+      record.set('orderNo', obj.order_no)
+      record.set('userId', obj.userId)
+      record.set('amount', obj.cost)
+      record.set('dealTime', obj.dealTime)
+    })
+  }
+}
+
 const OrderState = Record({
   orders: Map(),            //订单信息 健为orderId，值为OrderRecord
-  orderList: List()
+  orderList: List(),
+  recharges: Map(),         //充值记录
+  rechargeList: List(),
 }, 'OrderState')
 /**** Constant ****/
 const FETCH_ORDERS = 'FETCH_ORDERS'
-const FETCH_ORDERS_SUCCESS = 'FETCH_ORDERS_SUCCESS'
 const UPDATE_ORDER_LIST = 'UPDATE_ORDER_LIST'
 const SAVE_ORDER = 'SAVE_ORDER'
 const SAVE_ORDERS = 'SAVE_ORDERS'
+const FETCH_RECHARGES = 'FETCH_RECHARGES'
+const SAVE_RECHARGE = 'SAVE_RECHARGE'
+const SAVE_RECHARGES = 'SAVE_RECHARGES'
+const UPDATE_RECHARGE_LIST = 'UPDATE_RECHARGE_LIST'
 
 export const OrderStatus = {
   ORDER_STATUS_UNPAID : 0,      //未支付
@@ -62,14 +85,16 @@ export const OrderStatus = {
   ORDER_STATUS_PAID : 2,        //已支付
 }
 /**** Action ****/
-const fetchOrdersSuccessAction = createAction(FETCH_ORDERS_SUCCESS)
 const updateOrderList = createAction(UPDATE_ORDER_LIST)
+const updateRechargeList = createAction(UPDATE_RECHARGE_LIST)
 
 export const actions = {
   fetchOrdersAction: createAction(FETCH_ORDERS),
-  fetchOrdersSuccessAction,
   saveOrder: createAction(SAVE_ORDER),
-  saverOrders: createAction(SAVE_ORDERS)
+  saverOrders: createAction(SAVE_ORDERS),
+  saveRecharge: createAction(SAVE_RECHARGE),
+  saveRecharges: createAction(SAVE_RECHARGES),
+  fetchRechargesAction: createAction(FETCH_RECHARGES),
 }
 /**** Saga ****/
 function* fetchOrders(action) {
@@ -116,10 +141,46 @@ function* fetchOrders(action) {
       payload.error(error)
     }
   }
+}
+
+function* fetchRecharges(action) {
+  let payload = action.payload
+
+  let apiPayload = {
+    start: payload.start,
+    end: payload.end,
+    mobilePhoneNumber: payload.mobilePhoneNumber,
+    limit: payload.limit,
+    isRefresh: payload.isRefresh || true,
+    lastDealTime: payload.lastDealTime || undefined
+  }
+
+  try {
+    let recharges = yield call(fetchRechargesApi, apiPayload)
+    yield put(updateRechargeList({recharges: recharges, isRefresh: apiPayload.isRefresh}))
+    let users = new Set()
+    recharges.forEach((deal) => {
+      let user = deal.user
+      if(user) {
+        users.add(user)
+      }
+    })
+    if(users.size > 0) {
+      //TODO 保存user信息
+    }
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
 
 }
 export const saga = [
   takeLatest(FETCH_ORDERS, fetchOrders),
+  takeLatest(FETCH_RECHARGES, fetchRecharges)
 ]
 /**** Reducer ****/
 const initialState = OrderState()
@@ -130,10 +191,14 @@ export function reducer(state = initialState, action) {
       return handleSaveOrder(state, action)
     case SAVE_ORDERS:
       return handleSaveOrders(state, action)
-    case FETCH_ORDERS_SUCCESS:
-      return handleSaveOrders(state, action)
     case UPDATE_ORDER_LIST:
       return handleUpdateOrderList(state, action)
+    case SAVE_RECHARGE:
+      return handleSaveRecharge(state, action)
+    case SAVE_RECHARGES:
+      return handleSaveRecharges(state, action)
+    case UPDATE_RECHARGE_LIST:
+      return handleUpdateRechargeList(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -148,12 +213,29 @@ function handleSaveOrder(state, action) {
   return state
 }
 
+function handleSaveRecharge(state, action) {
+  let recharge = action.payload.recharge
+  let rechargeRecord = Recharge.fromApi(recharge)
+  state = state.setIn(['recharges', recharge.id], rechargeRecord)
+  return state
+}
+
 function handleSaveOrders(state, action) {
   let orders = action.payload.orders
 
   orders.forEach((order) => {
     let orderRecord = Order.fromApi(order)
     state = state.setIn(['orders', order.id], orderRecord)
+  })
+  return state
+}
+
+function handleSaveRecharges(state, action) {
+  let recharges = action.payload.recharges
+
+  recharges.forEach((recharge) => {
+    let rechargeRecord = Recharge.fromApi(recharge)
+    state = state.setIn(['recharges', recharge.id], rechargeRecord)
   })
   return state
 }
@@ -171,6 +253,22 @@ function handleUpdateOrderList(state, action) {
     orderList = orderList.push(order.id)
   })
   state = state.set('orderList', orderList)
+  return state
+}
+
+function handleUpdateRechargeList(state, action) {
+  let recharges = action.payload.recharges
+  let isRefresh = action.payload.isRefresh
+  let rechargeList = List()
+  if(!isRefresh) {
+    rechargeList = state.get('rechargeList')
+  }
+  recharges.forEach((recharge) => {
+    let rechargeRecord = Recharge.fromApi(recharge)
+    state = state.setIn(['recharges', recharge.id], rechargeRecord)
+    rechargeList = rechargeList.push(recharge.id)
+  })
+  state = state.set('rechargeList', rechargeList)
   return state
 }
 
@@ -211,7 +309,30 @@ function selectOrderList(state) {
   return orderInfoList
 }
 
+function selectRecharge(state, rechargeId) {
+  if(!rechargeId) {
+    return undefined
+  }
+  let rechargeRecord = state.ORDER.getIn(['recharges', rechargeId])
+  return rechargeRecord? rechargeRecord.toJS() : undefined
+}
+
+function selectRechargeList(state) {
+  let rechargeList = state.ORDER.get('rechargeList')
+  let rechargeInfoList = []
+  rechargeList.toArray().forEach((rechargeId) => {
+    let rechargeInfo = selectRecharge(state, rechargeId)
+    //TODO 获取user信息
+    // rechargeInfo.nickname = ""
+    // rechargeInfo.mobilePhoneNumber = ""
+    rechargeInfoList.push(rechargeInfo)
+  })
+  return rechargeInfoList
+}
+
 export const selector = {
   selectOrder,
   selectOrderList,
+  selectRecharge,
+  selectRechargeList,
 }

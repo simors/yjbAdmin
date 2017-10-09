@@ -70,7 +70,7 @@ class SiderMenu extends React.Component {
         </Menu.SubMenu>
         <Menu.SubMenu key="/order" title={<span><Icon type="notification" />充值与订单管理</span>}>
           <Menu.Item key="/order/list"><Link to="/order/list">订单信息管理</Link></Menu.Item>
-          <Menu.Item key="/order/deposit"><Link to="/order/deposit">用户充值管理</Link></Menu.Item>
+          <Menu.Item key="/order/recharge"><Link to="/order/recharge">用户充值管理</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/settlement" title={<span><Icon type="notification" />结算报表</span>}>
           <Menu.Item key="/settlement/list"><Link to="/settlement/list">服务点分成统计</Link></Menu.Item>
@@ -79,7 +79,7 @@ class SiderMenu extends React.Component {
         </Menu.SubMenu>
         <Menu.SubMenu key="/promotion" title={<span><Icon type="notification" />营销活动</span>}>
           <Menu.Item key="/promotion/list"><Link to="/promotion/list">活动管理</Link></Menu.Item>
-          <Menu.Item key="/promotion/deposit"><Link to="/promotion/deposit">发布充值活动</Link></Menu.Item>
+          <Menu.Item key="/promotion/recharge"><Link to="/promotion/recharge">发布充值活动</Link></Menu.Item>
           <Menu.Item key="/promotion/point"><Link to="/promotion/point">发布积分活动</Link></Menu.Item>
           <Menu.Item key="/promotion/bonus"><Link to="/promotion/bonus">发布红包活动</Link></Menu.Item>
         </Menu.SubMenu>

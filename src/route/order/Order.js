@@ -100,7 +100,6 @@ class Order extends PureComponent {
 
 const mapStateToProps = (appState, ownProps) => {
   let orderList = selector.selectOrderList(appState)
-  console.log("orderList:", orderList)
   return {
     orderList: orderList,
   }
@@ -111,5 +110,3 @@ const mapDispatchToProps = {
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Order))
-
-export {saga, reducer} from './redux'

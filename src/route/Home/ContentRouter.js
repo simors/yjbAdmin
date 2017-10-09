@@ -8,7 +8,7 @@ import Dashboard from '../../component/Dashboard'
 import SysConfig from '../../component/SysConfig'
 import {SysUser} from '../sysuser/'
 import StationManager from '../station/StationManage'
-import Order from '../Order'
+import Order, {Recharge} from '../Order'
 import Device from '../device'
 import InvestorManager from '../station/InvestorManage'
 import ShowStation from '../station/ShowStation'
@@ -23,7 +23,7 @@ const ContentRouter = ({match}) => {
       <Route exact path="/system/user" component={SysUser} />
       <Route exact path="/site/list" component={StationManager} />
       <Route exact path="/order/list" component={Order} />
-      <Route exact path="/order/deposit" component={SysConfig} />
+      <Route exact path="/order/recharge" component={Recharge} />
       <Route exact path="/site/showStation/:id" component={ShowStation} />
       <Route exact path="/site/editStation/:id" component={EditStation} />
       <Route exact path="/site/addStation" component={AddStation} />
