@@ -66,11 +66,11 @@ export async function fetchUserList(payload) {
         query.equalTo('user', ptrUser);
         query.include(['role']);
 
-        const leanUserRoleMaps = await query.find();
+        const leanUserRolePairs = await query.find();
 
         const roles = [];
 
-        leanUserRoleMaps.forEach((i) => {
+        leanUserRolePairs.forEach((i) => {
           roles.push(i.get('role').toJSON());
         });
 
@@ -161,10 +161,11 @@ export async function createUser(payload) {
     const leanUser = await user.save();
 
     // create _User and _Role pointer and insert into User_Role_Map
-    const userRoleMaps = [];
+    const userRolePairs = [];
 
     const ptrUser = AV.Object.createWithoutData('_User', leanUser.id);
 
+    // TODO: pass role id as payload
     await Promise.all(roles.map(
       async (role) => {
         const query = new AV.Query('_Role');
@@ -173,16 +174,16 @@ export async function createUser(payload) {
 
         const ptrRole = AV.Object.createWithoutData('_Role', leanRole.id);
 
-        const userRoleMap = new UserRoleMap({
+        const userRolePair = new UserRoleMap({
           user: ptrUser,
           role: ptrRole
         });
 
-        userRoleMaps.push(userRoleMap);
+        userRolePairs.push(userRolePair);
       }
     ));
 
-    await AV.Object.saveAll(userRoleMaps);
+    await AV.Object.saveAll(userRolePairs);
 
     return {
       success: true,
@@ -197,13 +198,30 @@ export async function createUser(payload) {
 }
 
 export async function deleteUser(payload) {
+  // TODO: move to server side implementation
+
   try {
-    await sleep(500);
+    const {params} = payload;
+    const {id} = params;
+
+    const ptrUser = AV.Object.createWithoutData('_User', id);
+
+    const query = new AV.Query('User_Role_Map');
+    query.equalTo('user', ptrUser);
+
+    const leanUserRolePairs = await query.find();
+
+    const ptrUserRolePairs = [];
+    leanUserRolePairs.forEach((i) => {
+      const ptrUserRolePair = AV.Object.createWithoutData('User_Role_Map', i.id);
+
+      ptrUserRolePairs.push(ptrUserRolePair);
+    });
+
+    await AV.Object.destroyAll([...ptrUserRolePairs, ptrUser]);
+
     return {
       success: true,
-      user: {
-        id: 1, name: '刘德华', phoneNo: '13687338616', note: '', roles: ['平台管理员', '服务点管理员']
-      }
     };
   } catch (e) {
     return {
