@@ -5,8 +5,10 @@ import AV from 'leancloud-storage'
 
 export async function fetchStations(payload) {
   try {
-    console.log('payload=======>', payload)
+    // console.log('payload=======>', payload)
     let stations = await AV.Cloud.run('stationFetchStations', payload)
+    // console.log('stations=======>', stations)
+
     return {success: true, stations: stations}
   } catch (err) {
     return {success: false, error: err}

@@ -235,11 +235,11 @@ class StationManage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
-  let areaList = configSelector.selectAreaList(state)
-  console.log('areaList========>', areaList)
+  // let areaList = configSelector.selectAreaList(state)
+  // console.log('areaList========>', areaList)
   return {
     stations: stations,
-    areaList: areaList,
+    // areaList: areaList,
   };
 };
 

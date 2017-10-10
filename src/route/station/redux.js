@@ -41,6 +41,7 @@ export const StationDetailRecord = Record({
 
 export class StationDetail extends StationDetailRecord {
   static fromApi(obj) {
+    console.log('obj====>',obj)
     let stationDetail = new StationDetailRecord()
     return stationDetail.withMutations((record) => {
       record.set('id', obj.id)
@@ -505,6 +506,7 @@ function handleSetAllInvestors(state, investors) {
 function handleSaveStations(state, action) {
   let stations = action.payload.stations
   let stationList = action.payload.stationList
+  console.log('stations=========>',stations,stationList)
   if (stationList && stationList.length > 0) {
     state = state.set('stationList', new List(stationList))
     state = handleSetAllStations(state, stations)
