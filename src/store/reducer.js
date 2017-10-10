@@ -5,7 +5,7 @@ import {reducer as backendUserReducer} from '../route/backenduser/'
 import {stationReducer} from '../route/station/redux'
 import {configReducer} from '../util/config'
 import {deviceReducer} from '../route/device'
-import {orderReducer} from '../route/Order'
+import {orderReducer} from '../route/order'
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
