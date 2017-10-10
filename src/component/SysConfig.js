@@ -13,10 +13,6 @@ class SysConfig extends React.Component {
     super(props)
   }
 
-  componentWillMount(){
-    this.props.requestAreaList()
-  }
-
   fetchLocation = () => {
     this.props.requestPosition()
     // this.props.requestAreaList()
@@ -39,10 +35,8 @@ class SysConfig extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   let location = configSelector.selectLocation(state)
-  let areaList = configSelector.selectAreaList(state)
   return {
     location,
-    areaList,
   }
 }
 

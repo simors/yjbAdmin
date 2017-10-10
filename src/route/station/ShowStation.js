@@ -265,7 +265,6 @@ const mapStateToProps = (state, ownProps) => {
   // console.log('ownporsoss.......aaa',ownProps)
   let userList = stationSelector.selectUsers(state)
 
-  let areaList = configSelector.selectAreaList(state)
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   console.log('stationnoredux====>', station)
   let partners = stationSelector.selectPartners(state)
@@ -275,7 +274,6 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     station: station,
-    areaList: areaList,
     partners: partners,
     userList: userList
 

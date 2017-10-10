@@ -24,10 +24,6 @@ class Home extends Component {
     super(props)
   }
 
-  componentWillMount(){
-    this.props.requestAreaList()
-  }
-
   userMenuOnClick = ({key}) => {
     let history = this.props.history
     if (key == 'logout') {

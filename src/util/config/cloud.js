@@ -31,50 +31,6 @@ export function fetchPosition(payload) {
   })
 }
 
-
-export async function fetchSubAreaList(payload) {
-  try{
-    let defaultPayload = {
-      level: "3",
-      areaCode: '0-1'
-    }
-    Object.assign(defaultPayload, payload)
-    if(defaultPayload.areaCode.indexOf('-') > -1) {
-      defaultPayload.areaType = defaultPayload.areaCode.split('-')[0]
-      defaultPayload.areaCode = defaultPayload.areaCode.split('-')[1]
-    }
-    let results = await AV.Cloud.run('baiduGetSubAreaList2', defaultPayload)
-    // console.log('fetchSubAreaList.results====>>>>', results)
-    return results
-  }catch (err){
-    return err
-  }
-  // console.log('fetchSubAreaList.defaultPayload====>>>>', defaultPayload)
-}
-
-
-// export async function fetchSubAreaList(payload) {
-//   try {
-//     await sleep(300);
-//     return {r: 0, users: [
-//       {id: 1, name: '刘德华', phoneNo: '18175181287', note: '暂无'},
-//       {id: 2, name: '罗润兵', phoneNo: '18175181288', note: '暂无'},
-//       {id: 3, name: '孙燕姿', phoneNo: '18175181289', note: '暂无'},
-//       {id: 4, name: '孙燕姿', phoneNo: '18175181289', note: '暂无'},
-//       {id: 5, name: '孙燕姿', phoneNo: '18175181289', note: '暂无'},
-//       {id: 6, name: '孙燕姿', phoneNo: '18175181289', note: '暂无'},
-//       {id: 7, name: '孙燕姿', phoneNo: '18175181289', note: '暂无'},
-//       {id: 8, name: '孙燕姿', phoneNo: '18175181289', note: '暂无'},
-//       {id: 9, name: '孙燕姿', phoneNo: '18175181289', note: '暂无'},
-//       {id: 10, name: '孙燕姿', phoneNo: '18175181289', note: '暂无'},
-//       {id: 11, name: '孙燕姿', phoneNo: '18175181289', note: '暂无'},
-//       {id: 12, name: '孙燕姿', phoneNo: '18175181289', note: '暂无'},
-//     ]};
-//   } catch (e) {
-//     return {r: -1};
-//   }
-// }
-
 export function trim(str){
   if(str&&str.length>0){
     str =  str.replace(/(^\s*)|(\s*$)/g, "")
