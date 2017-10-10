@@ -49,7 +49,7 @@ class UserOp extends React.Component {
   };
 
   onRefresh = () => {
-
+    this.props.fetchUserList({});
   };
 
   render() {
