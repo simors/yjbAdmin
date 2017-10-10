@@ -19,7 +19,7 @@ class UserOp extends React.Component {
   };
 
   onEdit = () => {
-
+    this.props.showUserEditModal({});
   };
 
   onDelete = () => {
