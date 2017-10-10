@@ -76,6 +76,8 @@ class UserDetail extends React.Component {
 
 const mapStateToProps = (appState, ownProps) => {
   const visible = selector.selectUserDetailModalVisible(appState);
+
+  // TODO: get user id from payload
   const selectedUserIds = selector.selectSelectedUserIds(appState);
   let user = {};
   if (selectedUserIds.length === 1) {

@@ -1,7 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Button} from 'antd';
+import {Button, Modal} from 'antd';
 import {action, selector} from './redux';
+import {action as authAction} from '../../util/auth';
 import style from './UserOp.module.scss';
 
 class UserOp extends React.Component {
@@ -22,7 +23,29 @@ class UserOp extends React.Component {
   };
 
   onDelete = () => {
+    Modal.confirm({
+      title: '确定要删除该用户吗?',
+      okText: '确定',
+      okType: 'danger',
+      cancelText: '取消',
+      onOk: () => {
+        if (this.props.selectedUserIds.length !== 1)
+            return;
 
+        const id = this.props.selectedUserIds[0];
+        this.props.deleteUser({
+          params: {
+            id
+          },
+          onSuccess: () => {
+            console.log('on Delete')
+            this.props.fetchUserList({});
+          }
+        });
+      },
+      onCancel: () => {
+      },
+    });
   };
 
   onRefresh = () => {
@@ -75,6 +98,7 @@ const mapStateToProps = (appState, ownProps) => {
 
 const mapDispatchToProps = {
   ...action,
+  ...authAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserOp);
