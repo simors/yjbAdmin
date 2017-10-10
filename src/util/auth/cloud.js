@@ -49,6 +49,7 @@ export async function fetchUserList(payload) {
     // TODO: filter params
 
     const users = [];
+    const userRolePairs = {};
 
     // TODO: limit
 
@@ -74,12 +75,16 @@ export async function fetchUserList(payload) {
           roles.push(i.get('role').toJSON());
         });
 
-        users.push({
-          ...leanUser.toJSON(),
-          roles
-        })
+        userRolePairs[leanUser.id] = roles;
       }
     ));
+
+    leanUsers.forEach((i) => {
+      users.push({
+        ...i.toJSON(),
+        roles: userRolePairs[i.id],
+      })
+    });
 
     return {
       success: true,
