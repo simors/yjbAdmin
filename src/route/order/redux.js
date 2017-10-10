@@ -276,9 +276,38 @@ function onRehydrate(state, action) {
   var incoming = action.payload.ORDER
   if (!incoming) return state
 
+  let orderMap = new Map(incoming.orders)
+  try {
+    for (let [orderId, order] of orderMap) {
+      if(orderId && order) {
+        let orderRecord = new OrderRecord({...order})
+        state = state.setIn(['orders', orderId], orderRecord)
+      }
+    }
+  } catch (error) {
+    orderMap.clear()
+  }
+
   let orderList = incoming.orderList
   if (orderList) {
     state = state.set('orderList', List(orderList))
+  }
+
+  let rechargeMap = new Map(incoming.recharges)
+  try {
+    for (let [rechargeId, recharge] of rechargeMap) {
+      if(rechargeId && recharge) {
+        let rechargeRecord = new RechargeRecord({...recharge})
+        state = state.setIn(['recharges', rechargeId], rechargeRecord)
+      }
+    }
+  } catch (error) {
+    rechargeMap.clear()
+  }
+
+  let rechargeList = incoming.rechargeList
+  if(rechargeList) {
+    state = state.set('rechargeList', List(rechargeList))
   }
 
   return state
@@ -320,12 +349,15 @@ function selectRecharge(state, rechargeId) {
 function selectRechargeList(state) {
   let rechargeList = state.ORDER.get('rechargeList')
   let rechargeInfoList = []
+
   rechargeList.toArray().forEach((rechargeId) => {
     let rechargeInfo = selectRecharge(state, rechargeId)
     //TODO 获取user信息
     // rechargeInfo.nickname = ""
     // rechargeInfo.mobilePhoneNumber = ""
-    rechargeInfoList.push(rechargeInfo)
+    if(rechargeInfo) {
+      rechargeInfoList.push(rechargeInfo)
+    }
   })
   return rechargeInfoList
 }

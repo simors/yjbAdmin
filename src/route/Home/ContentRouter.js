@@ -14,6 +14,7 @@ import InvestorManager from '../station/InvestorManage'
 import ShowStation from '../station/ShowStation'
 import EditStation from '../station/EditStation'
 import AddStation from '../station/AddStation'
+import Promotion from '../promotion'
 
 const ContentRouter = ({match}) => {
   return (
@@ -28,6 +29,7 @@ const ContentRouter = ({match}) => {
       <Route exact path="/site/editStation/:id" component={EditStation} />
       <Route exact path="/site/addStation" component={AddStation} />
       <Route exact path="/site/investor" component={InvestorManager} />
+      <Route exact path="/promotion/list" component={Promotion} />
     </Switch>
   )
 }

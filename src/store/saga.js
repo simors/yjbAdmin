@@ -7,6 +7,7 @@ import {stationSaga} from '../route/station/redux'
 import {configSaga} from '../util/config'
 import {orderSaga} from '../route/order'
 import {deviceSaga} from '../route/device'
+import {promotionSaga} from '../route/promotion'
 
 export default function* rootSaga() {
   yield all([
@@ -15,5 +16,6 @@ export default function* rootSaga() {
     ...stationSaga,
     ...orderSaga,
     ...deviceSaga,
+    ...promotionSaga,
   ])
 }
