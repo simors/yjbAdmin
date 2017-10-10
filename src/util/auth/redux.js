@@ -7,7 +7,7 @@ import * as api from './cloud';
 // --- model
 
 class User extends Record({
-  id: undefined,
+  id: undefined,                  // objectId
   email: undefined,
   emailVerified: undefined,
   mobilePhoneNumber: undefined,
@@ -27,7 +27,7 @@ class User extends Record({
   updatedAt: undefined,
   type: undefined,                // user type, e.g. system admin, platform admin, etc.
   note: undefined,                // note for this user
-  roles: List(),                  // List<RoleInfo>
+  roles: List(),                  // List<Role>
 }, 'User') {
   static fromJson(j) {
     let info = new User();
@@ -53,12 +53,21 @@ class User extends Record({
       m.set('updatedAt', j.updatedAt);
       m.set('type', j.type);
       m.set('note', j.note);
-      m.set('roles', new List(j.roles));
+
+      const roles = [];
+      if (j.roles) {
+        j.roles.forEach((i) => {
+          roles.push(Role.fromJson(i));
+        });
+      }
+      m.set('roles', new List(roles));
     });
   }
 }
 
 class Role extends Record({
+  id: undefined,              // objectId
+  name: undefined,
   code: undefined,
   permissions: List(),        // List<Permission>
 }, 'Role') {
@@ -66,6 +75,8 @@ class Role extends Record({
     let role = new Role();
 
     return role.withMutations((m) => {
+      m.set('id', j.objectId);
+      m.set('name', j.name);
       m.set('code', j.code);
       m.set('permissions', new List(j.permissions));
     })
@@ -73,12 +84,14 @@ class Role extends Record({
 }
 
 class Permission extends Record({
+  id: undefined,              // objectId
   code: undefined,
 }, 'Permission') {
   static fromJson(j) {
     let perm = new Permission();
 
     return perm.withMutations((m) => {
+      m.set('id', j.objectId);
       m.set('code', j.code);
     })
   }
@@ -89,8 +102,8 @@ class AuthState extends Record({
   activeUserId: undefined,    // current login user
   token: undefined,           // current login user token
   users: Map(),               // Map<id, User>, id is objectId from leancloud
-  roles: Map(),               // Map<id, Role>, id is objectId from leancloud
-  permissions: Map(),         // Map<id, Permission>, id is objectId from leancloud
+  // roles: Map(),               // Map<id, Role>, id is objectId from leancloud
+  // permissions: Map(),         // Map<id, Permission>, id is objectId from leancloud
 }, 'AuthState') {
 
 }
@@ -400,7 +413,8 @@ export const selector = {
   selectActiveUser,
   selectToken,
   selectIsUserLoggedIn,
-  selectUser,
+  selectAllUser,
+  selectAdminUser,
   selectUserById,
   selectUserByIds,
 };
@@ -428,8 +442,21 @@ function selectIsUserLoggedIn(appState) {
   return activeUserId !== undefined;
 }
 
-function selectUser(appState) {
+function selectAllUser(appState) {
   return appState.AUTH.getIn(['users'], new Map()).toArray();
+}
+
+function selectAdminUser(appState) {
+  const adminUsers = [];
+
+  const allUsers = appState.AUTH.getIn(['users'], new Map()).toArray();
+  allUsers.forEach((i) => {
+    if (i.type === 'admin') {
+      adminUsers.push(i);
+    }
+  });
+
+  return adminUsers;
 }
 
 function selectUserById(appState, id) {

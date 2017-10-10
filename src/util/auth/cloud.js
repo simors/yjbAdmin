@@ -41,17 +41,49 @@ export async function logout(payload) {
 }
 
 export async function fetchUserList(payload) {
+  // TODO: move to server side implementation
+
   try {
-    await sleep(300);
+    const {params} = payload;
+
+    // TODO: filter params
+
+    const users = [];
+
+    // TODO: limit
+
+    const query = new AV.Query('_User');
+    query.descending('createdAt');
+    query.equalTo('type', 'admin');
+
+    const leanUsers = await query.find();
+
+    await Promise.all(leanUsers.map(
+      async (leanUser) => {
+        const ptrUser = AV.Object.createWithoutData('_User', leanUser.id);
+
+        const query = new AV.Query('User_Role_Map');
+        query.equalTo('user', ptrUser);
+        query.include(['role']);
+
+        const leanUserRoleMaps = await query.find();
+
+        const roles = [];
+
+        leanUserRoleMaps.forEach((i) => {
+          roles.push(i.get('role').toJSON());
+        });
+
+        users.push({
+          ...leanUser.toJSON(),
+          roles
+        })
+      }
+    ));
+
     return {
       success: true,
-      users: [
-        {objectId: 1, idName: '刘德华', mobilePhoneNumber: '18175181287', note: '', roles: [100, 200]},
-        {objectId: 2, idName: '罗润兵', mobilePhoneNumber: '18175181288', note: '', roles: [100, 200, 300]},
-        {objectId: 3, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '', roles: [100, 400]},
-        {objectId: 4, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '', roles: [300, 200]},
-        {objectId: 5, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '', roles: [400, 100, 300]},
-      ]
+      users
     };
   } catch (e) {
     return {
@@ -105,15 +137,7 @@ export async function createUser(payload) {
     const User = AV.Object.extend('_User');
     const UserRoleMap = AV.Object.extend('User_Role_Map');
 
-    // check user existent
-    const query = new AV.Query('_User');
-    query.equalTo('username', jsonUser.username);
-
-    const count = await query.count();
-    if (count > 0) {
-      throw Error('username already exists');
-    }
-
+    // check 'mobilePhoneNumber' and 'username' existent
     if (jsonUser.mobilePhoneNumber) {
       const query = new AV.Query('_User');
       query.equalTo('mobilePhoneNumber', jsonUser.mobilePhoneNumber);
@@ -122,6 +146,14 @@ export async function createUser(payload) {
       if (count > 0) {
         throw Error('mobilePhoneNumber already exists');
       }
+    }
+
+    const query = new AV.Query('_User');
+    query.equalTo('username', jsonUser.username);
+
+    const count = await query.count();
+    if (count > 0) {
+      throw Error('username already exists');
     }
 
     // insert into _User

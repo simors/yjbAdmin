@@ -1,5 +1,13 @@
-:global .ant-form-item-label {
-  label {
-    display: inline;
+.UserCreate {
+  :global .ant-form-item-label {
+    label {
+      display: inline;
+    }
+  }
+
+  :global {
+     .ant-checkbox-wrapper + .ant-checkbox-wrapper {
+      margin-left: 0;
+    }
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Modal, Button, Form, Input, Select, Checkbox} from 'antd';
+import {Modal, Button, Form, Input, Select, Checkbox} from 'antd';
 import {action, selector} from './redux';
 import {action as authAction} from '../../util/auth/';
 import style from './UserCreate.module.scss';
@@ -48,7 +48,10 @@ class UserCreate extends React.Component {
       });
 
       this.props.createUser({
-        params: values,
+        params: {
+          ...values,
+          type: 'admin',
+        },
         onSuccess: () => {
           this.props.hideUserCreateModal({});
           this.props.form.resetFields();
@@ -110,6 +113,7 @@ class UserCreate extends React.Component {
 
     return (
       <Modal visible={this.props.visible}
+             wrapClassName={style.UserCreate}
              title='新建用户'
              closable={false}
              footer={[
