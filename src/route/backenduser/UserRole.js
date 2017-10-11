@@ -18,7 +18,7 @@ class UserRole extends React.Component {
   }
 
   onChange = (checkedValue) => {
-    this.props.updateCheckedUserRoles({checked: checkedValue});
+    // this.props.updateCheckedUserRoles({checked: checkedValue});
   };
 
   render() {
