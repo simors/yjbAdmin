@@ -4,7 +4,7 @@ import {Modal, Button, Form, Input, Select, Checkbox} from 'antd';
 import {action, selector} from './redux';
 import {action as authAction} from '../../util/auth/';
 import {selector as authSelector} from "../../util/auth/";
-import style from './UserCreate.module.scss';
+import style from './UserEdit.module.scss';
 
 const kRoles = [
   {label: '平台管理员', value: 100},
@@ -50,6 +50,7 @@ class UserEdit extends React.Component {
 
       this.props.updateUser({
         params: {
+          id: this.props.user.id,
           ...values,
           type: 'admin',
         },

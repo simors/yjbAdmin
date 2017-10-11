@@ -237,15 +237,95 @@ export async function deleteUser(payload) {
 }
 
 export async function updateUser(payload) {
+  // TODO: move to server side implementation
+
   try {
-    await sleep(500);
+    const {params} = payload;
+
+    const jsonUser = {
+    };
+
+    ({
+      email: jsonUser.email,
+      // mobilePhoneNumber: jsonUser.mobilePhoneNumber,
+      authData: jsonUser.authData,
+      // username: jsonUser.username,
+      password: jsonUser.password,
+      nickname: jsonUser.nickname,
+      avatar: jsonUser.avatar,
+      sex: jsonUser.sex,
+      language: jsonUser.language,
+      country: jsonUser.country,
+      province: jsonUser.province,
+      city: jsonUser.city,
+      idNumber: jsonUser.idNumber,
+      idName: jsonUser.idName,
+      type: jsonUser.type,
+      note: jsonUser.note,
+    } = params);
+
+    const {id, roles} = params;
+
+    // update User_Role_Map
+
+    const ptrUser = AV.Object.createWithoutData('_User', id);
+
+    const query = new AV.Query('User_Role_Map');
+    query.equalTo('user', ptrUser);
+    query.include(['role']);
+
+    const leanUserRolePairs = await query.find();
+
+    const oldRoles = [];
+
+    leanUserRolePairs.forEach((i) => {
+      oldRoles.push(i.get('role').toJSON().code);
+    });
+
+    // TODO: pass role id as payload
+    // role is identified by code
+    const rolesToAdd = [...roles].filter(i => ! new Set(oldRoles).has(i));
+    const rolesToRemove = [...oldRoles].filter(i => ! new Set(roles).has(i));
+
+    const queryAllRoles = new AV.Query('_Role');
+    const leanAllRoles = await queryAllRoles.find();
+    const jsonAllRoles = {};
+    leanAllRoles.forEach((i) => {
+      const jsonRole = i.toJSON();
+      jsonAllRoles[jsonRole.code] = jsonRole;
+    });
+
+    const ptrUserRolePairsToAdd = [];
+    const ptrUserRolePairsToRemove = [];
+
+    rolesToAdd.forEach((i) => {
+      const id = jsonAllRoles[i].objectId;
+      const ptrUserRolePair = AV.Object.createWithoutData('User_Role_Map', id);
+
+      ptrUserRolePairsToAdd.push(ptrUserRolePair);
+    });
+
+    rolesToRemove.forEach((i) => {
+      const id = jsonAllRoles[i].objectId;
+      const ptrUserRolePair = AV.Object.createWithoutData('User_Role_Map', id);
+
+      ptrUserRolePairsToRemove.push(ptrUserRolePair);
+    });
+
+    await AV.Object.saveAll(ptrUserRolePairsToAdd);
+    await AV.Object.destroyAll(ptrUserRolePairsToRemove);
+
+    // update _User
+    for (const [key, value] of Object.entries(jsonUser)) {
+      ptrUser.set(key, value);
+    }
+    const leanUser = await ptrUser.save();
+
     return {
       success: true,
-      user: {
-        id: 1, name: '张学友', phoneNo: '13687338616', note: '', roles: ['平台管理员', '服务点管理员']
-      }
     };
   } catch (e) {
+    console.log('failed to update user: ', e);
     return {
       success: false,
       error: e
