@@ -3,7 +3,8 @@ import {connect} from 'react-redux';
 import {Modal, Button, Form, Input, Select, Checkbox} from 'antd';
 import {action, selector} from './redux';
 import {action as authAction} from '../../util/auth/';
-import style from './UserCreate.module.scss';
+import {selector as authSelector} from "../../util/auth/";
+import style from './UserEdit.module.scss';
 
 const kRoles = [
   {label: '平台管理员', value: 100},
@@ -12,7 +13,7 @@ const kRoles = [
   {label: '服务单位', value: 400}
 ];
 
-class UserCreate extends React.Component {
+class UserEdit extends React.Component {
   constructor(props) {
     super(props);
 
@@ -23,7 +24,7 @@ class UserCreate extends React.Component {
   }
 
   onHideModal = () => {
-    this.props.hideUserCreateModal();
+    this.props.hideUserEditModal();
     this.props.form.resetFields();
     this.setState((prevState, props) => {
       return {
@@ -47,13 +48,14 @@ class UserCreate extends React.Component {
         };
       });
 
-      this.props.createUser({
+      this.props.updateUser({
         params: {
+          id: this.props.user.id,
           ...values,
           type: 'admin',
         },
         onSuccess: () => {
-          this.props.hideUserCreateModal({});
+          this.props.hideUserEditModal({});
           this.props.form.resetFields();
           this.props.fetchUserList({});
         },
@@ -107,14 +109,22 @@ class UserCreate extends React.Component {
       initialValue: '86',
     })(
       <Select style={{ width: 60 }}>
-        <Select.Option value='86'>+86</Select.Option>
+        <Select.Option value='86' disabled>+86</Select.Option>
       </Select>
     );
 
+    const roles = [];
+    // User.roles is type of List<Role>
+    if (this.props.user && this.props.user.roles) {
+      this.props.user.roles.toArray().forEach((i) => {
+        roles.push(i.code);
+      });
+    }
+
     return (
       <Modal visible={this.props.visible}
-             wrapClassName={style.UserCreate}
-             title='新增用户信息'
+             wrapClassName={style.UserEdit}
+             title='修改用户信息'
              closable={false}
              footer={[
                <Button key='1' type='primary' onClick={this.onHideModal}>
@@ -132,6 +142,7 @@ class UserCreate extends React.Component {
             label='用户名'
           > {
             getFieldDecorator('idName', {
+              initialValue: this.props.user.idName,
               rules: [{ required: true, message: '请输入用户名!' }],
             })(
               <Input />
@@ -143,9 +154,10 @@ class UserCreate extends React.Component {
             label='手机号'
           > {
             getFieldDecorator('mobilePhoneNumber', {
+              initialValue: this.props.user.mobilePhoneNumber,
               rules: [{ required: true, message: '请输入手机号码!' }],
             })(
-              <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
+              <Input addonBefore={prefixSelector} style={{ width: '100%' }} disabled />
             )
           }
           </Form.Item>
@@ -156,7 +168,7 @@ class UserCreate extends React.Component {
           > {
             getFieldDecorator('password', {
               rules: [{
-                required: true, message: '请输入密码!',
+                required: false, message: '请输入密码!',
               }, {
                 validator: this.checkConfirm,
               }],
@@ -172,7 +184,7 @@ class UserCreate extends React.Component {
           > {
             getFieldDecorator('confirm', {
               rules: [{
-                required: true, message: '请确认密码!',
+                required: false, message: '请确认密码!',
               }, {
                 validator: this.checkPassword,
               }],
@@ -186,7 +198,9 @@ class UserCreate extends React.Component {
             label='角色'
             hasFeedback
           > {
+
             getFieldDecorator('roles', {
+              initialValue: roles,
               rules: [{
                 required: true, message: '请选择角色!'
               }]
@@ -203,7 +217,7 @@ class UserCreate extends React.Component {
             hasFeedback
           > {
             getFieldDecorator('note', {
-
+              initialValue: this.props.user.note,
             })(
               <Input.TextArea autosize={{minRows: 2, maxRows: 4}} />
             )
@@ -216,10 +230,18 @@ class UserCreate extends React.Component {
 }
 
 const mapStateToProps = (appState, ownProps) => {
-  const visible = selector.selectUserCreateModalVisible(appState);
+  const visible = selector.selectUserEditModalVisible(appState);
+
+  const selectedUserIds = selector.selectSelectedUserIds(appState);
+  let user = {};
+  if (selectedUserIds.length === 1) {
+    const id = selectedUserIds[0];
+    user = authSelector.selectUserById(appState, id);
+  }
 
   return {
     visible,
+    user,
   };
 };
 
@@ -228,4 +250,4 @@ const mapDispatchToProps = {
   ...authAction,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(UserCreate));
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(UserEdit));

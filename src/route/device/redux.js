@@ -220,7 +220,7 @@ function onRehydrate(state, action) {
 
   let deviceList = incoming.deviceList
   if(deviceList) {
-    state = state.setIn('deviceList', List(deviceList))
+    state = state.set('deviceList', List(deviceList))
   }
   return state
 }

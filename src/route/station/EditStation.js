@@ -477,7 +477,6 @@ const mapStateToProps = (state, ownProps) => {
     station: station,
     partners: partners,
     userList: userList
-
   };
 };
 

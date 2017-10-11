@@ -9,6 +9,7 @@ const UserState = Record({
   checkedUserRoles: List(),
   userDetailModalVisible: false,
   userCreateModalVisible: false,
+  userEditModalVisible: false,
 }, 'UserState');
 
 // --- constant
@@ -19,6 +20,8 @@ const SHOW_USER_DETAIL_MODAL      = 'SYSUSER/SHOW_USER_DETAIL_MODAL';
 const HIDE_USER_DETAIL_MODAL      = 'SYSUSER/HIDE_USER_DETAIL_MODAL';
 const SHOW_USER_CREATE_MODAL      = 'SYSUSER/SHOW_USER_CREATE_MODAL';
 const HIDE_USER_CREATE_MODAL      = 'SYSUSER/HIDE_USER_CREATE_MODAL';
+const SHOW_USER_EDIT_MODAL        = 'SYSUSER/SHOW_USER_EDIT_MODAL';
+const HIDE_USER_EDIT_MODAL        = 'SYSUSER/HIDE_USER_EDIT_MODAL';
 
 // --- action
 
@@ -29,6 +32,8 @@ export const action = {
   hideUserDetailModal: createAction(HIDE_USER_DETAIL_MODAL),
   showUserCreateModal: createAction(SHOW_USER_CREATE_MODAL),
   hideUserCreateModal: createAction(HIDE_USER_CREATE_MODAL),
+  showUserEditModal: createAction(SHOW_USER_EDIT_MODAL),
+  hideUserEditModal: createAction(HIDE_USER_EDIT_MODAL),
 };
 
 // --- saga
@@ -51,6 +56,10 @@ export const reducer = (state=initialState, action) => {
       return reduceShowUserCreateModal(state, action);
     case HIDE_USER_CREATE_MODAL:
       return reduceHideUserCreateModal(state, action);
+    case SHOW_USER_EDIT_MODAL:
+      return reduceShowUserEditModal(state, action);
+    case HIDE_USER_EDIT_MODAL:
+      return reduceHideUserEditModal(state, action);
     default:
       return state;
   }
@@ -93,6 +102,16 @@ function reduceHideUserCreateModal(state, action) {
   return state.setIn(['userCreateModalVisible'], false);
 }
 
+function reduceShowUserEditModal(state, action) {
+  return state.withMutations((m) => {
+    m.setIn(['userEditModalVisible'], true);
+  })
+}
+
+function reduceHideUserEditModal(state, action) {
+  return state.setIn(['userEditModalVisible'], false);
+}
+
 // --- selector
 
 export const selector = {
@@ -100,6 +119,7 @@ export const selector = {
   selectCheckedUserRoles,
   selectUserDetailModalVisible,
   selectUserCreateModalVisible,
+  selectUserEditModalVisible,
 };
 
 function selectSelectedUserIds(appState) {
@@ -120,4 +140,9 @@ function selectUserDetailModalVisible(appState) {
 function selectUserCreateModalVisible(appState) {
   const state = appState.BACKENDUSER;
   return state.getIn(['userCreateModalVisible'], false);
+}
+
+function selectUserEditModalVisible(appState) {
+  const state = appState.BACKENDUSER;
+  return state.getIn(['userEditModalVisible'], false);
 }
