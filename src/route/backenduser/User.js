@@ -8,6 +8,7 @@ import UserList from './UserList';
 import UserRole from './UserRole';
 import UserDetail from './UserDetail';
 import UserCreate from './UserCreate';
+import UserEdit from './UserEdit';
 
 class User extends React.Component {
   constructor(props) {
@@ -39,6 +40,7 @@ class User extends React.Component {
         </Row>
         <UserDetail/>
         <UserCreate/>
+        <UserEdit/>
       </div>
     )
   };

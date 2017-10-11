@@ -41,17 +41,54 @@ export async function logout(payload) {
 }
 
 export async function fetchUserList(payload) {
+  // TODO: move to server side implementation
+
   try {
-    await sleep(300);
+    const {params} = payload;
+
+    // TODO: filter params
+
+    const users = [];
+    const userRolePairs = {};
+
+    // TODO: limit
+
+    const query = new AV.Query('_User');
+    query.descending('createdAt');
+    query.equalTo('type', 'admin');
+
+    const leanUsers = await query.find();
+
+    await Promise.all(leanUsers.map(
+      async (leanUser) => {
+        const ptrUser = AV.Object.createWithoutData('_User', leanUser.id);
+
+        const query = new AV.Query('User_Role_Map');
+        query.equalTo('user', ptrUser);
+        query.include(['role']);
+
+        const leanUserRolePairs = await query.find();
+
+        const roles = [];
+
+        leanUserRolePairs.forEach((i) => {
+          roles.push(i.get('role').toJSON());
+        });
+
+        userRolePairs[leanUser.id] = roles;
+      }
+    ));
+
+    leanUsers.forEach((i) => {
+      users.push({
+        ...i.toJSON(),
+        roles: userRolePairs[i.id],
+      })
+    });
+
     return {
       success: true,
-      users: [
-        {objectId: 1, idName: '刘德华', mobilePhoneNumber: '18175181287', note: '', roles: [100, 200]},
-        {objectId: 2, idName: '罗润兵', mobilePhoneNumber: '18175181288', note: '', roles: [100, 200, 300]},
-        {objectId: 3, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '', roles: [100, 400]},
-        {objectId: 4, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '', roles: [300, 200]},
-        {objectId: 5, idName: '孙燕姿', mobilePhoneNumber: '18175181289', note: '', roles: [400, 100, 300]},
-      ]
+      users
     };
   } catch (e) {
     return {
@@ -62,12 +99,102 @@ export async function fetchUserList(payload) {
 }
 
 export async function createUser(payload) {
+  // TODO: move to server side implementation
+
   try {
-    await sleep(500);
+    const {params} = payload;
+
+    const jsonUser = {
+    };
+
+    ({
+      email: jsonUser.email,
+      mobilePhoneNumber: jsonUser.mobilePhoneNumber,
+      authData: jsonUser.authData,
+      username: jsonUser.username,  // must be set
+      password: jsonUser.password,  // must be set
+      nickname: jsonUser.nickname,
+      avatar: jsonUser.avatar,
+      sex: jsonUser.sex,
+      language: jsonUser.language,
+      country: jsonUser.country,
+      province: jsonUser.province,
+      city: jsonUser.city,
+      idNumber: jsonUser.idNumber,
+      idName: jsonUser.idName,
+      type: jsonUser.type,
+      note: jsonUser.note,
+    } = params);
+
+    const {roles} = params;
+
+    if (!jsonUser.username) { // TODO: wechat user
+      if (jsonUser.mobilePhoneNumber) {
+        jsonUser.username = jsonUser.mobilePhoneNumber;
+      }
+    }
+
+    if (!jsonUser.username || !jsonUser.password) {
+      throw Error('username and password must be set');
+    }
+
+    // define db table
+    const User = AV.Object.extend('_User');
+    const UserRoleMap = AV.Object.extend('User_Role_Map');
+
+    // check 'mobilePhoneNumber' and 'username' existent
+    if (jsonUser.mobilePhoneNumber) {
+      const query = new AV.Query('_User');
+      query.equalTo('mobilePhoneNumber', jsonUser.mobilePhoneNumber);
+
+      const count = await query.count();
+      if (count > 0) {
+        throw Error('mobilePhoneNumber already exists');
+      }
+    }
+
+    const query = new AV.Query('_User');
+    query.equalTo('username', jsonUser.username);
+
+    const count = await query.count();
+    if (count > 0) {
+      throw Error('username already exists');
+    }
+
+    // insert into _User
+    const user = new User(jsonUser);
+    const leanUser = await user.save();
+
+    // create _User and _Role pointer and insert into User_Role_Map
+    const userRolePairs = [];
+
+    const ptrUser = AV.Object.createWithoutData('_User', leanUser.id);
+
+    // TODO: pass role id as payload
+    await Promise.all(roles.map(
+      async (role) => {
+        const query = new AV.Query('_Role');
+        query.equalTo('code', role);
+        const leanRole = await query.first();
+
+        const ptrRole = AV.Object.createWithoutData('_Role', leanRole.id);
+
+        const userRolePair = new UserRoleMap({
+          user: ptrUser,
+          role: ptrRole
+        });
+
+        userRolePairs.push(userRolePair);
+      }
+    ));
+
+    await AV.Object.saveAll(userRolePairs);
+
     return {
       success: true,
     };
   } catch (e) {
+    console.log('failed to create user: ', e);
     return {
       success: false,
       error: e
@@ -76,13 +203,30 @@ export async function createUser(payload) {
 }
 
 export async function deleteUser(payload) {
+  // TODO: move to server side implementation
+
   try {
-    await sleep(500);
+    const {params} = payload;
+    const {id} = params;
+
+    const ptrUser = AV.Object.createWithoutData('_User', id);
+
+    const query = new AV.Query('User_Role_Map');
+    query.equalTo('user', ptrUser);
+
+    const leanUserRolePairs = await query.find();
+
+    const ptrUserRolePairs = [];
+    leanUserRolePairs.forEach((i) => {
+      const ptrUserRolePair = AV.Object.createWithoutData('User_Role_Map', i.id);
+
+      ptrUserRolePairs.push(ptrUserRolePair);
+    });
+
+    await AV.Object.destroyAll([...ptrUserRolePairs, ptrUser]);
+
     return {
       success: true,
-      user: {
-        id: 1, name: '刘德华', phoneNo: '13687338616', note: '', roles: ['平台管理员', '服务点管理员']
-      }
     };
   } catch (e) {
     return {

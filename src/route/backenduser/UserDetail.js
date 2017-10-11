@@ -27,7 +27,7 @@ class UserDetail extends React.Component {
 
     return (
       <Modal visible={this.props.visible}
-             title="用户详情"
+             title='查看用户信息'
              closable={false}
              footer={[
                <Button key="1" type="primary" onClick={this.onHideModal}>
@@ -76,6 +76,7 @@ class UserDetail extends React.Component {
 
 const mapStateToProps = (appState, ownProps) => {
   const visible = selector.selectUserDetailModalVisible(appState);
+
   const selectedUserIds = selector.selectSelectedUserIds(appState);
   let user = {};
   if (selectedUserIds.length === 1) {
