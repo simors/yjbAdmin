@@ -1,16 +1,68 @@
 import AV from 'leancloud-storage';
-import sleep from '../../util/sleep';
+
+async function fetchRoles(leanCurUser) {
+  // TODO: move to server side implementation
+
+  // TODO: limit
+
+  // to get:
+  // 1. all role list, 2. all permission list,
+  // 3. role list for current user, 4. permission list for current user
+  const jsonAllRoles = [];
+  const jsonAllPermissions = [];
+  const jsonCurRoles = [];
+  const jsonCurPermissions = [];
+
+  // all role list
+  let query = new AV.Query('_Role');
+  const leanAllRoles = await query.find();
+
+  leanAllRoles.forEach((i) => {
+    jsonAllRoles.push(i.toJSON());
+  });
+
+  // all permission list
+  query = new AV.Query('Permission');
+  const leanAllPermissions = await query.find();
+
+  leanAllPermissions.forEach((i) => {
+    jsonAllPermissions.push(i.toJSON());
+  });
+
+  // role list for current user
+  query = new AV.Query('User_Role_Map');
+  query.equalTo('user', leanCurUser);
+  query.include(['role']);
+  const leanUserRolePairs = await query.find();
+
+  leanUserRolePairs.forEach((i) => {
+    jsonCurRoles.push(i.get('role').toJSON());
+  });
+
+  // permission list for current user
+  // TODO:
+
+  return {
+    jsonAllRoles,
+    jsonAllPermissions,
+    jsonCurRoles,
+    jsonCurPermissions
+  };
+}
 
 export async function loginWithMobilePhone(payload) {
   try {
     const {phone, password} = payload;
 
-    const user = await AV.User.logInWithMobilePhone(phone, password);
-    const token = user.getSessionToken();
+    const leanCurUser = await AV.User.logInWithMobilePhone(phone, password);
+    const token = leanCurUser.getSessionToken();
+
+    const jsonRes = await fetchRoles(leanCurUser);
 
     return ({
-      user: {...user.toJSON()},
+      user: leanCurUser.toJSON(),
       token,
+      ...jsonRes,
     });
   } catch (e) {
     throw e;
@@ -21,12 +73,15 @@ export async function become(payload) {
   try {
     const {token: oldToken} = payload;
 
-    const user = await AV.User.become(oldToken);
-    const token = user.getSessionToken();
+    const leanCurUser = await AV.User.become(oldToken);
+    const token = leanCurUser.getSessionToken();
+
+    const jsonRes = await fetchRoles(leanCurUser);
 
     return ({
-      user: {...user.toJSON()},
+      user: leanCurUser.toJSON(),
       token,
+      ...jsonRes,
     });
   } catch (e) {
     throw e;
