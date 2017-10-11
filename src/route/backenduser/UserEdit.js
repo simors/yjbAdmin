@@ -115,7 +115,7 @@ class UserEdit extends React.Component {
 
     const roles = [];
     // User.roles is type of List<Role>
-    if (this.props.user.roles) {
+    if (this.props.user && this.props.user.roles) {
       this.props.user.roles.toArray().forEach((i) => {
         roles.push(i.code);
       });
