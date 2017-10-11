@@ -23,11 +23,6 @@ class Promotion extends PureComponent {
   render() {
     return (
       <div className={style.content}>
-        <div className={style.operation}>
-          <ButtonGroup>
-            <Button icon="plus-circle-o" onClick={this.showDetail}>新增活动</Button>
-          </ButtonGroup>
-        </div>
         <Row>
           <PromotionSearchForm />
         </Row>

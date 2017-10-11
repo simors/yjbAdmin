@@ -59,7 +59,7 @@ class DivisionCascader extends PureComponent {
 
 DivisionCascader.defaultProps = {
   disabled: false,
-  defaultValue: ['430000', '430100', '430104'],   //湖南省／长沙市／岳麓区
+  // defaultValue: ['430000', '430100', '430104'],   //湖南省／长沙市／岳麓区
   onChange: () => {},
 }
 

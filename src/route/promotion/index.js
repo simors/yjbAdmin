@@ -17,3 +17,4 @@ export const promotionActions = redux.actions
 export const promotionSelector = redux.selector
 
 export default Promotion
+export {default as RechargePromotion} from './RechargePromotion'
