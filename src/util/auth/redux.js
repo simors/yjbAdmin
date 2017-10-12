@@ -7,7 +7,7 @@ import * as api from './cloud';
 // --- model
 
 class User extends Record({
-  id: undefined,                  // objectId
+  objectId: undefined,                  // objectId
   email: undefined,
   emailVerified: undefined,
   mobilePhoneNumber: undefined,
@@ -27,83 +27,128 @@ class User extends Record({
   updatedAt: undefined,
   type: undefined,                // user type, e.g. system admin, platform admin, etc.
   note: undefined,                // note for this user
-  roles: List(),                  // List<Role>
+  roles: List(),                  // List<role id>
 }, 'User') {
-  static fromJson(j) {
-    let info = new User();
+  static fromJson(json) {
+    const imm = new User();
 
-    return info.withMutations((m) => {
-      m.set('id', j.objectId);
-      m.set('email', j.email);
-      m.set('emailVerified', j.emailVerified);
-      m.set('mobilePhoneNumber', j.mobilePhoneNumber);
-      m.set('mobilePhoneVerified', j.mobilePhoneVerified);
-      m.set('authData', j.authData);
-      m.set('username', j.username);
-      m.set('nickname', j.nickname);
-      m.set('avatar', j.avatar);
-      m.set('sex', j.sex);
-      m.set('language', j.language);
-      m.set('country', j.country);
-      m.set('province', j.province);
-      m.set('city', j.city);
-      m.set('idNumber', j.idNumber);
-      m.set('idName', j.idName);
-      m.set('createdAt', j.createdAt);
-      m.set('updatedAt', j.updatedAt);
-      m.set('type', j.type);
-      m.set('note', j.note);
-
-      const roles = [];
-      if (j.roles) {
-        j.roles.forEach((i) => {
-          roles.push(Role.fromJson(i));
-        });
-      }
-      m.set('roles', new List(roles));
+    return imm.withMutations((m) => {
+      m.set('objectId', json.objectId);
+      m.set('email', json.email);
+      m.set('emailVerified', json.emailVerified);
+      m.set('mobilePhoneNumber', json.mobilePhoneNumber);
+      m.set('mobilePhoneVerified', json.mobilePhoneVerified);
+      m.set('authData', json.authData);
+      m.set('username', json.username);
+      m.set('nickname', json.nickname);
+      m.set('avatar', json.avatar);
+      m.set('sex', json.sex);
+      m.set('language', json.language);
+      m.set('country', json.country);
+      m.set('province', json.province);
+      m.set('city', json.city);
+      m.set('idNumber', json.idNumber);
+      m.set('idName', json.idName);
+      m.set('createdAt', json.createdAt);
+      m.set('updatedAt', json.updatedAt);
+      m.set('type', json.type);
+      m.set('note', json.note);
+      m.set('roles', new List(json.roles));
     });
+  }
+
+  static toJson(imm) {
+    // NOTE: IE8 does not support property access. Only use get() when supporting IE8
+    return {
+      objectId: imm.objectId,
+      email: imm.email,
+      emailVerified: imm.emailVerified,
+      mobilePhoneNumber: imm.mobilePhoneNumber,
+      mobilePhoneVerified: imm.mobilePhoneVerified,
+      authData: imm.authData,
+      username: imm.username,
+      nickname: imm.nickname,
+      avatar: imm.avatar,
+      sex: imm.sex,
+      language: imm.language,
+      country: imm.country,
+      province: imm.province,
+      city: imm.city,
+      idNumber: imm.idNumber,
+      idName: imm.idName,
+      createdAt: imm.createdAt,
+      updatedAt: imm.updatedAt,
+      type: imm.type,
+      note: imm.note,
+      roles: imm.get('roles', new List()).toArray(),
+    };
   }
 }
 
 class Role extends Record({
-  id: undefined,              // objectId
+  objectId: undefined,              // objectId
   name: undefined,
   code: undefined,
-  permissions: List(),        // List<Permission>
+  displayName: undefined,
+  permissions: List(),        // List<permission id>
 }, 'Role') {
-  static fromJson(j) {
-    let role = new Role();
+  static fromJson(json) {
+    const role = new Role();
 
     return role.withMutations((m) => {
-      m.set('id', j.objectId);
-      m.set('name', j.name);
-      m.set('code', j.code);
-      m.set('permissions', new List(j.permissions));
+      m.set('objectId', json.objectId);
+      m.set('name', json.name);
+      m.set('code', json.code);
+      m.set('displayName', json.displayName);
+      m.set('permissions', new List(json.permissions));
     })
+  }
+
+  static toJson(imm) {
+    return {
+      objectId: imm.objectId,
+      name: imm.name,
+      code: imm.code,
+      displayName: imm.displayName,
+      permissions: imm.get('permissions', new List()).toArray(),
+    };
   }
 }
 
 class Permission extends Record({
-  id: undefined,              // objectId
+  objectId: undefined,              // objectId
   code: undefined,
+  displayName: undefined,
 }, 'Permission') {
-  static fromJson(j) {
-    let perm = new Permission();
+  static fromJson(json) {
+    const perm = new Permission();
 
     return perm.withMutations((m) => {
-      m.set('id', j.objectId);
-      m.set('code', j.code);
+      m.set('objectId', json.objectId);
+      m.set('code', json.code);
+      m.set('displayName', json.displayName);
     })
+  }
+
+  static toJson(imm) {
+    return {
+      objectId: imm.objectId,
+      code: imm.code,
+      displayName: imm.displayName,
+    };
   }
 }
 
+// NOTE: id is objectId from leancloud
 class AuthState extends Record({
-  loading: true,              // whether login with token has finished
-  activeUserId: undefined,    // current login user
-  token: undefined,           // current login user token
-  users: Map(),               // Map<id, User>, id is objectId from leancloud
-  // roles: Map(),               // Map<id, Role>, id is objectId from leancloud
-  // permissions: Map(),         // Map<id, Permission>, id is objectId from leancloud
+  loading: true,                // whether login with token has finished
+  token: undefined,             // current login user token
+  activeUserId: undefined,      // current login user
+  activeRoleIds: List(),        // List<role id>
+  activePermissionIds: List(),  // List<permission id>
+  users: Map(),                 // Map<id, User>
+  roles: Map(),                 // Map<role id, Role>
+  permissions: Map(),           // Map<permission id, Permission>
 }, 'AuthState') {
 
 }
@@ -336,14 +381,42 @@ function reduceLoadDone(state, action) {
 
 function reduceLoginDone(state, action) {
   const {login} = action.payload;
+  const {user, token, jsonActiveRoles, jsonActivePermissions, jsonAllRoles, jsonAllPermissions} = login;
 
-  const user = User.fromJson(login.user);
-  const token = login.token;
+  // 'activeRoleIds'
+  const immActiveRoleIds = new List(jsonActiveRoles);
+
+  // 'activePermissionIds'
+  const immActivePermissionIds = new List(jsonActivePermissions);
+
+  // since we login from client side, e.g., browser, the roles of the login user
+  // were fetched separately
+  const immActiveUser = User.fromJson(user).set('roles', immActiveRoleIds);
+
+  // 'roles'
+  const immAllRoles = new Map().withMutations((m) => {
+    jsonAllRoles.forEach((i) => {
+      const immRole = Role.fromJson(i);
+      m.set(immRole.objectId, immRole);
+    });
+  });
+
+  // 'permissions'
+  const immAllPermissions = new Map().withMutations((m) => {
+    jsonAllPermissions.forEach((i) => {
+      const immPermission = Permission.fromJson(i);
+      m.set(immPermission.objectId, immPermission);
+    });
+  });
 
   return state.withMutations((m) => {
-    m.set('activeUserId', user.id);
     m.set('token', token);
-    m.setIn(['users', user.id], user);
+    m.set('activeUserId', immActiveUser.objectId);
+    m.set('activeRoleIds', immActiveRoleIds);
+    m.set('activePermissionIds', immActivePermissionIds);
+    m.setIn(['users', immActiveUser.objectId], immActiveUser);
+    m.set('roles', immAllRoles);
+    m.set('permissions', immAllPermissions);
   });
 }
 
@@ -360,49 +433,62 @@ function reduceLogoutDone(state, action) {
 function reduceFetchUserListDone(state, action) {
   const {users: jsonUsers} = action.payload;
 
-  let users = new Map();
-
-  users = users.withMutations((m) => {
-    jsonUsers.forEach((i) => {
-      const user = User.fromJson(i);
-      m.set(user.id, user);
-    })
+  const immUsers = [];
+  jsonUsers.forEach((i) => {
+    const immUser = User.fromJson(i);
+    immUsers.push(immUser);
   });
 
   return state.withMutations((m) => {
-    m.setIn(["users"], users);
+    immUsers.forEach((i) => {
+      m.setIn(['users', i.objectId], i);
+    });
   });
 }
 
 function reduceRehydrate(state, action) {
-  const incoming = action.payload.AUTH;
+  const storage = action.payload.AUTH;
 
-  if (!incoming) {
+  if (storage === undefined)
     return state;
-  }
 
-  if (!incoming.activeUserId) {
-    return state;
-  }
+  // all data in json format
+  const {token, activeUserId, activeRoleIds, activePermissionIds, users, roles, permissions} = storage;
 
-  // always re-auth with the server
-  // state = state.set('activeUserId', incoming.activeUserId);
-  state = state.set('token', incoming.token);
+  const immActiveRoleIds = new List(activeRoleIds);
+  const immActivePermissionIds = new List(activePermissionIds);
 
-  // convert from plain json dict to immutable.js Map
-  const users = Map(incoming.users);
-  try {
-    for (let [id, profile] of users) {
-      if (id && profile) {
-        const userInfo = new User({...profile});
-        state = state.setIn(['users', id], userInfo);
-      }
-    }
-  } catch (e) {
-    users.clear();
-  }
+  const immAllUsers = new Map().withMutations((m) => {
+    Object.values(users).forEach((i) => {
+      const immUser = User.fromJson(i);
+      m.set(immUser.objectId, immUser);
+    });
+  });
 
-  return state;
+  const immAllRoles = new Map().withMutations((m) => {
+    Object.values(roles).forEach((i) => {
+      const immRole = Role.fromJson(i);
+      m.set(immRole.objectId, immRole);
+    });
+  });
+
+  // 'permissions'
+  const immAllPermissions = new Map().withMutations((m) => {
+    Object.values(permissions).forEach((i) => {
+      const immPermission = Permission.fromJson(i);
+      m.set(immPermission.objectId, immPermission);
+    });
+  });
+
+  return state.withMutations((m) => {
+    m.set('token', token);
+    // m.set('activeUserId', activeUserId);   // always re-auth with the server
+    m.set('activeRoleIds', immActiveRoleIds);
+    m.set('activePermissionIds', immActivePermissionIds);
+    m.set('users', immAllUsers);
+    m.set('roles', immAllRoles);
+    m.set('permissions', immAllPermissions);
+  });
 }
 
 // --- selector
@@ -413,10 +499,10 @@ export const selector = {
   selectActiveUser,
   selectToken,
   selectIsUserLoggedIn,
-  selectAllUser,
-  selectAdminUser,
+  selectAllRoles,
+  selectAllUsers,
+  selectAdminUsers,
   selectUserById,
-  selectUserByIds,
 };
 
 function selectLoading(appState) {
@@ -430,7 +516,10 @@ function selectActiveUserId(appState) {
 function selectActiveUser(appState) {
   const activeUserId = selectActiveUserId(appState);
 
-  return activeUserId !== undefined ? selectUserById(appState, activeUserId) : undefined;
+  if (activeUserId === undefined)
+    return undefined;
+
+  return selectUserById(appState, activeUserId);
 }
 
 function selectToken(appState) {
@@ -442,14 +531,32 @@ function selectIsUserLoggedIn(appState) {
   return activeUserId !== undefined;
 }
 
-function selectAllUser(appState) {
-  return appState.AUTH.getIn(['users'], new Map()).toArray();
+function selectAllRoles(appState) {
+  const allRoles = [];
+
+  const allImmRoles = appState.AUTH.getIn(['roles'], new Map()).toArray();
+  allImmRoles.forEach((i) => {
+    allRoles.push(Role.toJson(i));
+  });
+
+  return allRoles;
 }
 
-function selectAdminUser(appState) {
+function selectAllUsers(appState) {
+  const allUsers = [];
+
+  const allImmUsers = appState.AUTH.getIn(['users'], new Map()).toArray();
+  allImmUsers.forEach((i) => {
+    allUsers.push(User.toJson(i));
+  });
+
+  return allUsers;
+}
+
+function selectAdminUsers(appState) {
   const adminUsers = [];
 
-  const allUsers = appState.AUTH.getIn(['users'], new Map()).toArray();
+  const allUsers = selectAllUsers(appState);
   allUsers.forEach((i) => {
     if (i.type === 'admin') {
       adminUsers.push(i);
@@ -460,20 +567,10 @@ function selectAdminUser(appState) {
 }
 
 function selectUserById(appState, id) {
-  return appState.AUTH.getIn(['users', id], undefined);
-}
+  const immUser = appState.AUTH.getIn(['users', id], undefined);
 
-function selectUserByIds(appState, ids) {
-  let users = [];
+  if (immUser === undefined)
+    return undefined;
 
-  ids.forEach((id) => {
-    const user = selectUserById(appState, id);
-
-    // TODO: invalid user id ?
-    if (user !== undefined) {
-      users.push(user.toJS());
-    }
-  });
-
-  return users;
+  return User.toJson(immUser);
 }

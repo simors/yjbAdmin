@@ -1,6 +1,6 @@
 import AV from 'leancloud-storage';
 
-async function fetchRoles(leanCurUser) {
+async function fetchRolesAndPermissions(leanActiveUser) {
   // TODO: move to server side implementation
 
   // TODO: limit
@@ -10,11 +10,12 @@ async function fetchRoles(leanCurUser) {
   // 3. role list for current user, 4. permission list for current user
   const jsonAllRoles = [];
   const jsonAllPermissions = [];
-  const jsonCurRoles = [];
-  const jsonCurPermissions = [];
+  const jsonActiveRoles = [];
+  const jsonActivePermissions = [];
 
   // all role list
   let query = new AV.Query('_Role');
+  query.ascending('code');
   const leanAllRoles = await query.find();
 
   leanAllRoles.forEach((i) => {
@@ -23,6 +24,7 @@ async function fetchRoles(leanCurUser) {
 
   // all permission list
   query = new AV.Query('Permission');
+  query.ascending('code');
   const leanAllPermissions = await query.find();
 
   leanAllPermissions.forEach((i) => {
@@ -31,12 +33,12 @@ async function fetchRoles(leanCurUser) {
 
   // role list for current user
   query = new AV.Query('User_Role_Map');
-  query.equalTo('user', leanCurUser);
-  query.include(['role']);
+  query.equalTo('user', leanActiveUser);
+  // query.include(['role']);
   const leanUserRolePairs = await query.find();
 
   leanUserRolePairs.forEach((i) => {
-    jsonCurRoles.push(i.get('role').toJSON());
+    jsonActiveRoles.push(i.get('role').id);
   });
 
   // permission list for current user
@@ -45,8 +47,8 @@ async function fetchRoles(leanCurUser) {
   return {
     jsonAllRoles,
     jsonAllPermissions,
-    jsonCurRoles,
-    jsonCurPermissions
+    jsonActiveRoles,
+    jsonActivePermissions
   };
 }
 
@@ -54,13 +56,13 @@ export async function loginWithMobilePhone(payload) {
   try {
     const {phone, password} = payload;
 
-    const leanCurUser = await AV.User.logInWithMobilePhone(phone, password);
-    const token = leanCurUser.getSessionToken();
+    const leanActiveUser = await AV.User.logInWithMobilePhone(phone, password);
+    const token = leanActiveUser.getSessionToken();
 
-    const jsonRes = await fetchRoles(leanCurUser);
+    const jsonRes = await fetchRolesAndPermissions(leanActiveUser);
 
     return ({
-      user: leanCurUser.toJSON(),
+      user: leanActiveUser.toJSON(),
       token,
       ...jsonRes,
     });
@@ -73,13 +75,13 @@ export async function become(payload) {
   try {
     const {token: oldToken} = payload;
 
-    const leanCurUser = await AV.User.become(oldToken);
-    const token = leanCurUser.getSessionToken();
+    const leanActiveUser = await AV.User.become(oldToken);
+    const token = leanActiveUser.getSessionToken();
 
-    const jsonRes = await fetchRoles(leanCurUser);
+    const jsonRes = await fetchRolesAndPermissions(leanActiveUser);
 
     return ({
-      user: leanCurUser.toJSON(),
+      user: leanActiveUser.toJSON(),
       token,
       ...jsonRes,
     });
@@ -120,14 +122,15 @@ export async function fetchUserList(payload) {
 
         const query = new AV.Query('User_Role_Map');
         query.equalTo('user', ptrUser);
-        query.include(['role']);
+        // query.include(['role']);
 
         const leanUserRolePairs = await query.find();
 
         const roles = [];
 
         leanUserRolePairs.forEach((i) => {
-          roles.push(i.get('role').toJSON());
+          // roles.push(i.get('role').toJSON());
+          roles.push(i.get('role').id);
         });
 
         userRolePairs[leanUser.id] = roles;
@@ -146,6 +149,7 @@ export async function fetchUserList(payload) {
       users
     };
   } catch (e) {
+    console.log('failed to fetch user list: ', e);
     return {
       success: false,
       error: e
@@ -225,23 +229,16 @@ export async function createUser(payload) {
 
     const ptrUser = AV.Object.createWithoutData('_User', leanUser.id);
 
-    // TODO: pass role id as payload
-    await Promise.all(roles.map(
-      async (role) => {
-        const query = new AV.Query('_Role');
-        query.equalTo('code', role);
-        const leanRole = await query.first();
+    roles.forEach((i) => {
+      const ptrRole = AV.Object.createWithoutData('_Role', i);
 
-        const ptrRole = AV.Object.createWithoutData('_Role', leanRole.id);
+      const userRolePair = new UserRoleMap({
+        user: ptrUser,
+        role: ptrRole
+      });
 
-        const userRolePair = new UserRoleMap({
-          user: ptrUser,
-          role: ptrRole
-        });
-
-        userRolePairs.push(userRolePair);
-      }
-    ));
+      userRolePairs.push(userRolePair);
+    });
 
     await AV.Object.saveAll(userRolePairs);
 
@@ -284,6 +281,7 @@ export async function deleteUser(payload) {
       success: true,
     };
   } catch (e) {
+    console.log('failed to delete user: ', e);
     return {
       success: false,
       error: e
@@ -327,42 +325,30 @@ export async function updateUser(payload) {
 
     const query = new AV.Query('User_Role_Map');
     query.equalTo('user', ptrUser);
-    query.include(['role']);
+    // query.include(['role']);
 
     const leanUserRolePairs = await query.find();
 
     const oldRoles = [];
 
     leanUserRolePairs.forEach((i) => {
-      oldRoles.push(i.get('role').toJSON().code);
+      oldRoles.push(i.get('role').id);
     });
 
-    // TODO: pass role id as payload
-    // role is identified by code
     const rolesToAdd = [...roles].filter(i => ! new Set(oldRoles).has(i));
     const rolesToRemove = [...oldRoles].filter(i => ! new Set(roles).has(i));
-
-    const queryAllRoles = new AV.Query('_Role');
-    const leanAllRoles = await queryAllRoles.find();
-    const jsonAllRoles = {};
-    leanAllRoles.forEach((i) => {
-      const jsonRole = i.toJSON();
-      jsonAllRoles[jsonRole.code] = jsonRole;
-    });
 
     const ptrUserRolePairsToAdd = [];
     const ptrUserRolePairsToRemove = [];
 
     rolesToAdd.forEach((i) => {
-      const id = jsonAllRoles[i].objectId;
-      const ptrUserRolePair = AV.Object.createWithoutData('User_Role_Map', id);
+      const ptrUserRolePair = AV.Object.createWithoutData('User_Role_Map', i);
 
       ptrUserRolePairsToAdd.push(ptrUserRolePair);
     });
 
     rolesToRemove.forEach((i) => {
-      const id = jsonAllRoles[i].objectId;
-      const ptrUserRolePair = AV.Object.createWithoutData('User_Role_Map', id);
+      const ptrUserRolePair = AV.Object.createWithoutData('User_Role_Map', i);
 
       ptrUserRolePairsToRemove.push(ptrUserRolePair);
     });
@@ -371,10 +357,11 @@ export async function updateUser(payload) {
     await AV.Object.destroyAll(ptrUserRolePairsToRemove);
 
     // update _User
+
     for (const [key, value] of Object.entries(jsonUser)) {
       ptrUser.set(key, value);
     }
-    const leanUser = await ptrUser.save();
+    await ptrUser.save();
 
     return {
       success: true,

@@ -75,7 +75,6 @@ function reduceUpdateSelectedUserIds(state, action) {
 
 function reduceUpdateCheckedUserRoles(state, action) {
   const {checked} = action.payload;
-  console.log('reduceUpdateCheckedUserRoles: ', checked);
 
   return state.withMutations((m) => {
     m.setIn(['checkedUserRoles'], new List(checked));

@@ -25,18 +25,14 @@ class UserList extends React.Component {
   }
 
   rowKey = (record) => {
-    return record.id;
+    return record.objectId;
   };
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
     this.props.updateSelectedUserIds({selected: selectedRowKeys});
-    if (selectedRowKeys.length === 1) {
-      const roles = [];
-      // User.roles is type of List<Role>
-      selectedRows[0].roles.toArray().forEach((i) => {
-        roles.push(i.code);
-      });
 
+    if (selectedRowKeys.length === 1) {
+      const roles = selectedRows[0].roles;
       this.props.updateCheckedUserRoles({checked: roles});
     }
   };
@@ -61,7 +57,7 @@ class UserList extends React.Component {
 
 const mapStateToProps = (appState, ownProps) => {
   const selectedUserIds = selector.selectSelectedUserIds(appState);
-  const users = authSelector.selectAdminUser(appState);
+  const users = authSelector.selectAdminUsers(appState);
 
   return {
     selectedUserIds,

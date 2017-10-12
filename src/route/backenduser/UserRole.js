@@ -2,15 +2,8 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Checkbox} from 'antd';
 import {action, selector} from './redux';
-import {action as authAction} from '../../util/auth/';
+import {action as authAction, selector as authSelector} from '../../util/auth/';
 import style from './UserRole.module.scss';
-
-const kRoles = [
-  {label: '平台管理员', value: 100},
-  {label: '服务点管理员', value: 200},
-  {label: '服务点投资人', value: 300},
-  {label: '服务单位', value: 400}
-];
 
 class UserRole extends React.Component {
   constructor(props) {
@@ -22,10 +15,18 @@ class UserRole extends React.Component {
   };
 
   render() {
+    const roleOptions = [];
+    this.props.allRoles.forEach((i) => {
+      roleOptions.push({
+        label: i.displayName,
+        value: i.objectId
+      })
+    });
+
     return (
       <div className={style.UserRole}>
         <Checkbox.Group disabled={this.props.selectedUserIds.length !== 1}
-                        options={kRoles} value={this.props.checkedUserRoles}
+                        options={roleOptions} value={this.props.checkedUserRoles}
                         onChange={this.onChange}/>
       </div>
     );
@@ -33,10 +34,12 @@ class UserRole extends React.Component {
 }
 
 const mapStateToProps = (appState, ownProps) => {
+  const allRoles = authSelector.selectAllRoles(appState);
   const selectedUserIds = selector.selectSelectedUserIds(appState);
   const checkedUserRoles = selector.selectCheckedUserRoles(appState);
 
   return {
+    allRoles,
     selectedUserIds,
     checkedUserRoles,
   };

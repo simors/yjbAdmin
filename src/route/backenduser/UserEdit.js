@@ -6,13 +6,6 @@ import {action as authAction} from '../../util/auth/';
 import {selector as authSelector} from "../../util/auth/";
 import style from './UserEdit.module.scss';
 
-const kRoles = [
-  {label: '平台管理员', value: 100},
-  {label: '服务点管理员', value: 200},
-  {label: '服务点投资人', value: 300},
-  {label: '服务单位', value: 400}
-];
-
 class UserEdit extends React.Component {
   constructor(props) {
     super(props);
@@ -34,7 +27,7 @@ class UserEdit extends React.Component {
     });
   };
 
-  handleSubmit = (e) => {
+  onSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (err) {
@@ -50,7 +43,7 @@ class UserEdit extends React.Component {
 
       this.props.updateUser({
         params: {
-          id: this.props.user.id,
+          id: this.props.user.objectId,
           ...values,
           type: 'admin',
         },
@@ -71,12 +64,12 @@ class UserEdit extends React.Component {
     });
   };
 
-  handleConfirmBlur = (e) => {
+  onConfirmBlur = (e) => {
     const value = e.target.value;
     this.setState({ confirmDirty: this.state.confirmDirty || !!value });
   };
 
-  checkPassword = (rule, value, callback) => {
+  validatePassword = (rule, value, callback) => {
     const form = this.props.form;
     if (value && value !== form.getFieldValue('password')) {
       callback('两次输入的密码不一致!');
@@ -85,7 +78,7 @@ class UserEdit extends React.Component {
     }
   };
 
-  checkConfirm = (rule, value, callback) => {
+  validateConfirm = (rule, value, callback) => {
     const form = this.props.form;
     if (value && this.state.confirmDirty) {
       form.validateFields(['confirm'], { force: true });
@@ -113,13 +106,13 @@ class UserEdit extends React.Component {
       </Select>
     );
 
-    const roles = [];
-    // User.roles is type of List<Role>
-    if (this.props.user && this.props.user.roles) {
-      this.props.user.roles.toArray().forEach((i) => {
-        roles.push(i.code);
-      });
-    }
+    const roleOptions = [];
+    this.props.allRoles.forEach((i) => {
+      roleOptions.push({
+        label: i.displayName,
+        value: i.objectId
+      })
+    });
 
     return (
       <Modal visible={this.props.visible}
@@ -130,7 +123,7 @@ class UserEdit extends React.Component {
                <Button key='1' type='primary' onClick={this.onHideModal}>
                  关闭
                </Button>,
-               <Button key='2' type='primary' onClick={this.handleSubmit}
+               <Button key='2' type='primary' onClick={this.onSubmit}
                        loading={this.state.loading}
                >
                  提交
@@ -139,11 +132,11 @@ class UserEdit extends React.Component {
         <Form>
           <Form.Item
             {...formItemLayout}
-            label='用户名'
+            label='姓名'
           > {
             getFieldDecorator('idName', {
               initialValue: this.props.user.idName,
-              rules: [{ required: true, message: '请输入用户名!' }],
+              rules: [{ required: true, message: '请输入姓名!' }],
             })(
               <Input />
             )
@@ -151,7 +144,7 @@ class UserEdit extends React.Component {
           </Form.Item>
           <Form.Item
             {...formItemLayout}
-            label='手机号'
+            label='手机号码'
           > {
             getFieldDecorator('mobilePhoneNumber', {
               initialValue: this.props.user.mobilePhoneNumber,
@@ -170,7 +163,7 @@ class UserEdit extends React.Component {
               rules: [{
                 required: false, message: '请输入密码!',
               }, {
-                validator: this.checkConfirm,
+                validator: this.validateConfirm,
               }],
             })(
               <Input type='password' />
@@ -186,10 +179,10 @@ class UserEdit extends React.Component {
               rules: [{
                 required: false, message: '请确认密码!',
               }, {
-                validator: this.checkPassword,
+                validator: this.validatePassword,
               }],
             })(
-              <Input type='password' onBlur={this.handleConfirmBlur} />
+              <Input type='password' onBlur={this.onConfirmBlur} />
             )
           }
           </Form.Item>
@@ -198,16 +191,13 @@ class UserEdit extends React.Component {
             label='角色'
             hasFeedback
           > {
-
             getFieldDecorator('roles', {
-              initialValue: roles,
+              initialValue: this.props.user.roles,
               rules: [{
                 required: true, message: '请选择角色!'
               }]
             })(
-              <Checkbox.Group options={kRoles}>
-
-              </Checkbox.Group>
+              <Checkbox.Group options={roleOptions} />
             )
           }
           </Form.Item>
@@ -230,6 +220,7 @@ class UserEdit extends React.Component {
 }
 
 const mapStateToProps = (appState, ownProps) => {
+  const allRoles = authSelector.selectAllRoles(appState);
   const visible = selector.selectUserEditModalVisible(appState);
 
   const selectedUserIds = selector.selectSelectedUserIds(appState);
@@ -240,6 +231,7 @@ const mapStateToProps = (appState, ownProps) => {
   }
 
   return {
+    allRoles,
     visible,
     user,
   };

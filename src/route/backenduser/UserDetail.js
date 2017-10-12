@@ -1,8 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Modal, Button, Form, Input} from 'antd';
+import {Modal, Button, Form, Input, Select, Checkbox} from 'antd';
 import {action, selector} from "./redux";
 import {selector as authSelector} from "../../util/auth/";
+import style from './UserDetail.module.scss';
 
 class UserDetail extends React.Component {
   constructor(props) {
@@ -25,8 +26,25 @@ class UserDetail extends React.Component {
       }
     };
 
+    const prefixSelector = getFieldDecorator('prefix', {
+      initialValue: '86',
+    })(
+      <Select style={{ width: 60 }}>
+        <Select.Option value='86'>+86</Select.Option>
+      </Select>
+    );
+
+    const roleOptions = [];
+    this.props.allRoles.forEach((i) => {
+      roleOptions.push({
+        label: i.displayName,
+        value: i.objectId
+      })
+    });
+
     return (
       <Modal visible={this.props.visible}
+             wrapClassName={style.UserDetail}
              title='查看用户信息'
              closable={false}
              footer={[
@@ -37,7 +55,7 @@ class UserDetail extends React.Component {
         <Form>
           <Form.Item
             {...formItemLayout}
-            label="姓名"
+            label='姓名'
           > {
             getFieldDecorator('idName', {
               initialValue: this.props.user.idName,
@@ -48,23 +66,34 @@ class UserDetail extends React.Component {
           </Form.Item>
           <Form.Item
             {...formItemLayout}
-            label="手机号码"
+            label='手机号码'
           > {
             getFieldDecorator('mobilePhoneNumber', {
               initialValue: this.props.user.mobilePhoneNumber,
             })(
-              <Input disabled />
+              <Input addonBefore={prefixSelector} style={{ width: '100%' }} disabled />
             )
           }
           </Form.Item>
           <Form.Item
             {...formItemLayout}
-            label="备注"
+            label='角色'
+          > {
+            getFieldDecorator('roles', {
+              initialValue: this.props.user.roles,
+             })(
+              <Checkbox.Group options={roleOptions} disabled />
+            )
+          }
+          </Form.Item>
+          <Form.Item
+            {...formItemLayout}
+            label='备注'
           > {
             getFieldDecorator('note', {
               initialValue: this.props.user.note ? this.props.user.note : '',
             })(
-              <Input.TextArea autosize={{ minRows: 2, maxRows: 6 }} disabled />
+              <Input.TextArea autosize={{minRows: 2, maxRows: 4}} disabled />
             )
           }
           </Form.Item>
@@ -75,6 +104,7 @@ class UserDetail extends React.Component {
 }
 
 const mapStateToProps = (appState, ownProps) => {
+  const allRoles = authSelector.selectAllRoles(appState);
   const visible = selector.selectUserDetailModalVisible(appState);
 
   const selectedUserIds = selector.selectSelectedUserIds(appState);
@@ -85,6 +115,7 @@ const mapStateToProps = (appState, ownProps) => {
   }
 
   return {
+    allRoles,
     visible,
     user,
   };
