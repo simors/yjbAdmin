@@ -10,8 +10,8 @@ async function fetchRolesAndPermissions(leanActiveUser) {
   // 3. role list for current user, 4. permission list for current user
   const jsonAllRoles = [];
   const jsonAllPermissions = [];
-  const jsonActiveRoles = [];
-  const jsonActivePermissions = [];
+  const jsonActiveRoleIds = [];
+  const jsonActivePermissionIds = [];
 
   // all role list
   let query = new AV.Query('_Role');
@@ -38,7 +38,7 @@ async function fetchRolesAndPermissions(leanActiveUser) {
   const leanUserRolePairs = await query.find();
 
   leanUserRolePairs.forEach((i) => {
-    jsonActiveRoles.push(i.get('role').id);
+    jsonActiveRoleIds.push(i.get('role').id);
   });
 
   // permission list for current user
@@ -47,8 +47,8 @@ async function fetchRolesAndPermissions(leanActiveUser) {
   return {
     jsonAllRoles,
     jsonAllPermissions,
-    jsonActiveRoles,
-    jsonActivePermissions
+    jsonActiveRoleIds,
+    jsonActivePermissionIds
   };
 }
 

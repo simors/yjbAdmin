@@ -381,13 +381,13 @@ function reduceLoadDone(state, action) {
 
 function reduceLoginDone(state, action) {
   const {login} = action.payload;
-  const {user, token, jsonActiveRoles, jsonActivePermissions, jsonAllRoles, jsonAllPermissions} = login;
+  const {user, token, jsonActiveRoleIds, jsonActivePermissionIds, jsonAllRoles, jsonAllPermissions} = login;
 
   // 'activeRoleIds'
-  const immActiveRoleIds = new List(jsonActiveRoles);
+  const immActiveRoleIds = new List(jsonActiveRoleIds);
 
   // 'activePermissionIds'
-  const immActivePermissionIds = new List(jsonActivePermissions);
+  const immActivePermissionIds = new List(jsonActivePermissionIds);
 
   // since we login from client side, e.g., browser, the roles of the login user
   // were fetched separately
