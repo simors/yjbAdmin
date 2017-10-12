@@ -6,23 +6,52 @@ async function fetchRolesAndPermissions(leanActiveUser) {
   // TODO: limit
 
   // to get:
-  // 1. all role list, 2. all permission list,
-  // 3. role list for current user, 4. permission list for current user
+  // 1. roles for current user, 2. all roles, 3. all permissions
+  const jsonActiveRoleIds = [];
   const jsonAllRoles = [];
   const jsonAllPermissions = [];
-  const jsonActiveRoles = [];
-  const jsonActivePermissions = [];
 
-  // all role list
+  // roles for current user
+  query = new AV.Query('User_Role_Map');
+  query.equalTo('user', leanActiveUser);
+  // query.include(['role']);
+  const leanUserRolePairs = await query.find();
+
+  leanUserRolePairs.forEach((i) => {
+    const roleId = i.get('role').id;
+    jsonActiveRoleIds.push(roleId);
+  });
+
+  // all roles
   let query = new AV.Query('_Role');
   query.ascending('code');
   const leanAllRoles = await query.find();
 
-  leanAllRoles.forEach((i) => {
-    jsonAllRoles.push(i.toJSON());
-  });
+  // get permissions for each role
+  await Promise.all(leanAllRoles.map(
+    async (i) => {
+      // get permissions by role
+      const ptrRole = AV.Object.createWithoutData('_Role', i.id);
+      const query = new AV.Query('Role_Permission_Map');
+      query.equalTo('role', ptrRole);
+      // query.include(['permission']);
+      // TODO: limit
 
-  // all permission list
+      const permissionIdsPerRole = [];
+      const leanRolePermissionPairs = await query.find();
+      leanRolePermissionPairs.forEach((i) => {
+        const permissionId = i.get('permission').id;
+        permissionIdsPerRole.push(permissionId);
+      });
+
+      jsonAllRoles.push({
+        ...i.toJSON(),
+        permissions: permissionIdsPerRole,
+      });
+    }
+  ));
+
+  // all permissions
   query = new AV.Query('Permission');
   query.ascending('code');
   const leanAllPermissions = await query.find();
@@ -31,24 +60,10 @@ async function fetchRolesAndPermissions(leanActiveUser) {
     jsonAllPermissions.push(i.toJSON());
   });
 
-  // role list for current user
-  query = new AV.Query('User_Role_Map');
-  query.equalTo('user', leanActiveUser);
-  // query.include(['role']);
-  const leanUserRolePairs = await query.find();
-
-  leanUserRolePairs.forEach((i) => {
-    jsonActiveRoles.push(i.get('role').id);
-  });
-
-  // permission list for current user
-  // TODO:
-
   return {
+    jsonActiveRoleIds,
     jsonAllRoles,
     jsonAllPermissions,
-    jsonActiveRoles,
-    jsonActivePermissions
   };
 }
 
@@ -62,7 +77,7 @@ export async function loginWithMobilePhone(payload) {
     const jsonRes = await fetchRolesAndPermissions(leanActiveUser);
 
     return ({
-      user: leanActiveUser.toJSON(),
+      jsonActiveUser: leanActiveUser.toJSON(),
       token,
       ...jsonRes,
     });
@@ -81,7 +96,7 @@ export async function become(payload) {
     const jsonRes = await fetchRolesAndPermissions(leanActiveUser);
 
     return ({
-      user: leanActiveUser.toJSON(),
+      jsonActiveUser: leanActiveUser.toJSON(),
       token,
       ...jsonRes,
     });
@@ -116,6 +131,7 @@ export async function fetchUserList(payload) {
 
     const leanUsers = await query.find();
 
+    // get roles for each user
     await Promise.all(leanUsers.map(
       async (leanUser) => {
         const ptrUser = AV.Object.createWithoutData('_User', leanUser.id);
@@ -126,17 +142,17 @@ export async function fetchUserList(payload) {
 
         const leanUserRolePairs = await query.find();
 
-        const roles = [];
-
+        const roleIdsPerUser = [];
         leanUserRolePairs.forEach((i) => {
           // roles.push(i.get('role').toJSON());
-          roles.push(i.get('role').id);
+          roleIdsPerUser.push(i.get('role').id);
         });
 
-        userRolePairs[leanUser.id] = roles;
+        userRolePairs[leanUser.id] = roleIdsPerUser;
       }
     ));
 
+    // put outside to keep data items in order
     leanUsers.forEach((i) => {
       users.push({
         ...i.toJSON(),

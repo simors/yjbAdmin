@@ -1,12 +1,11 @@
 import {createAction} from 'redux-actions';
-import {call, put, takeLatest} from 'redux-saga/effects';
-import {Record, List, Map} from 'immutable';
+import {Record, Set} from 'immutable';
 
 // --- model
 
 const UserState = Record({
-  selectedUserIds: List(),
-  checkedUserRoles: List(),
+  selectedUserIds: Set(),
+  checkedUserRoles: Set(),
   userDetailModalVisible: false,
   userCreateModalVisible: false,
   userEditModalVisible: false,
@@ -69,7 +68,7 @@ function reduceUpdateSelectedUserIds(state, action) {
   const {selected} = action.payload;
 
   return state.withMutations((m) => {
-    m.setIn(['selectedUserIds'], new List(selected));
+    m.setIn(['selectedUserIds'], new Set(selected));
   })
 }
 
@@ -77,7 +76,7 @@ function reduceUpdateCheckedUserRoles(state, action) {
   const {checked} = action.payload;
 
   return state.withMutations((m) => {
-    m.setIn(['checkedUserRoles'], new List(checked));
+    m.setIn(['checkedUserRoles'], new Set(checked));
   })
 }
 
@@ -123,12 +122,12 @@ export const selector = {
 
 function selectSelectedUserIds(appState) {
   const state = appState.BACKENDUSER;
-  return state.getIn(['selectedUserIds'], new List()).toArray();
+  return state.getIn(['selectedUserIds'], new Set()).toArray();
 }
 
 function selectCheckedUserRoles(appState) {
   const state = appState.BACKENDUSER;
-  return state.getIn(['checkedUserRoles'], new List()).toArray();
+  return state.getIn(['checkedUserRoles'], new Set()).toArray();
 }
 
 function selectUserDetailModalVisible(appState) {
