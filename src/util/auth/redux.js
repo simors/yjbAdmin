@@ -1,13 +1,13 @@
 import {call, put, takeLatest} from 'redux-saga/effects';
 import {createAction} from 'redux-actions';
-import {Record, Map, List} from 'immutable';
+import {Record, Map, Set} from 'immutable';
 import {REHYDRATE} from 'redux-persist/constants';
 import * as api from './cloud';
 
 // --- model
 
 class User extends Record({
-  objectId: undefined,                  // objectId
+  objectId: undefined,            // objectId
   email: undefined,
   emailVerified: undefined,
   mobilePhoneNumber: undefined,
@@ -27,7 +27,7 @@ class User extends Record({
   updatedAt: undefined,
   type: undefined,                // user type, e.g. system admin, platform admin, etc.
   note: undefined,                // note for this user
-  roles: List(),                  // List<role id>
+  roles: Set(),                   // Set<role id>
 }, 'User') {
   static fromJson(json) {
     const imm = new User();
@@ -53,7 +53,7 @@ class User extends Record({
       m.set('updatedAt', json.updatedAt);
       m.set('type', json.type);
       m.set('note', json.note);
-      m.set('roles', new List(json.roles));
+      m.set('roles', new Set(json.roles));
     });
   }
 
@@ -80,7 +80,7 @@ class User extends Record({
       updatedAt: imm.updatedAt,
       type: imm.type,
       note: imm.note,
-      roles: imm.get('roles', new List()).toArray(),
+      roles: imm.get('roles', new Set()).toArray(),
     };
   }
 }
@@ -90,7 +90,7 @@ class Role extends Record({
   name: undefined,
   code: undefined,
   displayName: undefined,
-  permissions: List(),        // List<permission id>
+  permissions: Set(),               // Set<permission id>
 }, 'Role') {
   static fromJson(json) {
     const role = new Role();
@@ -100,7 +100,7 @@ class Role extends Record({
       m.set('name', json.name);
       m.set('code', json.code);
       m.set('displayName', json.displayName);
-      m.set('permissions', new List(json.permissions));
+      m.set('permissions', new Set(json.permissions));
     })
   }
 
@@ -110,7 +110,7 @@ class Role extends Record({
       name: imm.name,
       code: imm.code,
       displayName: imm.displayName,
-      permissions: imm.get('permissions', new List()).toArray(),
+      permissions: imm.get('permissions', new Set()).toArray(),
     };
   }
 }
@@ -144,8 +144,8 @@ class AuthState extends Record({
   loading: true,                // whether login with token has finished
   token: undefined,             // current login user token
   activeUserId: undefined,      // current login user
-  activeRoleIds: List(),        // List<role id>
-  activePermissionIds: List(),  // List<permission id>
+  activeRoleIds: Set(),         // Set<role id>
+  activePermissionIds: Set(),   // Set<permission id>
   users: Map(),                 // Map<id, User>
   roles: Map(),                 // Map<role id, Role>
   permissions: Map(),           // Map<permission id, Permission>
@@ -381,17 +381,14 @@ function reduceLoadDone(state, action) {
 
 function reduceLoginDone(state, action) {
   const {login} = action.payload;
-  const {user, token, jsonActiveRoleIds, jsonActivePermissionIds, jsonAllRoles, jsonAllPermissions} = login;
+  const {jsonActiveUser, token, jsonActiveRoleIds, jsonAllRoles, jsonAllPermissions} = login;
 
   // 'activeRoleIds'
-  const immActiveRoleIds = new List(jsonActiveRoleIds);
-
-  // 'activePermissionIds'
-  const immActivePermissionIds = new List(jsonActivePermissionIds);
+  const immActiveRoleIds = new Set(jsonActiveRoleIds);
 
   // since we login from client side, e.g., browser, the roles of the login user
   // were fetched separately
-  const immActiveUser = User.fromJson(user).set('roles', immActiveRoleIds);
+  const immActiveUser = User.fromJson(jsonActiveUser).set('roles', immActiveRoleIds);
 
   // 'roles'
   const immAllRoles = new Map().withMutations((m) => {
@@ -406,6 +403,15 @@ function reduceLoginDone(state, action) {
     jsonAllPermissions.forEach((i) => {
       const immPermission = Permission.fromJson(i);
       m.set(immPermission.objectId, immPermission);
+    });
+  });
+
+  // 'activePermissionIds'
+  const immActivePermissionIds = new Set().withMutations((m) => {
+    immActiveRoleIds.forEach((i) => {
+      const immRole = immAllRoles.get(i);
+      const immPermissionIds = immRole.get('permissions');
+      m.union(immPermissionIds);
     });
   });
 
@@ -455,8 +461,8 @@ function reduceRehydrate(state, action) {
   // all data in json format
   const {token, activeUserId, activeRoleIds, activePermissionIds, users, roles, permissions} = storage;
 
-  const immActiveRoleIds = new List(activeRoleIds);
-  const immActivePermissionIds = new List(activePermissionIds);
+  const immActiveRoleIds = new Set(activeRoleIds);
+  const immActivePermissionIds = new Set(activePermissionIds);
 
   const immAllUsers = new Map().withMutations((m) => {
     Object.values(users).forEach((i) => {
