@@ -5,11 +5,22 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
+import {createPromotionApi, fetchPromotionsApi} from './cloud'
 
 /****  Model  ****/
 const PromotionRecord = Record({
-  id: undefined,
-
+  id: undefined,                //活动id
+  title: undefined,             //活动名称
+  start: undefined,             //活动起始时间
+  end: undefined,               //活动结束时间
+  description: undefined,       //活动描述
+  categoryId: undefined,        //活动类型id
+  region: undefined,            //活动区域
+  status: undefined,            //活动状态
+  createdAt: undefined,         //活动创建时间
+  awards: undefined,            //活动奖品参数
+  userId: undefined,            //活动创建用户id
+  stat: undefined,              //活动统计结果
 }, 'PromotionRecord')
 
 class Promotion extends PromotionRecord {
@@ -17,7 +28,34 @@ class Promotion extends PromotionRecord {
     let promotion = new PromotionRecord()
     return promotion.withMutations((record) => {
       record.set('id', obj.id)
+      record.set('title', obj.title)
+      record.set('start', obj.start)
+      record.set('end', obj.end)
+      record.set('description', obj.description)
+      record.set('categoryId', obj.categoryId)
+      record.set('region', obj.region)
+      record.set('status', obj.status)
+      record.set('createdAt', obj.createdAt)
+      record.set('awards', obj.awards)
+      record.set('userId', obj.userId)
+      record.set('stat', obj.stat)
+    })
+  }
+}
 
+const PromotionCategoryRecord = Record({
+  id: undefined,                //活动类型id
+  title: undefined,             //活动类型名称
+  description: undefined,       //活动类型描述
+}, 'PromotionRecord')
+
+class PromotionCategory extends PromotionCategoryRecord {
+  static fromApi(obj) {
+    let category = new PromotionCategoryRecord()
+    return category.withMutations((record) => {
+      record.set('id', obj.id)
+      record.set('title', obj.title)
+      record.set('description', obj.description)
     })
   }
 }
@@ -25,12 +63,16 @@ class Promotion extends PromotionRecord {
 const PromotionState = Record({
   promotions: Map(),
   promotionList: List(),
+  categories: Map(),
 }, 'PromotionState')
 /**** Constant ****/
 const FETCH_PROMOTIONS = 'FETCH_PROMOTIONS'
 const UPDATE_PROMOTION_LIST = 'UPDATE_PROMOTION_LIST'
 const SAVE_PROMOTION = 'SAVE_PROMOTION'
 const SAVE_PROMOTIONS = 'SAVE_PROMOTIONS'
+const PUBLISH_RECHARGE_PROMOTION = 'PUBLISH_RECHARGE_PROMOTION'
+const SAVE_PROMOTION_CATEGORIES = 'SAVE_PROMOTION_CATEGORIES'
+const FETCH_PROMOTION_CATEGORIES = 'FETCH_PROMOTION_CATEGORIES'
 
 export const PromotionStatus = {
 
@@ -44,16 +86,53 @@ export const actions = {
   fetchPromotionsAction: createAction(FETCH_PROMOTIONS),
   savePromotion: createAction(SAVE_PROMOTION),
   savePromotions: createAction(SAVE_PROMOTIONS),
+  publishRechargePromotion: createAction(PUBLISH_RECHARGE_PROMOTION),
+  savePromotionCategories: createAction(SAVE_PROMOTION_CATEGORIES),
+  fetchPromotionCategories: createAction(FETCH_PROMOTION_CATEGORIES),
 }
+
 /**** Saga ****/
 function* fetchPromotions(action) {
   let payload = action.payload
 
 }
 
+function* fetchPromotionCategories(action) {
+  let payload = action.payload
+
+}
+
+function* publishRechargePromotion(action) {
+  let payload = action.payload
+
+  let apiPayload = {
+    title: payload.title,
+    start: payload.start,
+    end: payload.end,
+    description: payload.description,
+    categoryId: payload.categoryId,
+    region: payload.region || [],
+    awards: payload.awards,
+  }
+
+  try {
+    let promotion = yield call(createPromotionApi, apiPayload)
+    yield put(actions.savePromotion({ promotion }))
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const saga = [
   takeLatest(FETCH_PROMOTIONS, fetchPromotions),
+  takeLatest(PUBLISH_RECHARGE_PROMOTION, publishRechargePromotion),
 ]
+
 /**** Reducer ****/
 const initialState = PromotionState()
 export function reducer(state = initialState, action) {
@@ -64,6 +143,8 @@ export function reducer(state = initialState, action) {
       return handleSavePromotions(state, action)
     case UPDATE_PROMOTION_LIST:
       return handleUpdatePromotionList(state, action)
+    case SAVE_PROMOTION_CATEGORIES:
+      return handleSavePromotionCategories(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -83,6 +164,15 @@ function handleSavePromotions(state, action) {
   promotions.forEach((promotion) => {
     let promotionRecord = Promotion.fromApi(promotion)
     state = state.setIn(['promotions', promotion.id], promotionRecord)
+  })
+  return state
+}
+
+function handleSavePromotionCategories(state, action) {
+  let categories = action.payload.categories
+  categories.forEach((category) => {
+    let categoryRecord = PromotionCategory.fromApi(category)
+    state = state.setIn(['categories', category.id], categoryRecord)
   })
   return state
 }

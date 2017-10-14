@@ -200,10 +200,6 @@ function* sagaLoginWithMobilePhone(action) {
   const payload = action.payload;
 
   try {
-    // result user = {
-    //   userInfo,
-    //   token
-    // }
     const login = yield call(api.loginWithMobilePhone, payload);
 
     yield put(loginDone({login}));
@@ -219,6 +215,7 @@ function* sagaLoginWithMobilePhone(action) {
     }
 
     console.log('login failed：', e);
+    console.log('code: ', e.code);
   }
 
   if (payload.onComplete) {
@@ -245,6 +242,7 @@ function* sagaLoginWithToken(action) {
     }
 
     console.log('login with token failed：', e);
+    console.log('code: ', e.code);
   }
 
   yield put(loadDone({}));
@@ -279,14 +277,19 @@ function* sagaLogout(action) {
 function* sagaFetchUserList(action) {
   const payload = action.payload;
 
-  const res = yield call(api.fetchUserList, payload);
-  if (res.success) {
-    yield put(fetchUserListDone({users: res.users}));
+  try {
+    const {params} = payload;
+
+    const jsonUsers = yield call(api.fetchUserList, params);
+    yield put(fetchUserListDone({jsonUsers}));
 
     if (payload.onSuccess) {
       payload.onSuccess();
     }
-  } else {
+  } catch (e) {
+    console.log('fetch user list failed：', e);
+    console.log('code: ', e.code);
+
     if (payload.onFailure) {
       payload.onFailure();
     }
@@ -300,12 +303,18 @@ function* sagaFetchUserList(action) {
 function* sagaCreateUser(action) {
   const payload = action.payload;
 
-  const res = yield call(api.createUser, payload);
-  if (res.success) {
+  try {
+    const {params} = payload;
+
+    yield call(api.createUser, params);
+
     if (payload.onSuccess) {
       payload.onSuccess();
     }
-  } else {
+  } catch (e) {
+    console.log('create user failed：', e);
+    console.log('code: ', e.code);
+
     if (payload.onFailure) {
       payload.onFailure();
     }
@@ -319,12 +328,18 @@ function* sagaCreateUser(action) {
 function* sagaDeleteUser(action) {
   const payload = action.payload;
 
-  const res = yield call(api.deleteUser, payload);
-  if (res.success) {
+  try {
+    const {params} = payload;
+
+    yield call(api.deleteUser, params);
+
     if (payload.onSuccess) {
       payload.onSuccess();
     }
-  } else {
+  } catch (e) {
+    console.log('delete user failed：', e);
+    console.log('code: ', e.code);
+
     if (payload.onFailure) {
       payload.onFailure();
     }
@@ -338,12 +353,18 @@ function* sagaDeleteUser(action) {
 function* sagaUpdateUser(action) {
   const payload = action.payload;
 
-  const res = yield call(api.updateUser, payload);
-  if (res.success) {
+  try {
+    const {params} = payload;
+
+    yield call(api.updateUser, params);
+
     if (payload.onSuccess) {
       payload.onSuccess();
     }
-  } else {
+  } catch (e) {
+    console.log('update user failed：', e);
+    console.log('code: ', e.code);
+
     if (payload.onFailure) {
       payload.onFailure();
     }
@@ -437,7 +458,7 @@ function reduceLogoutDone(state, action) {
 }
 
 function reduceFetchUserListDone(state, action) {
-  const {users: jsonUsers} = action.payload;
+  const {jsonUsers} = action.payload;
 
   const immUsers = [];
   jsonUsers.forEach((i) => {

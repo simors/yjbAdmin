@@ -26,7 +26,9 @@ class Device extends DeviceRecord {
       record.set('deviceNo', obj.deviceNo)
       record.set('status', obj.status)
       record.set('deviceAddr', obj.deviceAddr)
-      record.set('stationId', obj.station.id)
+      if(obj.stationId) {
+        record.set('stationId', obj.stationId)
+      }
       record.set('onlineTime', obj.onlineTime)
     })
   }
@@ -242,7 +244,7 @@ function selectDeviceList(state) {
   let deviceInfoList = []
   deviceList.toArray().forEach((deviceId) => {
     let deviceInfo = selectDevice(state, deviceId)
-    let station = deviceInfo? stationSelector.selectStationById(state, deviceInfo.stationId) : undefined
+    let station = deviceInfo && deviceInfo.stationId? stationSelector.selectStationById(state, deviceInfo.stationId) : undefined
     deviceInfo.stationName = station? station.name : undefined
     deviceInfoList.push(deviceInfo)
   })
