@@ -26,7 +26,9 @@ class Device extends DeviceRecord {
       record.set('deviceNo', obj.deviceNo)
       record.set('status', obj.status)
       record.set('deviceAddr', obj.deviceAddr)
-      record.set('stationId', obj.stationId)
+      if(obj.stationId) {
+        record.set('stationId', obj.stationId)
+      }
       record.set('onlineTime', obj.onlineTime)
     })
   }
