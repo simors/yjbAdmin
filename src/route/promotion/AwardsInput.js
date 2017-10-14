@@ -8,6 +8,7 @@ import {
   Col,
   Input,
   Icon,
+  message,
 } from 'antd'
 
 
@@ -27,9 +28,13 @@ class AwardsInput extends Component {
   }
 
   add = () => {
-    this.setState({
-      awards: this.state.awards.concat({recharge: undefined, award: undefined})
-    })
+    if(this.state.awards.length < 5) {
+      this.setState({
+        awards: this.state.awards.concat({recharge: undefined, award: undefined})
+      })
+    } else {
+      message.warning("奖励金额参数超限")
+    }
   }
 
   triggerChange(index, type, e) {
