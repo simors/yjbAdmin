@@ -145,7 +145,8 @@ export const stationAction = {
   openPartner: createAction(OPEN_PARTNER),
   closePartner: createAction(CLOSE_PARTNER),
   updateStation: createAction(UPDATE_STATION),
-  testFetchUsers: createAction(TEST_FETCH_USER)
+  testFetchUsers: createAction(TEST_FETCH_USER),
+  saveStation: createAction(CREATE_STATION_SUCCESS)
 }
 
 const requestStationsSuccess = createAction(FETCH_STATIONS_SUCCESS)
