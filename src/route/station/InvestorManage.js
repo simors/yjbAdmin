@@ -14,6 +14,7 @@ import {stationAction, stationSelector} from './redux';
 import {configSelector} from '../../util/config'
 import CreateInvestorModal from '../../component/station/CreateInvestorModal'
 import UpdateInvestorModal from '../../component/station/UpdateInvestorModal'
+import {selector,action} from '../../util/auth'
 
 const Option = Select.Option;
 
@@ -48,7 +49,7 @@ class InvestorManage extends React.Component {
         console.log('hahhahah')
       }
     });
-    this.props.testFetchUsers({
+    this.props.fetchUserList({
       success: ()=> {
       }
     })
@@ -362,9 +363,9 @@ class InvestorManage extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let investors = stationSelector.selectInvestors(state)
-  let userList = stationSelector.selectUsers(state)
+  let userList = selector.selectAllUsers(state)
   // let areaList = configSelector.selectAreaList(state)
-  // console.log('investors========>', investors)
+  console.log('userList========>', userList)
   return {
     investors: investors,
     // areaList: areaList,
@@ -374,7 +375,8 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = {
-  ...stationAction
+  ...stationAction,
+  ...action
 
 };
 

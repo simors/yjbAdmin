@@ -11,7 +11,7 @@ import {configSelector} from '../../util/config'
 import PartnerList from './PartnerList'
 import CreatePartnerModal from '../../component/station/CreatePartnerModal'
 import DivisionCascader from '../../component/DivisionCascader'
-
+import {action , selector} from '../../util/auth'
 const Option = Select.Option;
 const FormItem = Form.Item
 const formItemLayout = {
@@ -69,7 +69,7 @@ class AddStation extends React.Component {
       stationId: this.props.match.params.id, success: ()=> {
       }
     })
-    this.props.testFetchUsers({
+    this.props.fetchUserList({
       success: ()=> {
       }
     })
@@ -79,7 +79,7 @@ class AddStation extends React.Component {
     if (this.props.userList && this.props.userList.length > 0) {
       console.log('this.props.userList',this.props.userList)
       let userList = this.props.userList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.nickname}</Option>
+        return <Option key={key} value={item.objectId}>{item.username}</Option>
       })
       return userList
     } else {
@@ -272,13 +272,15 @@ const mapStateToProps = (state, ownProps) => {
   //   nickname: '绿蚁001',
   //   id: '59acdd051b69e600643de670'
   // }]
-  let userList = stationSelector.selectUsers(state)
+
+  let userList = selector.selectAllUsers(state)
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   console.log('stationnoredux====>', station)
   let partners = stationSelector.selectPartners(state)
   // let station={name:'123',adminName:'321'}
   // console.log('areaList========>', areaList)
   // console.log('partners========>', partners)
+  console.log('userList========>', userList)
 
   return {
     station: station,
@@ -289,7 +291,8 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = {
-  ...stationAction
+  ...stationAction,
+  ...action
 
 };
 
