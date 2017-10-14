@@ -38,7 +38,6 @@ class UserOp extends React.Component {
             id
           },
           onSuccess: () => {
-            console.log('on Delete')
             this.props.fetchUserList({});
           }
         });
