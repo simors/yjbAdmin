@@ -6,7 +6,8 @@ import AV from 'leancloud-storage'
 export async function fetchStationAccounts(payload) {
   try {
     let accounts = await AV.Cloud.run('accountGetStationAccounts', payload)
-    return {success: true, accounts: accounts}
+    // console.log('accounts================xxxxxx-========>',accounts)
+    return {success: true, accounts: accounts.accountList}
   } catch (error) {
     console.error(error)
     return {success: false, error: error}

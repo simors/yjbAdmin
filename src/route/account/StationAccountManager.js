@@ -1,4 +1,7 @@
 /**
+ * Created by lilu on 2017/10/15.
+ */
+/**
  * Created by lilu on 2017/9/18.
  */
 import React from 'react';
@@ -6,18 +9,19 @@ import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
 import {Row, Col, Input, Select, Button} from 'antd';
 import ContentHead from '../../component/ContentHead'
-import StationList from './StationList';
-import StationMenu from './StationMenu'
-import {stationAction, stationSelector} from './redux';
+import StationAccountList from './StationAccountList';
+// import StationMenu from './StationMenu'
+// import {stationAction, stationSelector} from './redux';
 import {configSelector} from '../../util/config'
 import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
-import {accountAction,accountSelector} from '../account/redux'
+import {accountAction,accountSelector} from './redux'
 const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
+// var Excel = require('exceljs');
 
-class StationManage extends React.Component {
+class StationAccountManager extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -41,11 +45,7 @@ class StationManage extends React.Component {
   }
 
   componentWillMount() {
-    this.props.requestStations({
-      success: ()=> {
-        console.log('hahhahah')
-      }
-    });
+
     this.props.fetchStationAccounts({
       success: ()=> {
         console.log('hahhahah')
@@ -193,57 +193,69 @@ class StationManage extends React.Component {
     )
   }
 
+  downloadFile(fileName, content){
+    // var workbook = new Excel.Workbook();
+    // // var workbook = createAndFillWorkbook();
+    // workbook.xlsx.writeFile('hahahah')
+    //   .then(function(item) {
+    //     console.log('hahahah=>',item)
+    //     // done
+    //   });
+}
 
   render() {
     // console.log('[DEBUG] ---> SysUser props: ', this.props);
     return (
       <div>
-        <StationMenu
-          showDetail={()=> {
-            this.props.history.push({
-              pathname: '/site/showStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),
-            })
-          }}
-          set={()=> {
-            this.props.history.push({
-              pathname: '/site/editStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),
-            })
-          }}
-          add={()=>{this.props.history.push({pathname: '/site/addStation'})}}
-          setStatus={()=> {
-            this.setStatus()
-          }}
-          refresh={()=> {
-            this.refresh()
-          }}
-        />
-        {this.renderSearchBar()}
+        <ButtonGroup>
+          <Button onClick={()=>{this.downloadFile()}}>ceshi</Button>
+        </ButtonGroup>
+        {/*<StationMenu*/}
+          {/*showDetail={()=> {*/}
+            {/*this.props.history.push({*/}
+              {/*pathname: '/site/showStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),*/}
+            {/*})*/}
+          {/*}}*/}
+          {/*set={()=> {*/}
+            {/*this.props.history.push({*/}
+              {/*pathname: '/site/editStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),*/}
+            {/*})*/}
+          {/*}}*/}
+          {/*add={()=>{this.props.history.push({pathname: '/site/addStation'})}}*/}
+          {/*setStatus={()=> {*/}
+            {/*this.setStatus()*/}
+          {/*}}*/}
+          {/*refresh={()=> {*/}
+            {/*this.refresh()*/}
+          {/*}}*/}
+        {/*/>*/}
+        {/*{this.renderSearchBar()}*/}
 
-        <StationList selectStation={(rowId, rowData)=> {
+        <StationAccountList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
-        }} stations={this.props.stations}/>
+        }} stationAccounts={this.props.stationAccounts}/>
       </div>
     )
   };
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let stations = stationSelector.selectStations(state)
+  // let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectStationAccounts(state)
   // let areaList = configSelector.selectAreaList(state)
   console.log('accounts========>', accounts)
   return {
-    stations: stations,
+    stationAccounts: accounts,
     // areaList: areaList,
   };
 };
 
 const mapDispatchToProps = {
-  ...stationAction,
+  // ...stationAction,
   ...accountAction
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(StationManage);
+export default connect(mapStateToProps, mapDispatchToProps)(StationAccountManager);
 
 export {saga, reducer} from './redux';
