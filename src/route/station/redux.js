@@ -41,7 +41,7 @@ export const StationDetailRecord = Record({
 
 export class StationDetail extends StationDetailRecord {
   static fromApi(obj) {
-    console.log('obj====>',obj)
+    console.log('obj====>', obj)
     let stationDetail = new StationDetailRecord()
     return stationDetail.withMutations((record) => {
       record.set('id', obj.id)
@@ -507,7 +507,7 @@ function handleSetAllInvestors(state, investors) {
 function handleSaveStations(state, action) {
   let stations = action.payload.stations
   let stationList = action.payload.stationList
-  console.log('stations=========>',stations,stationList)
+  console.log('stations=========>', stations, stationList)
   if (stationList && stationList.length > 0) {
     state = state.set('stationList', new List(stationList))
     state = handleSetAllStations(state, stations)
@@ -542,9 +542,9 @@ function handleSavePartners(state, action) {
 }
 
 
-function handleSaveUsers(state, action){
+function handleSaveUsers(state, action) {
   let users = action.payload.users
-    state = state.set('userList', new List(users))
+  state = state.set('userList', new List(users))
   return state
 }
 
@@ -627,7 +627,7 @@ function selectStationById(state, stationId) {
   let station = state.STATION
   let stationRecord = station.getIn(['allStations', stationId])
 
-  return stationRecord.toJS() || undefined
+  return stationRecord ? stationRecord.toJS() : undefined
 }
 
 

@@ -24,7 +24,7 @@ class StationManage extends React.Component {
       curUserId: -1,
       selectedRowId: undefined,
       selectedRowData: undefined,
-      status: undefined,
+      status: {},
       province: undefined,
       city: undefined,
       area: undefined,
@@ -78,7 +78,7 @@ class StationManage extends React.Component {
   }
 
   statusChange(value) {
-    this.setState({status: parseInt(value)})
+    this.setState({status: value})
   }
 
 
@@ -98,7 +98,7 @@ class StationManage extends React.Component {
       province: this.state.division[0],
       city: this.state.division[1],
       area: this.state.division[2],
-      status: this.state.status != undefined ? this.state.status : undefined,
+      status: this.state.status&&this.state.status.key ? parseInt(this.state.status.key) : undefined,
       addr: this.state.addr,
       name: this.state.name,
       success: ()=> {
@@ -142,32 +142,24 @@ class StationManage extends React.Component {
     return (
       <div style={{flex: 1}}>
         <Row >
-          <Col span={4}>
-            <p >名称</p>
-          </Col>
           <Col span={8}>
-            <Input onChange={(e)=> {
+            <Input  placeholder='名称' value={this.state.name} onChange={(e)=> {
               this.setState({name: e.target.value})
             }}></Input>
           </Col>
-          <Col span={4}>
-            <p>状态</p>
-          </Col>
           <Col span={8}>
-            <Select allowClear={true} style={{width: 120}} onChange={(value)=> {
+            <Select labelInValue={true} placeholder="状态" value={this.state.status}  allowClear={true} style={{width: 120}} onChange={(value)=> {
               this.statusChange(value)
             }}>
-              <Option value='1'>正常</Option>
-              <Option value='0'>已停用</Option>
+              <Option value='1' >正常</Option>
+              <Option value='0' >已停用</Option>
             </Select>
           </Col>
         </Row>
         <Row>
-          <Col span={2}>
-            <div>省市区</div>
-          </Col>
           <Col span={9}>
             <DivisionCascader
+              value = {this.state.division}
               defaultValue={this.state.division}
               onChange={(key, value)=> {
                 this.setDivision(key)
@@ -175,11 +167,8 @@ class StationManage extends React.Component {
               }}
             />
           </Col>
-          <Col span={2}>
-            <div>地址</div>
-          </Col>
           <Col span={7}>
-            <Input onChange={(e)=> {
+            <Input value = {this.state.addr} placeholder='地址' onChange={(e)=> {
               this.setState({addr: e.target.value})
             }}/>
           </Col>
