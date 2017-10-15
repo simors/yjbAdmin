@@ -48,7 +48,7 @@ class UserCreate extends React.Component {
         onSuccess: () => {
           this.props.hideUserCreateModal({});
           this.props.form.resetFields();
-          this.props.fetchUserList({});
+          this.props.listUsers({});
         },
         onComplete: () => {
           this.setState((prevState, props) => {
