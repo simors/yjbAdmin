@@ -496,6 +496,10 @@ babel-plugin-import@^1.4.0:
   version "1.4.0"
   resolved "http://registry.npm.taobao.org/babel-plugin-import/download/babel-plugin-import-1.4.0.tgz#a9999d9a79fc52a03c17ccfbbeb804038590503f"
 
+babel-plugin-js-logger@^1.0.17:
+  version "1.0.17"
+  resolved "http://r.cnpmjs.org/babel-plugin-js-logger/download/babel-plugin-js-logger-1.0.17.tgz#56d2ec6ab1de4593a1923b3a79fcc160ed0e21c4"
+
 babel-plugin-syntax-async-functions@^6.8.0:
   version "6.13.0"
   resolved "http://registry.npm.taobao.org/babel-plugin-syntax-async-functions/download/babel-plugin-syntax-async-functions-6.13.0.tgz#cad9cad1191b5ad634bf30ae0872391e0647be95"
@@ -2773,6 +2777,10 @@ jquery@>=1.7.2, jquery@^3.2.1:
 js-base64@^2.1.8, js-base64@^2.1.9:
   version "2.3.2"
   resolved "http://registry.npm.taobao.org/js-base64/download/js-base64-2.3.2.tgz#a79a923666372b580f8e27f51845c6f7e8fbfbaf"
+
+js-logger@^1.4.1:
+  version "1.4.1"
+  resolved "http://r.cnpmjs.org/js-logger/download/js-logger-1.4.1.tgz#f0230dc5e84e120f213d6e5a6b767a913d290335"
 
 js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"
