@@ -8,7 +8,7 @@ import {REHYDRATE} from 'redux-persist/constants'
 import {call, put, takeEvery, takeLatest} from 'redux-saga/effects'
 import * as accountFunc from './cloud'
 import {stationAction,StationDetail} from '../station/redux'
-
+import {formatLeancloudTime} from '../../util/datetime'
 /****  Model  ****/
 
 export const AccountRecord = Record({
@@ -40,7 +40,7 @@ export class StationAccount extends StationAccountRecord {
     let stationDetail = new StationAccountRecord()
     return stationDetail.withMutations((record) => {
       record.set('id', obj.id)
-      record.set('accountDay', obj.accountDay)
+      record.set('accountDay', formatLeancloudTime(new Date(obj.accountDay),'YYYY-MM-DD'))
       record.set('profit', obj.profit)
       record.set('platformProfit', obj.platformProfit)
       record.set('cost', obj.cost)
@@ -80,14 +80,18 @@ export class SharingAccount extends SharingAccountRecord {
 
 const FETCH_STATION_ACCOUNT = 'FETCH_STATION_ACCOUNT'
 const FETCH_STATION_ACCOUNT_SUCCESS = 'FETCH_STATION_ACCOUNT_SUCCESS'
+
+const FETCH_STATION_ACCOUNT_DETAIL = 'FETCH_STATION_ACCOUNT_DETAIL'
+const FETCH_STATION_ACCOUNT_DETAIL_SUCCESS = 'FETCH_STATION_ACCOUNT_DETAIL_SUCCESS'
 /**** Action ****/
 
 export const accountAction = {
   fetchStationAccounts: createAction(FETCH_STATION_ACCOUNT),
-
+  fetchStationAccountsDetail: createAction(FETCH_STATION_ACCOUNT_DETAIL),
 }
 
 const fetchStationAccountsSuccess = createAction(FETCH_STATION_ACCOUNT_SUCCESS)
+const fetchStationAccountsDetailSuccess = createAction(FETCH_STATION_ACCOUNT_DETAIL_SUCCESS)
 
 
 /**** Saga ****/
@@ -103,7 +107,7 @@ function* fetchStationAccounts(action) {
     if (data.accounts && data.accounts.length > 0) {
       data.accounts.forEach((item)=> {
         // console.log('item=====>',item)
-        stationAccountList.push(item.stationId)
+        stationAccountList.push(item.id)
         stationAccounts.push(StationAccount.fromApi(item))
         if(item.station){
           stationAction.saveStation({station: StationDetail.fromApi(item.station)})
@@ -122,9 +126,39 @@ function* fetchStationAccounts(action) {
   }
 }
 
+function* fetchStationAccountsDetail(action) {
+  let payload = action.payload
+  // console.log('payload=======>',payload)
+  let data = yield call(accountFunc.fetchStationAccountDetail, payload)
+  let stationAccounts = []
+  let stationAccountList = []
+  if (data.success) {
+    // console.log('data=====>',data)
+    if (data.accounts && data.accounts.length > 0) {
+      data.accounts.forEach((item)=> {
+        // console.log('item=====>',item)
+        stationAccountList.push(item.id)
+        stationAccounts.push(StationAccount.fromApi(item))
+        if(item.station){
+          stationAction.saveStation({station: StationDetail.fromApi(item.station)})
+        }
+      })
+    }
+    console.log('stationAccountList======>',stationAccountList,stationAccounts)
+    yield put(fetchStationAccountsDetailSuccess({stationAccounts: stationAccounts, stationAccountList: stationAccountList}))
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
 
 export const accountSaga = [
   takeLatest(FETCH_STATION_ACCOUNT, fetchStationAccounts),
+  takeLatest(FETCH_STATION_ACCOUNT_DETAIL, fetchStationAccountsDetail),
 
 ]
 
@@ -136,6 +170,8 @@ export function accountReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_STATION_ACCOUNT_SUCCESS:
       return handleSaveStationAccounts(state, action)
+    case FETCH_STATION_ACCOUNT_DETAIL_SUCCESS:
+      return handleSaveStationAccounts(state, action)
     default:
       return state
   }
@@ -143,13 +179,12 @@ export function accountReducer(state = initialState, action) {
 
 function handleSetAllStationAccounts(state, stationAccounts) {
   stationAccounts.forEach((item)=> {
-    state = state.setIn(['allStationAccounts', item.stationId], item)
+    state = state.setIn(['allStationAccounts', item.id], item)
   })
   return state
 }
 
 function handleSaveStationAccounts(state, action) {
-  console.log('action=========>', action.payload)
 
   let stationAccounts = action.payload.stationAccounts
   let stationAccountList = action.payload.stationAccountList
@@ -173,7 +208,7 @@ function selectStationAccounts(state) {
   if (stationAccountList && stationAccountList.size > 0) {
     stationAccountList.forEach((item)=> {
       let accountInfo = account.getIn(['allStationAccounts', item])
-      stationAccounts.push(accountInfo.toJS())
+      accountInfo?stationAccounts.push(accountInfo?accountInfo.toJS():undefined):null
     })
   }
   return stationAccounts

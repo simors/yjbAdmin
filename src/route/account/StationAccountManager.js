@@ -16,6 +16,8 @@ import {configSelector} from '../../util/config'
 import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
+import AccountChart from '../../component/account/AccountChart'
+
 const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
@@ -46,10 +48,11 @@ class StationAccountManager extends React.Component {
 
   componentWillMount() {
 
-    this.props.fetchStationAccounts({
+    this.props.fetchStationAccountsDetail({
       success: ()=> {
         console.log('hahhahah')
-      }
+      },
+      stationId: '59bc9eea61ff4b547868526a'
     })
   }
 
@@ -204,6 +207,19 @@ class StationAccountManager extends React.Component {
 }
 
   render() {
+    let data = [
+      {profit:100,stationId:1},
+      {profit:12,stationId:2},
+      {profit:33,stationId:3},
+      {profit:44,stationId:4},
+      {profit:88,stationId:5},
+      {profit:121,stationId:6},
+      {profit:155,stationId:7},
+      {profit:22,stationId:8},
+      {profit:31,stationId:9},
+      {profit:133,stationId:10}
+
+    ]
     // console.log('[DEBUG] ---> SysUser props: ', this.props);
     return (
       <div>
@@ -234,6 +250,7 @@ class StationAccountManager extends React.Component {
         <StationAccountList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
         }} stationAccounts={this.props.stationAccounts}/>
+        <AccountChart data = {this.props.stationAccounts} yline = 'profit' xline = 'accountDay'/>
       </div>
     )
   };

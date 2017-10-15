@@ -17,7 +17,7 @@ export async function fetchStationAccounts(payload) {
 export async function fetchPartnerAccounts(payload) {
   try {
     let accounts = await AV.Cloud.run('accountGetPartnerAccounts', payload)
-    return {success: true, accounts: accounts}
+    return {success: true, accounts: accounts.accountList}
   } catch (error) {
     console.error(error)
     return {success: false, error: error}
@@ -27,7 +27,7 @@ export async function fetchPartnerAccounts(payload) {
 export async function fetchInvestorAccounts(payload) {
   try {
     let accounts = await AV.Cloud.run('accountGetInvestorAccounts', payload)
-    return {success: true, accounts: accounts}
+    return {success: true, accounts: accounts.accountList}
   } catch (error) {
     console.error(error)
     return {success: false, error: error}
@@ -37,6 +37,7 @@ export async function fetchInvestorAccounts(payload) {
 export async function fetchStationAccountDetail(payload) {
   try {
     let accounts = await AV.Cloud.run('accountGetStationAccountsDetail', payload)
+    console.log('accounts===~~~~~~~~~>',accounts)
     return {success: true, accounts: accounts}
   } catch (error) {
     console.error(error)
@@ -47,7 +48,7 @@ export async function fetchStationAccountDetail(payload) {
 export async function fetchPartnerAccountsDetail(payload) {
   try {
     let accounts = await AV.Cloud.run('accountGetPartnerAccountsDetail', payload)
-    return {success: true, accounts: accounts}
+    return {success: true, accounts: accounts.accountList}
   } catch (error) {
     console.error(error)
     return {success: false, error: error}
@@ -57,7 +58,7 @@ export async function fetchPartnerAccountsDetail(payload) {
 export async function fetchInvestorAccountsDetail(payload) {
   try {
     let accounts = await AV.Cloud.run('accountGetInvestorAccountsDetail', payload)
-    return {success: true, accounts: accounts}
+    return {success: true, accounts: accounts.accountList}
   } catch (error) {
     console.error(error)
     return {success: false, error: error}
