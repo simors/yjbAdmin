@@ -162,7 +162,7 @@ class EditStation extends React.Component {
   userList() {
     if (this.props.userList && this.props.userList.length > 0) {
       let userList = this.props.userList.map((item, key)=> {
-        return <Option key={key} value={item.objectId}>{item.idName}</Option>
+        return <Option key={key} value={item.id}>{item.idName}</Option>
       })
       return userList
     } else {
@@ -258,7 +258,7 @@ class EditStation extends React.Component {
         division.push(station.area.value)
       }
     }
-    console.log('division===>', division)
+    console.log('station===>', station)
     // console.log('[DEBUG] ---> SysUser props: ', this.state.partnerList);
     // let plate = {id:'platform',shareholderName:'平台', royalty: this.props.station?this.props.station.platformProp:0}
     // let partnerList = this.state.partnerList.splice(0,0,plate)

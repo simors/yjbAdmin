@@ -14,7 +14,7 @@ import {stationAction, stationSelector} from './redux';
 import {configSelector} from '../../util/config'
 import CreateInvestorModal from '../../component/station/CreateInvestorModal'
 import UpdateInvestorModal from '../../component/station/UpdateInvestorModal'
-import {selector,action} from '../../util/auth'
+import {selector, action} from '../../util/auth'
 
 const Option = Select.Option;
 
@@ -49,10 +49,7 @@ class InvestorManage extends React.Component {
         console.log('hahhahah')
       }
     });
-    this.props.fetchUserList({
-      success: ()=> {
-      }
-    })
+
   }
 
   refresh() {

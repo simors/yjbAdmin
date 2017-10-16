@@ -76,9 +76,9 @@ class AddStation extends React.Component {
 
   userList() {
     if (this.props.userList && this.props.userList.length > 0) {
-      console.log('this.props.userList',this.props.userList)
+      // console.log('this.props.userList',this.props.userList)
       let userList = this.props.userList.map((item, key)=> {
-        return <Option key={key} value={item.objectId}>{item.idName}</Option>
+        return <Option key={key} value={item.id}>{item.idName}</Option>
       })
       return userList
     } else {
@@ -141,12 +141,7 @@ class AddStation extends React.Component {
             <Col span={12}>
               <FormItem label='管理员' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('adminId', {
-                  rules: [
-                    {
-                      required: true,
-                      message: '管理员未选择'
-                    }
-                  ]
+
                 })(
                   <Select allowClear={true} style={{width: 140}}>
                     {this.userList()}

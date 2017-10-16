@@ -587,7 +587,7 @@ function selectStation(state, stationId) {
   // console.log('stationId=====>',stationId)
   let stationInfo = station.getIn(['allStations', stationId])
   // console.log('stationInfo==>',stationInfo)
-  return stationInfo
+  return stationInfo?stationInfo.toJS():undefined
 }
 
 function selectInvestors(state) {
