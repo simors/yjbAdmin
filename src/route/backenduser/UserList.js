@@ -21,7 +21,7 @@ class UserList extends React.Component {
   }
 
   componentDidMount() {
-    this.props.fetchUserList({});
+    this.props.listUsers({});
   }
 
   rowKey = (record) => {

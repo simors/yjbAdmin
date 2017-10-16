@@ -38,7 +38,7 @@ class UserOp extends React.Component {
             id
           },
           onSuccess: () => {
-            this.props.fetchUserList({});
+            this.props.listUsers({});
           }
         });
       },
@@ -48,7 +48,7 @@ class UserOp extends React.Component {
   };
 
   onRefresh = () => {
-    this.props.fetchUserList({});
+    this.props.listUsers({});
   };
 
   render() {

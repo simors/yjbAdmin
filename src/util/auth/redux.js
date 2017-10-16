@@ -146,23 +146,27 @@ class AuthState extends Record({
   activeUserId: undefined,      // current login user
   activeRoleIds: Set(),         // Set<role id>
   activePermissionIds: Set(),   // Set<permission id>
-  users: Map(),                 // Map<id, User>
-  roles: Map(),                 // Map<role id, Role>
-  permissions: Map(),           // Map<permission id, Permission>
+  usersById: Map(),             // Map<id, User>
+  rolesById: Map(),             // Map<role id, Role>
+  permissionsById: Map(),       // Map<permission id, Permission>
+
+  allUsers: Set(),              // Set<user id>
+  allAdminUsers: Set(),         // Set<user id>
+  userIdsByRole: Map(),         // Map<role id, Set<user id>>
 }, 'AuthState') {
 
 }
 
 // --- constant
 
-const LOAD_DONE = 'AUTH/LOAD_DONE';
+const LOADED = 'AUTH/LOADED';
 const LOGIN_WITH_MOBILE_PHONE = 'AUTH/LOGIN_WITH_MOBILE_PHONE';
 const LOGIN_WITH_TOKEN = 'AUTH/LOGIN_WITH_TOKEN';
-const LOGIN_DONE = 'AUTH/LOGIN_DONE';
+const LOGGED_IN = 'AUTH/LOGGED_IN';
 const LOGOUT = 'AUTH/LOGOUT';
-const LOGOUT_DONE = 'AUTH/LOGOUT_DONE';
-const FETCH_USER_LIST = 'AUTH/FETCH_USER_LIST';
-const FETCH_USER_LIST_DONE = 'AUTH/FETCH_USER_LIST_DONE';
+const LOGGED_OUT = 'AUTH/LOGGED_OUT';
+const LIST_USERS = 'AUTH/LIST_USERS';
+const LISTED_USERS = 'AUTH/LISTED_USERS';
 const CREATE_USER = 'AUTH/CREATE_USER';
 const DELETE_USER = 'AUTH/DELETE_USER';
 const UPDATE_USER = 'AUTH/UPDATE_USER';
@@ -173,16 +177,17 @@ export const action = {
   loginWithMobilePhone: createAction(LOGIN_WITH_MOBILE_PHONE),
   loginWithToken: createAction(LOGIN_WITH_TOKEN),
   logout: createAction(LOGOUT),
-  fetchUserList: createAction(FETCH_USER_LIST),
+
+  listUsers: createAction(LIST_USERS),
   createUser: createAction(CREATE_USER),
   deleteUser: createAction(DELETE_USER),
   updateUser: createAction(UPDATE_USER),
 };
 
-const loadDone = createAction(LOAD_DONE);
-const loginDone = createAction(LOGIN_DONE);
-const logoutDone = createAction(LOGOUT_DONE);
-const fetchUserListDone = createAction(FETCH_USER_LIST_DONE);
+const loaded = createAction(LOADED);
+const loggedIn = createAction(LOGGED_IN);
+const loggedOut = createAction(LOGGED_OUT);
+const listedUsers = createAction(LISTED_USERS);
 
 // --- saga
 
@@ -190,7 +195,7 @@ export const saga = [
   takeLatest(LOGIN_WITH_MOBILE_PHONE, sagaLoginWithMobilePhone),
   takeLatest(LOGIN_WITH_TOKEN, sagaLoginWithToken),
   takeLatest(LOGOUT, sagaLogout),
-  takeLatest(FETCH_USER_LIST, sagaFetchUserList),
+  takeLatest(LIST_USERS, sagaListUser),
   takeLatest(CREATE_USER, sagaCreateUser),
   takeLatest(DELETE_USER, sagaDeleteUser),
   takeLatest(UPDATE_USER, sagaUpdateUser),
@@ -202,7 +207,7 @@ function* sagaLoginWithMobilePhone(action) {
   try {
     const login = yield call(api.loginWithMobilePhone, payload);
 
-    yield put(loginDone({login}));
+    yield put(loggedIn({login}));
 
     if (payload.onSuccess) {
       payload.onSuccess();
@@ -229,7 +234,7 @@ function* sagaLoginWithToken(action) {
   try {
     const login = yield call(api.become, payload);
 
-    yield put(loginDone({login}));
+    yield put(loggedIn({login}));
 
     if (payload.onSuccess) {
       payload.onSuccess();
@@ -245,7 +250,7 @@ function* sagaLoginWithToken(action) {
     console.log('code: ', e.code);
   }
 
-  yield put(loadDone({}));
+  yield put(loaded({}));
 
   if (payload.onComplete) {
     payload.onComplete();
@@ -267,21 +272,21 @@ function* sagaLogout(action) {
     }
   }
 
-  yield put(logoutDone({}));
+  yield put(loggedOut({}));
 
   if (payload.onComplete) {
     payload.onComplete();
   }
 }
 
-function* sagaFetchUserList(action) {
+function* sagaListUser(action) {
   const payload = action.payload;
 
   try {
     const {params} = payload;
 
-    const jsonUsers = yield call(api.fetchUserList, params);
-    yield put(fetchUserListDone({jsonUsers}));
+    const jsonUsers = yield call(api.listUsers, params);
+    yield put(listedUsers({jsonUsers}));
 
     if (payload.onSuccess) {
       payload.onSuccess();
@@ -381,14 +386,14 @@ const initialState = new AuthState();
 
 export function reducer(state=initialState, action) {
   switch(action.type) {
-    case LOAD_DONE:
-      return reduceLoadDone(state, action);
-    case LOGIN_DONE:
-      return reduceLoginDone(state, action);
-    case LOGOUT_DONE:
-      return reduceLogoutDone(state, action);
-    case FETCH_USER_LIST_DONE:
-      return reduceFetchUserListDone(state, action);
+    case LOADED:
+      return reduceLoaded(state, action);
+    case LOGGED_IN:
+      return reduceLoggedIN(state, action);
+    case LOGGED_OUT:
+      return reduceLoggedOut(state, action);
+    case LISTED_USERS:
+      return reduceListedUsers(state, action);
     case REHYDRATE:
       return reduceRehydrate(state, action);
     default:
@@ -396,11 +401,11 @@ export function reducer(state=initialState, action) {
   }
 }
 
-function reduceLoadDone(state, action) {
+function reduceLoaded(state, action) {
   return state.set('loading', false);
 }
 
-function reduceLoginDone(state, action) {
+function reduceLoggedIN(state, action) {
   const {login} = action.payload;
   const {jsonActiveUser, token, jsonActiveRoleIds, jsonAllRoles, jsonAllPermissions} = login;
 
@@ -412,7 +417,7 @@ function reduceLoginDone(state, action) {
   const immActiveUser = User.fromJson(jsonActiveUser).set('roles', immActiveRoleIds);
 
   // 'roles'
-  const immAllRoles = new Map().withMutations((m) => {
+  const immAllRolesById = new Map().withMutations((m) => {
     jsonAllRoles.forEach((i) => {
       const immRole = Role.fromJson(i);
       m.set(immRole.objectId, immRole);
@@ -420,7 +425,7 @@ function reduceLoginDone(state, action) {
   });
 
   // 'permissions'
-  const immAllPermissions = new Map().withMutations((m) => {
+  const immAllPermissionsById = new Map().withMutations((m) => {
     jsonAllPermissions.forEach((i) => {
       const immPermission = Permission.fromJson(i);
       m.set(immPermission.objectId, immPermission);
@@ -430,7 +435,7 @@ function reduceLoginDone(state, action) {
   // 'activePermissionIds'
   const immActivePermissionIds = new Set().withMutations((m) => {
     immActiveRoleIds.forEach((i) => {
-      const immRole = immAllRoles.get(i);
+      const immRole = immAllRolesById.get(i);
       const immPermissionIds = immRole.get('permissions');
       m.union(immPermissionIds);
     });
@@ -441,23 +446,23 @@ function reduceLoginDone(state, action) {
     m.set('activeUserId', immActiveUser.objectId);
     m.set('activeRoleIds', immActiveRoleIds);
     m.set('activePermissionIds', immActivePermissionIds);
-    m.setIn(['users', immActiveUser.objectId], immActiveUser);
-    m.set('roles', immAllRoles);
-    m.set('permissions', immAllPermissions);
+    m.setIn(['usersById', immActiveUser.objectId], immActiveUser);
+    m.set('rolesById', immAllRolesById);
+    m.set('permissionsById', immAllPermissionsById);
   });
 }
 
-function reduceLogoutDone(state, action) {
+function reduceLoggedOut(state, action) {
   const activeUserId = state.get('activeUserId');
 
   return state.withMutations((m) => {
     m.set('activeUserId', undefined);
     m.set('token', undefined);
-    m.deleteIn(['users', activeUserId]);
+    m.deleteIn(['usersById', activeUserId]);
   });
 }
 
-function reduceFetchUserListDone(state, action) {
+function reduceListedUsers(state, action) {
   const {jsonUsers} = action.payload;
 
   const immUsers = [];
@@ -468,7 +473,7 @@ function reduceFetchUserListDone(state, action) {
 
   return state.withMutations((m) => {
     immUsers.forEach((i) => {
-      m.setIn(['users', i.objectId], i);
+      m.setIn(['usersById', i.objectId], i);
     });
   });
 }
@@ -480,28 +485,28 @@ function reduceRehydrate(state, action) {
     return state;
 
   // all data in json format
-  const {token, activeUserId, activeRoleIds, activePermissionIds, users, roles, permissions} = storage;
+  const {token, activeUserId, activeRoleIds, activePermissionIds, usersById, rolesById, permissionsById} = storage;
 
   const immActiveRoleIds = new Set(activeRoleIds);
   const immActivePermissionIds = new Set(activePermissionIds);
 
-  const immAllUsers = new Map().withMutations((m) => {
-    Object.values(users).forEach((i) => {
+  const immAllUsersById = new Map().withMutations((m) => {
+    Object.values(usersById).forEach((i) => {
       const immUser = User.fromJson(i);
       m.set(immUser.objectId, immUser);
     });
   });
 
-  const immAllRoles = new Map().withMutations((m) => {
-    Object.values(roles).forEach((i) => {
+  const immAllRolesById = new Map().withMutations((m) => {
+    Object.values(rolesById).forEach((i) => {
       const immRole = Role.fromJson(i);
       m.set(immRole.objectId, immRole);
     });
   });
 
   // 'permissions'
-  const immAllPermissions = new Map().withMutations((m) => {
-    Object.values(permissions).forEach((i) => {
+  const immAllPermissionsById = new Map().withMutations((m) => {
+    Object.values(permissionsById).forEach((i) => {
       const immPermission = Permission.fromJson(i);
       m.set(immPermission.objectId, immPermission);
     });
@@ -512,9 +517,9 @@ function reduceRehydrate(state, action) {
     // m.set('activeUserId', activeUserId);   // always re-auth with the server
     m.set('activeRoleIds', immActiveRoleIds);
     m.set('activePermissionIds', immActivePermissionIds);
-    m.set('users', immAllUsers);
-    m.set('roles', immAllRoles);
-    m.set('permissions', immAllPermissions);
+    m.set('usersById', immAllUsersById);
+    m.set('rolesById', immAllRolesById);
+    m.set('permissionsById', immAllPermissionsById);
   });
 }
 
@@ -561,7 +566,7 @@ function selectIsUserLoggedIn(appState) {
 function selectAllRoles(appState) {
   const allRoles = [];
 
-  const allImmRoles = appState.AUTH.getIn(['roles'], new Map()).toArray();
+  const allImmRoles = appState.AUTH.getIn(['rolesById'], new Map()).toArray();
   allImmRoles.forEach((i) => {
     allRoles.push(Role.toJson(i));
   });
@@ -572,7 +577,7 @@ function selectAllRoles(appState) {
 function selectAllUsers(appState) {
   const allUsers = [];
 
-  const allImmUsers = appState.AUTH.getIn(['users'], new Map()).toArray();
+  const allImmUsers = appState.AUTH.getIn(['usersById'], new Map()).toArray();
   allImmUsers.forEach((i) => {
     allUsers.push(User.toJson(i));
   });
@@ -594,7 +599,7 @@ function selectAdminUsers(appState) {
 }
 
 function selectUserById(appState, id) {
-  const immUser = appState.AUTH.getIn(['users', id], undefined);
+  const immUser = appState.AUTH.getIn(['usersById', id], undefined);
 
   if (immUser === undefined)
     return undefined;

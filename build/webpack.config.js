@@ -76,6 +76,15 @@ config.module.rules.push({
           },
         ],
         ['import', { libraryName: 'antd', style: 'css' }],
+        [
+          'babel-plugin-js-logger',
+          {
+            "format": {
+              'project': false,
+              'separator': '.',
+            },
+          },
+        ],
       ],
       presets: [
         'babel-preset-react',
