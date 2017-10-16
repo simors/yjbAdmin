@@ -17,24 +17,28 @@ import AddStation from '../station/AddStation'
 import Promotion, {RechargePromotion} from '../promotion'
 import StationAccountManager from '../account/StationAccountManager'
 import StationAccountChartView from '../account/StationAccountChartView'
+import PartnerAccountManager from '../account/PartnerAccountManager'
+import PartnerAccountChartView from '../account/PartnerAccountChartView'
 
 const ContentRouter = ({match}) => {
   return (
     <Switch>
       <Route exact path={match.url} component={Dashboard}/>
-      <Route exact path="/device/list" component={Device} />
-      <Route exact path="/system/user" component={BackendUser} />
-      <Route exact path="/site/list" component={StationManager} />
-      <Route exact path="/order/list" component={Order} />
-      <Route exact path="/order/recharge" component={Recharge} />
-      <Route exact path="/site/showStation/:id" component={ShowStation} />
-      <Route exact path="/site/editStation/:id" component={EditStation} />
-      <Route exact path="/site/addStation" component={AddStation} />
-      <Route exact path="/site/investor" component={InvestorManager} />
-      <Route exact path="/promotion/list" component={Promotion} />
-      <Route exact path="/promotion/recharge" component={RechargePromotion} />
-      <Route exact path="/settlement/list" component={StationAccountManager} />
-        <Route exact path="/settlement/stationChart" component={StationAccountChartView} />
+      <Route exact path="/device/list" component={Device}/>
+      <Route exact path="/system/user" component={BackendUser}/>
+      <Route exact path="/site/list" component={StationManager}/>
+      <Route exact path="/order/list" component={Order}/>
+      <Route exact path="/order/recharge" component={Recharge}/>
+      <Route exact path="/site/showStation/:id" component={ShowStation}/>
+      <Route exact path="/site/editStation/:id" component={EditStation}/>
+      <Route exact path="/site/addStation" component={AddStation}/>
+      <Route exact path="/site/investor" component={InvestorManager}/>
+      <Route exact path="/promotion/list" component={Promotion}/>
+      <Route exact path="/promotion/recharge" component={RechargePromotion}/>
+      <Route exact path="/settlement/list" component={StationAccountManager}/>
+      <Route exact path="/settlement/stationChart" component={StationAccountChartView}/>
+      <Route exact path="/settlement/site" component={PartnerAccountManager}/>
+        <Route exact path="/settlement/partnerChart" component={PartnerAccountChartView}/>
 
     </Switch>
   )

@@ -19,6 +19,8 @@ export const AccountRecord = Record({
   allInvestorAccounts: Map(),
   partnerAccountList: List(),
   investorAccountList: List(),
+  partnerAccountsDetailList: List(),
+  investorAccountsDetailList: List(),
 }, "StationRecord")
 
 export const StationAccountRecord = Record({
@@ -59,30 +61,6 @@ export const SharingAccountRecord = Record({
   id: undefined,
   accountDay: undefined,
   profit: undefined,
-  userId: undefined,
-  stationId: undefined,
-  createdAt: undefined,
-}, 'SharingAccountRecord')
-
-export class SharingAccount extends SharingAccountRecord {
-  static fromApi(obj) {
-    console.log('obj====>', obj)
-    let accountDetail = new SharingAccountRecord()
-    return accountDetail.withMutations((record) => {
-      record.set('id', obj.id)
-      record.set('accountDay', formatLeancloudTime(new Date(obj.accountDay),'YYYY-MM-DD'))
-      record.set('profit', obj.profit)
-      record.set('userId', obj.userId)
-      record.set('stationId', obj.stationId)
-      record.set('createdAt', obj.createdAt)
-    })
-  }
-}
-
-export const SharingAccountRecord = Record({
-  id: undefined,
-  accountDay: undefined,
-  profit: undefined,
   stationId: undefined,
   userId: undefined,
 
@@ -91,10 +69,10 @@ export const SharingAccountRecord = Record({
 export class SharingAccount extends SharingAccountRecord {
   static fromApi(obj) {
     console.log('obj====>', obj)
-    let stationDetail = new StationAccountRecord()
+    let stationDetail = new SharingAccountRecord()
     return stationDetail.withMutations((record) => {
       record.set('id', obj.id)
-      record.set('accountDay', obj.accountDay)
+      record.set('accountDay', formatLeancloudTime(new Date(obj.accountDay),'YYYY-MM-DD'))
       record.set('profit', obj.profit)
       record.set('stationId', obj.stationId)
       record.set('userId', obj.userId)
@@ -105,19 +83,33 @@ export class SharingAccount extends SharingAccountRecord {
 
 const FETCH_STATION_ACCOUNT = 'FETCH_STATION_ACCOUNT'
 const FETCH_STATION_ACCOUNT_SUCCESS = 'FETCH_STATION_ACCOUNT_SUCCESS'
-
+const FETCH_PARTNER_ACCOUNT = 'FETCH_PARTNER_ACCOUNT'
+const FETCH_PARTNER_ACCOUNT_SUCCESS = 'FETCH_PARTNER_ACCOUNT_SUCCESS'
+const FETCH_INVESTOR_ACCOUNT = 'FETCH_INVESTOR_ACCOUNT'
+const FETCH_INVESTOR_ACCOUNT_SUCCESS = 'FETCH_INVESTOR_ACCOUNT_SUCCESS'
 const FETCH_STATION_ACCOUNT_DETAIL = 'FETCH_STATION_ACCOUNT_DETAIL'
 const FETCH_STATION_ACCOUNT_DETAIL_SUCCESS = 'FETCH_STATION_ACCOUNT_DETAIL_SUCCESS'
+const FETCH_PARTNER_ACCOUNT_DETAIL = 'FETCH_PARTNER_ACCOUNT_DETAIL'
+const FETCH_PARTNER_ACCOUNT_DETAIL_SUCCESS = 'FETCH_PARTNER_ACCOUNT_DETAIL_SUCCESS'
+const FETCH_INVESTOR_ACCOUNT_DETAIL = 'FETCH_INVESTOR_ACCOUNT_DETAIL'
+const FETCH_INVESTOR_ACCOUNT_DETAIL_SUCCESS = 'FETCH_INVESTOR_ACCOUNT_DETAIL_SUCCESS'
 /**** Action ****/
 
 export const accountAction = {
   fetchStationAccounts: createAction(FETCH_STATION_ACCOUNT),
   fetchStationAccountsDetail: createAction(FETCH_STATION_ACCOUNT_DETAIL),
+  fetchPartnerAccounts: createAction(FETCH_PARTNER_ACCOUNT),
+  fetchPartnerAccountsDetail: createAction(FETCH_PARTNER_ACCOUNT_DETAIL),
+  fetchInvestorAccounts: createAction(FETCH_INVESTOR_ACCOUNT),
+  fetchInvestorAccountsDetail: createAction(FETCH_INVESTOR_ACCOUNT_DETAIL),
 }
 
 const fetchStationAccountsSuccess = createAction(FETCH_STATION_ACCOUNT_SUCCESS)
 const fetchStationAccountsDetailSuccess = createAction(FETCH_STATION_ACCOUNT_DETAIL_SUCCESS)
-
+const fetchPartnerAccountsSuccess = createAction(FETCH_PARTNER_ACCOUNT_SUCCESS)
+const fetchPartnerAccountsDetailSuccess = createAction(FETCH_PARTNER_ACCOUNT_DETAIL_SUCCESS)
+const fetchInvestorAccountsSuccess = createAction(FETCH_INVESTOR_ACCOUNT_SUCCESS)
+const fetchInvestorAccountsDetailSuccess = createAction(FETCH_INVESTOR_ACCOUNT_DETAIL_SUCCESS)
 
 /**** Saga ****/
 
@@ -181,9 +173,134 @@ function* fetchStationAccountsDetail(action) {
   }
 }
 
+
+function* fetchPartnerAccounts(action) {
+  let payload = action.payload
+  // console.log('payload=======>',payload)
+  let data = yield call(accountFunc.fetchPartnerAccounts, payload)
+  let partnerAccounts = []
+  let partnerAccountList = []
+  if (data.success) {
+    // console.log('data=====>',data)
+    if (data.accounts && data.accounts.length > 0) {
+      data.accounts.forEach((item)=> {
+        // console.log('item=====>',item)
+        partnerAccountList.push(item.id)
+        partnerAccounts.push(SharingAccount.fromApi(item))
+        if(item.station){
+          stationAction.saveStation({station: StationDetail.fromApi(item.station)})
+        }
+      })
+    }
+    // console.log('stationAccountList======>',stationAccountList,stationAccounts)
+    yield put(fetchPartnerAccountsSuccess({partnerAccounts: partnerAccounts, partnerAccountList: partnerAccountList}))
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+function* fetchPartnerAccountsDetail(action) {
+  let payload = action.payload
+  // console.log('payload=======>',payload)
+  let data = yield call(accountFunc.fetchPartnerAccountsDetail, payload)
+  let partnerAccounts = []
+  let partnerAccountList = []
+  if (data.success) {
+    // console.log('data=====>',data)
+    if (data.accounts && data.accounts.length > 0) {
+      data.accounts.forEach((item)=> {
+        // console.log('item=====>',item)
+        partnerAccountList.push(item.id)
+        partnerAccounts.push(SharingAccount.fromApi(item))
+        if(item.station){
+          stationAction.saveStation({station: StationDetail.fromApi(item.station)})
+        }
+      })
+    }
+    yield put(fetchPartnerAccountsDetailSuccess({partnerAccounts: partnerAccounts, partnerAccountList: partnerAccountList}))
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+
+function* fetchInvestorAccounts(action) {
+  let payload = action.payload
+  // console.log('payload=======>',payload)
+  let data = yield call(accountFunc.fetchInvestorAccounts, payload)
+  let investorAccounts = []
+  let investorAccountList = []
+  if (data.success) {
+    // console.log('data=====>',data)
+    if (data.accounts && data.accounts.length > 0) {
+      data.accounts.forEach((item)=> {
+        // console.log('item=====>',item)
+        investorAccountList.push(item.id)
+        investorAccounts.push(SharingAccount.fromApi(item))
+        if(item.station){
+          stationAction.saveStation({station: StationDetail.fromApi(item.station)})
+        }
+      })
+    }
+    // console.log('stationAccountList======>',stationAccountList,stationAccounts)
+    yield put(fetchInvestorAccountsSuccess({investorAccounts: investorAccounts, investorAccountList: investorAccountList}))
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+function* fetchInvestorAccountsDetail(action) {
+  let payload = action.payload
+  // console.log('payload=======>',payload)
+  let data = yield call(accountFunc.fetchInvestorAccountsDetail, payload)
+  let investorAccounts = []
+  let investorAccountList = []
+  if (data.success) {
+    // console.log('data=====>',data)
+    if (data.accounts && data.accounts.length > 0) {
+      data.accounts.forEach((item)=> {
+        // console.log('item=====>',item)
+        investorAccountList.push(item.id)
+        investorAccounts.push(SharingAccount.fromApi(item))
+        if(item.station){
+          stationAction.saveStation({station: StationDetail.fromApi(item.station)})
+        }
+      })
+    }
+    // console.log('stationAccountList======>',stationAccountList,stationAccounts)
+    yield put(fetchStationAccountsDetailSuccess({investorAccounts: investorAccounts, investorAccountList: investorAccountList}))
+    if (payload.success) {
+      payload.success()
+    }
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
 export const accountSaga = [
   takeLatest(FETCH_STATION_ACCOUNT, fetchStationAccounts),
   takeLatest(FETCH_STATION_ACCOUNT_DETAIL, fetchStationAccountsDetail),
+  takeLatest(FETCH_PARTNER_ACCOUNT, fetchPartnerAccounts),
+  takeLatest(FETCH_PARTNER_ACCOUNT_DETAIL, fetchPartnerAccountsDetail),
+  takeLatest(FETCH_INVESTOR_ACCOUNT, fetchInvestorAccounts),
+  takeLatest(FETCH_INVESTOR_ACCOUNT_DETAIL, fetchInvestorAccountsDetail),
 
 ]
 
@@ -197,6 +314,14 @@ export function accountReducer(state = initialState, action) {
       return handleSaveStationAccounts(state, action)
     case FETCH_STATION_ACCOUNT_DETAIL_SUCCESS:
       return handleSaveStationAccountsDetail(state, action)
+    case FETCH_PARTNER_ACCOUNT_SUCCESS:
+      return handleSavePartnerAccounts(state, action)
+    case FETCH_PARTNER_ACCOUNT_DETAIL_SUCCESS:
+      return handleSavePartnerAccountsDetail(state, action)
+    case FETCH_INVESTOR_ACCOUNT_SUCCESS:
+    return handleSaveInvestorAccounts(state, action)
+    case FETCH_INVESTOR_ACCOUNT_DETAIL_SUCCESS:
+      return handleSaveInvestorAccountsDetail(state, action)
     default:
       return state
   }
@@ -234,6 +359,78 @@ function handleSaveStationAccountsDetail(state, action) {
     state = handleSetAllStationAccounts(state, stationAccounts)
   } else {
     state = state.set('stationAccountsDetailList', new List())
+  }
+  return state
+}
+
+
+function handleSetAllPartnerAccounts(state, stationAccounts) {
+  stationAccounts.forEach((item)=> {
+    state = state.setIn(['allPartnerAccounts', item.id], item)
+
+  })
+  return state
+}
+
+function handleSavePartnerAccounts(state, action) {
+
+  let partnerAccounts = action.payload.partnerAccounts
+  let partnerAccountList = action.payload.partnerAccountList
+  // console.log('stationAccounts=========>', stationAccounts, stationAccountList)
+  if (partnerAccountList && partnerAccountList.length > 0) {
+    state = state.set('partnerAccountList', new List(partnerAccountList))
+    state = handleSetAllPartnerAccounts(state, partnerAccounts)
+  } else {
+    state = state.set('partnerAccountList', new List())
+  }
+  return state
+}
+
+function handleSavePartnerAccountsDetail(state, action) {
+
+  let partnerAccounts = action.payload.partnerAccounts
+  let partnerAccountList = action.payload.partnerAccountList
+  if (partnerAccountList && partnerAccountList.length > 0) {
+    state = state.set('partnerAccountsDetailList', new List(partnerAccountList))
+    state = handleSetAllPartnerAccounts(state, partnerAccounts)
+  } else {
+    state = state.set('partnerAccountsDetailList', new List())
+  }
+  return state
+}
+
+
+function handleSetAllInvestorAccounts(state, stationAccounts) {
+  stationAccounts.forEach((item)=> {
+    state = state.setIn(['allStationAccounts', item.id], item)
+
+  })
+  return state
+}
+
+function handleSaveInvestorAccounts(state, action) {
+
+  let investorAccounts = action.payload.investorAccounts
+  let investorAccountList = action.payload.investorAccountList
+  if (investorAccountList && investorAccountList.length > 0) {
+    state = state.set('investorAccountList', new List(investorAccountList))
+    state = handleSetAllInvestorAccounts(state, investorAccounts)
+  } else {
+    state = state.set('investorAccountList', new List())
+  }
+  return state
+}
+
+function handleSaveInvestorAccountsDetail(state, action) {
+
+  let investorAccounts = action.payload.investorAccounts
+  let investorAccountList = action.payload.investorAccountList
+
+  if (investorAccountList && investorAccountList.length > 0) {
+    state = state.set('investorAccountsDetailList', new List(investorAccountList))
+    state = handleSetAllInvestorAccounts(state, investorAccounts)
+  } else {
+    state = state.set('investorAccountsDetailList', new List())
   }
   return state
 }
@@ -279,8 +476,86 @@ function selectStationAccountsDetail(state) {
   return stationAccounts
 }
 
+function selectPartnerAccounts(state) {
+  let account = state.ACCOUNT
+  let partnerAccountList = account.partnerAccountList
+  let partnerAccounts = []
+  if (partnerAccountList && partnerAccountList.size > 0) {
+    partnerAccountList.forEach((item)=> {
+      let accountInfo = account.getIn(['allPartnerAccounts', item])
+      if(accountInfo){
+        let station = stationSelector.selectStationById(state,accountInfo.stationId)
+        accountInfo?accountInfo = accountInfo.toJS(): undefined
+        station?accountInfo.station = station: null
+        console.log('accountInfo====>',accountInfo)
+        partnerAccounts.push(accountInfo)
+      }
+    })
+  }
+  return partnerAccounts
+}
+
+function selectPartnerAccountsDetail(state) {
+  let account = state.ACCOUNT
+  let partnerAccountsDetailList = account.partnerAccountsDetailList
+  let partnerAccounts = []
+  if (partnerAccountsDetailList && partnerAccountsDetailList.size > 0) {
+    partnerAccountsDetailList.forEach((item)=> {
+      let accountInfo = account.getIn(['allPartnerAccounts', item])
+      if(accountInfo){
+        let station = stationSelector.selectStationById(state,accountInfo.stationId)
+        accountInfo?accountInfo = accountInfo.toJS(): undefined
+        station?accountInfo.station = station: null
+        console.log('accountInfo====>',accountInfo)
+        partnerAccounts.push(accountInfo)
+      }
+    })
+  }
+  return partnerAccounts
+}
+function selectInvestorAccounts(state) {
+  let account = state.ACCOUNT
+  let investorAccountList = account.investorAccountList
+  let investorAccounts = []
+  if (investorAccountList && investorAccountList.size > 0) {
+    investorAccountList.forEach((item)=> {
+      let accountInfo = account.getIn(['allInvestornAccounts', item])
+      if(accountInfo){
+        let station = stationSelector.selectStationById(state,accountInfo.stationId)
+        accountInfo?accountInfo = accountInfo.toJS(): undefined
+        station?accountInfo.station = station: null
+        console.log('accountInfo====>',accountInfo)
+        investorAccounts.push(accountInfo)
+      }
+    })
+  }
+  return investorAccounts
+}
+
+function selectInvestorAccountsDetail(state) {
+  let account = state.ACCOUNT
+  let investorAccountsDetailList = account.investorAccountsDetailList
+  let investorAccounts = []
+  if (investorAccountsDetailList && investorAccountsDetailList.size > 0) {
+    investorAccountsDetailList.forEach((item)=> {
+      let accountInfo = account.getIn(['allInvestorAccounts', item])
+      if(accountInfo){
+        let station = stationSelector.selectStationById(state,accountInfo.stationId)
+        accountInfo?accountInfo = accountInfo.toJS(): undefined
+        station?accountInfo.station = station: null
+        console.log('accountInfo====>',accountInfo)
+        investorAccounts.push(accountInfo)
+      }
+    })
+  }
+  return investorAccounts
+}
 export const accountSelector = {
   selectStationAccounts,
   selectStationAccountsDetail,
+  selectPartnerAccounts,
+  selectPartnerAccountsDetail,
+  selectInvestorAccounts,
+  selectInvestorAccountsDetail,
 
 }
