@@ -19,7 +19,7 @@ class UserRole extends React.Component {
     this.props.allRoles.forEach((i) => {
       roleOptions.push({
         label: i.displayName,
-        value: i.objectId
+        value: i.id
       })
     });
 

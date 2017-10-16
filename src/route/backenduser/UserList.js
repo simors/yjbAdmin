@@ -25,7 +25,7 @@ class UserList extends React.Component {
   }
 
   rowKey = (record) => {
-    return record.objectId;
+    return record.id;
   };
 
   onSelectChange = (selectedRowKeys, selectedRows) => {

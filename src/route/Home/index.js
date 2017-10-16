@@ -62,7 +62,7 @@ class Home extends Component {
         </Sider>
         <Layout className={style.main}>
           <Header className={style.header}>
-            <div className={style.headerTitle}>后台管理系统Demo</div>
+            <div className={style.headerTitle}>衣家宝后台管理系统</div>
             <div>
               <Dropdown overlay={this.renderUserLoginMenu()}>
                 <a className="ant-dropdown-link" href="#">

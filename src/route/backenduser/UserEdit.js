@@ -43,7 +43,7 @@ class UserEdit extends React.Component {
 
       this.props.updateUser({
         params: {
-          id: this.props.user.objectId,
+          id: this.props.user.id,
           ...values,
           type: 'admin',
         },
@@ -110,7 +110,7 @@ class UserEdit extends React.Component {
     this.props.allRoles.forEach((i) => {
       roleOptions.push({
         label: i.displayName,
-        value: i.objectId
+        value: i.id
       })
     });
 

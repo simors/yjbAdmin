@@ -7,7 +7,7 @@ import * as api from './cloud';
 // --- model
 
 class User extends Record({
-  objectId: undefined,            // objectId
+  id: undefined,                  // objectId
   email: undefined,
   emailVerified: undefined,
   mobilePhoneNumber: undefined,
@@ -33,7 +33,7 @@ class User extends Record({
     const imm = new User();
 
     return imm.withMutations((m) => {
-      m.set('objectId', json.objectId);
+      m.set('id', json.id);
       m.set('email', json.email);
       m.set('emailVerified', json.emailVerified);
       m.set('mobilePhoneNumber', json.mobilePhoneNumber);
@@ -60,7 +60,7 @@ class User extends Record({
   static toJson(imm) {
     // NOTE: IE8 does not support property access. Only use get() when supporting IE8
     return {
-      objectId: imm.objectId,
+      id: imm.id,
       email: imm.email,
       emailVerified: imm.emailVerified,
       mobilePhoneNumber: imm.mobilePhoneNumber,
@@ -86,17 +86,17 @@ class User extends Record({
 }
 
 class Role extends Record({
-  objectId: undefined,              // objectId
+  id: undefined,                  // objectId
   name: undefined,
   code: undefined,
   displayName: undefined,
-  permissions: Set(),               // Set<permission id>
+  permissions: Set(),             // Set<permission id>
 }, 'Role') {
   static fromJson(json) {
     const role = new Role();
 
     return role.withMutations((m) => {
-      m.set('objectId', json.objectId);
+      m.set('id', json.id);
       m.set('name', json.name);
       m.set('code', json.code);
       m.set('displayName', json.displayName);
@@ -106,7 +106,7 @@ class Role extends Record({
 
   static toJson(imm) {
     return {
-      objectId: imm.objectId,
+      id: imm.id,
       name: imm.name,
       code: imm.code,
       displayName: imm.displayName,
@@ -116,7 +116,7 @@ class Role extends Record({
 }
 
 class Permission extends Record({
-  objectId: undefined,              // objectId
+  id: undefined,                  // objectId
   code: undefined,
   displayName: undefined,
 }, 'Permission') {
@@ -124,7 +124,7 @@ class Permission extends Record({
     const perm = new Permission();
 
     return perm.withMutations((m) => {
-      m.set('objectId', json.objectId);
+      m.set('id', json.id);
       m.set('code', json.code);
       m.set('displayName', json.displayName);
     })
@@ -132,7 +132,7 @@ class Permission extends Record({
 
   static toJson(imm) {
     return {
-      objectId: imm.objectId,
+      id: imm.id,
       code: imm.code,
       displayName: imm.displayName,
     };
@@ -146,13 +146,16 @@ class AuthState extends Record({
   activeUserId: undefined,      // current login user
   activeRoleIds: Set(),         // Set<role id>
   activePermissionIds: Set(),   // Set<permission id>
-  usersById: Map(),             // Map<id, User>
+
   rolesById: Map(),             // Map<role id, Role>
   permissionsById: Map(),       // Map<permission id, Permission>
 
   allUsers: Set(),              // Set<user id>
-  allAdminUsers: Set(),         // Set<user id>
-  userIdsByRole: Map(),         // Map<role id, Set<user id>>
+  adminUsers: Set(),            // Set<user id>
+  endUsers: Set(),              // Set<user id>
+  adminUsersByRole: Map(),      // Map<role id, Set<user id>>
+
+  cachedUsersById: Map(),       // Map<user id, User>
 }, 'AuthState') {
 
 }
@@ -420,7 +423,7 @@ function reduceLoggedIN(state, action) {
   const immAllRolesById = new Map().withMutations((m) => {
     jsonAllRoles.forEach((i) => {
       const immRole = Role.fromJson(i);
-      m.set(immRole.objectId, immRole);
+      m.set(immRole.id, immRole);
     });
   });
 
@@ -428,7 +431,7 @@ function reduceLoggedIN(state, action) {
   const immAllPermissionsById = new Map().withMutations((m) => {
     jsonAllPermissions.forEach((i) => {
       const immPermission = Permission.fromJson(i);
-      m.set(immPermission.objectId, immPermission);
+      m.set(immPermission.id, immPermission);
     });
   });
 
@@ -443,12 +446,12 @@ function reduceLoggedIN(state, action) {
 
   return state.withMutations((m) => {
     m.set('token', token);
-    m.set('activeUserId', immActiveUser.objectId);
+    m.set('activeUserId', immActiveUser.id);
     m.set('activeRoleIds', immActiveRoleIds);
     m.set('activePermissionIds', immActivePermissionIds);
-    m.setIn(['usersById', immActiveUser.objectId], immActiveUser);
     m.set('rolesById', immAllRolesById);
     m.set('permissionsById', immAllPermissionsById);
+    m.setIn(['cachedUsersById', immActiveUser.id], immActiveUser);
   });
 }
 
@@ -458,7 +461,6 @@ function reduceLoggedOut(state, action) {
   return state.withMutations((m) => {
     m.set('activeUserId', undefined);
     m.set('token', undefined);
-    m.deleteIn(['usersById', activeUserId]);
   });
 }
 
@@ -473,7 +475,7 @@ function reduceListedUsers(state, action) {
 
   return state.withMutations((m) => {
     immUsers.forEach((i) => {
-      m.setIn(['usersById', i.objectId], i);
+      m.setIn(['cachedUsersById', i.id], i);
     });
   });
 }
@@ -485,22 +487,15 @@ function reduceRehydrate(state, action) {
     return state;
 
   // all data in json format
-  const {token, activeUserId, activeRoleIds, activePermissionIds, usersById, rolesById, permissionsById} = storage;
+  const {token, activeUserId, activeRoleIds, activePermissionIds, rolesById, permissionsById, cachedUsersById} = storage;
 
   const immActiveRoleIds = new Set(activeRoleIds);
   const immActivePermissionIds = new Set(activePermissionIds);
 
-  const immAllUsersById = new Map().withMutations((m) => {
-    Object.values(usersById).forEach((i) => {
-      const immUser = User.fromJson(i);
-      m.set(immUser.objectId, immUser);
-    });
-  });
-
   const immAllRolesById = new Map().withMutations((m) => {
     Object.values(rolesById).forEach((i) => {
       const immRole = Role.fromJson(i);
-      m.set(immRole.objectId, immRole);
+      m.set(immRole.id, immRole);
     });
   });
 
@@ -508,7 +503,14 @@ function reduceRehydrate(state, action) {
   const immAllPermissionsById = new Map().withMutations((m) => {
     Object.values(permissionsById).forEach((i) => {
       const immPermission = Permission.fromJson(i);
-      m.set(immPermission.objectId, immPermission);
+      m.set(immPermission.id, immPermission);
+    });
+  });
+
+  const immCachedUsersById = new Map().withMutations((m) => {
+    Object.values(cachedUsersById).forEach((i) => {
+      const immUser = User.fromJson(i);
+      m.set(immUser.id, immUser);
     });
   });
 
@@ -517,7 +519,7 @@ function reduceRehydrate(state, action) {
     // m.set('activeUserId', activeUserId);   // always re-auth with the server
     m.set('activeRoleIds', immActiveRoleIds);
     m.set('activePermissionIds', immActivePermissionIds);
-    m.set('usersById', immAllUsersById);
+    m.set('cachedUsersById', immCachedUsersById);
     m.set('rolesById', immAllRolesById);
     m.set('permissionsById', immAllPermissionsById);
   });
@@ -577,7 +579,7 @@ function selectAllRoles(appState) {
 function selectAllUsers(appState) {
   const allUsers = [];
 
-  const allImmUsers = appState.AUTH.getIn(['usersById'], new Map()).toArray();
+  const allImmUsers = appState.AUTH.getIn(['cachedUsersById'], new Map()).toArray();
   allImmUsers.forEach((i) => {
     allUsers.push(User.toJson(i));
   });
@@ -599,7 +601,7 @@ function selectAdminUsers(appState) {
 }
 
 function selectUserById(appState, id) {
-  const immUser = appState.AUTH.getIn(['usersById', id], undefined);
+  const immUser = appState.AUTH.getIn(['cachedUsersById', id], undefined);
 
   if (immUser === undefined)
     return undefined;

@@ -22,6 +22,10 @@ class RechargePromotion extends PureComponent {
     super(props)
   }
 
+  componentWillMount() {
+    this.props.fetchPromCategoryAction({})
+  }
+
   render() {
     return (
       <div className={style.content}>

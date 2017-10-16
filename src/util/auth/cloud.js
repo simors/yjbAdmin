@@ -9,7 +9,10 @@ export async function loginWithMobilePhone(payload) {
   const jsonRes = await AV.Cloud.run('authFetchRolesAndPermissions', {});
 
   return ({
-    jsonActiveUser: leanActiveUser.toJSON(),
+    jsonActiveUser: {
+      ...leanActiveUser.toJSON(),
+      id: leanActiveUser.id,
+    },
     token,
     ...jsonRes,
   });
@@ -24,7 +27,10 @@ export async function become(payload) {
   const jsonRes = await AV.Cloud.run('authFetchRolesAndPermissions', {});
 
   return ({
-    jsonActiveUser: leanActiveUser.toJSON(),
+    jsonActiveUser: {
+      ...leanActiveUser.toJSON(),
+      id: leanActiveUser.id,
+    },
     token,
     ...jsonRes,
   });

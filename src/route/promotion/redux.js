@@ -5,7 +5,7 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
-import {createPromotionApi, fetchPromotionsApi} from './cloud'
+import {createPromotionApi, fetchPromotionsApi, fetchPromotionCategoriesApi} from './cloud'
 
 /****  Model  ****/
 const PromotionRecord = Record({
@@ -72,7 +72,7 @@ const SAVE_PROMOTION = 'SAVE_PROMOTION'
 const SAVE_PROMOTIONS = 'SAVE_PROMOTIONS'
 const PUBLISH_RECHARGE_PROMOTION = 'PUBLISH_RECHARGE_PROMOTION'
 const SAVE_PROMOTION_CATEGORIES = 'SAVE_PROMOTION_CATEGORIES'
-const FETCH_PROMOTION_CATEGORIES = 'FETCH_PROMOTION_CATEGORIES'
+const FETCH_PROMOTION_CATEGORYLIST = 'FETCH_PROMOTION_CATEGORYLIST'
 
 export const PromotionStatus = {
 
@@ -88,7 +88,7 @@ export const actions = {
   savePromotions: createAction(SAVE_PROMOTIONS),
   publishRechargePromotion: createAction(PUBLISH_RECHARGE_PROMOTION),
   savePromotionCategories: createAction(SAVE_PROMOTION_CATEGORIES),
-  fetchPromotionCategories: createAction(FETCH_PROMOTION_CATEGORIES),
+  fetchPromCategoryAction: createAction(FETCH_PROMOTION_CATEGORYLIST),
 }
 
 /**** Saga ****/
@@ -100,6 +100,17 @@ function* fetchPromotions(action) {
 function* fetchPromotionCategories(action) {
   let payload = action.payload
 
+  try {
+    let categories = yield call(fetchPromotionCategoriesApi, payload)
+    yield put(actions.savePromotionCategories({ categories }))
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
 }
 
 function* publishRechargePromotion(action) {
@@ -131,6 +142,7 @@ function* publishRechargePromotion(action) {
 export const saga = [
   takeLatest(FETCH_PROMOTIONS, fetchPromotions),
   takeLatest(PUBLISH_RECHARGE_PROMOTION, publishRechargePromotion),
+  takeLatest(FETCH_PROMOTION_CATEGORYLIST, fetchPromotionCategories)
 ]
 
 /**** Reducer ****/
@@ -209,6 +221,18 @@ function onRehydrate(state, action) {
     promotionMap.clear()
   }
 
+  let categoryMap = new Map(incoming.categories)
+  try {
+    for (let [categoryId, category] of categoryMap) {
+      if(categoryId && category) {
+        let categoryRecord = new PromotionCategoryRecord({...category})
+        state =state.setIn(['categories', categoryId], categoryRecord)
+      }
+    }
+  } catch (error) {
+
+  }
+
   let promotionList = incoming.promotionList
   if(promotionList) {
     state = state.set('promotionList', List(promotionList))
@@ -228,7 +252,35 @@ function selectPromotion(state, promotionId) {
 function selectPromotionList(state) {
 
 }
+
+function selectCategory(state, categoryId) {
+  if(!categoryId) {
+    return undefined
+  }
+  let categoryRecord = state.PROMOTION.getIn(['categories', categoryId])
+  return categoryRecord? categoryRecord.toJS() : undefined
+}
+
+function selectCategoryList(state) {
+  let categoryMap = state.PROMOTION.get('categories')
+  return categoryMap? categoryMap.toJS() : undefined
+}
+
+function selectCategoryByTitle(state, title) {
+  if(!title) {
+    return undefined
+  }
+  let categoryMap = state.PROMOTION.get('categories')
+  let categoryRecord = categoryMap.find((category) => {
+    return category.title == title
+  })
+  console.log("selectCategoryByTitle", categoryRecord)
+  return categoryRecord? categoryRecord.toJS() : undefined
+}
 export const selector = {
   selectPromotion,
   selectPromotionList,
+  selectCategory,
+  selectCategoryList,
+  selectCategoryByTitle,
 }
