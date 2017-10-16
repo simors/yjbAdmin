@@ -48,7 +48,7 @@ class UpdatePartnerModal extends Component {
   userList() {
     if (this.props.userList && this.props.userList.length > 0) {
       let userList = this.props.userList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.nickname}</Option>
+        return <Option key={key} value={item.objectId}>{item.idName}</Option>
       })
       return userList
     } else {
@@ -127,7 +127,7 @@ class UpdatePartnerModal extends Component {
                   message: '投资金额未填写'
                 }
               ]
-            })(<InputNumber />)}
+            })(<InputNumber max={1} />)}
           </FormItem>
         </Form>
       </Modal>

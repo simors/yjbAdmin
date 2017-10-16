@@ -41,7 +41,7 @@ export const StationDetailRecord = Record({
 
 export class StationDetail extends StationDetailRecord {
   static fromApi(obj) {
-    console.log('obj====>', obj)
+    // console.log('obj====>', obj)
     let stationDetail = new StationDetailRecord()
     return stationDetail.withMutations((record) => {
       record.set('id', obj.id)
@@ -55,7 +55,7 @@ export class StationDetail extends StationDetailRecord {
       record.set('powerUnitPrice', obj.powerUnitPrice)
       record.set('unitPrice', obj.unitPrice)
       record.set('adminId', obj.adminId ? obj.adminId : obj.admin.id)
-      record.set('adminName', obj.adminName ? obj.adminName : (obj.admin?obj.admin.nickname:undefined))
+      record.set('adminName', obj.adminName ? obj.adminName : (obj.admin?obj.admin.idName:undefined))
       record.set('adminPhone', obj.adminPhone ? obj.adminPhone : (obj.admin?obj.admin.mobilePhoneNumber:undefined))
       record.set('status', obj.status)
       record.set('deviceNo', obj.deviceNo)

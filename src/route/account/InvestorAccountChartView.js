@@ -1,15 +1,16 @@
 /**
- * Created by lilu on 2017/10/15.
+ * Created by lilu on 2017/10/16.
  */
 /**
- * Created by lilu on 2017/9/18.
+ * Created by lilu on 2017/10/15.
  */
+
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
 import {Row, Col, Input, Select, Button} from 'antd';
 import ContentHead from '../../component/ContentHead'
-import PartnerAccountList from './PartnerAccountList';
+import StationAccountList from './StationAccountList';
 // import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from '../station/redux';
 import {configSelector} from '../../util/config'
@@ -23,7 +24,7 @@ const Option = Select.Option;
 const ButtonGroup = Button.Group
 // var Excel = require('exceljs');
 
-class PartnerAccountManager extends React.Component {
+class StationAccountManager extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -44,60 +45,23 @@ class PartnerAccountManager extends React.Component {
 
   componentWillMount() {
 
-    this.props.fetchPartnerAccounts({
+    this.props.fetchInvestorAccountsDetail({
+      userId:'59b007abac502e006ac6b258',
       success: ()=> {
         console.log('hahhahah')
       },
+
     })
     this.props.requestStations({
 
     })
+
   }
 
   refresh() {
     // this.props.requestStations({...this.state})
   }
 
-  setStatus() {
-    if (this.state.selectedRowId) {
-      let data = undefined
-      this.props.stations.forEach((item, key)=> {
-        if (item.id == this.state.selectedRowId[0]) {
-          data = item
-        }
-      })
-      let payload = {
-        stationId: this.state.selectedRowId,
-        success: ()=> {
-          this.refresh()
-        },
-        error: ()=> {
-          console.log('i m false')
-        }
-      }
-      if (data.status == 1) {
-        this.props.closeStation(payload)
-      } else {
-        this.props.openStation(payload)
-      }
-    }
-  }
-
-  statusChange(value) {
-    this.setState({status: value})
-  }
-
-
-  areaList() {
-    if (this.state.city && this.state.city.sub.length > 0) {
-      let areaList = this.state.city.sub.map((item, key)=> {
-        return <Option key={key} value={key}>{item.area_name}</Option>
-      })
-      return areaList
-    } else {
-      return null
-    }
-  }
 
   search() {
     let payload = {
@@ -109,7 +73,7 @@ class PartnerAccountManager extends React.Component {
         console.log('error')
       }
     }
-    this.props.fetchPartnerAccounts(payload)
+    this.props.fetchStationAccountsDetail(payload)
   }
 
   setDivision(value) {
@@ -124,9 +88,15 @@ class PartnerAccountManager extends React.Component {
 
   clearSearch() {
     this.setState({
-      stationId: undefined
+      status: undefined,
+      province: undefined,
+      city: undefined,
+      area: undefined,
+      addr: undefined,
+      name: undefined,
+      division: []
     })
-    this.props.fetchPartnerAccounts({
+    this.props.requestStations({
       success: ()=> {
         console.log('hahhahah')
       }
@@ -138,8 +108,8 @@ class PartnerAccountManager extends React.Component {
       <div style={{flex: 1}}>
         <Row >
           <Col span={12}>
-            <Select defalutValue = '' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
-              <Option value=''>全部</Option>
+            <Select defalutValue = 'all' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
+              <Option value="all">全部</Option>
               {
                 this.props.stations.map((station, index) => (
                   <Option key={index} value={station.id}>{station.name}</Option>
@@ -158,7 +128,6 @@ class PartnerAccountManager extends React.Component {
             }}>重置</Button>
           </Col>
         </Row>
-
       </div>
     )
   }
@@ -172,11 +141,6 @@ class PartnerAccountManager extends React.Component {
     //     // done
     //   });
   }
-  viewChart(){
-    this.props.history.push({
-      pathname: '/settlement/partnerChart',
-    })
-  }
 
   render() {
     // console.log('[DEBUG] ---> SysUser props: ', this.props);
@@ -184,8 +148,6 @@ class PartnerAccountManager extends React.Component {
       <div>
         <ButtonGroup>
           <Button onClick={()=>{this.downloadFile()}}>ceshi</Button>
-          <Button onClick={()=>{this.viewChart()}}>查看图表</Button>
-
         </ButtonGroup>
         {/*<StationMenu*/}
         {/*showDetail={()=> {*/}
@@ -208,9 +170,7 @@ class PartnerAccountManager extends React.Component {
         {/*/>*/}
         {this.renderSearchBar()}
 
-        <PartnerAccountList selectStation={(rowId, rowData)=> {
-          this.selectStation(rowId, rowData)
-        }} stationAccounts={this.props.partnerAccounts}/>
+        <AccountChart data = {this.props.stationAccounts} yline = 'profit' xline = 'accountDay'/>
       </div>
     )
   };
@@ -218,11 +178,11 @@ class PartnerAccountManager extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
-  let accounts = accountSelector.selectPartnerAccounts(state)
+  let accounts = accountSelector.selectInvestorAccountsDetail(state)
   // let areaList = configSelector.selectAreaList(state)
   console.log('accounts========>', accounts)
   return {
-    partnerAccounts: accounts,
+    stationAccounts: accounts,
     stations: stations
     // areaList: areaList,
   };
@@ -234,6 +194,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PartnerAccountManager);
+export default connect(mapStateToProps, mapDispatchToProps)(StationAccountManager);
 
 export {saga, reducer} from './redux';

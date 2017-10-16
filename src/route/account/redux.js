@@ -39,7 +39,7 @@ export const StationAccountRecord = Record({
 
 export class StationAccount extends StationAccountRecord {
   static fromApi(obj) {
-    console.log('obj====>', obj)
+    // console.log('obj====>', obj)
     let stationDetail = new StationAccountRecord()
     return stationDetail.withMutations((record) => {
       record.set('id', obj.id)
@@ -68,7 +68,7 @@ export const SharingAccountRecord = Record({
 
 export class SharingAccount extends SharingAccountRecord {
   static fromApi(obj) {
-    console.log('obj====>', obj)
+    // console.log('obj====>', obj)
     let stationDetail = new SharingAccountRecord()
     return stationDetail.withMutations((record) => {
       record.set('id', obj.id)
@@ -283,7 +283,7 @@ function* fetchInvestorAccountsDetail(action) {
       })
     }
     // console.log('stationAccountList======>',stationAccountList,stationAccounts)
-    yield put(fetchStationAccountsDetailSuccess({investorAccounts: investorAccounts, investorAccountList: investorAccountList}))
+    yield put(fetchInvestorAccountsDetailSuccess({investorAccounts: investorAccounts, investorAccountList: investorAccountList}))
     if (payload.success) {
       payload.success()
     }
@@ -402,7 +402,7 @@ function handleSavePartnerAccountsDetail(state, action) {
 
 function handleSetAllInvestorAccounts(state, stationAccounts) {
   stationAccounts.forEach((item)=> {
-    state = state.setIn(['allStationAccounts', item.id], item)
+    state = state.setIn(['allInvestorAccounts', item.id], item)
 
   })
   return state
@@ -449,7 +449,7 @@ function selectStationAccounts(state) {
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
         accountInfo?accountInfo = accountInfo.toJS(): undefined
         station?accountInfo.station = station: null
-        console.log('accountInfo====>',accountInfo)
+        // console.log('accountInfo====>',accountInfo)
         stationAccounts.push(accountInfo)
       }
     })
@@ -468,7 +468,7 @@ function selectStationAccountsDetail(state) {
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
         accountInfo?accountInfo = accountInfo.toJS(): undefined
         station?accountInfo.station = station: null
-        console.log('accountInfo====>',accountInfo)
+        // console.log('accountInfo====>',accountInfo)
         stationAccounts.push(accountInfo)
       }
     })
@@ -487,7 +487,7 @@ function selectPartnerAccounts(state) {
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
         accountInfo?accountInfo = accountInfo.toJS(): undefined
         station?accountInfo.station = station: null
-        console.log('accountInfo====>',accountInfo)
+        // console.log('accountInfo====>',accountInfo)
         partnerAccounts.push(accountInfo)
       }
     })
@@ -506,7 +506,7 @@ function selectPartnerAccountsDetail(state) {
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
         accountInfo?accountInfo = accountInfo.toJS(): undefined
         station?accountInfo.station = station: null
-        console.log('accountInfo====>',accountInfo)
+        // console.log('accountInfo====>',accountInfo)
         partnerAccounts.push(accountInfo)
       }
     })
@@ -519,12 +519,12 @@ function selectInvestorAccounts(state) {
   let investorAccounts = []
   if (investorAccountList && investorAccountList.size > 0) {
     investorAccountList.forEach((item)=> {
-      let accountInfo = account.getIn(['allInvestornAccounts', item])
+      let accountInfo = account.getIn(['allInvestorAccounts', item])
       if(accountInfo){
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
         accountInfo?accountInfo = accountInfo.toJS(): undefined
         station?accountInfo.station = station: null
-        console.log('accountInfo====>',accountInfo)
+        // console.log('accountInfo====>',accountInfo)
         investorAccounts.push(accountInfo)
       }
     })
@@ -543,7 +543,6 @@ function selectInvestorAccountsDetail(state) {
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
         accountInfo?accountInfo = accountInfo.toJS(): undefined
         station?accountInfo.station = station: null
-        console.log('accountInfo====>',accountInfo)
         investorAccounts.push(accountInfo)
       }
     })

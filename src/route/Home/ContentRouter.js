@@ -19,6 +19,8 @@ import StationAccountManager from '../account/StationAccountManager'
 import StationAccountChartView from '../account/StationAccountChartView'
 import PartnerAccountManager from '../account/PartnerAccountManager'
 import PartnerAccountChartView from '../account/PartnerAccountChartView'
+import InvestorAccountManager from '../account/InvestorAccountManager'
+import InvestorAccountChartView from '../account/InvestorAccountChartView'
 
 const ContentRouter = ({match}) => {
   return (
@@ -39,6 +41,8 @@ const ContentRouter = ({match}) => {
       <Route exact path="/settlement/stationChart" component={StationAccountChartView}/>
       <Route exact path="/settlement/site" component={PartnerAccountManager}/>
         <Route exact path="/settlement/partnerChart" component={PartnerAccountChartView}/>
+      <Route exact path="/settlement/investor" component={InvestorAccountManager}/>
+      <Route exact path="/settlement/investorChart" component={InvestorAccountChartView}/>
 
     </Switch>
   )

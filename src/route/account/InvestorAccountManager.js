@@ -1,4 +1,7 @@
 /**
+ * Created by lilu on 2017/10/16.
+ */
+/**
  * Created by lilu on 2017/10/15.
  */
 /**
@@ -9,7 +12,7 @@ import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
 import {Row, Col, Input, Select, Button} from 'antd';
 import ContentHead from '../../component/ContentHead'
-import PartnerAccountList from './PartnerAccountList';
+import InvestorAccountList from './InvestorAccountList';
 // import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from '../station/redux';
 import {configSelector} from '../../util/config'
@@ -23,7 +26,7 @@ const Option = Select.Option;
 const ButtonGroup = Button.Group
 // var Excel = require('exceljs');
 
-class PartnerAccountManager extends React.Component {
+class InvestorAccountManager extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -44,7 +47,7 @@ class PartnerAccountManager extends React.Component {
 
   componentWillMount() {
 
-    this.props.fetchPartnerAccounts({
+    this.props.fetchInvestorAccounts({
       success: ()=> {
         console.log('hahhahah')
       },
@@ -109,7 +112,7 @@ class PartnerAccountManager extends React.Component {
         console.log('error')
       }
     }
-    this.props.fetchPartnerAccounts(payload)
+    this.props.fetchInvestorAccounts(payload)
   }
 
   setDivision(value) {
@@ -126,7 +129,7 @@ class PartnerAccountManager extends React.Component {
     this.setState({
       stationId: undefined
     })
-    this.props.fetchPartnerAccounts({
+    this.props.fetchInvestorAccounts({
       success: ()=> {
         console.log('hahhahah')
       }
@@ -174,7 +177,7 @@ class PartnerAccountManager extends React.Component {
   }
   viewChart(){
     this.props.history.push({
-      pathname: '/settlement/partnerChart',
+      pathname: '/settlement/investorChart',
     })
   }
 
@@ -208,7 +211,7 @@ class PartnerAccountManager extends React.Component {
         {/*/>*/}
         {this.renderSearchBar()}
 
-        <PartnerAccountList selectStation={(rowId, rowData)=> {
+        <InvestorAccountList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
         }} stationAccounts={this.props.partnerAccounts}/>
       </div>
@@ -218,7 +221,7 @@ class PartnerAccountManager extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
-  let accounts = accountSelector.selectPartnerAccounts(state)
+  let accounts = accountSelector.selectInvestorAccounts(state)
   // let areaList = configSelector.selectAreaList(state)
   console.log('accounts========>', accounts)
   return {
@@ -234,6 +237,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PartnerAccountManager);
+export default connect(mapStateToProps, mapDispatchToProps)(InvestorAccountManager);
 
 export {saga, reducer} from './redux';

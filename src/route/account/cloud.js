@@ -25,6 +25,8 @@ export async function fetchPartnerAccounts(payload) {
 }
 
 export async function fetchInvestorAccounts(payload) {
+  console.log('payload=====>',payload)
+
   try {
     let accounts = await AV.Cloud.run('accountGetInvestorAccounts', payload)
     return {success: true, accounts: accounts.accountList}
@@ -51,9 +53,10 @@ export async function fetchStationAccountDetail(payload) {
 }
 
 export async function fetchPartnerAccountsDetail(payload) {
+  console.log('payload=====>',payload)
+
   try {
     let accounts = await AV.Cloud.run('accountGetPartnerAccountsDetail', payload)
-    console.log('accounts=====>',accounts)
     return {success: true, accounts: accounts}
 
   } catch (error) {
@@ -63,6 +66,8 @@ export async function fetchPartnerAccountsDetail(payload) {
 }
 
 export async function fetchInvestorAccountsDetail(payload) {
+  console.log('payload=====>',payload)
+
   try {
     let accounts = await AV.Cloud.run('accountGetInvestorAccountsDetail', payload)
     return {success: true, accounts: accounts}
