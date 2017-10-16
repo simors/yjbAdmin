@@ -16,12 +16,21 @@ const Option = Select.Option;
 const FormItem = Form.Item
 const formItemLayout = {
   labelCol: {
-    span: 16
+    span: 6
   },
   wrapperCol: {
-    span: 8
+    span: 18
   }
 }
+const formItemLayout2 = {
+  labelCol: {
+    span: 12
+  },
+  wrapperCol: {
+    span: 12
+  }
+}
+
 
 class AddStation extends React.Component {
   constructor(props) {
@@ -118,8 +127,8 @@ class AddStation extends React.Component {
     // let partnerList = this.state.partnerList.splice(0,0,plate)
     return (
       <div>
-        <Form layout="horizontal">
-          <Row>
+        <Form >
+          <Row style={{justifyContent:'start'}}>
             <Col span={12}>
               <FormItem label='服务点名称' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('name', {
@@ -194,7 +203,7 @@ class AddStation extends React.Component {
           </Row>
           <Row>
             <Col span={6}>
-              <FormItem label='干衣柜单价：' hasFeedback {...formItemLayout}>
+              <FormItem label='干衣柜单价：' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('unitPrice', {
                   initialValue: 0,
                   rules: [
@@ -207,7 +216,7 @@ class AddStation extends React.Component {
               </FormItem>
             </Col>
             <Col span={6}>
-              <FormItem label='干衣柜押金：' hasFeedback {...formItemLayout}>
+              <FormItem label='干衣柜押金：' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('deposit', {
                   initialValue: 0,
                   rules: [
@@ -220,7 +229,7 @@ class AddStation extends React.Component {
               </FormItem>
             </Col>
             <Col span={6}>
-              <FormItem label='电费单价：' hasFeedback {...formItemLayout}>
+              <FormItem label='电费单价：' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('powerUnitPrice', {
                   initialValue: 0,
                   rules: [
@@ -233,7 +242,7 @@ class AddStation extends React.Component {
               </FormItem>
             </Col>
             <Col span={6}>
-              <FormItem label='平台分成比例：' hasFeedback {...formItemLayout}>
+              <FormItem label='平台分成比例：' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('platformProp', {
                   initialValue: 0,
                   rules: [

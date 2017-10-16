@@ -18,6 +18,15 @@ const Option = Select.Option;
 const FormItem = Form.Item
 const formItemLayout = {
   labelCol: {
+    span: 6
+  },
+  wrapperCol: {
+    span: 18
+  }
+}
+
+const formItemLayout2 = {
+  labelCol: {
     span: 12
   },
   wrapperCol: {
@@ -265,7 +274,7 @@ class EditStation extends React.Component {
     return (
       <div>
         <Spin size='large' spinning={this.state.spinShow}>
-        <Form layout="horizontal">
+        <Form >
           <Row>
             <Col span={12}>
               <FormItem label='服务点名称' hasFeedback {...formItemLayout}>
@@ -348,8 +357,8 @@ class EditStation extends React.Component {
             </Col>
           </Row>
           <Row>
-            <Col span={8}>
-              <FormItem label='干衣柜单价：' hasFeedback {...formItemLayout}>
+            <Col span={6}>
+              <FormItem label='干衣柜单价：' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('unitPrice', {
                   initialValue: station ? station.unitPrice : 0,
                   rules: [
@@ -361,8 +370,8 @@ class EditStation extends React.Component {
                 })(<InputNumber />)}
               </FormItem>
             </Col>
-            <Col span={8}>
-              <FormItem label='干衣柜押金：' hasFeedback {...formItemLayout}>
+            <Col span={6}>
+              <FormItem label='干衣柜押金：' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('deposit', {
                   initialValue: station ? station.deposit : 0,
                   rules: [
@@ -374,8 +383,8 @@ class EditStation extends React.Component {
                 })(<InputNumber />)}
               </FormItem>
             </Col>
-            <Col span={8}>
-              <FormItem label='电费单价：' hasFeedback {...formItemLayout}>
+            <Col span={6}>
+              <FormItem label='电费单价：' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('powerUnitPrice', {
                   initialValue: station ? station.powerUnitPrice : 0,
                   rules: [
@@ -387,10 +396,8 @@ class EditStation extends React.Component {
                 })(<InputNumber />)}
               </FormItem>
             </Col>
-            </Row>
-            <Row>
             <Col span={6}>
-              <FormItem label='平台分成比例：' hasFeedback {...formItemLayout}>
+              <FormItem label='平台分成比例：' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('platformProp', {
                   initialValue: station ? station.platformProp : 0,
                   rules: [
@@ -411,9 +418,10 @@ class EditStation extends React.Component {
             }}>提交</Button>
           </Col>
         </Row>
+          <Row></Row>
         <Row>
           <Col span={4}>
-            <h5>服务点分成</h5>
+            <p>服务点分成</p>
           </Col>
           <Col span={4}>
             <Button onClick={()=> {

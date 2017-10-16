@@ -5,3 +5,28 @@
   }
 ;
 }
+.content {
+  .operation {
+    margin-bottom: 12px;
+  }
+  .search {
+    margin-bottom: 12px;
+  }
+}
+
+.title {
+  display: inline;
+}
+
+.modalItem {
+  margin-bottom: 12px;
+}
+
+.link {
+  color: red;
+}
+
+.submit {
+  display: flex;
+  justify-content: flex-end;
+}
