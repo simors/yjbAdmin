@@ -34,7 +34,7 @@ class DeviceDetailModal extends React.PureComponent {
   }
 
   render() {
-    if(this.props.device) {
+    if(this.props.device && this.props.station) {
       return (
         <Modal title="干衣柜详情"
                width={720}
