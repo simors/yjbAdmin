@@ -624,6 +624,9 @@ function selectUsers(state) {
 }
 
 function selectStationById(state, stationId) {
+  if(!stationId) {
+    return undefined
+  }
   let station = state.STATION
   // console.log('stationId=======>',stationId)
   let stationRecord = station.getIn(['allStations', stationId])

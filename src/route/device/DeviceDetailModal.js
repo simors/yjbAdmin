@@ -34,7 +34,7 @@ class DeviceDetailModal extends React.PureComponent {
   }
 
   render() {
-    if(this.props.device) {
+    if(this.props.device && this.props.station) {
       return (
         <Modal title="干衣柜详情"
                width={720}
@@ -108,7 +108,7 @@ class DeviceDetailModal extends React.PureComponent {
 
 const mapStateToProps = (appState, ownProps) => {
   let device = ownProps.device
-  let station = device && device.stationId? stationSelector.selectStationById(appState, device.stationId) : undefined
+  let station = device? stationSelector.selectStationById(appState, device.stationId) : undefined
   return {
     station: station
   }
