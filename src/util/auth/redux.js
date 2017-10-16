@@ -147,13 +147,15 @@ class AuthState extends Record({
   activeRoleIds: Set(),         // Set<role id>
   activePermissionIds: Set(),   // Set<permission id>
 
-  cachedUsersById: Map(),       // Map<id, User>
   rolesById: Map(),             // Map<role id, Role>
   permissionsById: Map(),       // Map<permission id, Permission>
+
   allUsers: Set(),              // Set<user id>
   adminUsers: Set(),            // Set<user id>
   endUsers: Set(),              // Set<user id>
   adminUsersByRole: Map(),      // Map<role id, Set<user id>>
+
+  cachedUsersById: Map(),       // Map<id, User>
 }, 'AuthState') {
 
 }
