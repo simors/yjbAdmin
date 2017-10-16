@@ -23,11 +23,13 @@ class User extends Record({
   city: undefined,
   idNumber: undefined,
   idName: undefined,              // real name
+  idNameVerified: undefined,
   createdAt: undefined,
   updatedAt: undefined,
-  type: undefined,                // user type, e.g. system admin, platform admin, etc.
-  note: undefined,                // note for this user
+  type: undefined,                // user type, e.g. end user or admin user
   roles: Set(),                   // Set<role id>
+  note: undefined,                // note for this user
+  subscribe: undefined,
 }, 'User') {
   static fromJson(json) {
     const imm = new User();
@@ -49,11 +51,13 @@ class User extends Record({
       m.set('city', json.city);
       m.set('idNumber', json.idNumber);
       m.set('idName', json.idName);
+      m.set('idNameVerified', json.idNameVerified);
       m.set('createdAt', json.createdAt);
       m.set('updatedAt', json.updatedAt);
       m.set('type', json.type);
-      m.set('note', json.note);
       m.set('roles', new Set(json.roles));
+      m.set('note', json.note);
+      m.set('subscribe', json.subscribe);
     });
   }
 
@@ -76,11 +80,13 @@ class User extends Record({
       city: imm.city,
       idNumber: imm.idNumber,
       idName: imm.idName,
+      idNameVerified: imm.idNameVerified,
       createdAt: imm.createdAt,
       updatedAt: imm.updatedAt,
       type: imm.type,
-      note: imm.note,
       roles: imm.get('roles', new Set()).toArray(),
+      note: imm.note,
+      subscribe: imm.subscribe,
     };
   }
 }
