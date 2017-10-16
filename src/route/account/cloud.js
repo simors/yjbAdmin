@@ -36,8 +36,13 @@ export async function fetchInvestorAccounts(payload) {
 
 export async function fetchStationAccountDetail(payload) {
   try {
-    let accounts = await AV.Cloud.run('accountGetStationAccountsDetail', payload)
-    console.log('accounts===~~~~~~~~~>',accounts)
+    let accounts = undefined
+    if(payload.stationId&&payload.stationId!='all'){
+       accounts = await AV.Cloud.run('accountGetStationAccountsDetail', payload)
+    }else{
+       accounts = await AV.Cloud.run('accountGetDayAccountsSum', payload)
+    }
+    console.log('accounts===~~~~~~~~~~~~~~~~~===>',accounts)
     return {success: true, accounts: accounts}
   } catch (error) {
     console.error(error)

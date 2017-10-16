@@ -7,12 +7,13 @@ import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import {call, put, takeEvery, takeLatest} from 'redux-saga/effects'
 import * as accountFunc from './cloud'
-import {stationAction,StationDetail} from '../station/redux'
+import {stationAction,StationDetail,stationSelector} from '../station/redux'
 import {formatLeancloudTime} from '../../util/datetime'
 /****  Model  ****/
 
 export const AccountRecord = Record({
   stationAccountList: List(),
+  stationAccountsDetailList: List(),
   allStationAccounts: Map(),
   allPartnerAccounts: Map(),
   allInvestorAccounts: Map(),
@@ -171,7 +172,7 @@ export function accountReducer(state = initialState, action) {
     case FETCH_STATION_ACCOUNT_SUCCESS:
       return handleSaveStationAccounts(state, action)
     case FETCH_STATION_ACCOUNT_DETAIL_SUCCESS:
-      return handleSaveStationAccounts(state, action)
+      return handleSaveStationAccountsDetail(state, action)
     default:
       return state
   }
@@ -180,6 +181,7 @@ export function accountReducer(state = initialState, action) {
 function handleSetAllStationAccounts(state, stationAccounts) {
   stationAccounts.forEach((item)=> {
     state = state.setIn(['allStationAccounts', item.id], item)
+
   })
   return state
 }
@@ -198,6 +200,20 @@ function handleSaveStationAccounts(state, action) {
   return state
 }
 
+function handleSaveStationAccountsDetail(state, action) {
+
+  let stationAccounts = action.payload.stationAccounts
+  let stationAccountList = action.payload.stationAccountList
+  console.log('stationAccounts=========>', stationAccounts, stationAccountList)
+  if (stationAccountList && stationAccountList.length > 0) {
+    state = state.set('stationAccountsDetailList', new List(stationAccountList))
+    state = handleSetAllStationAccounts(state, stationAccounts)
+  } else {
+    state = state.set('stationAccountsDetailList', new List())
+  }
+  return state
+}
+
 
 /**** Selector ****/
 
@@ -208,14 +224,39 @@ function selectStationAccounts(state) {
   if (stationAccountList && stationAccountList.size > 0) {
     stationAccountList.forEach((item)=> {
       let accountInfo = account.getIn(['allStationAccounts', item])
-      accountInfo?stationAccounts.push(accountInfo?accountInfo.toJS():undefined):null
+      if(accountInfo){
+        let station = stationSelector.selectStationById(state,accountInfo.stationId)
+        accountInfo?accountInfo = accountInfo.toJS(): undefined
+        station?accountInfo.station = station: null
+        console.log('accountInfo====>',accountInfo)
+        stationAccounts.push(accountInfo)
+      }
     })
   }
   return stationAccounts
 }
 
+function selectStationAccountsDetail(state) {
+  let account = state.ACCOUNT
+  let stationAccountList = account.stationAccountsDetailList
+  let stationAccounts = []
+  if (stationAccountList && stationAccountList.size > 0) {
+    stationAccountList.forEach((item)=> {
+      let accountInfo = account.getIn(['allStationAccounts', item])
+      if(accountInfo){
+        let station = stationSelector.selectStationById(state,accountInfo.stationId)
+        accountInfo?accountInfo = accountInfo.toJS(): undefined
+        station?accountInfo.station = station: null
+        console.log('accountInfo====>',accountInfo)
+        stationAccounts.push(accountInfo)
+      }
+    })
+  }
+  return stationAccounts
+}
 
 export const accountSelector = {
   selectStationAccounts,
+  selectStationAccountsDetail,
 
 }

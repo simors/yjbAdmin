@@ -16,6 +16,7 @@ import EditStation from '../station/EditStation'
 import AddStation from '../station/AddStation'
 import Promotion, {RechargePromotion} from '../promotion'
 import StationAccountManager from '../account/StationAccountManager'
+import StationAccountChartView from '../account/StationAccountChartView'
 
 const ContentRouter = ({match}) => {
   return (
@@ -33,6 +34,7 @@ const ContentRouter = ({match}) => {
       <Route exact path="/promotion/list" component={Promotion} />
       <Route exact path="/promotion/recharge" component={RechargePromotion} />
       <Route exact path="/settlement/list" component={StationAccountManager} />
+        <Route exact path="/settlement/stationChart" component={StationAccountChartView} />
 
     </Switch>
   )

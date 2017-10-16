@@ -625,6 +625,7 @@ function selectUsers(state) {
 
 function selectStationById(state, stationId) {
   let station = state.STATION
+  // console.log('stationId=======>',stationId)
   let stationRecord = station.getIn(['allStations', stationId])
 
   return stationRecord ? stationRecord.toJS() : undefined

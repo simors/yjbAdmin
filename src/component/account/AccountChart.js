@@ -98,7 +98,7 @@ export default class AccountChart extends Component {
       });
       return (
         <div>
-          <div>当地{this.state.months}月来营业额
+          <div>
             <LineEarning data={this.props.data} width={600} height={300}/>
           </div>
         </div>
@@ -110,9 +110,7 @@ export default class AccountChart extends Component {
   }
 
   render() {
-    var marks = {
-      1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12
-    }
+
     return (
       <Tabs defaultActiveKey='1' className='content-inner'>
         <TabPane tab='地区统计' key='2'>

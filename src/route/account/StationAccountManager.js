@@ -48,11 +48,10 @@ class StationAccountManager extends React.Component {
 
   componentWillMount() {
 
-    this.props.fetchStationAccountsDetail({
+    this.props.fetchStationAccounts({
       success: ()=> {
         console.log('hahhahah')
       },
-      stationId: '59bc9eea61ff4b547868526a'
     })
   }
 
@@ -205,6 +204,11 @@ class StationAccountManager extends React.Component {
     //     // done
     //   });
 }
+  viewChart(){
+    this.props.history.push({
+      pathname: '/settlement/stationChart',
+    })
+  }
 
   render() {
     let data = [
@@ -225,6 +229,8 @@ class StationAccountManager extends React.Component {
       <div>
         <ButtonGroup>
           <Button onClick={()=>{this.downloadFile()}}>ceshi</Button>
+          <Button onClick={()=>{this.viewChart()}}>查看图表</Button>
+
         </ButtonGroup>
         {/*<StationMenu*/}
           {/*showDetail={()=> {*/}
@@ -250,7 +256,6 @@ class StationAccountManager extends React.Component {
         <StationAccountList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
         }} stationAccounts={this.props.stationAccounts}/>
-        <AccountChart data = {this.props.stationAccounts} yline = 'profit' xline = 'accountDay'/>
       </div>
     )
   };
