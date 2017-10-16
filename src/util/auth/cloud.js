@@ -34,7 +34,7 @@ export async function logout(payload) {
   await AV.User.logOut();
 }
 
-export async function fetchUserList(payload) {
+export async function listUsers(payload) {
   return await AV.Cloud.run('authFetchUserList', payload);
 }
 
