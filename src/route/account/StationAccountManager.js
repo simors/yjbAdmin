@@ -11,7 +11,7 @@ import {Row, Col, Input, Select, Button} from 'antd';
 import ContentHead from '../../component/ContentHead'
 import StationAccountList from './StationAccountList';
 // import StationMenu from './StationMenu'
-// import {stationAction, stationSelector} from './redux';
+import {stationAction, stationSelector} from '../station/redux';
 import {configSelector} from '../../util/config'
 import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
@@ -31,18 +31,14 @@ class StationAccountManager extends React.Component {
       selectedRowId: undefined,
       selectedRowData: undefined,
       status: undefined,
-      province: undefined,
-      city: undefined,
-      area: undefined,
-      addr: undefined,
-      name: undefined,
+      stationId: undefined,
       division: []
     }
   }
 
-  selectStation(rowId, rowData) {
-    this.setState({selectedRowId: rowId, selectedRowData: rowData}, ()=> {
-      console.log('selectRow========>', this.state.selectedRowId)
+  selectStation(value) {
+    this.setState({
+      stationId: value
     })
   }
 
@@ -52,6 +48,9 @@ class StationAccountManager extends React.Component {
       success: ()=> {
         console.log('hahhahah')
       },
+    })
+    this.props.requestStations({
+
     })
   }
 
@@ -102,12 +101,7 @@ class StationAccountManager extends React.Component {
 
   search() {
     let payload = {
-      province: this.state.division[0],
-      city: this.state.division[1],
-      area: this.state.division[2],
-      status: this.state.status&&this.state.status.key ? parseInt(this.state.status.key) : undefined,
-      addr: this.state.addr,
-      name: this.state.name,
+      stationId: this.state.stationId,
       success: ()=> {
         console.log('success')
       },
@@ -115,7 +109,7 @@ class StationAccountManager extends React.Component {
         console.log('error')
       }
     }
-    this.props.requestStations(payload)
+    this.props.fetchStationAccounts(payload)
   }
 
   setDivision(value) {
@@ -130,15 +124,9 @@ class StationAccountManager extends React.Component {
 
   clearSearch() {
     this.setState({
-      status: undefined,
-      province: undefined,
-      city: undefined,
-      area: undefined,
-      addr: undefined,
-      name: undefined,
-      division: []
+      stationId: undefined
     })
-    this.props.requestStations({
+    this.props.fetchStationAccounts({
       success: ()=> {
         console.log('hahhahah')
       }
@@ -148,48 +136,28 @@ class StationAccountManager extends React.Component {
   renderSearchBar() {
     return (
       <div style={{flex: 1}}>
-        <Row >
-          <Col span={12}>
-            <Input  placeholder='名称' value={this.state.name} onChange={(e)=> {
-              this.setState({name: e.target.value})
-            }}></Input>
-          </Col>
-          <Col span={12}>
-            <Select labelInValue={true} placeholder="状态" value={this.state.status}  allowClear={true} style={{width: 120}} onChange={(value)=> {
-              this.statusChange(value)
-            }}>
-              <Option value='1' >正常</Option>
-              <Option value='0' >已停用</Option>
-            </Select>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={6}>
-            <DivisionCascader
-              value = {this.state.division}
-              defaultValue={this.state.division}
-              onChange={(key, value)=> {
-                this.setDivision(key)
-                console.log('value===>', value, key)
-              }}
-            />
-          </Col>
-          <Col span={14}>
-            <Input value = {this.state.addr} placeholder='地址' onChange={(e)=> {
-              this.setState({addr: e.target.value})
-            }}/>
-          </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
-              this.search()
-            }}>查询</Button>
-          </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
-              this.clearSearch()
-            }}>重置</Button>
-          </Col>
-        </Row>
+          <Row >
+            <Col span={12}>
+              <Select defalutValue = '' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
+                <Option value=''>全部</Option>
+                {
+                  this.props.stations.map((station, index) => (
+                    <Option key={index} value={station.id}>{station.name}</Option>
+                  ))
+                }
+              </Select>
+            </Col>
+            <Col span={2}>
+              <Button onClick={()=> {
+                this.search()
+              }}>查询</Button>
+            </Col>
+            <Col span={2}>
+              <Button onClick={()=> {
+                this.clearSearch()
+              }}>重置</Button>
+            </Col>
+          </Row>
 
       </div>
     )
@@ -211,19 +179,6 @@ class StationAccountManager extends React.Component {
   }
 
   render() {
-    let data = [
-      {profit:100,stationId:1},
-      {profit:12,stationId:2},
-      {profit:33,stationId:3},
-      {profit:44,stationId:4},
-      {profit:88,stationId:5},
-      {profit:121,stationId:6},
-      {profit:155,stationId:7},
-      {profit:22,stationId:8},
-      {profit:31,stationId:9},
-      {profit:133,stationId:10}
-
-    ]
     // console.log('[DEBUG] ---> SysUser props: ', this.props);
     return (
       <div>
@@ -251,7 +206,7 @@ class StationAccountManager extends React.Component {
             {/*this.refresh()*/}
           {/*}}*/}
         {/*/>*/}
-        {/*{this.renderSearchBar()}*/}
+        {this.renderSearchBar()}
 
         <StationAccountList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
@@ -262,18 +217,19 @@ class StationAccountManager extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  // let stations = stationSelector.selectStations(state)
+  let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectStationAccounts(state)
   // let areaList = configSelector.selectAreaList(state)
   console.log('accounts========>', accounts)
   return {
     stationAccounts: accounts,
+    stations: stations
     // areaList: areaList,
   };
 };
 
 const mapDispatchToProps = {
-  // ...stationAction,
+  ...stationAction,
   ...accountAction
 
 };

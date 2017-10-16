@@ -59,6 +59,30 @@ export const SharingAccountRecord = Record({
   id: undefined,
   accountDay: undefined,
   profit: undefined,
+  userId: undefined,
+  stationId: undefined,
+  createdAt: undefined,
+}, 'SharingAccountRecord')
+
+export class SharingAccount extends SharingAccountRecord {
+  static fromApi(obj) {
+    console.log('obj====>', obj)
+    let accountDetail = new SharingAccountRecord()
+    return accountDetail.withMutations((record) => {
+      record.set('id', obj.id)
+      record.set('accountDay', formatLeancloudTime(new Date(obj.accountDay),'YYYY-MM-DD'))
+      record.set('profit', obj.profit)
+      record.set('userId', obj.userId)
+      record.set('stationId', obj.stationId)
+      record.set('createdAt', obj.createdAt)
+    })
+  }
+}
+
+export const SharingAccountRecord = Record({
+  id: undefined,
+  accountDay: undefined,
+  profit: undefined,
   stationId: undefined,
   userId: undefined,
 
