@@ -69,9 +69,8 @@ class AddStation extends React.Component {
       stationId: this.props.match.params.id, success: ()=> {
       }
     })
-    this.props.fetchUserList({
-      success: ()=> {
-      }
+    this.props.listUsers({
+      onFailure: (e)=>{console.log(e.message)}
     })
   }
 
@@ -79,7 +78,7 @@ class AddStation extends React.Component {
     if (this.props.userList && this.props.userList.length > 0) {
       console.log('this.props.userList',this.props.userList)
       let userList = this.props.userList.map((item, key)=> {
-        return <Option key={key} value={item.objectId}>{item.username}</Option>
+        return <Option key={key} value={item.objectId}>{item.idName}</Option>
       })
       return userList
     } else {
