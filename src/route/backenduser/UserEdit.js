@@ -50,7 +50,7 @@ class UserEdit extends React.Component {
         onSuccess: () => {
           this.props.hideUserEditModal({});
           this.props.form.resetFields();
-          this.props.listUsers({});
+          this.props.listAdminUsers({});
         },
         onComplete: () => {
           this.setState((prevState, props) => {
@@ -220,7 +220,7 @@ class UserEdit extends React.Component {
 }
 
 const mapStateToProps = (appState, ownProps) => {
-  const allRoles = authSelector.selectAllRoles(appState);
+  const allRoles = authSelector.selectRoles(appState);
   const visible = selector.selectUserEditModalVisible(appState);
 
   const selectedUserIds = selector.selectSelectedUserIds(appState);
