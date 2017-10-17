@@ -1,3 +1,3 @@
-import Loading from './Loading';
+import LoadingPage from './Loading';
 
-export default Loading
+export default LoadingPage

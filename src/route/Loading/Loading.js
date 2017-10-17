@@ -5,7 +5,7 @@ import {Spin} from 'antd';
 import style from './Loading.module.scss';
 import {appStateSelector} from '../../util/appstate'
 
-class Loading extends React.PureComponent {
+class LoadingPage extends React.PureComponent {
   constructor(props) {
     super(props);
   }
@@ -37,4 +37,4 @@ const mapStateToProps = (state, ownProps) => {
   }
 };
 
-export default withRouter(connect(mapStateToProps)(Loading));
+export default withRouter(connect(mapStateToProps)(LoadingPage));
