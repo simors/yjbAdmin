@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import {connect} from 'react-redux';
-import {Spin, Alert} from 'antd';
+import {Spin} from 'antd';
 import {loadSelector, loadAction, loadSaga, loadReducer} from './redux'
 
 class LoadActivity extends React.PureComponent {
@@ -12,8 +12,8 @@ class LoadActivity extends React.PureComponent {
   }
 
   render() {
-    let {isLoading, tip} = this.props
-    return isLoading ? (
+    let {isLoading, force, tip} = this.props
+    return isLoading || force ? (
       <div>
         <Spin size="large" tip={tip}/>
       </div>
@@ -23,6 +23,7 @@ class LoadActivity extends React.PureComponent {
 
 LoadActivity.defaultProps = {
   tip: '加载中..',
+  force: false,
 }
 
 const mapStateToProps = (state, ownProps) => {

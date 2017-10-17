@@ -15,7 +15,8 @@ import ContentRouter from './ContentRouter'
 import SiderMenu from '../../component/SiderMenu'
 import style from './style.module.scss'
 import {configAction} from '../../util/config'
-import {action as authAction} from '../../util/auth/'
+import {action as authAction, selector as authSelector} from '../../util/auth/'
+import LoadActivity from '../../component/loadActivity'
 
 const {Header, Footer, Sider, Content} = Layout
 
@@ -50,7 +51,10 @@ class Home extends Component {
   }
 
   render() {
-    let {match} = this.props
+    let {match, activeUser} = this.props
+    if (!activeUser) {
+      return <LoadActivity force={true}/>
+    }
     return (
       <Layout style={{height: "100%"}}>
         <Sider width={224} className={style.siderMenu}>
@@ -66,7 +70,7 @@ class Home extends Component {
             <div>
               <Dropdown overlay={this.renderUserLoginMenu()}>
                 <a className="ant-dropdown-link" href="#">
-                  <Icon type="user" /> username <Icon type="caret-down" />
+                  <Icon type="user" />{activeUser.nickname}<Icon type="caret-down" />
                 </a>
               </Dropdown>
             </div>
@@ -76,6 +80,7 @@ class Home extends Component {
               <Breadcrumb.Item>User</Breadcrumb.Item>
               <Breadcrumb.Item>Bill</Breadcrumb.Item>
             </Breadcrumb>
+            <LoadActivity/>
             <div className={style.container}>
               <div className={style.content}>
                 <ContentRouter match={match}/>
@@ -89,8 +94,11 @@ class Home extends Component {
   }
 }
 
-const mapStateToProps = (appState, ownProps) => {
+const mapStateToProps = (state, ownProps) => {
+  let activeUser = authSelector.selectCurUser(state)
+  console.log('user', activeUser)
   return {
+    activeUser,
   }
 }
 
