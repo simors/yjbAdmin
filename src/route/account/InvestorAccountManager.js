@@ -20,6 +20,7 @@ import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
 import AccountChart from '../../component/account/AccountChart'
+import * as excelFuncs from '../../util/excel'
 
 const history = createBrowserHistory()
 const Option = Select.Option;
@@ -166,15 +167,21 @@ class InvestorAccountManager extends React.Component {
     )
   }
 
-  downloadFile(fileName, content){
-    // var workbook = new Excel.Workbook();
-    // // var workbook = createAndFillWorkbook();
-    // workbook.xlsx.writeFile('hahahah')
-    //   .then(function(item) {
-    //     console.log('hahahah=>',item)
-    //     // done
-    //   });
+  downloadFile(){
+    let data = [[ "日期",    "利润", "成本" , "收益" , "服务点名称" ],]
+    // let accountArray = []
+    if(this.props.investorAccounts&&this.props.investorAccounts.length){
+      this.props.stationAccounts.forEach((account)=>{
+        let account2Arr = [account.accountDay,account.profit, account.cost,account.incoming,account.station.name]
+        data.push(account2Arr)
+      })
+    }
+    let params={data: data, sheetName:'服务点日结数据', fileName:'服务点日结数据'}
+
+    excelFuncs.exportExcel(params)
+
   }
+
   viewChart(){
     this.props.history.push({
       pathname: '/settlement/investorChart',
@@ -213,7 +220,7 @@ class InvestorAccountManager extends React.Component {
 
         <InvestorAccountList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
-        }} stationAccounts={this.props.partnerAccounts}/>
+        }} stationAccounts={this.props.investorAccounts}/>
       </div>
     )
   };
@@ -225,7 +232,7 @@ const mapStateToProps = (state, ownProps) => {
   // let areaList = configSelector.selectAreaList(state)
   console.log('accounts========>', accounts)
   return {
-    partnerAccounts: accounts,
+    investorAccounts: accounts,
     stations: stations
     // areaList: areaList,
   };

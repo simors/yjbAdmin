@@ -17,6 +17,9 @@ import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
 import AccountChart from '../../component/account/AccountChart'
+import XLSX from 'xlsx'
+import FileSaver from 'file-saver'
+import * as excelFuncs from '../../util/excel'
 
 const history = createBrowserHistory()
 const Option = Select.Option;
@@ -163,15 +166,23 @@ class StationAccountManager extends React.Component {
     )
   }
 
-  downloadFile(fileName, content){
-    // var workbook = new Excel.Workbook();
-    // // var workbook = createAndFillWorkbook();
-    // workbook.xlsx.writeFile('hahahah')
-    //   .then(function(item) {
-    //     console.log('hahahah=>',item)
-    //     // done
-    //   });
+
+
+  downloadFile(){
+    let data = [[ "日期",    "利润", "成本" , "收益" , "服务点名称" ],]
+    // let accountArray = []
+    if(this.props.stationAccounts&&this.props.stationAccounts.length){
+      this.props.stationAccounts.forEach((account)=>{
+        let account2Arr = [account.accountDay,account.profit, account.cost,account.incoming,account.station.name]
+        data.push(account2Arr)
+      })
+    }
+    let params={data: data, sheetName:'服务点日结数据', fileName:'服务点日结数据'}
+
+    excelFuncs.exportExcel(params)
+
 }
+
   viewChart(){
     this.props.history.push({
       pathname: '/settlement/stationChart',
@@ -183,7 +194,7 @@ class StationAccountManager extends React.Component {
     return (
       <div>
         <ButtonGroup>
-          <Button onClick={()=>{this.downloadFile()}}>ceshi</Button>
+          <Button onClick={()=>{this.downloadFile()}}>导出EXCEL</Button>
           <Button onClick={()=>{this.viewChart()}}>查看图表</Button>
 
         </ButtonGroup>
