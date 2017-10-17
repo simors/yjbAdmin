@@ -12,6 +12,7 @@ import {
   Input,
   DatePicker,
   Alert,
+  message,
 } from 'antd'
 import style from './promotion.module.scss'
 import DivisionCascader from '../../component/DivisionCascader'
@@ -57,9 +58,15 @@ class PromotionCreateForm extends PureComponent {
         start: values.rangeTimePicker[0],
         end: values.rangeTimePicker[1],
         description: values.description,
-        categoryId: '',
+        categoryId: this.props.category.id,
         region: values.region,
         awards: {rechargeList: values.awards},
+        success: () => {
+          this.props.history.push('/promotion/list')
+        },
+        error: (error) => {
+          message.error("充值活动发布失败")
+        }
       })
     })
   }
@@ -103,14 +110,14 @@ class PromotionCreateForm extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="奖励金额">
             {getFieldDecorator("awards", {
-              rules: [{ type: 'array', required: true, message: '请输入奖励金额' }],
+              rules: [{ type: 'array', required: true, message: '请输入奖励金额', min: 1, max: 5}],
             })(
               <AwardsInput />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="活动说明">
             {getFieldDecorator("description", {
-              rules: [{ required: true, message: '请输入活动名称'}],
+              rules: [{}],
             })(
               <TextArea placeholder="描述活动" />
             )}

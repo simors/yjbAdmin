@@ -29,7 +29,7 @@ class RechargePromotion extends PureComponent {
   render() {
     return (
       <div className={style.content}>
-        <RechargePromotionCreateForm />
+        <RechargePromotionCreateForm history={this.props.history} />
       </div>
     )
   }

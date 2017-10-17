@@ -15,16 +15,9 @@ export async function createPromotionApi(payload) {
 }
 
 export async function fetchPromotionCategoriesApi(payload) {
-  let categories = await AV.Cloud.run('promFetchPromotionCategoryList', payload)
-  return categories
+  return await AV.Cloud.run('promFetchPromotionCategoryList', payload)
 }
 
 export async function fetchPromotionsApi(payload) {
-  try {
-    let promotions = await AV.Cloud.run('promFetchPromotions', payload)
-    return promotions
-  } catch (error) {
-    console.error(error)
-    throw error
-  }
+  return await AV.Cloud.run('promFetchPromotions', payload)
 }

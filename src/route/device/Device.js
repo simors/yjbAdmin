@@ -132,15 +132,15 @@ class Device extends PureComponent {
                columns={columns}
                dataSource={this.props.deviceInfoList}/>
         <DeviceDetailModal visible={this.state.showDeviceDetailModal}
-                            device={this.state.selectDevice}
-                            onOk={() => {this.setState({showDeviceDetailModal: false})}}
-                            onCancel={() => {this.setState({showDeviceDetailModal: false})}}/>
+                           device={this.state.selectDevice}
+                           onOk={() => {this.setState({showDeviceDetailModal: false})}}
+                           onCancel={() => {this.setState({showDeviceDetailModal: false})}}/>
         <DeviceAssociateModal visible={this.state.showDeviceAssociateModal}
-                               device={this.state.selectDevice}
-                               onCancel={() => {this.setState({showDeviceAssociateModal: false})}}/>
+                              device={this.state.selectDevice}
+                              onCancel={() => {this.setState({showDeviceAssociateModal: false})}}/>
         <DeviceEditModal visible={this.state.showDeviceEditModal}
-                          device={this.state.selectDevice}
-                          onCancel={() => {this.setState({showDeviceEditModal: false})}} />
+                         device={this.state.selectDevice}
+                         onCancel={() => {this.setState({showDeviceEditModal: false})}} />
       </div>
     )
   }
