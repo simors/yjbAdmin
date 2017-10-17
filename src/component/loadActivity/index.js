@@ -5,6 +5,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Spin} from 'antd';
 import {loadSelector, loadAction, loadSaga, loadReducer} from './redux'
+import styles from './load.module.scss'
 
 class LoadActivity extends React.PureComponent {
   constructor(props) {
@@ -14,7 +15,7 @@ class LoadActivity extends React.PureComponent {
   render() {
     let {isLoading, force, tip} = this.props
     return isLoading || force ? (
-      <div>
+      <div className={styles.container}>
         <Spin size="large" tip={tip}/>
       </div>
     ) : null
