@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux'
 import { routerReducer} from 'react-router-redux'
+import {appStateReducer} from '../util/appstate'
+import {loadReducer} from '../component/loadActivity'
 import {reducer as authReducer} from '../util/auth/'
 import {reducer as backendUserReducer} from '../route/backenduser/'
 import {stationReducer} from '../route/station/redux'
@@ -11,6 +13,8 @@ import {accountReducer} from '../route/account/redux'
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
+    LOADING: loadReducer,
+    APPSTATE: appStateReducer,
     CONFIG: configReducer,
     router: routerReducer,
     AUTH: authReducer,

@@ -13,7 +13,7 @@ import {
   Select,
   DatePicker,
 } from 'antd'
-import {actions} from './redux'
+import {actions, PromotionStatus} from './redux'
 import style from './promotion.module.scss'
 
 const FormItem = Form.Item
@@ -22,6 +22,10 @@ const RangePicker = DatePicker.RangePicker
 class SearchForm extends PureComponent {
   constructor(props) {
     super(props)
+  }
+
+  componentWillMount() {
+    this.props.fetchPromotionsAction({})
   }
 
   handleSubmit = (e) => {
@@ -42,6 +46,11 @@ class SearchForm extends PureComponent {
         }
       }
       console.log("handleSubmit values:", values)
+      this.props.fetchPromotionsAction({
+        start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
+        end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
+        status: !values.status || values.status == 'all'? undefined : Number(values.status),
+      })
     })
   }
 
@@ -56,6 +65,16 @@ class SearchForm extends PureComponent {
             rules: [{ type: 'array', message: '请输入起始时间!' }],
           })(
             <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("status", {})(
+            <Select style={{width: 120}} placeholder="选择活动状态">
+              <Option value="all">全部</Option>
+              <Option value={PromotionStatus.PROMOTION_STATUS_AWAIT.toString()}>待触发</Option>
+              <Option value={PromotionStatus.PROMOTION_STATUS_UNDERWAY.toString()}>进行中</Option>
+              <Option value={PromotionStatus.PROMOTION_STATUS_INVALID.toString()}>无效</Option>
+            </Select>
           )}
         </FormItem>
         <FormItem>

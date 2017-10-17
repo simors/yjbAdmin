@@ -56,7 +56,7 @@ class Home extends Component {
         <Sider width={224} className={style.siderMenu}>
           <div className={style.logo}>
             <img src={require('../../asset/image/logo.jpg')} />
-            <span>绿蚁网络</span>
+            <span>衣家宝</span>
           </div>
           <SiderMenu />
         </Sider>
@@ -82,7 +82,7 @@ class Home extends Component {
               </div>
             </div>
           </Content>
-          <Footer className={style.footer}>版权所有 © 长沙绿蚁网络科技有限公司 2017</Footer>
+          <Footer className={style.footer}>版权所有 © 长沙欧力电器有限公司 2017    由长沙绿蚁网络科技有限公司提供技术支持</Footer>
         </Layout>
       </Layout>
     )

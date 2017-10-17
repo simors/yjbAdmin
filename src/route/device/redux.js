@@ -76,7 +76,7 @@ function* fetchDevices(action) {
     deviceNo: payload.deviceNo,
     stationId: payload.stationId,
     limit: payload.limit,
-    isRefresh: payload.isRefresh || true,
+    isRefresh: payload.isRefresh,
     lastUpdateTime: payload.lastUpdateTime,
   }
 

@@ -75,8 +75,9 @@ const SAVE_PROMOTION_CATEGORIES = 'SAVE_PROMOTION_CATEGORIES'
 const FETCH_PROMOTION_CATEGORYLIST = 'FETCH_PROMOTION_CATEGORYLIST'
 
 export const PromotionStatus = {
-
-
+  PROMOTION_STATUS_AWAIT: 0,
+  PROMOTION_STATUS_UNDERWAY: 1,
+  PROMOTION_STATUS_INVALID: 2,
 }
 
 /**** Action ****/
@@ -95,6 +96,40 @@ export const actions = {
 function* fetchPromotions(action) {
   let payload = action.payload
 
+  let apiPayload = {
+    status: payload.status,
+    start: payload.start,
+    end: payload.end,
+  }
+  try {
+    let promotions = yield call(fetchPromotionsApi, apiPayload)
+    yield put(updatePromotionList({ promotions }))
+    let users = new Set()
+    let categories = new Set()
+    promotions.forEach((promotion) => {
+      let user = promotion.user
+      let category = promotion.category
+      if(user) {
+        users.add(user)
+      }
+      if(category) {
+        categories.add(category)
+      }
+    })
+    if(users.size > 0) {
+      //TODO 保存user信息
+    }
+    if(categories.size > 0) {
+      yield put(actions.savePromotionCategories({ categories }))
+    }
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
 }
 
 function* fetchPromotionCategories(action) {
@@ -191,15 +226,11 @@ function handleSavePromotionCategories(state, action) {
 
 function handleUpdatePromotionList(state, action) {
   let promotions = action.payload.promotions
-  let isRefresh = action.payload.isRefresh
   let promotionList = List()
-  if(!isRefresh) {
-    promotionList = state.get('promotionList')
-  }
   promotions.forEach((promotion) => {
     let promotionRecord = Promotion.fromApi(promotion)
     state = state.setIn(['promotions', promotion.id], promotionRecord)
-    promotionList.push(promotion.id)
+    promotionList = promotionList.push(promotion.id)
   })
   state = state.set('promotionList', promotionList)
   return state
@@ -250,7 +281,17 @@ function selectPromotion(state, promotionId) {
 }
 
 function selectPromotionList(state) {
+  let promotionList = state.PROMOTION.get('promotionList')
+  let promotionInfoList = []
+  promotionList.toArray().forEach((promotionId) => {
+    let promotionInfo = selectPromotion(state, promotionId)
+    let categoryInfo = promotionInfo? selectCategory(state, promotionInfo.categoryId) : undefined
+    promotionInfo.categoryTitle = categoryInfo? categoryInfo.title: undefined
+    //TODO 获取user信息
+    promotionInfoList.push(promotionInfo)
+  })
 
+  return promotionInfoList
 }
 
 function selectCategory(state, categoryId) {
@@ -274,7 +315,6 @@ function selectCategoryByTitle(state, title) {
   let categoryRecord = categoryMap.find((category) => {
     return category.title == title
   })
-  console.log("selectCategoryByTitle", categoryRecord)
   return categoryRecord? categoryRecord.toJS() : undefined
 }
 export const selector = {

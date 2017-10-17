@@ -108,7 +108,7 @@ function* fetchOrders(action) {
       mobilePhoneNumber: payload.mobilePhoneNumber,
       stationId: payload.stationId,
       limit: payload.limit,
-      isRefresh: payload.isRefresh || true,
+      isRefresh: payload.isRefresh,
       lastStartTime: payload.lastStartTime || undefined
     }
     let orders = yield call(fetchOrdersApi, apiPayload)
@@ -151,7 +151,7 @@ function* fetchRecharges(action) {
     end: payload.end,
     mobilePhoneNumber: payload.mobilePhoneNumber,
     limit: payload.limit,
-    isRefresh: payload.isRefresh || true,
+    isRefresh: payload.isRefresh,
     lastDealTime: payload.lastDealTime || undefined
   }
 
