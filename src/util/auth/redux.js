@@ -816,7 +816,6 @@ function reduceRehydrate(state, action) {
 }
 
 function reduceCachedUser(state, action) {
-
   const {user} = action.payload;
 
   const immUser = User.fromJson(user);
