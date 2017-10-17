@@ -2,28 +2,20 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter, Redirect} from 'react-router-dom';
 import {Spin} from 'antd';
-import {selector as authSelector} from '../../util/auth';
 import style from './Loading.module.scss';
+import {appStateSelector} from '../../util/appstate'
 
-class Loading extends React.Component {
+class Loading extends React.PureComponent {
   constructor(props) {
     super(props);
   }
 
   render() {
-    if (!this.props.loading) {
-      if (this.props.activeUserId !== undefined) {
-        return (
-          <Redirect to={this.props.from}/>
-        );
-      } else {
-        return (
-          <Redirect to={{
-            pathname: "/login",
-            state: {from: this.props.from}
-          }}/>
-        );
-      }
+    const { from } = this.props.location.state || { from: { pathname: '/' } }
+    if (this.props.isRehydrated) {
+      return (
+        <Redirect to={from}/>
+      )
     }
 
     return (
@@ -34,10 +26,14 @@ class Loading extends React.Component {
   }
 }
 
-const mapStateToProps = (appState, ownProps) => {
+const mapStateToProps = (state, ownProps) => {
+  let appState = appStateSelector.selectAppState(state)
+  let isRehydrated = undefined
+  if (appState) {
+    isRehydrated = appState.isRehydrated
+  }
   return {
-    loading: authSelector.selectLoading(appState),
-    activeUserId: authSelector.selectActiveUserId(appState),
+    isRehydrated,
   }
 };
 

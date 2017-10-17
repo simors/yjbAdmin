@@ -1,18 +1,24 @@
 import React from 'react';
 import {Redirect} from 'react-router-dom';
 import AV from 'leancloud-storage';
-import {action as authAction, selector as authSelector} from './redux';
 import {store} from '../../store/persistStore';
-import {Loading} from '../../route/Loading/';
+import {appStateSelector} from '../../util/appstate'
 
 export function checkAuth(from) { // from is an location object
   const appState = store.getState();
 
-  // TODO: check rehydration
-
-  const activeUserId = authSelector.selectActiveUserId(appState);
-  if (activeUserId !== undefined) { // already authenticated
-    return undefined;
+  let appStatus = appStateSelector.selectAppState(appState)
+  let isRehydrated = undefined
+  if (appStatus) {
+    isRehydrated = appStatus.isRehydrated
+  }
+  if (!isRehydrated) {
+    return (
+      <Redirect to={{
+        pathname: '/loading',
+        state: {from}
+      }}/>
+    )
   }
 
   const curUser = AV.User.current();
@@ -25,9 +31,5 @@ export function checkAuth(from) { // from is an location object
     );
   }
 
-  // re-auth with the server
-  const token = curUser.getSessionToken();
-  store.dispatch(authAction.loginWithToken({token}));
-
-  return <Loading from={from}/>;
+  return undefined
 }

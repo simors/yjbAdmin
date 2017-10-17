@@ -36,10 +36,6 @@ class Login extends React.Component {
           this.setState({ redirectToReferrer: true });
         }
       });
-      //
-      // fakeAuth.authenticate(() => {
-      //   this.setState({ redirectToReferrer: true })
-      // })
     });
   }
 
@@ -58,7 +54,7 @@ class Login extends React.Component {
       <div className={style.form}>
         <div className={style.logo}>
           <img src={require("../../asset/image/logo.jpg")}/>
-          <span>绿蚁网络</span>
+          <span>衣家宝管理平台</span>
         </div>
         <Form onSubmit={this.handleSubmit}>
           <FormItem hasFeedback>
