@@ -7,6 +7,7 @@ import {Redirect} from 'react-router-dom'
 import {Button, Row, Form, Input} from 'antd'
 import {action as authAction} from '../../util/auth/'
 import style from './style.module.scss'
+import LoadActivity, {loadAction} from '../../component/loadActivity'
 
 const FormItem = Form.Item
 
@@ -20,6 +21,7 @@ class Login extends React.Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
+    this.props.updateLoadingState({isLoading: true})
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
@@ -34,6 +36,7 @@ class Login extends React.Component {
         password,
         onSuccess: () => {
           this.setState({ redirectToReferrer: true });
+          this.props.updateLoadingState({isLoading: false})
         }
       });
     });
@@ -83,6 +86,7 @@ class Login extends React.Component {
             </Button>
           </Row>
         </Form>
+          <LoadActivity tip="正在登录..."/>
       </div>
     )
   }
@@ -90,6 +94,7 @@ class Login extends React.Component {
 
 const mapDispatchToProps = {
   loginWithMobilePhone: authAction.loginWithMobilePhone,
+  ...loadAction,
 };
 
 const LoginForm = connect(null, mapDispatchToProps)(Form.create()(Login));
