@@ -103,8 +103,8 @@ class PartnerAccountManager extends React.Component {
   downloadFile(){
     let data = [[ "日期",    "利润", "成本" , "收益" , "服务点名称" ],]
     // let accountArray = []
-    if(this.props.partnerAccounts&&this.props.stationAccounts.length){
-      this.props.stationAccounts.forEach((account)=>{
+    if(this.props.partnerAccounts&&this.props.partnerAccounts.length){
+      this.props.partnerAccounts.forEach((account)=>{
         let account2Arr = [account.accountDay,account.profit, account.cost,account.incoming,account.station.name]
         data.push(account2Arr)
       })

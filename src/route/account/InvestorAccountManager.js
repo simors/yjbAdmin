@@ -171,7 +171,7 @@ class InvestorAccountManager extends React.Component {
     let data = [[ "日期",    "利润", "成本" , "收益" , "服务点名称" ],]
     // let accountArray = []
     if(this.props.investorAccounts&&this.props.investorAccounts.length){
-      this.props.stationAccounts.forEach((account)=>{
+      this.props.investorAccounts.forEach((account)=>{
         let account2Arr = [account.accountDay,account.profit, account.cost,account.incoming,account.station.name]
         data.push(account2Arr)
       })
