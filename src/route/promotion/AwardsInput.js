@@ -11,12 +11,11 @@ import {
   message,
 } from 'antd'
 
-
 class AwardsInput extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      awards: []
+      awards: props.initValue,
     }
   }
 
@@ -53,24 +52,44 @@ class AwardsInput extends Component {
     }
   }
 
+  renderRemoveIcon(index) {
+    if(this.props.disabled) {
+      return null
+    }
+    return (
+      <Icon
+        className="dynamic-delete-button"
+        type="minus-circle-o"
+        onClick={() => this.remove(index)}
+      />
+    )
+  }
+
+  renderPlusButton() {
+    if(this.props.disabled) {
+      return null
+    }
+    return (
+      <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
+        <Icon type="plus" /> 增加
+      </Button>
+    )
+  }
+
   render() {
     const inputItems = this.state.awards.map((k, index) => {
       return (
         <Row key={index} gutter={16}>
           <Col span={8}>
-            <Input value={this.state.awards[index].recharge} addonBefore='充值金额' addonAfter="¥" type='number'
+            <Input disabled={this.props.disabled} value={this.state.awards[index].recharge} addonBefore='充值金额' addonAfter="¥" type='number'
                    onChange={(e) => this.triggerChange(index, 'recharge', e)}/>
           </Col>
           <Col span={8}>
-            <Input value={this.state.awards[index].award} addonBefore='奖励金额' addonAfter="¥" type='number'
+            <Input disabled={this.props.disabled} value={this.state.awards[index].award} addonBefore='奖励金额' addonAfter="¥" type='number'
                    onChange={(e) => this.triggerChange(index, 'award', e)}/>
           </Col>
           <Col>
-            <Icon
-              className="dynamic-delete-button"
-              type="minus-circle-o"
-              onClick={() => this.remove(index)}
-            />
+            {this.renderRemoveIcon(index)}
           </Col>
         </Row>
 
@@ -79,12 +98,15 @@ class AwardsInput extends Component {
     return (
       <div>
         {inputItems}
-        <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
-          <Icon type="plus" /> 增加
-        </Button>
+        {this.renderPlusButton()}
       </div>
     )
   }
+}
+
+AwardsInput.defaultProps = {
+  disabled: false,
+  initValue: []
 }
 
 export default AwardsInput
