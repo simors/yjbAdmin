@@ -34,7 +34,7 @@ class UserRole extends React.Component {
 }
 
 const mapStateToProps = (appState, ownProps) => {
-  const allRoles = authSelector.selectAllRoles(appState);
+  const allRoles = authSelector.selectRoles(appState);
   const selectedUserIds = selector.selectSelectedUserIds(appState);
   const checkedUserRoles = selector.selectCheckedUserRoles(appState);
 

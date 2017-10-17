@@ -3,15 +3,27 @@ import AV from 'leancloud-storage';
 export async function loginWithMobilePhone(payload) {
   const {phone, password} = payload;
 
-  const leanActiveUser = await AV.User.logInWithMobilePhone(phone, password);
-  const token = leanActiveUser.getSessionToken();
+  const leanCurUser = await AV.User.logInWithMobilePhone(phone, password);
+  const token = leanCurUser.getSessionToken();
 
-  const jsonRes = await AV.Cloud.run('authFetchRolesAndPermissions', {});
+  // result = {
+  //   jsonCurRoleIds,
+  //   jsonRoles,
+  //   jsonPermissions,
+  // }
+  const jsonRes = await AV.Cloud.run('authGetRolesAndPermissions', {});
 
+  // result = {
+  //   jsonCurUser,
+  //   token,
+  //   jsonCurRoleIds,
+  //   jsonRoles,
+  //   jsonPermissions,
+  // }
   return ({
-    jsonActiveUser: {
-      ...leanActiveUser.toJSON(),
-      id: leanActiveUser.id,
+    jsonCurUser: {
+      ...leanCurUser.toJSON(),
+      id: leanCurUser.id,
     },
     token,
     ...jsonRes,
@@ -21,15 +33,27 @@ export async function loginWithMobilePhone(payload) {
 export async function become(payload) {
   const {token: oldToken} = payload;
 
-  const leanActiveUser = await AV.User.become(oldToken);
-  const token = leanActiveUser.getSessionToken();
+  const leanCurUser = await AV.User.become(oldToken);
+  const token = leanCurUser.getSessionToken();
 
-  const jsonRes = await AV.Cloud.run('authFetchRolesAndPermissions', {});
+  // result = {
+  //   jsonCurRoleIds,
+  //   jsonRoles,
+  //   jsonPermissions,
+  // }
+  const jsonRes = await AV.Cloud.run('authGetRolesAndPermissions', {});
 
+  // result = {
+  //   jsonCurUser,
+  //   token,
+  //   jsonCurRoleIds,
+  //   jsonRoles,
+  //   jsonPermissions,
+  // }
   return ({
-    jsonActiveUser: {
-      ...leanActiveUser.toJSON(),
-      id: leanActiveUser.id,
+    jsonCurUser: {
+      ...leanCurUser.toJSON(),
+      id: leanCurUser.id,
     },
     token,
     ...jsonRes,
@@ -41,17 +65,29 @@ export async function logout(payload) {
 }
 
 export async function listUsers(payload) {
-  return await AV.Cloud.run('authFetchUserList', payload);
+  // result = {
+  //   jsonUsers,
+  // }
+  return await AV.Cloud.run('authListUsers', payload);
 }
 
 export async function createUser(payload) {
+  // result = {
+  //
+  // }
   return await AV.Cloud.run('authCreateUser', payload);
 }
 
 export async function deleteUser(payload) {
+  // result = {
+  //
+  // }
   return await AV.Cloud.run('authDeleteUser', payload);
 }
 
 export async function updateUser(payload) {
+  // result = {
+  //
+  // }
   return await AV.Cloud.run('authUpdateUser', payload);
 }

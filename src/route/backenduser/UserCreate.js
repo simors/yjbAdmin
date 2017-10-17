@@ -48,7 +48,7 @@ class UserCreate extends React.Component {
         onSuccess: () => {
           this.props.hideUserCreateModal({});
           this.props.form.resetFields();
-          this.props.listUsers({});
+          this.props.listAdminUsers({});
         },
         onComplete: () => {
           this.setState((prevState, props) => {
@@ -215,7 +215,7 @@ class UserCreate extends React.Component {
 }
 
 const mapStateToProps = (appState, ownProps) => {
-  const allRoles = authSelector.selectAllRoles(appState);
+  const allRoles = authSelector.selectRoles(appState);
   const visible = selector.selectUserCreateModalVisible(appState);
 
   return {
