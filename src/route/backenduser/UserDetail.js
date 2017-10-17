@@ -104,7 +104,7 @@ class UserDetail extends React.Component {
 }
 
 const mapStateToProps = (appState, ownProps) => {
-  const allRoles = authSelector.selectAllRoles(appState);
+  const allRoles = authSelector.selectRoles(appState);
   const visible = selector.selectUserDetailModalVisible(appState);
 
   const selectedUserIds = selector.selectSelectedUserIds(appState);
