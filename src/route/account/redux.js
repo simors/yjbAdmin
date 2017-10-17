@@ -125,9 +125,9 @@ function* fetchStationAccounts(action) {
       data.accounts.forEach((item)=> {
         // console.log('item=====>',item)
         stationAccountList.push(item.id)
-        stationAccounts.push(StationAccount.fromApi(item))
+        stationAccounts.push(item)
         if(item.station){
-          stationAction.saveStation({station: StationDetail.fromApi(item.station)})
+          stationAction.saveStation({station: item.station})
         }
       })
     }
@@ -155,9 +155,9 @@ function* fetchStationAccountsDetail(action) {
       data.accounts.forEach((item)=> {
         // console.log('item=====>',item)
         stationAccountList.push(item.id)
-        stationAccounts.push(StationAccount.fromApi(item))
+        stationAccounts.push(item)
         if(item.station){
-          stationAction.saveStation({station: StationDetail.fromApi(item.station)})
+          stationAction.saveStation({station: item.station})
         }
       })
     }
@@ -186,9 +186,9 @@ function* fetchPartnerAccounts(action) {
       data.accounts.forEach((item)=> {
         // console.log('item=====>',item)
         partnerAccountList.push(item.id)
-        partnerAccounts.push(SharingAccount.fromApi(item))
+        partnerAccounts.push(item)
         if(item.station){
-          stationAction.saveStation({station: StationDetail.fromApi(item.station)})
+          stationAction.saveStation({station: item.station})
         }
       })
     }
@@ -216,9 +216,9 @@ function* fetchPartnerAccountsDetail(action) {
       data.accounts.forEach((item)=> {
         // console.log('item=====>',item)
         partnerAccountList.push(item.id)
-        partnerAccounts.push(SharingAccount.fromApi(item))
+        partnerAccounts.push(item)
         if(item.station){
-          stationAction.saveStation({station: StationDetail.fromApi(item.station)})
+          stationAction.saveStation({station: item.station})
         }
       })
     }
@@ -246,9 +246,9 @@ function* fetchInvestorAccounts(action) {
       data.accounts.forEach((item)=> {
         // console.log('item=====>',item)
         investorAccountList.push(item.id)
-        investorAccounts.push(SharingAccount.fromApi(item))
+        investorAccounts.push(item)
         if(item.station){
-          stationAction.saveStation({station: StationDetail.fromApi(item.station)})
+          stationAction.saveStation({station: item.station})
         }
       })
     }
@@ -276,9 +276,9 @@ function* fetchInvestorAccountsDetail(action) {
       data.accounts.forEach((item)=> {
         // console.log('item=====>',item)
         investorAccountList.push(item.id)
-        investorAccounts.push(SharingAccount.fromApi(item))
+        investorAccounts.push(item)
         if(item.station){
-          stationAction.saveStation({station: StationDetail.fromApi(item.station)})
+          stationAction.saveStation({station: item.station})
         }
       })
     }
@@ -329,7 +329,7 @@ export function accountReducer(state = initialState, action) {
 
 function handleSetAllStationAccounts(state, stationAccounts) {
   stationAccounts.forEach((item)=> {
-    state = state.setIn(['allStationAccounts', item.id], item)
+    state = state.setIn(['allStationAccounts', item.id], StationAccount.fromApi(item))
 
   })
   return state
@@ -339,7 +339,7 @@ function handleSaveStationAccounts(state, action) {
 
   let stationAccounts = action.payload.stationAccounts
   let stationAccountList = action.payload.stationAccountList
-  console.log('stationAccounts=========>', stationAccounts, stationAccountList)
+  // console.log('stationAccounts=========>', stationAccounts, stationAccountList)
   if (stationAccountList && stationAccountList.length > 0) {
     state = state.set('stationAccountList', new List(stationAccountList))
     state = handleSetAllStationAccounts(state, stationAccounts)
@@ -353,7 +353,7 @@ function handleSaveStationAccountsDetail(state, action) {
 
   let stationAccounts = action.payload.stationAccounts
   let stationAccountList = action.payload.stationAccountList
-  console.log('stationAccounts=========>', stationAccounts, stationAccountList)
+  // console.log('stationAccounts=========>', stationAccounts, stationAccountList)
   if (stationAccountList && stationAccountList.length > 0) {
     state = state.set('stationAccountsDetailList', new List(stationAccountList))
     state = handleSetAllStationAccounts(state, stationAccounts)
@@ -366,7 +366,7 @@ function handleSaveStationAccountsDetail(state, action) {
 
 function handleSetAllPartnerAccounts(state, stationAccounts) {
   stationAccounts.forEach((item)=> {
-    state = state.setIn(['allPartnerAccounts', item.id], item)
+    state = state.setIn(['allPartnerAccounts', item.id], SharingAccount.fromApi(item))
 
   })
   return state
@@ -402,7 +402,7 @@ function handleSavePartnerAccountsDetail(state, action) {
 
 function handleSetAllInvestorAccounts(state, stationAccounts) {
   stationAccounts.forEach((item)=> {
-    state = state.setIn(['allInvestorAccounts', item.id], item)
+    state = state.setIn(['allInvestorAccounts', item.id], SharingAccount.fromApi(item) )
 
   })
   return state

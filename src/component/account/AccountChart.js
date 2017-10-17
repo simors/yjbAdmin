@@ -79,7 +79,7 @@ export default class AccountChart extends Component {
           },
           title: null,
           tickLine:{
-            value:10,
+            value:30,
             lineWidth:1,
           }
         });
@@ -93,7 +93,7 @@ export default class AccountChart extends Component {
           min:0
         })
         // chart.source(this.props.lastMonthsPerformance,defs)
-        chart.line().position(this.props.xline+'*'+this.props.yline).label(this.props.yline).color(this.props.xline).shape('spline').size(1);
+        chart.line().position(this.props.xline+'*'+this.props.yline).label(this.props.yline).shape('spline').size(1);
         chart.render();
       });
       return (

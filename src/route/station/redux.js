@@ -170,7 +170,7 @@ function* fetchStationsAction(action) {
     if (data.stations && data.stations.length > 0) {
       data.stations.forEach((item)=> {
         stationList.push(item.id)
-        stations.push(StationDetail.fromApi(item))
+        stations.push(item)
       })
     }
     yield put(requestStationsSuccess({stations: stations, stationList: stationList}))
@@ -189,7 +189,7 @@ function* openStationAction(action) {
   let data = yield call(stationFuncs.openStation, payload)
   if (data.success) {
     if (data.station) {
-      yield put(openStationSuccess({station: StationDetail.fromApi(data.station)}))
+      yield put(openStationSuccess({station: data.station}))
       if (payload.success) {
         payload.success()
       }
@@ -206,7 +206,7 @@ function* closeStationAction(action) {
   let data = yield call(stationFuncs.closeStation, payload)
   if (data.success) {
     if (data.station) {
-      yield put(closeStationSuccess({station: StationDetail.fromApi(data.station)}))
+      yield put(closeStationSuccess({station: data.station}))
       if (payload.success) {
         payload.success()
       }
@@ -227,7 +227,7 @@ function* fetchInvestorsAction(action) {
     if (data.investors && data.investors.length > 0) {
       data.investors.forEach((item)=> {
         investorList.push(item.id)
-        investors.push(ProfitSharing.fromApi(item))
+        investors.push(item)
       })
     }
     yield put(requestInvestorsSuccess({investors: investors, investorList: investorList}))
@@ -307,7 +307,7 @@ function* fetchPartnersAction(action) {
     if (data.partners && data.partners.length > 0) {
       data.partners.forEach((item)=> {
         partnerList.push(item.id)
-        partners.push(ProfitSharing.fromApi(item))
+        partners.push(item)
       })
     }
     yield put(requestPartnersSuccess({partners: partners, partnerList: partnerList}))
@@ -382,7 +382,7 @@ function* createStationAction(action) {
   let data = yield call(stationFuncs.createStation, payload)
 
   if (data.success) {
-    let station = StationDetail.fromApi(data.station)
+    let station = data.station
     yield put(createStationSuccess({station: station}))
     if (payload.success) {
       payload.success(station.id)
@@ -399,7 +399,7 @@ function* updateStationAction(action) {
   let data = yield call(stationFuncs.updateStation, payload)
 
   if (data.success) {
-    let station = StationDetail.fromApi(data.station)
+    let station = data.station
     yield put(updateStationSuccess({station: station}))
     if (payload.success) {
       payload.success(station.id)
@@ -479,27 +479,27 @@ export function stationReducer(state = initialState, action) {
 
 function handleSetAllStations(state, stations) {
   stations.forEach((item)=> {
-    state = state.setIn(['allStations', item.id], item)
+    state = state.setIn(['allStations', item.id], StationDetail.fromApi(item))
   })
   return state
 }
 
 function handleSaveStation(state, action) {
   let station = action.payload.station
-  state = state.setIn(['allStations', station.id], station)
+  state = state.setIn(['allStations', station.id], StationDetail.fromApi(station))
   return state
 }
 
 function handleSetAllPartners(state, partners) {
   partners.forEach((item)=> {
-    state = state.setIn(['allPartners', item.id], item)
+    state = state.setIn(['allPartners', item.id], ProfitSharing.fromApi(item))
   })
   return state
 }
 
 function handleSetAllInvestors(state, investors) {
   investors.forEach((item)=> {
-    state = state.setIn(['allInvestors', item.id], item)
+    state = state.setIn(['allInvestors', item.id], ProfitSharing.fromApi(item))
   })
   return state
 }
@@ -507,7 +507,7 @@ function handleSetAllInvestors(state, investors) {
 function handleSaveStations(state, action) {
   let stations = action.payload.stations
   let stationList = action.payload.stationList
-  console.log('stations=========>', stations, stationList)
+  // console.log('stations=========>', stations, stationList)
   if (stationList && stationList.length > 0) {
     state = state.set('stationList', new List(stationList))
     state = handleSetAllStations(state, stations)
@@ -583,6 +583,9 @@ function selectStations(state) {
 }
 
 function selectStation(state, stationId) {
+  if(!stationId){
+    return undefined
+  }
   let station = state.STATION
   // console.log('stationId=====>',stationId)
   let stationInfo = station.getIn(['allStations', stationId])
