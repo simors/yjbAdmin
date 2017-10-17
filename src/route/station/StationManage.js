@@ -46,11 +46,6 @@ class StationManage extends React.Component {
         console.log('hahhahah')
       }
     });
-    this.props.fetchStationAccounts({
-      success: ()=> {
-        console.log('hahhahah')
-      }
-    })
   }
 
   refresh() {
@@ -229,9 +224,6 @@ class StationManage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
-  let accounts = accountSelector.selectStationAccounts(state)
-  // let areaList = configSelector.selectAreaList(state)
-  console.log('accounts========>', accounts)
   return {
     stations: stations,
     // areaList: areaList,

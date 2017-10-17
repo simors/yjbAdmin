@@ -13,12 +13,14 @@ const columns = [{
   title: "服务点名称",
   dataIndex: "station.name",
 }, {
+  title: "分成方信息",
+  dataIndex: "user.idName",
+}, {
   title: "利润",
   dataIndex: "profit",
   render: (text,record)=>{
     return <p>{record.profit+'元'}</p>
   }
-
 }, {
   title: "日期",
   dataIndex: "accountDay",

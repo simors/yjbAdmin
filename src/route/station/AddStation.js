@@ -78,9 +78,9 @@ class AddStation extends React.Component {
       stationId: this.props.match.params.id, success: ()=> {
       }
     })
-    this.props.listUsers({
-      onFailure: (e)=>{console.log(e.message)}
-    })
+    // this.props.listUsers({
+    //   onFailure: (e)=>{console.log(e.message)}
+    // })
   }
 
   userList() {
@@ -270,25 +270,12 @@ class AddStation extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  // console.log('ownporsoss.......aaa',ownProps)
-  // let userList = [{id: '59c27b4b128fe10035923744', nickname: '绿蚁002'}, {
-  //   nickname: '绿蚁001',
-  //   id: '59acdd051b69e600643de670'
-  // }]
-
-  let userList = selector.selectAllUsers(state)
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
-  console.log('stationnoredux====>', station)
   let partners = stationSelector.selectPartners(state)
-  // let station={name:'123',adminName:'321'}
-  // console.log('areaList========>', areaList)
-  // console.log('partners========>', partners)
-  console.log('userList========>', userList)
-
   return {
     station: station,
     partners: partners,
-    userList: userList
+    // userList: userList
 
   };
 };

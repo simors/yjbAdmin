@@ -6,6 +6,7 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import {call, put, takeEvery, takeLatest} from 'redux-saga/effects'
+import { action as authAction, selector} from '../../util/auth'
 import * as accountFunc from './cloud'
 import {stationAction,StationDetail,stationSelector} from '../station/redux'
 import {formatLeancloudTime} from '../../util/datetime'
@@ -120,18 +121,15 @@ function* fetchStationAccounts(action) {
   let stationAccounts = []
   let stationAccountList = []
   if (data.success) {
-    // console.log('data=====>',data)
     if (data.accounts && data.accounts.length > 0) {
-      data.accounts.forEach((item)=> {
-        // console.log('item=====>',item)
-        stationAccountList.push(item.id)
-        stationAccounts.push(item)
-        if(item.station){
-          stationAction.saveStation({station: item.station})
+      for(let i = 0; i<data.accounts.length; i++){
+        stationAccountList.push(data.accounts[i].id)
+        stationAccounts.push(data.accounts[i])
+        if(data.accounts[i].station){
+         yield put(stationAction.saveStation({station: data.accounts[i].station}))
         }
-      })
+      }
     }
-    console.log('stationAccountList======>',stationAccountList,stationAccounts)
     yield put(fetchStationAccountsSuccess({stationAccounts: stationAccounts, stationAccountList: stationAccountList}))
     if (payload.success) {
       payload.success()
@@ -150,18 +148,15 @@ function* fetchStationAccountsDetail(action) {
   let stationAccounts = []
   let stationAccountList = []
   if (data.success) {
-    // console.log('data=====>',data)
     if (data.accounts && data.accounts.length > 0) {
-      data.accounts.forEach((item)=> {
-        // console.log('item=====>',item)
-        stationAccountList.push(item.id)
-        stationAccounts.push(item)
-        if(item.station){
-          stationAction.saveStation({station: item.station})
+      for(let i = 0; i<data.accounts.length; i++){
+        stationAccountList.push(data.accounts[i].id)
+        stationAccounts.push(data.accounts[i])
+        if(data.accounts[i].station){
+          yield put(stationAction.saveStation({station: data.accounts[i].station}))
         }
-      })
+      }
     }
-    console.log('stationAccountList======>',stationAccountList,stationAccounts)
     yield put(fetchStationAccountsDetailSuccess({stationAccounts: stationAccounts, stationAccountList: stationAccountList}))
     if (payload.success) {
       payload.success()
@@ -181,18 +176,17 @@ function* fetchPartnerAccounts(action) {
   let partnerAccounts = []
   let partnerAccountList = []
   if (data.success) {
-    // console.log('data=====>',data)
     if (data.accounts && data.accounts.length > 0) {
-      data.accounts.forEach((item)=> {
-        // console.log('item=====>',item)
-        partnerAccountList.push(item.id)
-        partnerAccounts.push(item)
-        if(item.station){
-          stationAction.saveStation({station: item.station})
+      for (let i=0; i<data.accounts.length; i++){
+        partnerAccountList.push(data.accounts[i].id)
+        partnerAccounts.push(data.accounts[i])
+        yield put(stationAction.saveStation({station: data.accounts[i].station}))
+        if(data.accounts[i].user){
+          let user = data.accounts[i].user
+          yield put(authAction.saveUser({user: user}))
         }
-      })
+      }
     }
-    // console.log('stationAccountList======>',stationAccountList,stationAccounts)
     yield put(fetchPartnerAccountsSuccess({partnerAccounts: partnerAccounts, partnerAccountList: partnerAccountList}))
     if (payload.success) {
       payload.success()
@@ -211,16 +205,16 @@ function* fetchPartnerAccountsDetail(action) {
   let partnerAccounts = []
   let partnerAccountList = []
   if (data.success) {
-    // console.log('data=====>',data)
     if (data.accounts && data.accounts.length > 0) {
-      data.accounts.forEach((item)=> {
-        // console.log('item=====>',item)
-        partnerAccountList.push(item.id)
-        partnerAccounts.push(item)
-        if(item.station){
-          stationAction.saveStation({station: item.station})
+      for (let i=0; i<data.accounts.length; i++){
+        partnerAccountList.push(data.accounts[i].id)
+        partnerAccounts.push(data.accounts[i])
+        yield put(stationAction.saveStation({station: data.accounts[i].station}))
+        if(data.accounts[i].user){
+          let user = data.accounts[i].user
+          yield put(authAction.saveUser({user: user}))
         }
-      })
+      }
     }
     yield put(fetchPartnerAccountsDetailSuccess({partnerAccounts: partnerAccounts, partnerAccountList: partnerAccountList}))
     if (payload.success) {
@@ -236,23 +230,21 @@ function* fetchPartnerAccountsDetail(action) {
 
 function* fetchInvestorAccounts(action) {
   let payload = action.payload
-  // console.log('payload=======>',payload)
   let data = yield call(accountFunc.fetchInvestorAccounts, payload)
   let investorAccounts = []
   let investorAccountList = []
   if (data.success) {
-    // console.log('data=====>',data)
     if (data.accounts && data.accounts.length > 0) {
-      data.accounts.forEach((item)=> {
-        // console.log('item=====>',item)
-        investorAccountList.push(item.id)
-        investorAccounts.push(item)
-        if(item.station){
-          stationAction.saveStation({station: item.station})
+      for (let i=0; i<data.accounts.length; i++){
+        investorAccountList.push(data.accounts[i].id)
+        investorAccounts.push(data.accounts[i])
+        yield put(stationAction.saveStation({station: data.accounts[i].station}))
+        if(data.accounts[i].user){
+          let user = data.accounts[i].user
+          yield put(authAction.saveUser({user: user}))
         }
-      })
+      }
     }
-    // console.log('stationAccountList======>',stationAccountList,stationAccounts)
     yield put(fetchInvestorAccountsSuccess({investorAccounts: investorAccounts, investorAccountList: investorAccountList}))
     if (payload.success) {
       payload.success()
@@ -271,18 +263,17 @@ function* fetchInvestorAccountsDetail(action) {
   let investorAccounts = []
   let investorAccountList = []
   if (data.success) {
-    // console.log('data=====>',data)
     if (data.accounts && data.accounts.length > 0) {
-      data.accounts.forEach((item)=> {
-        // console.log('item=====>',item)
-        investorAccountList.push(item.id)
-        investorAccounts.push(item)
-        if(item.station){
-          stationAction.saveStation({station: item.station})
+      for (let i=0; i<data.accounts.length; i++){
+        investorAccountList.push(data.accounts[i].id)
+        investorAccounts.push(data.accounts[i])
+        yield put(stationAction.saveStation({station: data.accounts[i].station}))
+        if(data.accounts[i].user){
+          let user = data.accounts[i].user
+          yield put(authAction.saveUser({user: user}))
         }
-      })
+      }
     }
-    // console.log('stationAccountList======>',stationAccountList,stationAccounts)
     yield put(fetchInvestorAccountsDetailSuccess({investorAccounts: investorAccounts, investorAccountList: investorAccountList}))
     if (payload.success) {
       payload.success()
@@ -447,9 +438,8 @@ function selectStationAccounts(state) {
       let accountInfo = account.getIn(['allStationAccounts', item])
       if(accountInfo){
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
-        accountInfo?accountInfo = accountInfo.toJS(): undefined
+        accountInfo = accountInfo.toJS()
         station?accountInfo.station = station: null
-        // console.log('accountInfo====>',accountInfo)
         stationAccounts.push(accountInfo)
       }
     })
@@ -466,9 +456,8 @@ function selectStationAccountsDetail(state) {
       let accountInfo = account.getIn(['allStationAccounts', item])
       if(accountInfo){
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
-        accountInfo?accountInfo = accountInfo.toJS(): undefined
+        accountInfo = accountInfo.toJS()
         station?accountInfo.station = station: null
-        // console.log('accountInfo====>',accountInfo)
         stationAccounts.push(accountInfo)
       }
     })
@@ -485,9 +474,10 @@ function selectPartnerAccounts(state) {
       let accountInfo = account.getIn(['allPartnerAccounts', item])
       if(accountInfo){
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
-        accountInfo?accountInfo = accountInfo.toJS(): undefined
+        accountInfo = accountInfo.toJS()
+        let user = selector.selectUserById(state,accountInfo.userId)
+        user?accountInfo.user = user: null
         station?accountInfo.station = station: null
-        // console.log('accountInfo====>',accountInfo)
         partnerAccounts.push(accountInfo)
       }
     })
@@ -504,9 +494,10 @@ function selectPartnerAccountsDetail(state) {
       let accountInfo = account.getIn(['allPartnerAccounts', item])
       if(accountInfo){
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
-        accountInfo?accountInfo = accountInfo.toJS(): undefined
+        accountInfo = accountInfo.toJS()
+        let user = selector.selectUserById(state,accountInfo.userId)
+        user?accountInfo.user = user: null
         station?accountInfo.station = station: null
-        // console.log('accountInfo====>',accountInfo)
         partnerAccounts.push(accountInfo)
       }
     })
@@ -522,9 +513,10 @@ function selectInvestorAccounts(state) {
       let accountInfo = account.getIn(['allInvestorAccounts', item])
       if(accountInfo){
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
-        accountInfo?accountInfo = accountInfo.toJS(): undefined
+        accountInfo = accountInfo.toJS()
+        let user = selector.selectUserById(state,accountInfo.userId)
+        user?accountInfo.user = user: null
         station?accountInfo.station = station: null
-        // console.log('accountInfo====>',accountInfo)
         investorAccounts.push(accountInfo)
       }
     })
@@ -540,8 +532,10 @@ function selectInvestorAccountsDetail(state) {
     investorAccountsDetailList.forEach((item)=> {
       let accountInfo = account.getIn(['allInvestorAccounts', item])
       if(accountInfo){
+        accountInfo = accountInfo.toJS()
+        let user = selector.selectUserById(state,accountInfo.userId)
+        user?accountInfo.user = user: null
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
-        accountInfo?accountInfo = accountInfo.toJS(): undefined
         station?accountInfo.station = station: null
         investorAccounts.push(accountInfo)
       }

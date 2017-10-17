@@ -57,13 +57,9 @@ class EditStation extends React.Component {
   }
 
   componentWillMount() {
-    // console.log('hahahahah',this.props.match)
     this.props.requestPartners({
       stationId: this.props.match.params.id, success: ()=> {
       }
-    })
-    this.props.listUsers({
-      onFailure: (e)=>{console.log(e.message)}
     })
   }
 
@@ -139,13 +135,11 @@ class EditStation extends React.Component {
   }
 
   openCreateModal() {
-    // this.props.requestStations({success:()=>{console.log('asasas')}})
     this.setState({createModalVisible: true})
   }
 
   openUpdateModal(data) {
     this.setState({selectedPartner: data})
-    // this.props.requestStations({success:()=>{console.log('asasas')}})
     this.setState({updateModalVisible: true})
   }
 
@@ -206,7 +200,7 @@ class EditStation extends React.Component {
       stationId: this.props.match.params.id,
       partnerId: this.state.selectedPartner.id,
       success: ()=> {
-        this.setState({spinShow: false,updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+        this.setState({spinShow: false, updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
           message.success('提交成功')
           this.refresh()
         })
@@ -217,8 +211,6 @@ class EditStation extends React.Component {
       }
     }
     console.log('payload----------111', payload)
-    // this.setState({updateModalVisible:false,modalKey: this.state.modalKey-1},()=>{this.refresh()})
-
     this.props.updatePartner(payload)
   }
 
@@ -228,7 +220,6 @@ class EditStation extends React.Component {
       if (errors) {
         return
       }
-      // console.log('=======>',{...this.props.form.getFieldsValue()})
       let data = this.props.form.getFieldsValue()
       let payload = {
         ...data,
@@ -247,7 +238,6 @@ class EditStation extends React.Component {
         }
       }
       console.log('data======>', data)
-      // let count = this.state.count - 1
       this.props.updateStation(payload)
     })
   }
@@ -268,203 +258,189 @@ class EditStation extends React.Component {
       }
     }
     console.log('station===>', station)
-    // console.log('[DEBUG] ---> SysUser props: ', this.state.partnerList);
-    // let plate = {id:'platform',shareholderName:'平台', royalty: this.props.station?this.props.station.platformProp:0}
-    // let partnerList = this.state.partnerList.splice(0,0,plate)
     return (
       <div>
         <Spin size='large' spinning={this.state.spinShow}>
-        <Form >
+          <Form >
+            <Row>
+              <Col span={12}>
+                <FormItem label='服务点名称' hasFeedback {...formItemLayout}>
+                  {this.props.form.getFieldDecorator('name', {
+                    // getValueFromEvent:(e)=>{
+                    //  let value=this.setTrimValue(e.target.value)
+                    //  return value
+                    //},
+                    initialValue: station ? station.name : '',
+                    rules: [
+                      {
+                        required: true,
+                        message: '服务点名称未填写'
+                      }
+                    ]
+                  })(
+                    <Input/>
+                  )}
+                </FormItem>
+              </Col>
+              <Col span={12}>
+                <FormItem label='管理员' hasFeedback {...formItemLayout}>
+                  {this.props.form.getFieldDecorator('adminId', {
+                    initialValue: station ? station.adminId : '',
+                    rules: [
+                      {
+                        required: true,
+                        message: '管理员未选择'
+                      }
+                    ]
+                  })(
+                    <Select allowClear={true} style={{width: 140}}>
+                      {this.userList()}
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                <FormItem label='省市区' hasFeedback {...formItemLayout}>
+                  {this.props.form.getFieldDecorator('division', {
+                    initialValue: division,
+                    rules: [
+                      {
+                        required: true,
+                        message: '省市区未选择'
+                      }
+                    ]
+                  })(
+                    <DivisionCascader defaultValue={division} onChange={(value, label)=> {
+                      this.selectDivision(value, label)
+                    }}/>
+                  )}
+                </FormItem>
+              </Col>
+              <Col span={12}>
+                <FormItem label='服务点地址' hasFeedback {...formItemLayout}>
+                  {this.props.form.getFieldDecorator('addr', {
+                    initialValue: station ? station.addr : '',
+                    rules: [
+                      {
+                        required: true,
+                        message: '服务点地址未填写'
+                      }
+                    ]
+                  })(
+                    <Input/>
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={6}>
+                <FormItem label='干衣柜单价：' hasFeedback {...formItemLayout2}>
+                  {this.props.form.getFieldDecorator('unitPrice', {
+                    initialValue: station ? station.unitPrice : 0,
+                    rules: [
+                      {
+                        required: true,
+                        message: '干衣柜单价未填写'
+                      }
+                    ]
+                  })(<InputNumber />)}
+                </FormItem>
+              </Col>
+              <Col span={6}>
+                <FormItem label='干衣柜押金：' hasFeedback {...formItemLayout2}>
+                  {this.props.form.getFieldDecorator('deposit', {
+                    initialValue: station ? station.deposit : 0,
+                    rules: [
+                      {
+                        required: true,
+                        message: '干衣柜押金未填写'
+                      }
+                    ]
+                  })(<InputNumber />)}
+                </FormItem>
+              </Col>
+              <Col span={6}>
+                <FormItem label='电费单价：' hasFeedback {...formItemLayout2}>
+                  {this.props.form.getFieldDecorator('powerUnitPrice', {
+                    initialValue: station ? station.powerUnitPrice : 0,
+                    rules: [
+                      {
+                        required: true,
+                        message: '电费单价未填写'
+                      }
+                    ]
+                  })(<InputNumber />)}
+                </FormItem>
+              </Col>
+              <Col span={6}>
+                <FormItem label='平台分成比例：' hasFeedback {...formItemLayout2}>
+                  {this.props.form.getFieldDecorator('platformProp', {
+                    initialValue: station ? station.platformProp : 0,
+                    rules: [
+                      {
+                        required: true,
+                        message: '平台分成比例未填写'
+                      }
+                    ]
+                  })(<InputNumber />)}
+                </FormItem>
+              </Col>
+            </Row>
+          </Form>
           <Row>
-            <Col span={12}>
-              <FormItem label='服务点名称' hasFeedback {...formItemLayout}>
-                {this.props.form.getFieldDecorator('name', {
-                  // getValueFromEvent:(e)=>{
-                  //  let value=this.setTrimValue(e.target.value)
-                  //  return value
-                  //},
-                  initialValue: station ? station.name : '',
-                  rules: [
-                    {
-                      required: true,
-                      message: '服务点名称未填写'
-                    }
-                  ]
-                })(
-                  <Input/>
-                )}
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem label='管理员' hasFeedback {...formItemLayout}>
-                {this.props.form.getFieldDecorator('adminId', {
-                  initialValue: station ? station.adminId : '',
-                  rules: [
-                    {
-                      required: true,
-                      message: '管理员未选择'
-                    }
-                  ]
-                })(
-                  <Select allowClear={true} style={{width: 140}}>
-                    {this.userList()}
-                  </Select>
-                )}
-              </FormItem>
+            <Col>
+              <Button onClick={()=> {
+                this.submitStation()
+              }}>提交</Button>
             </Col>
           </Row>
-          <Row>
-            <Col span={12}>
-              <FormItem label='省市区' hasFeedback {...formItemLayout}>
-                {this.props.form.getFieldDecorator('division', {
-                  // getValueFromEvent:(e)=>{
-                  //  let value=this.setTrimValue(e.target.value)
-                  //  return value
-                  //},
-                  initialValue: division,
-
-                  rules: [
-                    {
-                      required: true,
-                      message: '省市区未选择'
-                    }
-                  ]
-                })(
-                  <DivisionCascader defaultValue={division} onChange={(value, label)=> {
-                    this.selectDivision(value, label)
-                  }}/>
-                )}
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem label='服务点地址' hasFeedback {...formItemLayout}>
-                {this.props.form.getFieldDecorator('addr', {
-                  // getValueFromEvent:(e)=>{
-                  //  let value=this.setTrimValue(e.target.value)
-                  //  return value
-                  //},
-                  initialValue: station ? station.addr : '',
-                  rules: [
-                    {
-                      required: true,
-                      message: '服务点地址未填写'
-                    }
-                  ]
-                })(
-                  <Input/>
-                )}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={6}>
-              <FormItem label='干衣柜单价：' hasFeedback {...formItemLayout2}>
-                {this.props.form.getFieldDecorator('unitPrice', {
-                  initialValue: station ? station.unitPrice : 0,
-                  rules: [
-                    {
-                      required: true,
-                      message: '干衣柜单价未填写'
-                    }
-                  ]
-                })(<InputNumber />)}
-              </FormItem>
-            </Col>
-            <Col span={6}>
-              <FormItem label='干衣柜押金：' hasFeedback {...formItemLayout2}>
-                {this.props.form.getFieldDecorator('deposit', {
-                  initialValue: station ? station.deposit : 0,
-                  rules: [
-                    {
-                      required: true,
-                      message: '干衣柜押金未填写'
-                    }
-                  ]
-                })(<InputNumber />)}
-              </FormItem>
-            </Col>
-            <Col span={6}>
-              <FormItem label='电费单价：' hasFeedback {...formItemLayout2}>
-                {this.props.form.getFieldDecorator('powerUnitPrice', {
-                  initialValue: station ? station.powerUnitPrice : 0,
-                  rules: [
-                    {
-                      required: true,
-                      message: '电费单价未填写'
-                    }
-                  ]
-                })(<InputNumber />)}
-              </FormItem>
-            </Col>
-            <Col span={6}>
-              <FormItem label='平台分成比例：' hasFeedback {...formItemLayout2}>
-                {this.props.form.getFieldDecorator('platformProp', {
-                  initialValue: station ? station.platformProp : 0,
-                  rules: [
-                    {
-                      required: true,
-                      message: '平台分成比例未填写'
-                    }
-                  ]
-                })(<InputNumber />)}
-              </FormItem>
-            </Col>
-          </Row>
-        </Form>
-        <Row>
-          <Col>
-            <Button onClick={()=> {
-              this.submitStation()
-            }}>提交</Button>
-          </Col>
-        </Row>
           <Row></Row>
-        <Row>
-          <Col span={4}>
-            <p>服务点分成</p>
-          </Col>
-          <Col span={4}>
-            <Button onClick={()=> {
-              this.openCreateModal()
-            }}>添加分成方</Button>
-          </Col>
-        </Row>
-        <PartnerList editPartner={(data)=> {
-          this.openUpdateModal(data)
-        }}
-                     type='edit' partners={this.props.partners}
-                     setPartnerStatus={(data)=> {
-                       this.setPartnerStatus(data)
-                     }}
-        />
-        <CreatePartnerModal
-          modalKey={this.state.modalKey}
-          onOk={(data)=> {
-            this.createPartner(data)
+          <Row>
+            <Col span={4}>
+              <p>服务点分成</p>
+            </Col>
+            <Col span={4}>
+              <Button onClick={()=> {
+                this.openCreateModal()
+              }}>添加分成方</Button>
+            </Col>
+          </Row>
+          <PartnerList editPartner={(data)=> {
+            this.openUpdateModal(data)
           }}
-          onCancel={()=> {
-            console.log('i, m cancel')
-            this.setState({createModalVisible: false})
-          }}
-          userList={this.props.userList}
-          stationList={this.props.stations}
-          modalVisible={this.state.createModalVisible}
-        />
-        <UpdatePartnerModal
-          modalKey={this.state.modalKey}
-          onOk={(data)=> {
-            this.updatePartner(data)
-          }}
-          onCancel={()=> {
-            console.log('i, m cancel')
-            this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1})
-          }}
-          partner={this.state.selectedPartner}
-          userList={this.props.userList}
-          stationList={this.props.stations}
-          modalVisible={this.state.updateModalVisible}
-        />
-          </Spin>
+                       type='edit' partners={this.props.partners}
+                       setPartnerStatus={(data)=> {
+                         this.setPartnerStatus(data)
+                       }}
+          />
+          <CreatePartnerModal
+            modalKey={this.state.modalKey}
+            onOk={(data)=> {
+              this.createPartner(data)
+            }}
+            onCancel={()=> {
+              this.setState({createModalVisible: false})
+            }}
+            userList={this.props.userList}
+            stationList={this.props.stations}
+            modalVisible={this.state.createModalVisible}
+          />
+          <UpdatePartnerModal
+            modalKey={this.state.modalKey}
+            onOk={(data)=> {
+              this.updatePartner(data)
+            }}
+            onCancel={()=> {
+              this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1})
+            }}
+            partner={this.state.selectedPartner}
+            userList={this.props.userList}
+            stationList={this.props.stations}
+            modalVisible={this.state.updateModalVisible}
+          />
+        </Spin>
       </div>
     )
 
@@ -472,20 +448,13 @@ class EditStation extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  // console.log('ownporsoss.......aaa',ownProps)
-  let userList = selector.selectAllUsers(state)
-
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   let partners = stationSelector.selectPartners(state)
-  // let station={name:'123',adminName:'321'}
-  // console.log('areaList========>', areaList)
-  // console.log('partners========>', partners)
-  console.log('userList========>', userList)
 
   return {
     station: station,
     partners: partners,
-    userList: userList
+    // userList: userList
   };
 };
 
