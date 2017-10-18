@@ -92,7 +92,7 @@ class DeviceAssociateModal extends PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>编号</Col>
             <Col span={6}>
-              <Input disabled={true} defaultValue={this.props.device.deviceNo} />
+              <Input disabled={true} value={this.props.device.deviceNo} />
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>

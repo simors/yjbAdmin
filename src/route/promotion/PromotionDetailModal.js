@@ -39,19 +39,19 @@ class PromotionDetailModal extends PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>活动名称</Col>
             <Col span={6}>
-              <Input disabled={true} defaultValue={this.props.promotion.title} />
+              <Input disabled={true} value={this.props.promotion.title} />
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>活动起始时间</Col>
             <Col span={10}>
-              <RangePicker disabled defaultValue={[moment(promotion.start, dateFormat), moment(promotion.end, dateFormat)]}/>
+              <RangePicker disabled value={[moment(promotion.start, dateFormat), moment(promotion.end, dateFormat)]}/>
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>活动区域</Col>
             <Col span={10}>
-              <DivisionCascader disabled={true} defaultValue={promotion.region} />
+              <DivisionCascader disabled={true} value={promotion.region} />
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
@@ -63,7 +63,7 @@ class PromotionDetailModal extends PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>活动描述</Col>
             <Col span={10}>
-              <TextArea disabled={true} defaultValue={promotion.description} />
+              <TextArea disabled={true} value={promotion.description} />
             </Col>
           </Row>
         </Modal>

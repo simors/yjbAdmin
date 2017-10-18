@@ -176,7 +176,7 @@ class AddStation extends React.Component {
                     }
                   ]
                 })(
-                  <DivisionCascader defaultValue={[]} onChange={(value, label)=> {
+                  <DivisionCascader onChange={(value, label)=> {
                     this.selectDivision(value, label)
                   }}/>
                 )}

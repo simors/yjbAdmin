@@ -138,9 +138,11 @@ class Device extends PureComponent {
         <DeviceAssociateModal visible={this.state.showDeviceAssociateModal}
                               device={this.state.selectDevice}
                               onCancel={() => {this.setState({showDeviceAssociateModal: false})}}/>
-        <DeviceEditModal visible={this.state.showDeviceEditModal}
-                         device={this.state.selectDevice}
-                         onCancel={() => {this.setState({showDeviceEditModal: false})}} />
+        {
+          this.state.showDeviceEditModal ?
+            <DeviceEditModal device={this.state.selectDevice} onCancel={() => {this.setState({showDeviceEditModal: false})}} />
+            : null
+        }
       </div>
     )
   }

@@ -73,7 +73,6 @@ class DivisionCascader extends PureComponent {
                 options={options}
                 value={this.state.value}
                 placeholder="省／市／区"
-                defaultValue={this.props.defaultValue}
                 changeOnSelect
                 disabled={this.props.disabled}
                 onChange={this.onSelectChange} />

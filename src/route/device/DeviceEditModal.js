@@ -23,7 +23,7 @@ class DeviceEditModal extends PureComponent {
       return (
         <Modal title="编辑干衣柜"
                width={720}
-               visible={this.props.visible}
+               visible={true}
                onOk={this.onSubmit}
                onCancel={this.props.onCancel}
                footer={null}>

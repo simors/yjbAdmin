@@ -22,9 +22,9 @@ const Option = Select.Option
 class StationSelect extends React.Component {
   constructor(props) {
     super(props)
-    const value = props.value
+    const {value, stationInfo} = props
     this.state = {
-      division: undefined,
+      division: [stationInfo.province.value, stationInfo.city.value, stationInfo.area.value],
       stationId: value,
     }
   }
@@ -88,7 +88,9 @@ class StationSelect extends React.Component {
   render() {
     return (
       <div style={{display: 'flex'}}>
-        <DivisionCascader disabled={false} onChange={this.onDivisionChange}/>
+        <DivisionCascader disabled={false}
+                          value={this.state.division}
+                          onChange={this.onDivisionChange}/>
         <Select style={{width: 120}} notFoundContent="无服务点" value={this.state.stationId} onChange={this.onSelectChange}>
           {
             this.props.stationList.map((station, index) => {
@@ -104,9 +106,12 @@ class StationSelect extends React.Component {
 }
 
 const mapStateToProps = (appState, ownProps) => {
+  let stationId = ownProps.value
+  let stationInfo = stationSelector.selectStation(appState, stationId)
   let stationList = stationSelector.selectStations(appState)
   return {
     stationList: stationList,
+    stationInfo: stationInfo,
   }
 }
 
