@@ -80,11 +80,11 @@ class AwardsInput extends Component {
     const inputItems = this.state.awards.map((k, index) => {
       return (
         <Row key={index} gutter={16}>
-          <Col span={8}>
+          <Col span={10}>
             <Input disabled={this.props.disabled} value={this.state.awards[index].recharge} addonBefore='充值金额' addonAfter="¥" type='number'
                    onChange={(e) => this.triggerChange(index, 'recharge', e)}/>
           </Col>
-          <Col span={8}>
+          <Col span={10}>
             <Input disabled={this.props.disabled} value={this.state.awards[index].award} addonBefore='奖励金额' addonAfter="¥" type='number'
                    onChange={(e) => this.triggerChange(index, 'award', e)}/>
           </Col>

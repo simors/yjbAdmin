@@ -30,7 +30,6 @@ class PromotionDetailModal extends PureComponent {
   render() {
     const dateFormat = 'YYYY-MM-DD'
     let promotion = this.props.promotion
-    console.log("promotion", promotion)
     if(promotion) {
       return (
         <Modal title="活动详情"
