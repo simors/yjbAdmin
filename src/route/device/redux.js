@@ -6,7 +6,7 @@ import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
 import {fetchDevicesApi, associateWithStationApi, modifyDeviceApi} from './cloud'
-import {stationSelector} from '../station/redux'
+import {stationSelector, stationAction} from '../station/redux'
 
 /****  Model  ****/
 const DeviceRecord = Record({
@@ -94,7 +94,7 @@ function* fetchDevices(action) {
       }
     })
     if(stations.size > 0) {
-      //TODO 保存station信息
+      yield put(stationAction.saveStations({ stations }))
     }
   } catch (error) {
     console.error(error)

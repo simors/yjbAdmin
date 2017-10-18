@@ -6,6 +6,7 @@ import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
 import {createPromotionApi, fetchPromotionsApi, fetchPromotionCategoriesApi} from './cloud'
+import {action as userActions, selector as userSelector} from '../../util/auth'
 
 /****  Model  ****/
 const PromotionRecord = Record({
@@ -117,7 +118,7 @@ function* fetchPromotions(action) {
       }
     })
     if(users.size > 0) {
-      //TODO 保存user信息
+      yield put(userActions.saveUsers({ users }))
     }
     if(categories.size > 0) {
       yield put(actions.savePromotionCategories({ categories }))
@@ -287,7 +288,8 @@ function selectPromotionList(state) {
     let promotionInfo = selectPromotion(state, promotionId)
     let categoryInfo = promotionInfo? selectCategory(state, promotionInfo.categoryId) : undefined
     promotionInfo.categoryTitle = categoryInfo? categoryInfo.title: undefined
-    //TODO 获取user信息
+    let userInfo = promotionInfo? userSelector.selectUserById(state, promotionInfo.userId) : undefined
+    promotionInfo.username = userInfo? userInfo.nickname : undefined
     promotionInfoList.push(promotionInfo)
   })
 
