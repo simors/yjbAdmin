@@ -10,10 +10,10 @@ const columns = [{
   dataIndex: "createdAt",
 }, {
   title: "姓名",
-  dataIndex: "sharehlderName",
+  dataIndex: "shareholder.idName",
 }, {
   title: "联系方式",
-  dataIndex: "sharehlderPhone",
+  dataIndex: "shareholder.mobilePhoneNumber",
 }, {
   title: "投资服务点",
   dataIndex: "stationName",

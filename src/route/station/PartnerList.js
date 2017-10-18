@@ -8,7 +8,7 @@ import {Table, Button} from 'antd';
 
 const showColumns = [{
   title: "分成方",
-  dataIndex: "shareholderName",
+  dataIndex: "shareholder.idName",
 }, {
   title: "分成比例",
   dataIndex: "royalty",
@@ -30,14 +30,13 @@ const PartnerList = (props) => {
 
   const columns = [{
     title: "分成方",
-    dataIndex: "shareholderName",
+    dataIndex: "shareholder.idName",
   }, {
     title: "分成比例",
     dataIndex: "royalty",
   }, {
     title: '状态',
     render: (text, record)=> {
-      // console.log('record=====>',record)
       return (
         <p>{record.status == 1 ? '正常' : '停用'}</p>
       )
@@ -45,7 +44,6 @@ const PartnerList = (props) => {
   }, {
     title: '操作',
     render: (text, record)=> {
-      // console.log('record=====>',record)
       return (
         <div>
           <Button onClick={()=> {

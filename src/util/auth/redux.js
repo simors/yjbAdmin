@@ -924,6 +924,10 @@ function selectUsersByRole(appState, roleId) {
 }
 
 function selectUserById(appState, userId) {
+  if(!userId){
+    return undefined
+  }
+  
   const immUser = appState.AUTH.getIn(['cachedUsersById', userId], undefined);
 
   if (immUser === undefined)

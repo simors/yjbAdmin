@@ -17,9 +17,7 @@ export async function fetchStations(payload) {
 
 export async function createStation(payload) {
   try {
-    console.log('payload=====>',payload)
     let station = await AV.Cloud.run('stationCreateStation', payload)
-
     return {success: true, station: station}
   } catch (err) {
     return {success: false, error: err}
@@ -151,18 +149,6 @@ export async function closePartner(payload) {
     let partner = await AV.Cloud.run('stationClosePartner', payload)
     return {success: true, partner: partner}
   } catch (err) {
-    return {success: false, error: err}
-  }
-}
-
-export async function testUserList(payload){
-  try{
-    let userList = await AV.Cloud.run('userFuncTest')
-      return {success:true, userList: userList}
-
-
-  }catch(err){
-    console.log('hahahah',err.message)
     return {success: false, error: err}
   }
 }

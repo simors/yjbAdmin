@@ -5,6 +5,7 @@
 import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
+import {action as authAction, selector} from '../../util/auth'
 import {call, put, takeEvery, takeLatest} from 'redux-saga/effects'
 import * as stationFuncs from './cloud'
 
@@ -17,7 +18,6 @@ export const StationRecord = Record({
   allPartners: Map(),
   investorList: List(),
   allInvestors: Map(),
-  userList: List()
 }, "StationRecord")
 
 export const StationDetailRecord = Record({
@@ -32,8 +32,6 @@ export const StationDetailRecord = Record({
   powerUnitPrice: undefined,
   unitPrice: undefined,
   adminId: undefined,
-  adminName: undefined,
-  adminPhone: undefined,
   status: undefined,
   deviceNo: undefined,
   createdAt: undefined,
@@ -41,7 +39,6 @@ export const StationDetailRecord = Record({
 
 export class StationDetail extends StationDetailRecord {
   static fromApi(obj) {
-    // console.log('obj====>', obj)
     let stationDetail = new StationDetailRecord()
     return stationDetail.withMutations((record) => {
       record.set('id', obj.id)
@@ -55,8 +52,6 @@ export class StationDetail extends StationDetailRecord {
       record.set('powerUnitPrice', obj.powerUnitPrice)
       record.set('unitPrice', obj.unitPrice)
       record.set('adminId', obj.adminId ? obj.adminId : obj.admin.id)
-      record.set('adminName', obj.adminName ? obj.adminName : (obj.admin?obj.admin.idName:undefined))
-      record.set('adminPhone', obj.adminPhone ? obj.adminPhone : (obj.admin?obj.admin.mobilePhoneNumber:undefined))
       record.set('status', obj.status)
       record.set('deviceNo', obj.deviceNo)
       record.set('createdAt', obj.createdAt)
@@ -71,8 +66,6 @@ export const ProfitSharingRecord = Record({
   royalty: undefined,
   investment: undefined,
   shareholderId: undefined,
-  shareholderName: undefined,
-  shareholderPhone: undefined,
   stationId: undefined,
   stationName: undefined,
   createdAt: undefined,
@@ -88,8 +81,6 @@ export class ProfitSharing extends ProfitSharingRecord {
       record.set('royalty', obj.royalty)
       record.set('investment', obj.investment)
       record.set('shareholderId', obj.shareholderId)
-      record.set('shareholderName', obj.shareholderName)
-      record.set('shareholderPhone', obj.shareholderPhone)
       record.set('stationId', obj.stationId)
       record.set('stationName', obj.stationName)
       record.set('createdAt', obj.createdAt)
@@ -123,8 +114,7 @@ const CREATE_PARTNER = 'CREATE_PARTNER'
 const UPDATE_PARTNER = 'UPDATE_PARTNER'
 const OPEN_PARTNER = 'OPEN_PARTNER'
 const CLOSE_PARTNER = 'CLOSE_PARTNER'
-const TEST_FETCH_USER = 'TEST_FETCH_USER'
-const TEST_FETCH_USER_SUCCESS = 'TEST_FETCH_USER_SUCCESS'
+const SAVE_STATIONS = 'SAVE_STATIONS'
 
 /**** Action ****/
 
@@ -145,8 +135,8 @@ export const stationAction = {
   openPartner: createAction(OPEN_PARTNER),
   closePartner: createAction(CLOSE_PARTNER),
   updateStation: createAction(UPDATE_STATION),
-  testFetchUsers: createAction(TEST_FETCH_USER),
-  saveStation: createAction(CREATE_STATION_SUCCESS)
+  saveStation: createAction(CREATE_STATION_SUCCESS),
+  saveStations: createAction(SAVE_STATIONS)
 }
 
 const requestStationsSuccess = createAction(FETCH_STATIONS_SUCCESS)
@@ -156,7 +146,6 @@ const requestInvestorsSuccess = createAction(FETCH_INVESTORS_SUCCESS)
 const requestPartnersSuccess = createAction(FETCH_PARTNERS_SUCCESS)
 const createStationSuccess = createAction(CREATE_STATION_SUCCESS)
 const updateStationSuccess = createAction(UPDATE_STATION_SUCCESS)
-const testUsersSuccess = createAction(TEST_FETCH_USER_SUCCESS)
 
 
 /**** Saga ****/
@@ -168,10 +157,14 @@ function* fetchStationsAction(action) {
   let stationList = []
   if (data.success) {
     if (data.stations && data.stations.length > 0) {
-      data.stations.forEach((item)=> {
+      for (let i = 0; i < data.stations.length; i++) {
+        let item = data.stations[i]
         stationList.push(item.id)
         stations.push(item)
-      })
+        if (item.admin) {
+          yield put(authAction.saveUser({user: item.admin}))
+        }
+      }
     }
     yield put(requestStationsSuccess({stations: stations, stationList: stationList}))
     if (payload.success) {
@@ -190,6 +183,10 @@ function* openStationAction(action) {
   if (data.success) {
     if (data.station) {
       yield put(openStationSuccess({station: data.station}))
+      if (data.station.admin) {
+        yield put(authAction.saveUser({user: data.station.admin}))
+
+      }
       if (payload.success) {
         payload.success()
       }
@@ -207,6 +204,10 @@ function* closeStationAction(action) {
   if (data.success) {
     if (data.station) {
       yield put(closeStationSuccess({station: data.station}))
+      if (data.station.admin) {
+        yield put(authAction.saveUser({user: data.station.admin}))
+
+      }
       if (payload.success) {
         payload.success()
       }
@@ -225,10 +226,14 @@ function* fetchInvestorsAction(action) {
   let investorList = []
   if (data.success) {
     if (data.investors && data.investors.length > 0) {
-      data.investors.forEach((item)=> {
+      for (let i = 0; i < data.investors.length; i++) {
+        let item = data.investors[i]
         investorList.push(item.id)
         investors.push(item)
-      })
+        if (item.shareholder) {
+          yield put(authAction.saveUser({user: item.shareholder}))
+        }
+      }
     }
     yield put(requestInvestorsSuccess({investors: investors, investorList: investorList}))
     if (payload.success) {
@@ -271,7 +276,6 @@ function* closeInvestorsAction(action) {
 
 function* createInvestorsAction(action) {
   let payload = action.payload
-  console.log('actionpayload=====>', payload)
   let data = yield call(stationFuncs.createInvestor, payload)
   if (data.success) {
     if (payload.success) {
@@ -305,10 +309,14 @@ function* fetchPartnersAction(action) {
   let partnerList = []
   if (data.success) {
     if (data.partners && data.partners.length > 0) {
-      data.partners.forEach((item)=> {
+      for (let i = 0; i < data.partners.length; i++) {
+        let item = data.partners[i]
         partnerList.push(item.id)
         partners.push(item)
-      })
+        if (item.shareholder) {
+          yield put(authAction.saveUser({user: item.shareholder}))
+        }
+      }
     }
     yield put(requestPartnersSuccess({partners: partners, partnerList: partnerList}))
     if (payload.success) {
@@ -384,6 +392,9 @@ function* createStationAction(action) {
   if (data.success) {
     let station = data.station
     yield put(createStationSuccess({station: station}))
+    if (station.admin) {
+      yield put(authAction.saveUser({user: station.admin}))
+    }
     if (payload.success) {
       payload.success(station.id)
     }
@@ -401,24 +412,11 @@ function* updateStationAction(action) {
   if (data.success) {
     let station = data.station
     yield put(updateStationSuccess({station: station}))
+    if (station.admin) {
+      yield put(authAction.saveUser({user: station.admin}))
+    }
     if (payload.success) {
       payload.success(station.id)
-    }
-  } else {
-    if (payload.error) {
-      payload.error(data.error)
-    }
-  }
-}
-
-function* testFetchUserList(action) {
-  let payload = action.payload
-  let data = yield call(stationFuncs.testUserList, payload)
-
-  if (data.success) {
-    yield put(testUsersSuccess({users: data.userList}))
-    if (payload.success) {
-      payload.success()
     }
   } else {
     if (payload.error) {
@@ -443,7 +441,6 @@ export const stationSaga = [
   takeLatest(CLOSE_PARTNER, closePartnerAction),
   takeLatest(CREATE_STATION, createStationAction),
   takeLatest(UPDATE_STATION, updateStationAction),
-  takeLatest(TEST_FETCH_USER, testFetchUserList),
 
 
 ]
@@ -468,13 +465,21 @@ export function stationReducer(state = initialState, action) {
       return handleSaveInvestors(state, action)
     case FETCH_PARTNERS_SUCCESS:
       return handleSavePartners(state, action)
-    case TEST_FETCH_USER_SUCCESS:
-      return handleSaveUsers(state, action)
+    case SAVE_STATIONS:
+      return handleSaveAllStations(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
       return state
   }
+}
+
+function handleSaveAllStations(state, action) {
+  let stations = action.payload.stations
+  stations.forEach((item)=> {
+    state = state.setIn(['allStations', item.id], StationDetail.fromApi(item))
+  })
+  return state
 }
 
 function handleSetAllStations(state, stations) {
@@ -541,14 +546,6 @@ function handleSavePartners(state, action) {
   return state
 }
 
-
-function handleSaveUsers(state, action) {
-  let users = action.payload.users
-  state = state.set('userList', new List(users))
-  return state
-}
-
-
 function onRehydrate(state, action) {
   var incoming = action.payload.STATION
   if (!incoming) return state
@@ -575,22 +572,30 @@ function selectStations(state) {
   let stations = []
   if (stationList && stationList.size > 0) {
     stationList.forEach((item)=> {
-      let stationInfo = station.getIn(['allStations', item])
-      stations.push(stationInfo.toJS())
+      let stationRecord = station.getIn(['allStations', item])
+      let stationInfo = stationRecord.toJS()
+      if (stationInfo) {
+        let admin = selector.selectUserById(state, stationInfo.adminId)
+        admin ? stationInfo.admin = admin : null
+      }
+      stations.push(stationInfo)
     })
   }
   return stations
 }
 
 function selectStation(state, stationId) {
-  if(!stationId){
+  if (!stationId) {
     return undefined
   }
   let station = state.STATION
-  // console.log('stationId=====>',stationId)
-  let stationInfo = station.getIn(['allStations', stationId])
-  // console.log('stationInfo==>',stationInfo)
-  return stationInfo?stationInfo.toJS():undefined
+  let stationRecord = station.getIn(['allStations', stationId])
+  let stationInfo = stationRecord ? stationRecord.toJS() : undefined
+  if (stationInfo) {
+    let admin = selector.selectUserById(state, stationInfo.adminId)
+    admin ? stationInfo.admin = admin : null
+  }
+  return stationInfo
 }
 
 function selectInvestors(state) {
@@ -599,8 +604,13 @@ function selectInvestors(state) {
   let investors = []
   if (investorList && investorList.size > 0) {
     investorList.forEach((item)=> {
-      let investorInfo = station.getIn(['allInvestors', item])
-      investors.push(investorInfo.toJS())
+      let investorRecord = station.getIn(['allInvestors', item])
+      let investorInfo = investorRecord ? investorRecord.toJS() : undefined
+      if (investorInfo) {
+        let shareholder = selector.selectUserById(state, investorInfo.shareholderId)
+        shareholder ? investorInfo.shareholder = shareholder : null
+      }
+      investors.push(investorInfo)
     })
   }
   return investors
@@ -612,29 +622,30 @@ function selectPartners(state) {
   let partners = []
   if (partnerList && partnerList.size > 0) {
     partnerList.forEach((item)=> {
-      let partnerInfo = station.getIn(['allPartners', item])
-      partners.push(partnerInfo.toJS())
+      let partnerRecord = station.getIn(['allPartners', item])
+      let partnerInfo = partnerRecord ? partnerRecord.toJS() : undefined
+      if (partnerInfo) {
+        let shareholder = selector.selectUserById(state, partnerInfo.shareholderId)
+        shareholder ? partnerInfo.shareholder = shareholder : null
+      }
+      partners.push(partnerInfo)
     })
   }
   return partners
 }
 
-function selectUsers(state) {
-  let station = state.STATION
-  let partnerList = station.userList
-
-  return partnerList.toJS() || []
-}
-
 function selectStationById(state, stationId) {
-  if(!stationId) {
+  if (!stationId) {
     return undefined
   }
   let station = state.STATION
-  // console.log('stationId=======>',stationId)
   let stationRecord = station.getIn(['allStations', stationId])
-
-  return stationRecord ? stationRecord.toJS() : undefined
+  let stationInfo = stationRecord ? stationRecord.toJS() : undefined
+  if (stationInfo) {
+    let admin = selector.selectUserById(state, stationInfo.adminId)
+    admin ? stationInfo.admin = admin : null
+  }
+  return stationInfo
 }
 
 
@@ -644,5 +655,5 @@ export const stationSelector = {
   selectStation,
   selectPartners,
   selectStationById,
-  selectUsers
+
 }

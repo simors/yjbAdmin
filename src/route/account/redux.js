@@ -8,7 +8,7 @@ import {REHYDRATE} from 'redux-persist/constants'
 import {call, put, takeEvery, takeLatest} from 'redux-saga/effects'
 import { action as authAction, selector} from '../../util/auth'
 import * as accountFunc from './cloud'
-import {stationAction,StationDetail,stationSelector} from '../station/redux'
+import {stationAction,stationSelector} from '../station/redux'
 import {formatLeancloudTime} from '../../util/datetime'
 /****  Model  ****/
 

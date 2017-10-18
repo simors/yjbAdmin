@@ -33,10 +33,10 @@ const columns = [{
   dataIndex: "deviceNo",
 }, {
   title: "管理员",
-  dataIndex: "adminName",
+  dataIndex: "admin.idName",
 }, {
   title: "联系方式",
-  dataIndex: "adminPhone",
+  dataIndex: "admin.mobilePhoneNumber",
 }, {
   title: "状态",
   dataIndex: "status",

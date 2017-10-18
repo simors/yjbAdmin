@@ -51,7 +51,6 @@ class ShowStation extends React.Component {
 
   selectInvestor(rowId, rowData) {
     this.setState({selectedRowId: rowId, selectedRowData: rowData}, ()=> {
-      console.log('selectRow========>', this.state.selectedRowId)
     })
   }
 
@@ -59,10 +58,6 @@ class ShowStation extends React.Component {
     // console.log('hahahahah',this.props.match)
     this.props.requestPartners({
       stationId: this.props.match.params.id, success: ()=> {
-      }
-    })
-    this.props.fetchUserList({
-      success: ()=> {
       }
     })
   }
@@ -89,9 +84,6 @@ class ShowStation extends React.Component {
 
   render() {
     let station = this.props.station
-    // console.log('[DEBUG] ---> SysUser props: ', this.state.partnerList);
-    // let plate = {id:'platform',shareholderName:'平台', royalty: this.props.station?this.props.station.platformProp:0}
-    // let partnerList = this.state.partnerList.splice(0,0,plate)
     let division = []
     if (station) {
       if (station.province) {
@@ -264,21 +256,16 @@ class ShowStation extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   // console.log('ownporsoss.......aaa',ownProps)
-  let userList = selector.selectAllUsers(state)
-
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   // console.log('stationnoredux====>', station)
   let partners = stationSelector.selectPartners(state)
   // let station={name:'123',adminName:'321'}
   // console.log('areaList========>', areaList)
   // console.log('partners========>', partners)
-  console.log('userList========>', userList)
 
   return {
     station: station,
     partners: partners,
-    userList: userList
-
   };
 };
 
