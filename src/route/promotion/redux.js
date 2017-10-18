@@ -5,8 +5,8 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
-import {createPromotionApi, fetchPromotionsApi, fetchPromotionCategoriesApi} from './cloud'
 import {action as userActions, selector as userSelector} from '../../util/auth'
+import {createPromotionApi, fetchPromotionsApi, fetchPromotionCategoriesApi, editPromotionApi} from './cloud'
 
 /****  Model  ****/
 const PromotionRecord = Record({
@@ -74,6 +74,7 @@ const SAVE_PROMOTIONS = 'SAVE_PROMOTIONS'
 const PUBLISH_RECHARGE_PROMOTION = 'PUBLISH_RECHARGE_PROMOTION'
 const SAVE_PROMOTION_CATEGORIES = 'SAVE_PROMOTION_CATEGORIES'
 const FETCH_PROMOTION_CATEGORYLIST = 'FETCH_PROMOTION_CATEGORYLIST'
+const EDIT_PROMOTION = 'EDIT_PROMOTION'
 
 export const PromotionStatus = {
   PROMOTION_STATUS_AWAIT: 0,
@@ -91,6 +92,7 @@ export const actions = {
   publishRechargePromotion: createAction(PUBLISH_RECHARGE_PROMOTION),
   savePromotionCategories: createAction(SAVE_PROMOTION_CATEGORIES),
   fetchPromCategoryAction: createAction(FETCH_PROMOTION_CATEGORYLIST),
+  editPromotion: createAction(EDIT_PROMOTION),
 }
 
 /**** Saga ****/
@@ -175,10 +177,37 @@ function* publishRechargePromotion(action) {
   }
 }
 
+function* editPromotion(action) {
+  let payload = action.payload
+
+  let apiPayload = {
+    title: payload.title,
+    start: payload.start,
+    end: payload.end,
+    description: payload.description,
+    region: payload.region,
+    awards: payload.awards,
+    status: payload.status,
+  }
+  try {
+    let promotion = yield call(editPromotionApi, apiPayload)
+    yield put(actions.savePromotion({ promotion }))
+
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const saga = [
   takeLatest(FETCH_PROMOTIONS, fetchPromotions),
   takeLatest(PUBLISH_RECHARGE_PROMOTION, publishRechargePromotion),
-  takeLatest(FETCH_PROMOTION_CATEGORYLIST, fetchPromotionCategories)
+  takeLatest(FETCH_PROMOTION_CATEGORYLIST, fetchPromotionCategories),
+  takeLatest(EDIT_PROMOTION, editPromotion)
 ]
 
 /**** Reducer ****/

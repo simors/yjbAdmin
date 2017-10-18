@@ -14,6 +14,7 @@ import style from './promotion.module.scss'
 import PromotionSearchForm from './PromotionSearchForm'
 import {selector, PromotionStatus} from './redux'
 import PromotionDetailModal from './PromotionDetailModal'
+import PromotionEditModal from './PromotionEditModal'
 
 const ButtonGroup = Button.Group
 
@@ -24,6 +25,7 @@ class Promotion extends PureComponent {
     this.state = {
       selectPromotion: undefined,
       showPromotionDetailModal: false,
+      showPromotionEditModal: false,
     }
   }
 
@@ -35,6 +37,10 @@ class Promotion extends PureComponent {
   }
 
   showRowEditModal(record) {
+    this.setState({
+      selectPromotion: record,
+      showPromotionEditModal: true
+    })
   }
 
   showRowStatModal(record) {
@@ -112,6 +118,9 @@ class Promotion extends PureComponent {
                               onCancel={() => {this.setState({showPromotionDetailModal: false})}}
                               promotion={this.state.selectPromotion}
         />
+        <PromotionEditModal visible={this.state.showPromotionEditModal}
+                            promotion={this.state.selectPromotion}
+                            onCancel={() => {this.setState({showPromotionEditModal: false})}}/>
       </div>
     )
   }
