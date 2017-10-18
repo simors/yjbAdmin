@@ -38,18 +38,21 @@ class SearchForm extends PureComponent {
         return
       }
       const rangeTimeValue = fieldsValue['rangeTimePicker']
-      const values = {
-        ...fieldsValue,
-        'rangeTimePicker': [
-          rangeTimeValue[0].format('YYYY-MM-DD HH:mm:ss'),
-          rangeTimeValue[1].format('YYYY-MM-DD HH:mm:ss'),
-        ],
+      let values = fieldsValue
+      if(rangeTimeValue && rangeTimeValue.length === 2) {
+        values = {
+          ...fieldsValue,
+          'rangeTimePicker': [
+            rangeTimeValue[0].format('YYYY-MM-DD HH:mm:ss'),
+            rangeTimeValue[1].format('YYYY-MM-DD HH:mm:ss'),
+          ],
+        }
       }
       console.log("handleSubmit values:", values)
       this.props.fetchOrdersAction({
-        start: values.rangeTimePicker[0],
-        end: values.rangeTimePicker[1],
-        status: values.status,
+        start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
+        end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
+        status: !values.status || values.status == 'all'? undefined : Number(values.status),
         mobilePhoneNumber: values.phone,
         stationId: values.stationId,
         limit: 10,
@@ -71,7 +74,7 @@ class SearchForm extends PureComponent {
      <Form className={style.search} layout="inline" onSubmit={this.handleSubmit}>
        <FormItem>
          {getFieldDecorator("rangeTimePicker", {
-           rules: [{ type: 'array', required: true, message: '请输入起始时间!' }],
+           rules: [{ type: 'array'}],
          })(
            <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />
          )}
