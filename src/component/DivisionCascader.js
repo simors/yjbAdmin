@@ -42,24 +42,47 @@ const options = provinces.map(province => ({
 class DivisionCascader extends PureComponent {
   constructor(props) {
     super(props)
+    const value = props.value
+    this.state = {
+      value: value,
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if ('value' in nextProps) {
+      const value = nextProps.value
+      this.setState({value: value})
+    }
+  }
+
+  onSelectChange = (value) => {
+    this.setState({value: value})
+    this.triggerChange(value)
+  }
+
+  triggerChange = (changedValue) => {
+    const onChange = this.props.onChange
+    if (onChange) {
+      onChange(changedValue)
+    }
   }
 
   render() {
     return (
       <Cascader style={{width: `200px`}}
                 options={options}
+                value={this.state.value}
                 placeholder="省／市／区"
                 defaultValue={this.props.defaultValue}
                 changeOnSelect
                 disabled={this.props.disabled}
-                onChange={this.props.onChange} />
+                onChange={this.onSelectChange} />
     )
   }
 }
 
 DivisionCascader.defaultProps = {
   disabled: false,
-  // defaultValue: ['430000', '430100', '430104'],   //湖南省／长沙市／岳麓区
   onChange: () => {},
 }
 

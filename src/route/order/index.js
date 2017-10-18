@@ -1,5 +1,6 @@
 import * as redux from './redux'
 import Order from './Order'
+import Recharge from './Recharge'
 
 /* export saga */
 export const orderSaga = redux.saga
@@ -13,5 +14,5 @@ export const orderActions = redux.actions
 /* export selector */
 export const orderSelector = redux.selector
 
-export {default as Recharge}  from './Recharge'
+export {Recharge}
 export default Order

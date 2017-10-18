@@ -21,7 +21,6 @@ import AwardsInput from './AwardsInput'
 const RangePicker = DatePicker.RangePicker
 const TextArea = Input.TextArea
 
-
 class PromotionDetailModal extends PureComponent {
   constructor(props) {
     super(props)
@@ -30,7 +29,6 @@ class PromotionDetailModal extends PureComponent {
   render() {
     const dateFormat = 'YYYY-MM-DD'
     let promotion = this.props.promotion
-    console.log("promotion", promotion)
     if(promotion) {
       return (
         <Modal title="活动详情"
@@ -53,15 +51,13 @@ class PromotionDetailModal extends PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>活动区域</Col>
             <Col span={10}>
-              <DivisionCascader disabled={true}
-                                defaultValue={promotion.region} />
-
+              <DivisionCascader disabled={true} defaultValue={promotion.region} />
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>充值奖励金额</Col>
             <Col span={14}>
-              <AwardsInput disabled={true} initValue={promotion.awards.rechargeList} />
+              <AwardsInput disabled={true} value={promotion.awards.rechargeList} />
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
@@ -70,7 +66,6 @@ class PromotionDetailModal extends PureComponent {
               <TextArea disabled={true} defaultValue={promotion.description} />
             </Col>
           </Row>
-
         </Modal>
       )
     } else {

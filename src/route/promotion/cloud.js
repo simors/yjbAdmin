@@ -4,14 +4,7 @@
 import AV from 'leancloud-storage'
 
 export async function createPromotionApi(payload) {
-  try {
-    let promotion = await AV.Cloud.run('promCreatePromotion', payload)
-    return promotion
-  } catch (error) {
-    console.log("createPromotionApi errorCode", error.code)
-    console.error(error)
-    throw error
-  }
+  return await AV.Cloud.run('promCreatePromotion', payload)
 }
 
 export async function fetchPromotionCategoriesApi(payload) {
@@ -20,4 +13,8 @@ export async function fetchPromotionCategoriesApi(payload) {
 
 export async function fetchPromotionsApi(payload) {
   return await AV.Cloud.run('promFetchPromotions', payload)
+}
+
+export async function editPromotionApi(payload) {
+  return await AV.Cloud.run('promEditPromotion', payload)
 }

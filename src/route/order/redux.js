@@ -7,8 +7,9 @@ import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
 import {fetchOrdersApi, fetchRechargesApi} from './cloud'
 import {deviceActions} from '../device'
-import {stationSelector} from '../station/redux'
+import {stationSelector, stationAction} from '../station/redux'
 import {deviceSelector} from '../device'
+import {action as userActions, selector as userSelector} from '../../util/auth'
 
 /****  Model  ****/
 const OrderRecord = Record({
@@ -20,8 +21,6 @@ const OrderRecord = Record({
   amount: undefined,            //订单金额
   deviceId: undefined,          //干衣柜id
   userId: undefined,            //用户id
-  // nickname: undefined,          //用户昵称
-  // mobilePhoneNumber: undefined, //用户手机号码
 }, 'OrderRecord')
 
 class Order extends OrderRecord {
@@ -36,8 +35,6 @@ class Order extends OrderRecord {
       record.set('amount', obj.amount)
       record.set('deviceId', obj.device.id)
       record.set('userId', obj.user.id)
-      // record.set('nickname', obj.user.nickname)
-      // record.set('mobilePhoneNumber', obj.user.mobilePhoneNumber)
     })
   }
 }
@@ -129,8 +126,7 @@ function* fetchOrders(action) {
       yield put(deviceActions.saveDevices({ devices }))
     }
     if(stations.size > 0) {
-      //TODO 保存station信息
-      // yield put()
+      yield put(stationAction.saveStations({ stations }))
     }
 
     if(payload.success) {
@@ -166,7 +162,7 @@ function* fetchRecharges(action) {
       }
     })
     if(users.size > 0) {
-      //TODO 保存user信息
+      yield put(userActions.saveUsers({ users }))
     }
     if(payload.success) {
       payload.success()
@@ -352,9 +348,9 @@ function selectRechargeList(state) {
 
   rechargeList.toArray().forEach((rechargeId) => {
     let rechargeInfo = selectRecharge(state, rechargeId)
-    //TODO 获取user信息
-    // rechargeInfo.nickname = ""
-    // rechargeInfo.mobilePhoneNumber = ""
+    let userInfo = rechargeInfo? userSelector.selectUserById(state, rechargeInfo.userId) : undefined
+    rechargeInfo.nickname = userInfo? userInfo.nickname : undefined
+    rechargeInfo.mobilePhoneNumber = userInfo? userInfo.mobilePhoneNumber : undefined
     if(rechargeInfo) {
       rechargeInfoList.push(rechargeInfo)
     }

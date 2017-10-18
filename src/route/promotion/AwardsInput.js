@@ -14,8 +14,16 @@ import {
 class AwardsInput extends Component {
   constructor(props) {
     super(props)
+    const value = props.value
     this.state = {
-      awards: props.initValue,
+      awards: value,
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if ('value' in nextProps) {
+      const value = nextProps.value
+      this.setState({awards: value})
     }
   }
 
@@ -77,15 +85,24 @@ class AwardsInput extends Component {
   }
 
   render() {
-    const inputItems = this.state.awards.map((k, index) => {
+    const state = this.state
+    const {disabled} = this.props
+    const inputItems = state.awards.map((k, index) => {
       return (
         <Row key={index} gutter={16}>
-          <Col span={8}>
-            <Input disabled={this.props.disabled} value={this.state.awards[index].recharge} addonBefore='充值金额' addonAfter="¥" type='number'
+          <Col span={10}>
+            <Input disabled={disabled}
+                   value={state.awards[index].recharge}
+                   addonBefore='充值金额'
+                   addonAfter="¥"
+                   type='number'
                    onChange={(e) => this.triggerChange(index, 'recharge', e)}/>
           </Col>
-          <Col span={8}>
-            <Input disabled={this.props.disabled} value={this.state.awards[index].award} addonBefore='奖励金额' addonAfter="¥" type='number'
+          <Col span={10}>
+            <Input disabled={disabled}
+                   value={state.awards[index].award}
+                   addonBefore='奖励金额'
+                   addonAfter="¥" type='number'
                    onChange={(e) => this.triggerChange(index, 'award', e)}/>
           </Col>
           <Col>
@@ -106,7 +123,6 @@ class AwardsInput extends Component {
 
 AwardsInput.defaultProps = {
   disabled: false,
-  initValue: []
 }
 
 export default AwardsInput
