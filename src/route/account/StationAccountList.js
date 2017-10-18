@@ -32,9 +32,9 @@ const columns = [{
   dataIndex: "platformRoyalty",
   render: (text,record)=>{
     if(record.platformProfit&&record.profit){
-      return <p>{mathjs.round(mathjs.chain(1).multiply(record.platformProfit/record.profit).multiply(100).done(),2)+'%'}</p>
+      return <div>{mathjs.round(mathjs.chain(1).multiply(record.platformProfit/record.profit).multiply(100).done(),2)+'%'}</div>
     }else{
-      return <p>0</p>
+      return <div>0</div>
     }
   }
 }, {
@@ -45,9 +45,9 @@ const columns = [{
   dataIndex: "partnerRoyalty",
   render: (text,record)=>{
     if(record.partnerProfit&&record.profit){
-      return <p>{mathjs.round(mathjs.chain(1).multiply(record.partnerProfit/record.profit).multiply(100).done(),2)+'%'}</p>
+      return <div>{mathjs.round(mathjs.chain(1).multiply(record.partnerProfit/record.profit).multiply(100).done(),2)+'%'}</div>
     }else{
-      return <p>0</p>
+      return <div>0</div>
     }
   }
 }, {
@@ -58,9 +58,9 @@ const columns = [{
   dataIndex: "investorRoyalty",
   render: (text,record)=>{
     if(record.investorProfit&&record.profit){
-      return <p>{mathjs.round(mathjs.chain(1).multiply(record.investorProfit/record.profit).multiply(100).done(),2)+'%'}</p>
+      return <div>{mathjs.round(mathjs.chain(1).multiply(record.investorProfit/record.profit).multiply(100).done(),2)+'%'}</div>
     }else{
-      return <p>0</p>
+      return <div>0</div>
     }
   }
 }, {
