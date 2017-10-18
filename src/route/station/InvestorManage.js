@@ -49,7 +49,9 @@ class InvestorManage extends React.Component {
         console.log('hahhahah')
       }
     });
-
+    this.props.listUsersByRole({
+      roleCode: 200,
+    });
   }
 
   refresh() {
@@ -297,10 +299,11 @@ class InvestorManage extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let investors = stationSelector.selectInvestors(state)
+  let userList = selector.selectUsersByRole(state,200)
    return {
     investors: investors,
     stations: stations,
-    // userList: userList
+    userList: userList
   };
 };
 

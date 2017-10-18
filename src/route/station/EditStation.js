@@ -61,6 +61,10 @@ class EditStation extends React.Component {
       stationId: this.props.match.params.id, success: ()=> {
       }
     })
+    this.props.listUsersByRole({
+      roleCode: 200,
+      onFailure: (e)=>{console.log(e.message)}
+    })
   }
 
   refresh() {
@@ -450,11 +454,12 @@ class EditStation extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   let partners = stationSelector.selectPartners(state)
+  let userList = selector.selectUsersByRole(state, 200)
 
   return {
     station: station,
     partners: partners,
-    // userList: userList
+    userList: userList
   };
 };
 

@@ -9,6 +9,7 @@ import ContentHead from '../../component/ContentHead'
 import StationList from './StationList';
 import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from './redux';
+import {action, selector} from '../../util/auth'
 import {configSelector} from '../../util/config'
 import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
@@ -226,7 +227,6 @@ const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   return {
     stations: stations,
-    // areaList: areaList,
   };
 };
 
