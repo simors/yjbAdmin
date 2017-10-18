@@ -154,7 +154,7 @@ class ShowStation extends React.Component {
                     }
                   ]
                 })(
-                  <DivisionCascader disabled={true} defaultValue={['120000', '120100', '120101']} onChange={(value, label)=> {
+                  <DivisionCascader disabled={true} onChange={(value, label)=> {
                     this.selectDivision(value, label)
                   }}/>
                 )}
