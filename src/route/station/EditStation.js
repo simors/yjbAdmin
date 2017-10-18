@@ -316,7 +316,7 @@ class EditStation extends React.Component {
                       }
                     ]
                   })(
-                    <DivisionCascader defaultValue={division} onChange={(value, label)=> {
+                    <DivisionCascader onChange={(value, label)=> {
                       this.selectDivision(value, label)
                     }}/>
                   )}

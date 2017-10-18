@@ -14,22 +14,19 @@ import {
 class AwardsInput extends Component {
   constructor(props) {
     super(props)
-    const value = props.value
+    const {value} = props
     this.state = {
-      awards: value,
+      awards: value || [],
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if ('value' in nextProps) {
-      const value = nextProps.value
-      this.setState({awards: value})
-    }
+    const {value} = nextProps
+    this.setState({awards: value || []})
   }
 
   remove = (index) => {
     let awards = this.state.awards
-
     awards.splice(index, 1)
     this.setState({awards: awards})
   }

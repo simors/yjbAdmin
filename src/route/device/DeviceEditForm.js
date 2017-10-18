@@ -104,9 +104,9 @@ class EditForm extends PureComponent {
             initialValue: this.props.device.status,
           })(
             <RadioGroup>
-              <Radio disabled={true} value={deviceStatus.DEVICE_STATUS_IDLE}>空闲</Radio>
-              <Radio value={deviceStatus.DEVICE_STATUS_OCCUPIED}>使用中</Radio>
-              <Radio disabled={true} value={deviceStatus.DEVICE_STATUS_OFFLINE}>下线</Radio>
+              <Radio value={deviceStatus.DEVICE_STATUS_IDLE}>空闲</Radio>
+              <Radio disabled={true} value={deviceStatus.DEVICE_STATUS_OCCUPIED}>使用中</Radio>
+              <Radio value={deviceStatus.DEVICE_STATUS_OFFLINE}>下线</Radio>
               <Radio value={deviceStatus.DEVICE_STATUS_FAULT}>故障</Radio>
               <Radio value={deviceStatus.DEVICE_STATUS_MAINTAIN}>维修保养</Radio>
             </RadioGroup>
