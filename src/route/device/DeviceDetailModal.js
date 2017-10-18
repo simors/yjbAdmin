@@ -16,6 +16,7 @@ import QRCode from 'qrcode.react'
 import style from './device.module.scss'
 import DivisionCascader from '../../component/DivisionCascader'
 import {stationSelector} from '../station/redux'
+import {selector as userSelector} from '../../util/auth'
 
 const RadioGroup = Radio.Group
 const Option = Select.Option
@@ -34,7 +35,8 @@ class DeviceDetailModal extends React.PureComponent {
   }
 
   render() {
-    if(this.props.device && this.props.station) {
+    const {device, station, stationUser} = this.props
+    if(device && station && stationUser) {
       return (
         <Modal title="干衣柜详情"
                width={720}
@@ -44,41 +46,41 @@ class DeviceDetailModal extends React.PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>编号</Col>
             <Col span={6}>
-              <Input disabled={true} value={this.props.device.deviceNo} />
+              <Input disabled={true} value={device.deviceNo} />
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>服务点</Col>
             <Col span={10}>
               <DivisionCascader disabled={true}
-                                value={[this.props.station.province.value, this.props.station.city.value, this.props.station.area.value]} />
+                                value={[station.province.value, station.city.value, station.area.value]} />
             </Col>
             <Col span={6}>
-              <Select disabled={true} value={this.props.station.id} style={{width: 120}}>
-                <Option value={this.props.station.id}>{this.props.station.name}</Option>
+              <Select disabled={true} value={station.id} style={{width: 120}}>
+                <Option value={station.id}>{station.name}</Option>
               </Select>
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}></Col>
             <Col span={10}>
-              <span>{"服务网点地址：" + this.props.station.addr}</span>
+              <span>{"服务网点地址：" + station.addr}</span>
             </Col>
             <Col>
-              <span>{"管理员：" + this.props.station.adminName + "  " + this.props.station.adminPhone}</span>
+              <span>{"管理员：" + stationUser.nickname + "  " + stationUser.mobilePhoneNumber}</span>
             </Col>
           </Row>
 
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>干衣柜位置</Col>
             <Col span={12}>
-              <Input disabled={true} value={this.props.device.deviceAddr} />
+              <Input disabled={true} value={device.deviceAddr} />
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>状态</Col>
             <Col span={18}>
-              <RadioGroup value={this.props.device.status}>
+              <RadioGroup value={device.status}>
                 <Radio value={deviceStatus.DEVICE_STATUS_IDLE}>空闲</Radio>
                 <Radio value={deviceStatus.DEVICE_STATUS_OCCUPIED}>使用中</Radio>
                 <Radio value={deviceStatus.DEVICE_STATUS_OFFLINE}>下线</Radio>
@@ -91,10 +93,10 @@ class DeviceDetailModal extends React.PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} >
             <Col span={4}>二维码</Col>
             <Col span={6}>
-              <QRCode ref="qrcode" value={"http://dev.yiijiabao.com/openDevice?deviceNo=" + this.props.device.deviceNo} />
+              <QRCode ref="qrcode" value={"http://dev.yiijiabao.com/openDevice?deviceNo=" + device.deviceNo} />
             </Col>
             <Col>
-              <a href="" id="download" download={this.props.device.deviceNo} onClick={this.downloadQRCode}>下载二维码</a>
+              <a href="" id="download" download={device.deviceNo} onClick={this.downloadQRCode}>下载二维码</a>
             </Col>
             <div classID=""></div>
           </Row>
@@ -109,8 +111,10 @@ class DeviceDetailModal extends React.PureComponent {
 const mapStateToProps = (appState, ownProps) => {
   let device = ownProps.device
   let station = device? stationSelector.selectStationById(appState, device.stationId) : undefined
+  let stationUser = station? userSelector.selectUserById(appState, station.adminId) : undefined
   return {
-    station: station
+    station: station,
+    stationUser: stationUser,
   }
 }
 

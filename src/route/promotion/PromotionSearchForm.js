@@ -18,6 +18,7 @@ import style from './promotion.module.scss'
 
 const FormItem = Form.Item
 const RangePicker = DatePicker.RangePicker
+const Option = Select.Option
 
 class SearchForm extends PureComponent {
   constructor(props) {
