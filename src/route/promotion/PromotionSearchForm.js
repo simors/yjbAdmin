@@ -36,7 +36,7 @@ class SearchForm extends PureComponent {
       }
       const rangeTimeValue = fieldsValue['rangeTimePicker']
       let values = fieldsValue
-      if(rangeTimeValue) {
+      if(rangeTimeValue && rangeTimeValue.length === 2) {
         values = {
           ...fieldsValue,
           'rangeTimePicker': [
@@ -62,7 +62,7 @@ class SearchForm extends PureComponent {
       <Form className={style.search} layout="inline" onSubmit={this.handleSubmit}>
         <FormItem>
           {getFieldDecorator("rangeTimePicker", {
-            rules: [{ type: 'array', message: '请输入起始时间!' }],
+            rules: [{ type: 'array'}],
           })(
             <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />
           )}

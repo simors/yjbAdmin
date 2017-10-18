@@ -45,7 +45,7 @@ class EditForm extends Component {
       }
       const rangeTimeValue = fieldsValue['rangeTimePicker']
       let values = fieldsValue
-      if(rangeTimeValue) {
+      if(rangeTimeValue && rangeTimeValue.length === 2) {
         values = {
           ...fieldsValue,
           'rangeTimePicker': [
