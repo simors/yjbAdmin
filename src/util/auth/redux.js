@@ -1,4 +1,4 @@
-import {call, put, takeLatest} from 'redux-saga/effects';
+import {call, put, select, takeLatest} from 'redux-saga/effects';
 import {createAction} from 'redux-actions';
 import {Record, Map, Set, List} from 'immutable';
 import {REHYDRATE} from 'redux-persist/constants';
@@ -159,8 +159,8 @@ class AuthState extends Record({
   rolesById: Map(),             // Map<role id, Role>
   permissionsById: Map(),       // Map<permission id, Permission>
 
-  endUsers: List(),             // Set<user id>
-  adminUsers: List(),           // Set<user id>
+  endUsers: List(),             // List<user id>
+  adminUsers: List(),           // List<user id>
 
   usersByRole: Map(),           // Map<role code, List<user id>>
 
@@ -495,21 +495,26 @@ function* sagaListUsersByRole(action) {
   const payload = action.payload;
 
   try {
-    ({
-      limit: params.limit,
-      lastCreatedAt: params.lastCreatedAt,
-    } = payload);
-
     const {roleCode} = payload;
 
-    const role = select(selectRoleByCode, roleCode);
+    const role = yield select(selectRoleByCode, roleCode);
 
     const params = {
       type: 'admin',
       roleId: role.id,
     };
 
-    const jsonUsers = yield call(api.listUsers, params);
+    ({
+      limit: params.limit,
+      lastCreatedAt: params.lastCreatedAt,
+    } = payload);
+
+    // result = {
+    //   jsonUsers,
+    // }
+    const result = yield call(api.listUsers, params);
+
+    const {jsonUsers} = result;
     yield put(listedUsersByRole({
       roleCode,
       jsonUsers
@@ -759,7 +764,7 @@ function reduceListedUsersByRole(state, action) {
 
   const userIds = new List().withMutations((m) => {
     jsonUsers.forEach((i) => {
-      userIds.push(i.id);
+      m.push(i.id);
     });
   });
 
@@ -832,9 +837,9 @@ function reduceRehydrate(state, action) {
 
   // 'usersByRole'
   const immUsersByRole = new Map().withMutations((m) => {
-    Object.entries(usersByRole).forEach((k, v) => {
-      m.set(k, new Set(v));
-    });
+    for (const [k, v] of Object.entries(usersByRole)) {
+      m.set(k, new List(v));
+    }
   });
 
   const immCachedUsersById = new Map().withMutations((m) => {
