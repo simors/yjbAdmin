@@ -155,6 +155,7 @@ function* fetchStationsAction(action) {
   let data = yield call(stationFuncs.fetchStations, payload)
   let stations = []
   let stationList = []
+  let users = new Set()
   if (data.success) {
     if (data.stations && data.stations.length > 0) {
       for (let i = 0; i < data.stations.length; i++) {
@@ -162,10 +163,11 @@ function* fetchStationsAction(action) {
         stationList.push(item.id)
         stations.push(item)
         if (item.admin) {
-          yield put(authAction.saveUser({user: item.admin}))
+          users.add(item.admin)
         }
       }
     }
+    yield put(authAction.saveUsers({users: users}))
     yield put(requestStationsSuccess({stations: stations, stationList: stationList}))
     if (payload.success) {
       payload.success()
@@ -185,7 +187,6 @@ function* openStationAction(action) {
       yield put(openStationSuccess({station: data.station}))
       if (data.station.admin) {
         yield put(authAction.saveUser({user: data.station.admin}))
-
       }
       if (payload.success) {
         payload.success()
@@ -224,6 +225,7 @@ function* fetchInvestorsAction(action) {
   let data = yield call(stationFuncs.fetchInvestor, payload)
   let investors = []
   let investorList = []
+  let users = new Set()
   if (data.success) {
     if (data.investors && data.investors.length > 0) {
       for (let i = 0; i < data.investors.length; i++) {
@@ -231,10 +233,11 @@ function* fetchInvestorsAction(action) {
         investorList.push(item.id)
         investors.push(item)
         if (item.shareholder) {
-          yield put(authAction.saveUser({user: item.shareholder}))
+          users.add(item.shareholder)
         }
       }
     }
+    yield put(authAction.saveUsers({users: users}))
     yield put(requestInvestorsSuccess({investors: investors, investorList: investorList}))
     if (payload.success) {
       payload.success()
@@ -307,6 +310,7 @@ function* fetchPartnersAction(action) {
   let data = yield call(stationFuncs.fetchProfitSharing, payload)
   let partners = []
   let partnerList = []
+  let users = new Set()
   if (data.success) {
     if (data.partners && data.partners.length > 0) {
       for (let i = 0; i < data.partners.length; i++) {
@@ -314,10 +318,11 @@ function* fetchPartnersAction(action) {
         partnerList.push(item.id)
         partners.push(item)
         if (item.shareholder) {
-          yield put(authAction.saveUser({user: item.shareholder}))
+          users.add(item.shareholder)
         }
       }
     }
+    yield put(authAction.saveUsers({users: users}))
     yield put(requestPartnersSuccess({partners: partners, partnerList: partnerList}))
     if (payload.success) {
       payload.success()

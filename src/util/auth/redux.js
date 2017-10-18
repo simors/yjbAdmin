@@ -1,6 +1,6 @@
 import {call, put, takeLatest} from 'redux-saga/effects';
 import {createAction} from 'redux-actions';
-import {Record, Map, Set, List} from 'immutable';
+import {Record, Map, Set} from 'immutable';
 import {REHYDRATE} from 'redux-persist/constants';
 import * as api from './cloud';
 
@@ -148,21 +148,19 @@ class Permission extends Record({
 
 // NOTE: id is objectId from leancloud
 class AuthState extends Record({
+  loading: true,                // whether login with token has finished
   token: undefined,             // current login user token
   curUserId: undefined,         // current login user
   curRoleIds: Set(),            // Set<role id>
   curPermissionIds: Set(),      // Set<permission id>
 
-  rolesByCode: Map(),           // Map<role code, Role>
-  permissionsByCode: Map(),     // Map<permission code, Permission>
-
   rolesById: Map(),             // Map<role id, Role>
   permissionsById: Map(),       // Map<permission id, Permission>
 
-  endUsers: List(),             // Set<user id>
-  adminUsers: List(),           // Set<user id>
+  endUsers: Set(),              // Set<user id>
+  adminUsers: Set(),            // Set<user id>
 
-  usersByRole: Map(),           // Map<role code, List<user id>>
+  usersByRole: Map(),      // Map<role id, Set<user id>>
 
   cachedUsersById: Map(),       // Map<user id, User>
 }, 'AuthState') {
@@ -171,6 +169,7 @@ class AuthState extends Record({
 
 // --- constant
 
+const LOADED = 'AUTH/LOADED';
 const LOGIN_WITH_MOBILE_PHONE = 'AUTH/LOGIN_WITH_MOBILE_PHONE';
 const LOGIN_WITH_TOKEN = 'AUTH/LOGIN_WITH_TOKEN';
 const LOGGED_IN = 'AUTH/LOGGED_IN';
@@ -243,6 +242,7 @@ export const action = {
   saveUsers: createAction(CACHED_USERS),
 };
 
+const loaded = createAction(LOADED);
 const loggedIn = createAction(LOGGED_IN);
 const loggedOut = createAction(LOGGED_OUT);
 const listedEndUsers = createAction(LISTED_END_USERS);
@@ -354,6 +354,8 @@ function* sagaLoginWithToken(action) {
     logger.error('login with token failed：', e);
     logger.error('code: ', e.code);
   }
+
+  yield put(loaded({}));
 
   if (payload.onComplete) {
     payload.onComplete();
@@ -487,7 +489,7 @@ function* sagaListUsersByRole(action) {
   // payload = {
   //   limit?,
   //   lastCreatedAt?,
-  //   roleCode,
+  //   roleId,
   //   onSuccess?,
   //   onFailure?,
   //   onComplete?,
@@ -495,23 +497,19 @@ function* sagaListUsersByRole(action) {
   const payload = action.payload;
 
   try {
+    const params = {
+      type: 'admin',
+    };
+
     ({
+      roleId: params.roleId,
       limit: params.limit,
       lastCreatedAt: params.lastCreatedAt,
     } = payload);
 
-    const {roleCode} = payload;
-
-    const role = select(selectRoleByCode, roleCode);
-
-    const params = {
-      type: 'admin',
-      roleId: role.id,
-    };
-
     const jsonUsers = yield call(api.listUsers, params);
     yield put(listedUsersByRole({
-      roleCode,
+      roleId: params.roleId,
       jsonUsers
     }));
 
@@ -613,6 +611,8 @@ const initialState = new AuthState();
 
 export function reducer(state=initialState, action) {
   switch(action.type) {
+    case LOADED:
+      return reduceLoaded(state, action);
     case LOGGED_IN:
       return reduceLoggedIn(state, action);
     case LOGGED_OUT:
@@ -632,6 +632,10 @@ export function reducer(state=initialState, action) {
     default:
       return state
   }
+}
+
+function reduceLoaded(state, action) {
+  return state.set('loading', false);
 }
 
 function reduceLoggedIn(state, action) {
@@ -670,22 +674,6 @@ function reduceLoggedIn(state, action) {
     });
   });
 
-  // 'rolesByCode'
-  const immRolesByCode = new Map().withMutations((m) => {
-    jsonRoles.forEach((i) => {
-      const immRole = Role.fromJson(i);
-      m.set(immRole.code, immRole);
-    });
-  });
-
-  // 'permissionsByCode'
-  const immPermissionsByCode = new Map().withMutations((m) => {
-    jsonPermissions.forEach((i) => {
-      const immPermission = Permission.fromJson(i);
-      m.set(immPermission.code, immPermission);
-    });
-  });
-
   return state.withMutations((m) => {
     m.set('token', token);
     m.set('curUserId', immCurUser.id);
@@ -693,8 +681,6 @@ function reduceLoggedIn(state, action) {
     m.set('curPermissionIds', immCurPermissionIds);
     m.set('rolesById', immRolesById);
     m.set('permissionsById', immPermissionsById);
-    m.set('rolesByCode', immRolesByCode);
-    m.set('permissionsByCode', immPermissionsByCode);
     m.setIn(['cachedUsersById', immCurUser.id], immCurUser);
   });
 }
@@ -709,16 +695,12 @@ function reduceLoggedOut(state, action) {
 function reduceListedEndUsers(state, action) {
   const {jsonUsers} = action.payload;
 
-  const userIds = new List().withMutations((m) => {
-    jsonUsers.forEach((i) => {
-      m.push(i.id);
-    });
-  });
-
   const immUsers = [];
+  const userIds = new Set();
   jsonUsers.forEach((i) => {
     const immUser = User.fromJson(i);
     immUsers.push(immUser);
+    userIds.add(i.id);
   });
 
   return state.withMutations((m) => {
@@ -733,16 +715,12 @@ function reduceListedEndUsers(state, action) {
 function reduceListedAdminUsers(state, action) {
   const {jsonUsers} = action.payload;
 
-  const userIds = new List().withMutations((m) => {
-    jsonUsers.forEach((i) => {
-      m.push(i.id);
-    });
-  });
-
   const immUsers = [];
+  const userIds = new Set();
   jsonUsers.forEach((i) => {
     const immUser = User.fromJson(i);
     immUsers.push(immUser);
+    userIds.add(i.id);
   });
 
   return state.withMutations((m) => {
@@ -755,22 +733,18 @@ function reduceListedAdminUsers(state, action) {
 }
 
 function reduceListedUsersByRole(state, action) {
-  const {roleCode, jsonUsers} = action.payload;
-
-  const userIds = new List().withMutations((m) => {
-    jsonUsers.forEach((i) => {
-      userIds.push(i.id);
-    });
-  });
+  const {roleId, jsonUsers} = action.payload;
 
   const immUsers = [];
+  const userIds = new Set();
   jsonUsers.forEach((i) => {
     const immUser = User.fromJson(i);
     immUsers.push(immUser);
+    userIds.add(i.id);
   });
 
   return state.withMutations((m) => {
-    m.setIn(['usersByRole', roleCode], userIds);
+    m.setIn(['usersByRole', roleId], userIds);
 
     immUsers.forEach((i) => {
       m.setIn(['cachedUsersById', i.id], i);
@@ -785,8 +759,7 @@ function reduceRehydrate(state, action) {
     return state;
 
   // all data in json format
-  const {token, curUserId, curRoleIds, curPermissionIds,
-    rolesByCode, permissionsByCode, rolesById, permissionsById,
+  const {token, curUserId, curRoleIds, curPermissionIds, rolesById, permissionsById,
     endUsers, adminUsers, usersByRole, cachedUsersById} = storage;
 
   const immCurRoleIds = new Set(curRoleIds);
@@ -808,27 +781,11 @@ function reduceRehydrate(state, action) {
     });
   });
 
-  // 'rolesByCode'
-  const immRolesByCode = new Map().withMutations((m) => {
-    Object.values(rolesByCode).forEach((i) => {
-      const immRole = Role.fromJson(i);
-      m.set(immRole.code, immRole);
-    });
-  });
-
-  // 'permissionsByCode'
-  const immPermissionsByCode = new Map().withMutations((m) => {
-    Object.values(permissionsByCode).forEach((i) => {
-      const immPermission = Permission.fromJson(i);
-      m.set(immPermission.code, immPermission);
-    });
-  });
-
   // 'endUsers'
-  const immEndUsers = new List(endUsers);
+  const immEndUsers = new Set(endUsers);
 
   // 'adminUsers'
-  const immAdminUsers = new List(adminUsers);
+  const immAdminUsers = new Set(adminUsers);
 
   // 'usersByRole'
   const immUsersByRole = new Map().withMutations((m) => {
@@ -851,8 +808,6 @@ function reduceRehydrate(state, action) {
     m.set('curPermissionIds', immCurPermissionIds);
     m.set('rolesById', immRolesById);
     m.set('permissionsById', immPermissionsById);
-    m.set('rolesByCode', immRolesByCode);
-    m.set('permissionsByCode', immPermissionsByCode);
     m.set('endUsers', immEndUsers);
     m.set('adminUsers', immAdminUsers);
     m.set('usersByRole', immUsersByRole);
@@ -887,6 +842,7 @@ function reduceCachedUsers(state, action) {
 // --- selector
 
 export const selector = {
+  selectLoading,
   selectCurUserId,
   selectCurUser,
   selectToken,
@@ -898,6 +854,10 @@ export const selector = {
   selectRolesByUser,
   selectPermissionsByUser,
 };
+
+function selectLoading(appState) {
+  return appState.AUTH.loading;
+}
 
 function selectCurUserId(appState) {
   return appState.AUTH.curUserId;
@@ -927,19 +887,13 @@ function selectRoles(appState) {
   return roles;
 }
 
-function selectRoleByCode(appState, roleCode) {
-  const immRole = appState.AUTH.getIn(['rolesByCode', roleCode]);
-
-  return User.toJson(immRole);
-}
-
 function selectEndUsers(appState) {
   const users = [];
 
-  const userIds = appState.AUTH.get('endUsers', new List());
+  const immUsers = appState.AUTH.get('endUsers', new Set());
 
-  userIds.forEach((i) => {
-    users.push(selectUserById(i));
+  immUsers.forEach((i) => {
+    users.push(User.toJson(i));
   });
 
   return users;
@@ -948,22 +902,22 @@ function selectEndUsers(appState) {
 function selectAdminUsers(appState) {
   const users = [];
 
-  const userIds = appState.AUTH.get('adminUsers', new List());
+  const immUsers = appState.AUTH.get('adminUsers', new Set());
 
-  userIds.forEach((i) => {
-    users.push(selectUserById(appState, i));
+  immUsers.forEach((i) => {
+    users.push(User.toJson(i));
   });
 
   return users;
 }
 
-function selectUsersByRole(appState, roleCode) {
+function selectUsersByRole(appState, roleId) {
   const users = [];
 
-  const userIds = appState.AUTH.getIn(['usersByRole', roleCode], new List());
+  const immUsers = appState.AUTH.getIn(['usersByRole', roleId], new Set());
 
-  userIds.forEach((i) => {
-    users.push(selectUserById(appState, i));
+  immUsers.forEach((i) => {
+    users.push(User.toJson(i));
   });
 
   return users;
@@ -973,8 +927,9 @@ function selectUserById(appState, userId) {
   if(!userId){
     return undefined
   }
-  
+
   const immUser = appState.AUTH.getIn(['cachedUsersById', userId], undefined);
+
   if (immUser === undefined)
     return undefined;
 
@@ -983,6 +938,7 @@ function selectUserById(appState, userId) {
 
 function selectRolesByUser(appState, userId) {
   const immUser = appState.AUTH.getIn(['cachedUsersById', userId], undefined);
+
   if (immUser === undefined)
     return undefined;
 
