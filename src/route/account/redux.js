@@ -8,7 +8,7 @@ import {REHYDRATE} from 'redux-persist/constants'
 import {call, put, takeEvery, takeLatest} from 'redux-saga/effects'
 import { action as authAction, selector} from '../../util/auth'
 import * as accountFunc from './cloud'
-import {stationAction,stationSelector} from '../station/redux'
+import {stationAction,stationSelector} from '../station/'
 import {formatLeancloudTime} from '../../util/datetime'
 /****  Model  ****/
 
@@ -120,16 +120,19 @@ function* fetchStationAccounts(action) {
   let data = yield call(accountFunc.fetchStationAccounts, payload)
   let stationAccounts = []
   let stationAccountList = []
+  let stations = new Set()
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for(let i = 0; i<data.accounts.length; i++){
         stationAccountList.push(data.accounts[i].id)
         stationAccounts.push(data.accounts[i])
         if(data.accounts[i].station){
-         yield put(stationAction.saveStation({station: data.accounts[i].station}))
+          stations.add(data.accounts[i].station)
         }
       }
     }
+    yield put(stationAction.saveStations({stations: stations}))
+
     yield put(fetchStationAccountsSuccess({stationAccounts: stationAccounts, stationAccountList: stationAccountList}))
     if (payload.success) {
       payload.success()
@@ -147,16 +150,18 @@ function* fetchStationAccountsDetail(action) {
   let data = yield call(accountFunc.fetchStationAccountDetail, payload)
   let stationAccounts = []
   let stationAccountList = []
+  let stations = new Set()
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for(let i = 0; i<data.accounts.length; i++){
         stationAccountList.push(data.accounts[i].id)
         stationAccounts.push(data.accounts[i])
         if(data.accounts[i].station){
-          yield put(stationAction.saveStation({station: data.accounts[i].station}))
+          stations.add(data.accounts[i].station)
         }
       }
     }
+    yield put(stationAction.saveStations({stations: stations}))
     yield put(fetchStationAccountsDetailSuccess({stationAccounts: stationAccounts, stationAccountList: stationAccountList}))
     if (payload.success) {
       payload.success()
@@ -171,22 +176,26 @@ function* fetchStationAccountsDetail(action) {
 
 function* fetchPartnerAccounts(action) {
   let payload = action.payload
-  // console.log('payload=======>',payload)
   let data = yield call(accountFunc.fetchPartnerAccounts, payload)
   let partnerAccounts = []
   let partnerAccountList = []
+  let users = new Set()
+  let stations = new Set()
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
         partnerAccountList.push(data.accounts[i].id)
         partnerAccounts.push(data.accounts[i])
-        yield put(stationAction.saveStation({station: data.accounts[i].station}))
+        if(data.accounts[i].station){
+          stations.add(data.accounts[i].station)
+        }
         if(data.accounts[i].user){
-          let user = data.accounts[i].user
-          yield put(authAction.saveUser({user: user}))
+          users.add(data.accounts[i].user)
         }
       }
     }
+    yield put(stationAction.saveStations({stations: stations}))
+    yield put(authAction.saveUsers({users: users}))
     yield put(fetchPartnerAccountsSuccess({partnerAccounts: partnerAccounts, partnerAccountList: partnerAccountList}))
     if (payload.success) {
       payload.success()
@@ -200,22 +209,26 @@ function* fetchPartnerAccounts(action) {
 
 function* fetchPartnerAccountsDetail(action) {
   let payload = action.payload
-  // console.log('payload=======>',payload)
   let data = yield call(accountFunc.fetchPartnerAccountsDetail, payload)
   let partnerAccounts = []
   let partnerAccountList = []
+  let users = new Set()
+  let stations = new Set()
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
         partnerAccountList.push(data.accounts[i].id)
         partnerAccounts.push(data.accounts[i])
-        yield put(stationAction.saveStation({station: data.accounts[i].station}))
+        if(data.accounts[i].station){
+          stations.add(data.accounts[i].station)
+        }
         if(data.accounts[i].user){
-          let user = data.accounts[i].user
-          yield put(authAction.saveUser({user: user}))
+          users.add(data.accounts[i].user)
         }
       }
     }
+    yield put(stationAction.saveStations({stations: stations}))
+    yield put(authAction.saveUsers({users: users}))
     yield put(fetchPartnerAccountsDetailSuccess({partnerAccounts: partnerAccounts, partnerAccountList: partnerAccountList}))
     if (payload.success) {
       payload.success()
@@ -233,18 +246,23 @@ function* fetchInvestorAccounts(action) {
   let data = yield call(accountFunc.fetchInvestorAccounts, payload)
   let investorAccounts = []
   let investorAccountList = []
+  let users = new Set()
+  let stations = new Set()
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
         investorAccountList.push(data.accounts[i].id)
         investorAccounts.push(data.accounts[i])
-        yield put(stationAction.saveStation({station: data.accounts[i].station}))
+        if(data.accounts[i].station){
+          stations.add(data.accounts[i].station)
+        }
         if(data.accounts[i].user){
-          let user = data.accounts[i].user
-          yield put(authAction.saveUser({user: user}))
+          users.add(data.accounts[i].user)
         }
       }
     }
+    yield put(stationAction.saveStations({stations: stations}))
+    yield put(authAction.saveUsers({users: users}))
     yield put(fetchInvestorAccountsSuccess({investorAccounts: investorAccounts, investorAccountList: investorAccountList}))
     if (payload.success) {
       payload.success()
@@ -262,18 +280,23 @@ function* fetchInvestorAccountsDetail(action) {
   let data = yield call(accountFunc.fetchInvestorAccountsDetail, payload)
   let investorAccounts = []
   let investorAccountList = []
+  let users = new Set()
+  let stations = new Set()
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
         investorAccountList.push(data.accounts[i].id)
         investorAccounts.push(data.accounts[i])
-        yield put(stationAction.saveStation({station: data.accounts[i].station}))
+        if(data.accounts[i].station){
+          stations.add(data.accounts[i].station)
+        }
         if(data.accounts[i].user){
-          let user = data.accounts[i].user
-          yield put(authAction.saveUser({user: user}))
+          users.add(data.accounts[i].user)
         }
       }
     }
+    yield put(stationAction.saveStations({stations: stations}))
+    yield put(authAction.saveUsers({users: users}))
     yield put(fetchInvestorAccountsDetailSuccess({investorAccounts: investorAccounts, investorAccountList: investorAccountList}))
     if (payload.success) {
       payload.success()

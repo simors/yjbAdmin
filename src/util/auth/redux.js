@@ -153,11 +153,11 @@ class AuthState extends Record({
   curRoleIds: Set(),            // Set<role id>
   curPermissionIds: Set(),      // Set<permission id>
 
-  rolesByCode: Map(),           // Map<role code, Role>
-  permissionsByCode: Map(),     // Map<permission code, Permission>
-
   rolesById: Map(),             // Map<role id, Role>
   permissionsById: Map(),       // Map<permission id, Permission>
+
+  rolesByCode: Map(),           // Map<role code, Role>
+  permissionsByCode: Map(),     // Map<permission code, Permission>
 
   endUsers: List(),             // List<user id>
   adminUsers: List(),           // List<user id>
@@ -191,55 +191,19 @@ const CACHED_USERS = 'AUTH/CACHED_USERS';
 
 // --- action
 
-// action payload = {
-//   ...action specific payload,
-//   onSuccess: func,
-//   onFailure: func,
-//   onComplete: func,
-// }
 export const action = {
-  // loginWithMobilePhone payload = {
-  //   phone,
-  //   password,
-  // }
   loginWithMobilePhone: createAction(LOGIN_WITH_MOBILE_PHONE),
-  // loginWithToken payload = {
-  //   token,
-  // }
   loginWithToken: createAction(LOGIN_WITH_TOKEN),
-  // logout payload = {
-  // }
   logout: createAction(LOGOUT),
-  // listEndUsers payload = {
-  //   limit?,
-  //   lastCreatedAt?,
-  // }
   listEndUsers: createAction(LIST_END_USERS),
-  // listEndUsers payload = {
-  //   limit?,
-  //   lastCreatedAt?,
-  //   idName?,
-  //   mobilePhoneNumber?,
-  // }
   listAdminUsers: createAction(LIST_ADMIN_USERS),
-  // listUsersByRole payload = {
-  //   limit?,
-  //   lastCreatedAt?,
-  //   roleId,
-  // }
   listUsersByRole: createAction(LIST_USERS_BY_ROLE),
 
   createUser: createAction(CREATE_USER),
   deleteUser: createAction(DELETE_USER),
   updateUser: createAction(UPDATE_USER),
 
-  // saveUser payload = {
-  //   user: User,
-  // }
   saveUser: createAction(CACHED_USER),
-  // saveUsers payload = {
-  //   users: Array<User>,
-  // }
   saveUsers: createAction(CACHED_USERS),
 };
 
@@ -264,14 +228,18 @@ export const saga = [
   takeLatest(UPDATE_USER, sagaUpdateUser),
 ];
 
+/**
+ *
+ * @param action
+ * payload = {
+ *   phone,
+ *   password,
+ *   onSuccess?,
+ *   onFailure?,
+ *   onComplete?,
+ * }
+ */
 function* sagaLoginWithMobilePhone(action) {
-  // payload = {
-  //   phone,
-  //   password,
-  //   onSuccess?,
-  //   onFailure?,
-  //   onComplete?,
-  // }
   const payload = action.payload;
 
   try {
@@ -313,13 +281,17 @@ function* sagaLoginWithMobilePhone(action) {
   }
 }
 
+/**
+ *
+ * @param action
+ * payload = {
+ *   token,
+ *   onSuccess?,
+ *   onFailure?,
+ *   onComplete?,
+ * }
+ */
 function* sagaLoginWithToken(action) {
-  // payload = {
-  //   token,
-  //   onSuccess?,
-  //   onFailure?,
-  //   onComplete?,
-  // }
   const payload = action.payload;
 
   try {
@@ -385,14 +357,18 @@ function* sagaLogout(action) {
   }
 }
 
+/**
+ *
+ * @param action
+ * payload = {
+ *   limit?,
+ *   lastCreatedAt?,
+ *   onSuccess?,
+ *   onFailure?,
+ *   onComplete?,
+ * }
+ */
 function* sagaListEndUsers(action) {
-  // payload = {
-  //   limit?,
-  //   lastCreatedAt?,
-  //   onSuccess?,
-  //   onFailure?,
-  //   onComplete?,
-  // }
   const payload = action.payload;
 
   try {
@@ -432,16 +408,20 @@ function* sagaListEndUsers(action) {
   }
 }
 
+/**
+ *
+ * @param action
+ * payload = {
+ *   limit?,
+ *   lastCreatedAt?,
+ *   idName?,
+ *   mobilePhoneNumber?,
+ *   onSuccess?,
+ *   onFailure?,
+ *   onComplete?,
+ * }
+ */
 function* sagaListAdminUsers(action) {
-  // payload = {
-  //   limit?,
-  //   lastCreatedAt?,
-  //   idName?,
-  //   mobilePhoneNumber?,
-  //   onSuccess?,
-  //   onFailure?,
-  //   onComplete?,
-  // }
   const payload = action.payload;
 
   try {
@@ -483,15 +463,19 @@ function* sagaListAdminUsers(action) {
   }
 }
 
+/**
+ * List admin users by role code.
+ * @param action
+ * payload = {
+ *   limit?,
+ *   lastCreatedAt?,
+ *   roleCode,
+ *   onSuccess?,
+ *   onFailure?,
+ *   onComplete?,
+ * }
+ */
 function* sagaListUsersByRole(action) {
-  // payload = {
-  //   limit?,
-  //   lastCreatedAt?,
-  //   roleCode,
-  //   onSuccess?,
-  //   onFailure?,
-  //   onComplete?,
-  // }
   const payload = action.payload;
 
   try {
@@ -865,6 +849,14 @@ function reduceRehydrate(state, action) {
   });
 }
 
+/**
+ *
+ * @param state
+ * @param action
+ * payload = {
+ *   user: User,
+ * }
+ */
 function reduceCachedUser(state, action) {
   const {user} = action.payload;
 
@@ -873,6 +865,14 @@ function reduceCachedUser(state, action) {
   return state.setIn(['cachedUsersById', immUser.id], immUser);
 }
 
+/**
+ *
+ * @param state
+ * @param action
+ * payload = {
+ *   users: Array<User>,
+ * }
+ */
 function reduceCachedUsers(state, action) {
   const {users} = action.payload;
 
@@ -898,8 +898,8 @@ export const selector = {
   selectRoles,
   selectEndUsers,
   selectAdminUsers,
-  selectUsersByRole,
   selectUserById,
+  selectUsersByRole,
   selectRolesByUser,
   selectPermissionsByUser,
 };
@@ -932,10 +932,16 @@ function selectRoles(appState) {
   return roles;
 }
 
+function selectRoleById(appState, roleId) {
+  const immRole = appState.AUTH.getIn(['rolesById', roleId]);
+
+  return Role.toJson(immRole);
+}
+
 function selectRoleByCode(appState, roleCode) {
   const immRole = appState.AUTH.getIn(['rolesByCode', roleCode]);
 
-  return User.toJson(immRole);
+  return Role.toJson(immRole);
 }
 
 function selectEndUsers(appState) {
@@ -962,6 +968,30 @@ function selectAdminUsers(appState) {
   return users;
 }
 
+/**
+ * Get user detail by user id.
+ * @param {Object} appState
+ * @param {String} userId
+ * @returns {User} User object
+ */
+function selectUserById(appState, userId) {
+  if(!userId){
+    return undefined
+  }
+
+  const immUser = appState.AUTH.getIn(['cachedUsersById', userId]);
+  if (immUser === undefined)
+    return undefined;
+
+  return User.toJson(immUser);
+}
+
+/**
+ * Get all users with the specified role code.
+ * @param {Object} appState
+ * @param {Number} roleCode
+ * @returns {Array} an array of User object
+ */
 function selectUsersByRole(appState, roleCode) {
   const users = [];
 
@@ -974,45 +1004,70 @@ function selectUsersByRole(appState, roleCode) {
   return users;
 }
 
-function selectUserById(appState, userId) {
-  if(!userId){
-    return undefined
-  }
-  
-  const immUser = appState.AUTH.getIn(['cachedUsersById', userId], undefined);
-  if (immUser === undefined)
-    return undefined;
-
-  return User.toJson(immUser);
-}
-
+/**
+ * Get user's role codes by user id.
+ * @param {Object} appState
+ * @param {String} userId
+ * @returns {Array} an array of role code
+ */
 function selectRolesByUser(appState, userId) {
-  const immUser = appState.AUTH.getIn(['cachedUsersById', userId], undefined);
+  // Map<user id, User>
+  const immUser = appState.AUTH.getIn(['cachedUsersById', userId]);
   if (immUser === undefined)
     return undefined;
 
-  const immRoleIds = immUser.get('roles', new Set());
+  const roleCodes = [];
 
-  return immRoleIds.toArray();
+  // Map<role id, Role>
+  const immRolesById = appState.AUTH.getIn(['rolesById']);
+
+  const immRoleIds = immUser.get('roles', new Set());
+  // convert roleId to roleCode
+  immRoleIds.forEach((i) => {
+    const immRole = immRolesById.get(i);
+
+    roleCodes.push(immRole.get('code'));
+  });
+
+  return roleCodes;
 }
 
+/**
+ * Get user's permission codes by user id.
+ * @param {Object} appState
+ * @param {String} userId
+ * @returns {Array} an array of permission code
+ */
 function selectPermissionsByUser(appState, userId) {
-  const immUser = appState.AUTH.getIn(['cachedUsersById', userId], undefined);
-
+  // Map<user id, User>
+  const immUser = appState.AUTH.getIn(['cachedUsersById', userId]);
   if (immUser === undefined)
     return undefined;
 
-  const immRoleIds = immUser.get('roles', new Set());
+  const permissionCodes = [];
 
   const immPermissionIds = new Set().withMutations((m) => {
-    const immRolesById = appState.AUTH.get('rolesById', new Map());
+    // Map<role id, Role>
+    const immRolesById = appState.AUTH.getIn(['rolesById']);
 
+    const immRoleIds = immUser.get('roles', new Set());
     immRoleIds.forEach((i) => {
       const immRole = immRolesById.get(i);
-      const immPermissionIds = immRole.get('permissions');
-      m.union(immPermissionIds);
+
+      const immPermissionIdsPerRole = immRole.get('permissions');
+      m.union(immPermissionIdsPerRole);
     });
   });
 
-  return immPermissionIds.toArray();
+  // Map<permission id, Permission>
+  const immPermissionsById = appState.AUTH.getIn(['permissionsById']);
+
+  // convert permissionId to permissionCode
+  immPermissionIds.forEach((i) => {
+    const immPermission = immPermissionsById.get(i);
+
+    permissionCodes.push(immPermission.get('code'));
+  });
+
+  return permissionCodes;
 }
