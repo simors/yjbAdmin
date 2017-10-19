@@ -181,6 +181,7 @@ function* editPromotion(action) {
   let payload = action.payload
 
   let apiPayload = {
+    promotionId: payload.promotionId,
     title: payload.title,
     start: payload.start,
     end: payload.end,
@@ -197,6 +198,8 @@ function* editPromotion(action) {
       payload.success()
     }
   } catch (error) {
+    console.error(error)
+    console.error("errorCode:", error.code)
     if(payload.error) {
       payload.error(error)
     }
