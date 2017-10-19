@@ -718,6 +718,8 @@ function reduceListedAdminUsers(state, action) {
   return state.withMutations((m) => {
     const userIds = [];
 
+    m.delete('adminRoles');
+
     jsonUsers.forEach((i) => {
       userIds.push(i.id);
 
