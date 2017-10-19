@@ -111,7 +111,7 @@ const mapStateToProps = (appState, ownProps) => {
   let user = {};
   if (selectedUserIds.length === 1) {
     const id = selectedUserIds[0];
-    user = authSelector.selectUserById(appState, id);
+    user = authSelector.selectAdminUserById(appState, id);
   }
 
   return {
