@@ -55,15 +55,15 @@ class DivisionCascader extends PureComponent {
     }
   }
 
-  onSelectChange = (value) => {
+  onSelectChange = (value, selectOptions) => {
     this.setState({value: value})
-    this.triggerChange(value)
+    this.triggerChange(value, selectOptions)
   }
 
-  triggerChange = (changedValue) => {
+  triggerChange = (changedValue,selectOptions) => {
     const onChange = this.props.onChange
     if (onChange) {
-      onChange(changedValue)
+      onChange(changedValue,selectOptions)
     }
   }
 
