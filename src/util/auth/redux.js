@@ -28,7 +28,6 @@ class User extends Record({
   createdAt: undefined,
   updatedAt: undefined,
   type: undefined,                // user type, e.g. end user or admin user
-  roles: Set(),                   // Set<role id>
   note: undefined,                // note for this user
   subscribe: undefined,
 }, 'User') {
@@ -57,7 +56,6 @@ class User extends Record({
       m.set('createdAt', json.createdAt);
       m.set('updatedAt', json.updatedAt);
       m.set('type', json.type);
-      m.set('roles', new Set(json.roles));
       m.set('note', json.note);
       m.set('subscribe', json.subscribe);
     });
@@ -89,7 +87,6 @@ class User extends Record({
       type: imm.type,
       note: imm.note,
       subscribe: imm.subscribe,
-      roles: imm.get('roles', new Set()).toArray(),
     };
   }
 }
@@ -152,6 +149,9 @@ class AuthState extends Record({
   curUserId: undefined,         // current login user
   curRoleIds: Set(),            // Set<role id>
   curPermissionIds: Set(),      // Set<permission id>
+
+  curRoles: Set(),              // Set<role code>
+  curPermissions: Set(),        // Set<permission code>
 
   rolesById: Map(),             // Map<role id, Role>
   permissionsById: Map(),       // Map<permission id, Permission>
@@ -632,7 +632,7 @@ function reduceLoggedIn(state, action) {
 
   // since we login from client side, e.g., browser, the roles of the login user
   // were fetched separately
-  const immCurUser = User.fromJson(jsonCurUser).set('roles', immCurRoleIds);
+  const immCurUser = User.fromJson(jsonCurUser);
 
   // 'curPermissionIds'
   const immCurPermissionIds = new Set().withMutations((m) => {
@@ -890,6 +890,7 @@ export const selector = {
   selectRoles,
   selectEndUsers,
   selectAdminUsers,
+  selectAdminUserById,
   selectUserById,
   selectUsersByRole,
   selectRolesByUser,
@@ -959,10 +960,31 @@ function selectAdminUsers(appState) {
 }
 
 /**
+ * Get admin user detail by user id
+ * @param {Object} appState
+ * @param {String} userId
+ * @returns {Object} JSON representation of User object with roles
+ */
+function selectAdminUserById(appState, userId) {
+  const immUser = appState.AUTH.getIn(['usersById', userId]);
+  if (immUser === undefined)
+    return undefined;
+
+  const immRoles = appState.AUTH.getIn(['adminRoles', userId]);
+  if (immRoles === undefined)
+    return undefined;
+
+  return {
+    ...User.toJson(immUser),
+    roles: immRoles.toArray()
+  };
+}
+
+/**
  * Get user detail by user id.
  * @param {Object} appState
  * @param {String} userId
- * @returns {User} User object
+ * @returns {User} JSON representation of User object
  */
 function selectUserById(appState, userId) {
   if(!userId){
