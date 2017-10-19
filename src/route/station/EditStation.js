@@ -13,6 +13,7 @@ import CreatePartnerModal from '../../component/station/CreatePartnerModal'
 import UpdatePartnerModal from '../../component/station/UpdatePartnerModal'
 import DivisionCascader from '../../component/DivisionCascader'
 import {action, selector} from '../../util/auth'
+import LoadActivity, {loadAction} from '../../component/loadActivity'
 
 const Option = Select.Option;
 const FormItem = Form.Item
@@ -105,7 +106,6 @@ class EditStation extends React.Component {
   }
 
   selectDivision(value, label) {
-    console.log('vauelsas', value, label)
     if (label.length == 3) {
       this.setState({
         province: {label: label[0].label, value: label[0].value},
@@ -239,6 +239,7 @@ class EditStation extends React.Component {
       if (errors) {
         return
       }
+      this.props.updateLoadingState({isLoading: true})
       let data = this.props.form.getFieldsValue()
       let payload = {
         ...data,
@@ -250,9 +251,12 @@ class EditStation extends React.Component {
           this.setState({spinShow: false})
           message.success('提交成功')
           this.props.history.push({pathname: '/site/editStation/' + stationId})
+          this.props.updateLoadingState({isLoading: false})
+
         },
         error: (err)=> {
           message.error('提交失败')
+          this.props.updateLoadingState({isLoading: false})
           console.log(err.message)
         }
       }
@@ -407,6 +411,7 @@ class EditStation extends React.Component {
                 </FormItem>
               </Col>
             </Row>
+            <LoadActivity tip="正在提交..."/>
           </Form>
           <Row>
             <Col>
@@ -418,7 +423,7 @@ class EditStation extends React.Component {
           <Row></Row>
           <Row>
             <Col span={4}>
-              <p>服务点分成</p>
+              <div>服务点分成</div>
             </Col>
             <Col span={4}>
               <Button onClick={()=> {
@@ -484,7 +489,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = {
   ...stationAction,
-  ...action
+  ...action,
+  ...loadAction,
 
 };
 

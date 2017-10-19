@@ -16,6 +16,7 @@ import CreateInvestorModal from '../../component/station/CreateInvestorModal'
 import UpdateInvestorModal from '../../component/station/UpdateInvestorModal'
 import {selector, action} from '../../util/auth'
 import StationSelect from './StationSelect'
+import LoadActivity, {loadAction} from '../../component/loadActivity'
 
 const Option = Select.Option;
 
@@ -56,7 +57,9 @@ class InvestorManage extends React.Component {
   }
 
   refresh() {
-    this.props.requestInvestors({...this.state})
+    this.props.updateLoadingState({isLoading: true})
+    this.props.requestInvestors({...this.state,success: ()=>{    this.props.updateLoadingState({isLoading: false})
+    }})
   }
 
   setStatus() {
@@ -90,13 +93,16 @@ class InvestorManage extends React.Component {
   }
 
   search() {
+    this.props.updateLoadingState({isLoading: true})
     let payload = {
       status: this.state.status != undefined ? this.state.status : undefined,
       stationId: this.state.stationId,
       success: ()=> {
+        this.props.updateLoadingState({isLoading: false})
         console.log('success')
       },
       error: ()=> {
+        this.props.updateLoadingState({isLoading: false})
         console.log('error')
       }
     }
@@ -113,7 +119,17 @@ class InvestorManage extends React.Component {
       addr: undefined,
       name: undefined
     })
-    this.props.requestStations()
+    this.props.updateLoadingState({isLoading: true})
+
+    this.props.requestStations({
+      success: ()=> {
+      this.props.updateLoadingState({isLoading: false})
+      console.log('success')
+    },
+      error: ()=> {
+        this.props.updateLoadingState({isLoading: false})
+        console.log('error')
+      }})
 
   }
 
@@ -169,9 +185,11 @@ class InvestorManage extends React.Component {
   }
 
   createInvestor(data) {
+    this.props.updateLoadingState({isLoading: true})
     let payload = {
       ...data,
       success: ()=> {
+
         this.setState({createModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
           this.refresh()
         })
@@ -251,6 +269,7 @@ class InvestorManage extends React.Component {
           stationList={this.props.stations}
           modalVisible={this.state.updateModalVisible}
         /> : null}
+        <LoadActivity tip="正在提交..."/>
 
       </div>
     )
@@ -270,7 +289,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = {
   ...stationAction,
-  ...action
+  ...action,
+  ...loadAction
 
 };
 
