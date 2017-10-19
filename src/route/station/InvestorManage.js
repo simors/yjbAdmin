@@ -50,7 +50,7 @@ class InvestorManage extends React.Component {
       }
     });
     this.props.listUsersByRole({
-      roleCode: 200,
+      roleCode: 300,
     });
   }
 
@@ -273,7 +273,7 @@ class InvestorManage extends React.Component {
             console.log('i, m cancel')
             this.setState({createModalVisible: false})
           }}
-          userList={this.props.userList}
+          userList={this.props.investorList}
           stationList={this.props.stations}
           modalVisible={this.state.createModalVisible}
         />
@@ -287,7 +287,7 @@ class InvestorManage extends React.Component {
             this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1})
           }}
           investor={this.state.selectedRowData ? this.state.selectedRowData[0] : undefined}
-          userList={this.props.userList}
+          userList={this.props.investorList}
           stationList={this.props.stations}
           modalVisible={this.state.updateModalVisible}
         />
@@ -299,11 +299,11 @@ class InvestorManage extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let investors = stationSelector.selectInvestors(state)
-  let userList = selector.selectUsersByRole(state,200)
+  let investorList = selector.selectUsersByRole(state,300)
    return {
     investors: investors,
     stations: stations,
-    userList: userList
+     investorList: investorList
   };
 };
 
