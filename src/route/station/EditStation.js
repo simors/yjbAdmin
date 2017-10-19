@@ -61,6 +61,14 @@ class EditStation extends React.Component {
       stationId: this.props.match.params.id, success: ()=> {
       }
     })
+    this.props.listUsersByRole({
+      roleCode: 400,
+      onFailure: (e)=>{console.log(e.message)},
+      onSuccess: ()=>{this.props.listUsersByRole({
+        roleCode: 200,
+        onFailure: (e)=>{console.log(e.message)}
+      })}
+    })
   }
 
   refresh() {
@@ -162,12 +170,23 @@ class EditStation extends React.Component {
     }
   }
 
-  userList() {
-    if (this.props.userList && this.props.userList.length > 0) {
-      let userList = this.props.userList.map((item, key)=> {
+  adminList() {
+    if (this.props.adminList && this.props.adminList.length > 0) {
+      let adminList = this.props.adminList.map((item, key)=> {
         return <Option key={key} value={item.id}>{item.idName}</Option>
       })
-      return userList
+      return adminList
+    } else {
+      return null
+    }
+  }
+
+  partnerList() {
+    if (this.props.partnerList && this.props.partnerList.length > 0) {
+      let partnerList = this.props.partnerList.map((item, key)=> {
+        return <Option key={key} value={item.id}>{item.idName}</Option>
+      })
+      return partnerList
     } else {
       return null
     }
@@ -294,7 +313,7 @@ class EditStation extends React.Component {
                     ]
                   })(
                     <Select allowClear={true} style={{width: 140}}>
-                      {this.userList()}
+                      {this.adminList()}
                     </Select>
                   )}
                 </FormItem>
@@ -423,7 +442,7 @@ class EditStation extends React.Component {
             onCancel={()=> {
               this.setState({createModalVisible: false})
             }}
-            userList={this.props.userList}
+            userList={this.props.partnerList}
             stationList={this.props.stations}
             modalVisible={this.state.createModalVisible}
           />
@@ -436,7 +455,7 @@ class EditStation extends React.Component {
               this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1})
             }}
             partner={this.state.selectedPartner}
-            userList={this.props.userList}
+            userList={this.props.partnerList}
             stationList={this.props.stations}
             modalVisible={this.state.updateModalVisible}
           />
@@ -450,11 +469,16 @@ class EditStation extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   let partners = stationSelector.selectPartners(state)
+  let adminList = selector.selectUsersByRole(state, 200)
+  let partnerList = selector.selectUsersByRole(state, 400)
+  console.log('adminList======>',adminList)
+  console.log('partnerList======>',partnerList)
 
   return {
     station: station,
     partners: partners,
-    // userList: userList
+    adminList: adminList,
+    partnerList: partnerList
   };
 };
 
