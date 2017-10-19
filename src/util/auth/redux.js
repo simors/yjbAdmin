@@ -161,10 +161,10 @@ class AuthState extends Record({
 
   endUsers: List(),             // List<user id>
   adminUsers: List(),           // List<user id>
+  adminRoles: Map(),            // Map<user id, Set<role code>>
 
   usersByRole: Map(),           // Map<role code, List<user id>>
-
-  cachedUsersById: Map(),       // Map<user id, User>
+  usersById: Map(),             // Map<user id, User>
 }, 'AuthState') {
 
 }
@@ -684,7 +684,7 @@ function reduceLoggedIn(state, action) {
     m.set('permissionsById', immPermissionsById);
     m.set('rolesByCode', immRolesByCode);
     m.set('permissionsByCode', immPermissionsByCode);
-    m.setIn(['cachedUsersById', immCurUser.id], immCurUser);
+    m.setIn(['usersById', immCurUser.id], immCurUser);
   });
 }
 
@@ -698,72 +698,55 @@ function reduceLoggedOut(state, action) {
 function reduceListedEndUsers(state, action) {
   const {jsonUsers} = action.payload;
 
-  const userIds = new List().withMutations((m) => {
-    jsonUsers.forEach((i) => {
-      m.push(i.id);
-    });
-  });
-
-  const immUsers = [];
-  jsonUsers.forEach((i) => {
-    const immUser = User.fromJson(i);
-    immUsers.push(immUser);
-  });
-
   return state.withMutations((m) => {
-    m.set('endUsers', userIds);
+    const userIds = [];
 
-    immUsers.forEach((i) => {
-      m.setIn(['cachedUsersById', i.id], i);
+    jsonUsers.forEach((i) => {
+      userIds.push(i.id);
+
+      const immUser = User.fromJson(i);
+      m.setIn(['usersById', i.id], immUser);
     });
+
+    m.set('endUsers', new List(userIds));
   });
 }
 
 function reduceListedAdminUsers(state, action) {
   const {jsonUsers} = action.payload;
 
-  const userIds = new List().withMutations((m) => {
-    jsonUsers.forEach((i) => {
-      m.push(i.id);
-    });
-  });
-
-  const immUsers = [];
-  jsonUsers.forEach((i) => {
-    const immUser = User.fromJson(i);
-    immUsers.push(immUser);
-  });
-
   return state.withMutations((m) => {
-    m.set('adminUsers', userIds);
+    const userIds = [];
 
-    immUsers.forEach((i) => {
-      m.setIn(['cachedUsersById', i.id], i);
+    jsonUsers.forEach((i) => {
+      userIds.push(i.id);
+
+      // admin users has role(s) associated with them
+      const {roles} = i;
+      m.setIn(['adminRoles', i.id], new Set(roles));
+
+      const immUser = User.fromJson(i);
+      m.setIn(['usersById', i.id], immUser);
     });
+
+    m.set('adminUsers', new List(userIds));
   });
 }
 
 function reduceListedUsersByRole(state, action) {
   const {roleCode, jsonUsers} = action.payload;
 
-  const userIds = new List().withMutations((m) => {
-    jsonUsers.forEach((i) => {
-      m.push(i.id);
-    });
-  });
-
-  const immUsers = [];
-  jsonUsers.forEach((i) => {
-    const immUser = User.fromJson(i);
-    immUsers.push(immUser);
-  });
-
   return state.withMutations((m) => {
-    m.setIn(['usersByRole', roleCode], userIds);
+    const userIds = [];
 
-    immUsers.forEach((i) => {
-      m.setIn(['cachedUsersById', i.id], i);
+    jsonUsers.forEach((i) => {
+      userIds.push(i.id);
+
+      const immUser = User.fromJson(i);
+      m.setIn(['usersById', i.id], immUser);
     });
+
+    m.setIn(['usersByRole', roleCode], userIds);
   });
 }
 
@@ -773,10 +756,17 @@ function reduceRehydrate(state, action) {
   if (storage === undefined)
     return state;
 
+  // TODO: to do rehydrate later
+
+  const {token} = storage;
+  return state.withMutations((m) => {
+    m.set('token', token);
+  });
+
   // all data in json format
-  const {token, curUserId, curRoleIds, curPermissionIds,
+  const {curUserId, curRoleIds, curPermissionIds,
     rolesByCode, permissionsByCode, rolesById, permissionsById,
-    endUsers, adminUsers, usersByRole, cachedUsersById} = storage;
+    endUsers, adminUsers, usersByRole, usersById} = storage;
 
   const immCurRoleIds = new Set(curRoleIds);
   const immCurPermissionIds = new Set(curPermissionIds);
@@ -826,8 +816,8 @@ function reduceRehydrate(state, action) {
     }
   });
 
-  const immCachedUsersById = new Map().withMutations((m) => {
-    Object.values(cachedUsersById).forEach((i) => {
+  const immUsersById = new Map().withMutations((m) => {
+    Object.values(usersById).forEach((i) => {
       const immUser = User.fromJson(i);
       m.set(immUser.id, immUser);
     });
@@ -845,7 +835,7 @@ function reduceRehydrate(state, action) {
     m.set('endUsers', immEndUsers);
     m.set('adminUsers', immAdminUsers);
     m.set('usersByRole', immUsersByRole);
-    m.set('cachedUsersById', immCachedUsersById);
+    m.set('usersById', immUsersById);
   });
 }
 
@@ -862,7 +852,7 @@ function reduceCachedUser(state, action) {
 
   const immUser = User.fromJson(user);
 
-  return state.setIn(['cachedUsersById', immUser.id], immUser);
+  return state.setIn(['usersById', immUser.id], immUser);
 }
 
 /**
@@ -884,7 +874,7 @@ function reduceCachedUsers(state, action) {
 
   return state.withMutations((m) => {
     immUsers.forEach((i) => {
-      m.setIn(['cachedUsersById', i.id], i);
+      m.setIn(['usersById', i.id], i);
     });
   });
 }
@@ -973,7 +963,7 @@ function selectUserById(appState, userId) {
     return undefined
   }
 
-  const immUser = appState.AUTH.getIn(['cachedUsersById', userId]);
+  const immUser = appState.AUTH.getIn(['usersById', userId]);
   if (immUser === undefined)
     return undefined;
 
@@ -1006,7 +996,7 @@ function selectUsersByRole(appState, roleCode) {
  */
 function selectRolesByUser(appState, userId) {
   // Map<user id, User>
-  const immUser = appState.AUTH.getIn(['cachedUsersById', userId]);
+  const immUser = appState.AUTH.getIn(['usersById', userId]);
   if (immUser === undefined)
     return undefined;
 
@@ -1034,7 +1024,7 @@ function selectRolesByUser(appState, userId) {
  */
 function selectPermissionsByUser(appState, userId) {
   // Map<user id, User>
-  const immUser = appState.AUTH.getIn(['cachedUsersById', userId]);
+  const immUser = appState.AUTH.getIn(['usersById', userId]);
   if (immUser === undefined)
     return undefined;
 
