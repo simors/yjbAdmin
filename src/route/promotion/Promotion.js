@@ -118,9 +118,11 @@ class Promotion extends PureComponent {
                               onCancel={() => {this.setState({showPromotionDetailModal: false})}}
                               promotion={this.state.selectPromotion}
         />
-        <PromotionEditModal visible={this.state.showPromotionEditModal}
-                            promotion={this.state.selectPromotion}
-                            onCancel={() => {this.setState({showPromotionEditModal: false})}}/>
+        {
+          this.state.showPromotionEditModal?
+            <PromotionEditModal promotion={this.state.selectPromotion} onCancel={() => {this.setState({showPromotionEditModal: false})}}/>
+            : null
+        }
       </div>
     )
   }

@@ -38,6 +38,7 @@ class EditForm extends Component {
   }
 
   handleSubmit = (e) => {
+    const {promotion} = this.props
     e.preventDefault()
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
@@ -56,6 +57,7 @@ class EditForm extends Component {
       }
       console.log("handleSubmit values:", values)
       this.props.editPromotion({
+        promotionId: promotion.id,
         title: values.title,
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,

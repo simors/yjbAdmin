@@ -17,12 +17,12 @@ class PromotionEditModal extends PureComponent {
   }
 
   render() {
-    const {history, promotion, visible, onCancel } = this.props
+    const {history, promotion, onCancel } = this.props
     if(promotion) {
       return (
         <Modal title="编辑活动"
                width={720}
-               visible={visible}
+               visible={true}
                onOk={this.onSubmit}
                onCancel={onCancel}
                footer={null}>
