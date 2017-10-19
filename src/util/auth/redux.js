@@ -924,18 +924,12 @@ function selectToken(appState) {
 function selectRoles(appState) {
   const roles = [];
 
-  const immRoles = appState.AUTH.getIn(['rolesById'], new Map()).toArray();
+  const immRoles = appState.AUTH.getIn(['rolesByCode'], new Map()).toArray();
   immRoles.forEach((i) => {
     roles.push(Role.toJson(i));
   });
 
   return roles;
-}
-
-function selectRoleById(appState, roleId) {
-  const immRole = appState.AUTH.getIn(['rolesById', roleId]);
-
-  return Role.toJson(immRole);
 }
 
 function selectRoleByCode(appState, roleCode) {
