@@ -7,16 +7,16 @@ export async function loginWithMobilePhone(payload) {
   const token = leanCurUser.getSessionToken();
 
   // result = {
-  //   jsonCurRoleIds,
+  //   jsonCurRoleCodes,
   //   jsonRoles,
   //   jsonPermissions,
   // }
-  const jsonRes = await AV.Cloud.run('authGetRolesAndPermissions', {});
+  const result = await AV.Cloud.run('authGetRolesAndPermissions', {});
 
   // result = {
   //   jsonCurUser,
   //   token,
-  //   jsonCurRoleIds,
+  //   jsonCurRoleCodes,
   //   jsonRoles,
   //   jsonPermissions,
   // }
@@ -26,7 +26,7 @@ export async function loginWithMobilePhone(payload) {
       id: leanCurUser.id,
     },
     token,
-    ...jsonRes,
+    ...result,
   });
 }
 
@@ -37,16 +37,16 @@ export async function become(payload) {
   const token = leanCurUser.getSessionToken();
 
   // result = {
-  //   jsonCurRoleIds,
+  //   jsonCurRoleCodes,
   //   jsonRoles,
   //   jsonPermissions,
   // }
-  const jsonRes = await AV.Cloud.run('authGetRolesAndPermissions', {});
+  const result = await AV.Cloud.run('authGetRolesAndPermissions', {});
 
   // result = {
   //   jsonCurUser,
   //   token,
-  //   jsonCurRoleIds,
+  //   jsonCurRoleCodes,
   //   jsonRoles,
   //   jsonPermissions,
   // }
@@ -56,7 +56,7 @@ export async function become(payload) {
       id: leanCurUser.id,
     },
     token,
-    ...jsonRes,
+    ...result,
   });
 }
 
