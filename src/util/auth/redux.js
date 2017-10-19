@@ -944,9 +944,13 @@ function selectAdminUsers(appState) {
   const users = [];
 
   const userIds = appState.AUTH.get('adminUsers', new List());
+  const adminRoles = appState.AUTH.get('adminRoles', new Map());
 
   userIds.forEach((i) => {
-    users.push(selectUserById(appState, i));
+    users.push({
+      ...selectUserById(appState, i),
+      roles: adminRoles.get(i).toArray()
+    });
   });
 
   return users;
