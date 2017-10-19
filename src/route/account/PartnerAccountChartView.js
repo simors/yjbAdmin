@@ -146,30 +146,7 @@ class StationAccountManager extends React.Component {
     // console.log('[DEBUG] ---> SysUser props: ', this.props);
     return (
       <div>
-        <ButtonGroup>
-          <Button onClick={()=>{this.downloadFile()}}>ceshi</Button>
-        </ButtonGroup>
-        {/*<StationMenu*/}
-        {/*showDetail={()=> {*/}
-        {/*this.props.history.push({*/}
-        {/*pathname: '/site/showStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),*/}
-        {/*})*/}
-        {/*}}*/}
-        {/*set={()=> {*/}
-        {/*this.props.history.push({*/}
-        {/*pathname: '/site/editStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),*/}
-        {/*})*/}
-        {/*}}*/}
-        {/*add={()=>{this.props.history.push({pathname: '/site/addStation'})}}*/}
-        {/*setStatus={()=> {*/}
-        {/*this.setStatus()*/}
-        {/*}}*/}
-        {/*refresh={()=> {*/}
-        {/*this.refresh()*/}
-        {/*}}*/}
-        {/*/>*/}
         {this.renderSearchBar()}
-
         <AccountChart data = {this.props.stationAccounts} yline = 'profit' xline = 'accountDay'/>
       </div>
     )
