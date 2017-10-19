@@ -3,7 +3,6 @@
  */
 import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
-import {PromotionStatus} from './redux'
 import {
   Row,
   Col,

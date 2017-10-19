@@ -9,6 +9,7 @@ import {
   Form,
   message,
   DatePicker,
+  Switch,
 } from 'antd'
 import {actions}  from './redux'
 import moment from 'moment'
@@ -64,7 +65,7 @@ class EditForm extends Component {
         description: values.description,
         region: values.region,
         awards: {rechargeList: values.awards},
-        status: values.status,
+        disabled: !values.disabled,
         success: () => {
           message.success("修改成功")
           this.props.onSubmit()
@@ -98,6 +99,15 @@ class EditForm extends Component {
             initialValue: promotion.title,
           })(
             <Input />
+          )}
+        </FormItem>
+        <FormItem hasFeedback {...formItemLayout} label="活动开关">
+          {getFieldDecorator("disabled", {
+            rules: [{ required: true}],
+            valuePropName: 'checked',
+            initialValue: !promotion.disabled,
+          })(
+            <Switch />
           )}
         </FormItem>
         <FormItem hasFeedback {...formItemLayout} label="活动起始时间">

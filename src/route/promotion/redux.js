@@ -17,7 +17,7 @@ const PromotionRecord = Record({
   description: undefined,       //活动描述
   categoryId: undefined,        //活动类型id
   region: undefined,            //活动区域
-  status: undefined,            //活动状态
+  disabled: undefined,          //活动状态
   createdAt: undefined,         //活动创建时间
   awards: undefined,            //活动奖品参数
   userId: undefined,            //活动创建用户id
@@ -35,7 +35,7 @@ class Promotion extends PromotionRecord {
       record.set('description', obj.description)
       record.set('categoryId', obj.categoryId)
       record.set('region', obj.region)
-      record.set('status', obj.status)
+      record.set('disabled', obj.disabled)
       record.set('createdAt', obj.createdAt)
       record.set('awards', obj.awards)
       record.set('userId', obj.userId)
@@ -76,12 +76,6 @@ const SAVE_PROMOTION_CATEGORIES = 'SAVE_PROMOTION_CATEGORIES'
 const FETCH_PROMOTION_CATEGORYLIST = 'FETCH_PROMOTION_CATEGORYLIST'
 const EDIT_PROMOTION = 'EDIT_PROMOTION'
 
-export const PromotionStatus = {
-  PROMOTION_STATUS_AWAIT: 0,
-  PROMOTION_STATUS_UNDERWAY: 1,
-  PROMOTION_STATUS_INVALID: 2,
-}
-
 /**** Action ****/
 const updatePromotionList = createAction(UPDATE_PROMOTION_LIST)
 
@@ -100,7 +94,7 @@ function* fetchPromotions(action) {
   let payload = action.payload
 
   let apiPayload = {
-    status: payload.status,
+    disabled: payload.disabled,
     start: payload.start,
     end: payload.end,
   }
@@ -188,7 +182,7 @@ function* editPromotion(action) {
     description: payload.description,
     region: payload.region,
     awards: payload.awards,
-    status: payload.status,
+    disabled: payload.disabled,
   }
   try {
     let promotion = yield call(editPromotionApi, apiPayload)

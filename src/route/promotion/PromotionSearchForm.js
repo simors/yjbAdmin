@@ -13,7 +13,7 @@ import {
   Select,
   DatePicker,
 } from 'antd'
-import {actions, PromotionStatus} from './redux'
+import {actions} from './redux'
 import style from './promotion.module.scss'
 
 const FormItem = Form.Item
@@ -50,7 +50,7 @@ class SearchForm extends PureComponent {
       this.props.fetchPromotionsAction({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
-        status: !values.status || values.status == 'all'? undefined : Number(values.status),
+        disabled: !values.disabled || values.disabled == 'all'? undefined : Boolean(values.disabled),
       })
     })
   }
@@ -69,12 +69,11 @@ class SearchForm extends PureComponent {
           )}
         </FormItem>
         <FormItem>
-          {getFieldDecorator("status", {})(
+          {getFieldDecorator("disabled", {})(
             <Select style={{width: 120}} placeholder="选择活动状态">
               <Option value="all">全部</Option>
-              <Option value={PromotionStatus.PROMOTION_STATUS_AWAIT.toString()}>待触发</Option>
-              <Option value={PromotionStatus.PROMOTION_STATUS_UNDERWAY.toString()}>进行中</Option>
-              <Option value={PromotionStatus.PROMOTION_STATUS_INVALID.toString()}>无效</Option>
+              <Option value='true'>禁用</Option>
+              <Option value='false'>有效</Option>
             </Select>
           )}
         </FormItem>
