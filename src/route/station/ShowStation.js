@@ -60,6 +60,10 @@ class ShowStation extends React.Component {
       stationId: this.props.match.params.id, success: ()=> {
       }
     })
+    this.props.listUsersByRole({
+      roleCode: 200,
+      onFailure: (e)=>{console.log(e.message)}
+    })
   }
 
   refresh() {
@@ -70,16 +74,18 @@ class ShowStation extends React.Component {
   }
 
 
-  userList() {
-    if (this.props.userList && this.props.userList.length > 0) {
-      let userList = this.props.userList.map((item, key)=> {
+  adminList() {
+    if (this.props.adminList && this.props.adminList.length > 0) {
+      let adminList = this.props.adminList.map((item, key)=> {
         return <Option key={key} value={item.id}>{item.idName+' '+item.mobilePhoneNumber}</Option>
       })
-      return userList
+      return adminList
     } else {
       return null
     }
   }
+
+
 
 
   render() {
@@ -131,7 +137,7 @@ class ShowStation extends React.Component {
                   ]
                 })(
                   <Select  disabled={true} allowClear={true} style={{width: 140}}>
-                    {this.userList()}
+                    {this.adminList()}
                   </Select>
                 )}
               </FormItem>
@@ -236,18 +242,6 @@ class ShowStation extends React.Component {
           </Row>
         </Form>
         <PartnerList type='show' partners={this.props.partners}/>
-        <CreatePartnerModal
-          modalKey={this.state.modalKey}
-          onOk={(data)=> {
-            this.createPartner(data)
-          }}
-          onCancel={()=> {
-            console.log('i, m cancel')
-            this.setState({createModalVisible: false})
-          }}
-          userList={this.props.userList}
-          modalVisible={this.state.createModalVisible}
-        />
       </div>
     )
 
@@ -255,10 +249,10 @@ class ShowStation extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  // console.log('ownporsoss.......aaa',ownProps)
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
-  // console.log('stationnoredux====>', station)
   let partners = stationSelector.selectPartners(state)
+  let adminList = selector.selectUsersByRole(state,200)
+
   // let station={name:'123',adminName:'321'}
   // console.log('areaList========>', areaList)
   // console.log('partners========>', partners)
@@ -266,6 +260,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     station: station,
     partners: partners,
+    adminList: adminList,
   };
 };
 

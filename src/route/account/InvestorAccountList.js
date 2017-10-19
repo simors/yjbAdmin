@@ -19,7 +19,7 @@ const columns = [{
   title: "利润",
   dataIndex: "profit",
   render: (text,record)=>{
-    return <p>{record.profit+'元'}</p>
+    return <div>{record.profit+'元'}</div>
   }
 
 }, {

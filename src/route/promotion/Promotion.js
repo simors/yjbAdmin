@@ -12,12 +12,11 @@ import {
 import moment from "moment"
 import style from './promotion.module.scss'
 import PromotionSearchForm from './PromotionSearchForm'
-import {selector, PromotionStatus} from './redux'
+import {selector} from './redux'
 import PromotionDetailModal from './PromotionDetailModal'
 import PromotionEditModal from './PromotionEditModal'
 
 const ButtonGroup = Button.Group
-
 
 class Promotion extends PureComponent {
   constructor(props) {
@@ -51,48 +50,50 @@ class Promotion extends PureComponent {
 
   }
 
-  renderStatusColum = (status) => {
-    switch (status) {
-      case PromotionStatus.PROMOTION_STATUS_AWAIT:
+  renderStatusColum = (disabled, record) => {
+    if(disabled) {
+      return <span>禁用</span>
+    } else {
+      if (moment().isBefore(record.start)) {
         return <span>待触发</span>
-        break
-      case PromotionStatus.PROMOTION_STATUS_UNDERWAY:
+      } else if (moment().isSameOrAfter(record.start) && moment().isSameOrBefore(record.end)) {
         return <span>进行中</span>
-        break
-      case PromotionStatus.PROMOTION_STATUS_INVALID:
-        return <span>无效</span>
-        break
-      default:
-        break
+      } else if (moment().isAfter(record.end)) {
+        return <span>结束</span>
+      }
     }
   }
 
   renderActionColumn = (record) => {
-    if(record.status === PromotionStatus.PROMOTION_STATUS_AWAIT) {
+    if(moment().isBefore(record.start)) {
       return (
         <span>
-          <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
-          <span className="ant-divider" />
-          <a style={{color: `blue`}} onClick={() => {this.showRowEditModal(record)}}>编辑</a>
-        </span>
+            <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
+            <span className="ant-divider" />
+            <a style={{color: `blue`}} onClick={() => {this.showRowEditModal(record)}}>编辑</a>
+          </span>
       )
-    } else if(record.status === PromotionStatus.PROMOTION_STATUS_UNDERWAY) {
+    } else if(moment().isSameOrAfter(record.start) && moment().isSameOrBefore(record.end)) {
       return (
         <span>
-          <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
+            <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
+            <span className="ant-divider" />
+            <a style={{color: `blue`}} onClick={() => {this.showRowEditModal(record)}}>编辑</a>
             <span className="ant-divider" />
             <a style={{color: `blue`}} onClick={() => {this.showRowStatModal(record)}}>统计</a>
-            <span className="ant-divider" />
-          <a style={{color: `blue`}} onClick={() => {this.showRowStopModal(record)}}>停止</a>
-        </span>
+          </span>
       )
-    } else if(record.status === PromotionStatus.PROMOTION_STATUS_INVALID) {
+    } else if(moment().isAfter(record.end)) {
       return (
         <span>
-          <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
-          <span className="ant-divider" />
-          <a style={{color: `blue`}} onClick={() => {this.showRowStatModal(record)}}>统计</a>
-        </span>
+            <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
+            <span className="ant-divider" />
+            <a style={{color: `blue`}} onClick={() => {this.showRowStatModal(record)}}>统计</a>
+          </span>
+      )
+    } else {
+      return (
+        <span>异常</span>
       )
     }
   }
@@ -104,7 +105,7 @@ class Promotion extends PureComponent {
       { title: '活动开始时间', dataIndex: 'start', key: 'start', render: (start) => (<span>{moment(start).format('LLLL')}</span>)},
       { title: '活动结束时间', dataIndex: 'end', key: 'end', render: (end) => (<span>{moment(end).format('LLLL')}</span>)},
       { title: '发布人', dataIndex: 'username', key: 'username'},
-      { title: '活动状态', dataIndex: 'status', key: 'status', render: this.renderStatusColum},
+      { title: '活动状态', dataIndex: 'disabled', key: 'disabled', render: this.renderStatusColum},
       { title: '操作', key: 'action', render: this.renderActionColumn}
     ]
     return (
@@ -118,9 +119,11 @@ class Promotion extends PureComponent {
                               onCancel={() => {this.setState({showPromotionDetailModal: false})}}
                               promotion={this.state.selectPromotion}
         />
-        <PromotionEditModal visible={this.state.showPromotionEditModal}
-                            promotion={this.state.selectPromotion}
-                            onCancel={() => {this.setState({showPromotionEditModal: false})}}/>
+        {
+          this.state.showPromotionEditModal?
+            <PromotionEditModal promotion={this.state.selectPromotion} onCancel={() => {this.setState({showPromotionEditModal: false})}}/>
+            : null
+        }
       </div>
     )
   }

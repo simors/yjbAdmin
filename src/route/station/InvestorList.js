@@ -8,6 +8,9 @@ import {Table} from 'antd';
 const columns = [{
   title: "创建时间",
   dataIndex: "createdAt",
+  render: (createdAt)=> {
+    return <div>{createdAt.slice(0,10) }</div>
+  }
 }, {
   title: "姓名",
   dataIndex: "shareholder.idName",
@@ -30,7 +33,7 @@ const columns = [{
   title: "状态",
   dataIndex: "status",
   render: (text, record)=> {
-    return <p>{record.status ? '正常' : '已停用'}</p>
+    return <div>{record.status ? '正常' : '已停用'}</div>
   }
 }];
 
