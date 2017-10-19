@@ -1,19 +1,23 @@
 /**
  * Created by yangyang on 2017/10/18.
  */
-import React, {Component} from 'react'
+import React from 'react'
 import {connect} from 'react-redux'
 import { Row, Col, Tabs } from 'antd'
 import {withRouter} from 'react-router-dom'
 import WalletBar from './WalletBar'
 import InvestProfitChart from './InvestProfitChart'
 import ParticipationProfitChart from './ParticipationProfitChart'
+import Withdraw from './Withdraw'
 
 const TabPane = Tabs.TabPane
 
 class Profit extends React.PureComponent {
   constructor(props) {
     super(props)
+    this.state = {
+      showWithdraw: false,
+    }
   }
 
   tabSelect = (key) => {
@@ -23,7 +27,7 @@ class Profit extends React.PureComponent {
   render() {
     return (
       <div>
-        <WalletBar/>
+        <WalletBar onClick={() => this.setState({showWithdraw: true})}/>
         <div style={{marginTop: 20}}>
           <Tabs onChange={this.tabSelect} type="card">
             <TabPane tab="投资收益" key="1">
@@ -34,6 +38,9 @@ class Profit extends React.PureComponent {
             </TabPane>
           </Tabs>
         </div>
+        {
+          this.state.showWithdraw ? <Withdraw onCancel={() => this.setState({showWithdraw: false})} /> : null
+        }
       </div>
     )
   }

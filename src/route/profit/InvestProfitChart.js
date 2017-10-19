@@ -56,7 +56,6 @@ class InvestProfitChart extends React.PureComponent {
   render() {
     let frame = new Frame(data);
     frame = Frame.combineColumns(frame, ['中南大学', '中电软件园'], 'profit', 'stationName', ['date'])
-    console.log('frame', frame)
     return (
       <div>
         <this.ProfitChart forceFit={true} height={500} width={200} data={frame} plotCfg={{margin: [50, 150, 80, 100]}} />
