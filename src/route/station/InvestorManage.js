@@ -15,6 +15,7 @@ import {configSelector} from '../../util/config'
 import CreateInvestorModal from '../../component/station/CreateInvestorModal'
 import UpdateInvestorModal from '../../component/station/UpdateInvestorModal'
 import {selector, action} from '../../util/auth'
+import StationSelect from './StationSelect'
 
 const Option = Select.Option;
 
@@ -90,9 +91,8 @@ class InvestorManage extends React.Component {
 
   search() {
     let payload = {
-     status: this.state.status != undefined ? this.state.status : undefined,
-      addr: this.state.addr,
-      name: this.state.name,
+      status: this.state.status != undefined ? this.state.status : undefined,
+      stationId: this.state.stationId,
       success: ()=> {
         console.log('success')
       },
@@ -100,7 +100,7 @@ class InvestorManage extends React.Component {
         console.log('error')
       }
     }
-    this.props.requestStations(payload)
+    this.props.requestInvestors(payload)
   }
 
 
@@ -121,62 +121,22 @@ class InvestorManage extends React.Component {
     return (
       <div style={{flex: 1}}>
         <Row >
-          <Col span={4}>
-            <p >名称</p>
-          </Col>
+
           <Col span={8}>
-            <Input onChange={(e)=> {
-              this.setState({name: e.target.value})
-            }}></Input>
-          </Col>
-          <Col span={4}>
-            <p>状态</p>
-          </Col>
-          <Col span={8}>
-            <Select allowClear={true} style={{width: 120}} onChange={(value)=> {
+            <Select allowClear={true} style={{width: 120}} placeholder='状态' onChange={(value)=> {
               this.statusChange(value)
             }}>
               <Option value='1'>正常</Option>
               <Option value='0'>已停用</Option>
             </Select>
           </Col>
+          <Col>
+            <StationSelect onChange={(value)=>{
+              this.setState({stationId: value})
+            }} />
+            </Col>
         </Row>
         <Row>
-          <Col span={2}>
-            <div>省市区</div>
-          </Col>
-          <Col span={3}>
-            <Select allowClear={true} style={{width: 80}} onChange={(value)=> {
-              this.provinceChange(value)
-            }}>
-              <Option key='all'>无</Option>
-              {this.provinceList()}
-            </Select>
-          </Col>
-          <Col span={3}>
-            <Select allowClear={true} defaultValue='' style={{width: 80}} onChange={(value)=> {
-              this.cityChange(value)
-            }}>
-              <Option key='all'>无</Option>
-              {this.cityList()}
-            </Select>
-          </Col>
-          <Col span={3}>
-            <Select allowClear={true} defaultValue='' style={{width: 80}} onChange={(value)=> {
-              this.areaChange(value)
-            }}>
-              <Option key='all'>无</Option>
-              {this.areaList()}
-            </Select>
-          </Col>
-          <Col span={2}>
-            <div>地址</div>
-          </Col>
-          <Col span={7}>
-            <Input onChange={(e)=> {
-              this.setState({addr: e.target.value})
-            }}/>
-          </Col>
           <Col span={2}>
             <Button onClick={()=> {
               this.search()
@@ -188,7 +148,6 @@ class InvestorManage extends React.Component {
             }}>重置</Button>
           </Col>
         </Row>
-
       </div>
     )
   }
@@ -261,6 +220,7 @@ class InvestorManage extends React.Component {
             this.refresh()
           }}
         />
+        {this.renderSearchBar()}
         <InvestorList selectStation={(rowId, rowData)=> {
           this.selectInvestor(rowId, rowData)
         }} investors={this.props.investors}/>
@@ -277,7 +237,7 @@ class InvestorManage extends React.Component {
           stationList={this.props.stations}
           modalVisible={this.state.createModalVisible}
         />
-        <UpdateInvestorModal
+        {this.state.updateModalVisible ? <UpdateInvestorModal
           modalKey={this.state.modalKey}
           onOk={(data)=> {
             this.updateInvestor(data)
@@ -290,7 +250,8 @@ class InvestorManage extends React.Component {
           userList={this.props.investorList}
           stationList={this.props.stations}
           modalVisible={this.state.updateModalVisible}
-        />
+        /> : null}
+
       </div>
     )
   };
@@ -299,11 +260,11 @@ class InvestorManage extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let investors = stationSelector.selectInvestors(state)
-  let investorList = selector.selectUsersByRole(state,300)
-   return {
+  let investorList = selector.selectUsersByRole(state, 300)
+  return {
     investors: investors,
     stations: stations,
-     investorList: investorList
+    investorList: investorList
   };
 };
 
