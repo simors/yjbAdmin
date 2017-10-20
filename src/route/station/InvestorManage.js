@@ -51,6 +51,11 @@ class InvestorManage extends React.Component {
         console.log('hahhahah')
       }
     });
+    this.props.requestStations({
+      success: ()=> {
+        console.log('hahhahah')
+      }
+    });
     this.props.listUsersByRole({
       roleCode: 300,
     });
@@ -110,14 +115,16 @@ class InvestorManage extends React.Component {
   }
 
 
+  selectStation(value){
+    this.setState({
+      stationId: value
+    })
+  }
+
   clearSearch() {
     this.setState({
       status: undefined,
-      province: undefined,
-      city: undefined,
-      area: undefined,
-      addr: undefined,
-      name: undefined
+      stationId: undefined,
     })
     this.props.updateLoadingState({isLoading: true})
 
@@ -146,10 +153,15 @@ class InvestorManage extends React.Component {
               <Option value='0'>已停用</Option>
             </Select>
           </Col>
-          <Col>
-            <StationSelect onChange={(value)=>{
-              this.setState({stationId: value})
-            }} />
+          <Col span={16}>
+            <Select style={{width: 120}} placeholder="选择服务网点" onChange={(value)=>{this.selectStation(value)}}>
+              <Option value="">全部</Option>
+              {
+                this.props.stations.map((station, index) => (
+                  <Option key={index} value={station.id}>{station.name}</Option>
+                ))
+              }
+            </Select>
             </Col>
         </Row>
         <Row>

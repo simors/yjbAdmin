@@ -14,6 +14,8 @@ import {configSelector} from '../../util/config'
 import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from '../account/redux'
+
+
 const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
@@ -202,6 +204,9 @@ class StationManage extends React.Component {
               })
             }
           }}
+          showVisible = {this.props.showVisible}
+          editVisible = {this.props.editVisible}
+          addVisible = {this.props.addVisible}
           set={()=> {
             if(this.state.selectedRowId && this.state.selectedRowId.length) {
               this.props.history.push({
@@ -229,8 +234,16 @@ class StationManage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
+  let showVisible = selector.selectValidPermissions(state,[20000,30000])
+  let addVisible = selector.selectValidPermissions(state,[20000,30000])
+  let editVisible = selector.selectValidPermissions(state,[20000,30000])
+
+
   return {
     stations: stations,
+    addVisible: addVisible,
+    editVisible: editVisible,
+    showVisible: showVisible
   };
 };
 
