@@ -9,22 +9,14 @@
 
 .logo {
   text-align: center;
-  height: 40px;
+  height: 45px;
   line-height: 40px;
   cursor: pointer;
   margin: 28px 0;
   overflow: hidden;
 
   img {
-    width: 40px;
-    margin-right: 8px;
-  }
-
-  span {
-    vertical-align: middle;
-    font-size: 16px;
-    text-transform: uppercase;
-    display: inline-block;
+    width: 120px;
   }
 }
 
@@ -50,7 +42,7 @@
 
   .container {
     background: #fff;
-    margin: 0 24px 24px;
+    margin: 0 10px 10px;
   }
 
   .content {
