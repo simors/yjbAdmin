@@ -73,11 +73,6 @@ class AddStation extends React.Component {
   }
 
   componentWillMount() {
-    // console.log('hahahahah',this.props.match)
-    this.props.requestPartners({
-      stationId: this.props.match.params.id, success: ()=> {
-      }
-    })
     this.props.listUsersByRole({
       roleCode: 200,
       onFailure: (e)=>{console.log(e.message)}
