@@ -54,7 +54,7 @@ class SearchForm extends PureComponent {
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
         status: !values.status || values.status == 'all'? undefined : Number(values.status),
         mobilePhoneNumber: values.phone,
-        stationId: values.stationId,
+        stationId: values.stationId == 'all'? undefined : values.stationId,
         limit: 10,
         isRefresh: true,
       })

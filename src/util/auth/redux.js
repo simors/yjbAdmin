@@ -532,7 +532,7 @@ function* sagaCreateUser(action) {
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
-      payload.onFailure();
+      payload.onFailure(e.code);
     }
   }
 
@@ -1000,7 +1000,6 @@ function selectValidRoles(appState, roleCodes) {
  */
 function selectValidPermissions(appState, permissionCodes) {
   const curPermissions = appState.AUTH.get('curPermissions', new Set());
-
   return curPermissions.intersect(new Set(permissionCodes)).size > 0;
 }
 

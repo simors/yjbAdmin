@@ -4,7 +4,7 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Input, Select, Button, Form, InputNumber} from 'antd';
+import {Row, Col, Input, Select, Button, Form, InputNumber, message} from 'antd';
 import ContentHead from '../../component/ContentHead'
 import {stationAction, stationSelector} from './redux';
 import {configSelector} from '../../util/config'
@@ -12,6 +12,9 @@ import PartnerList from './PartnerList'
 import CreatePartnerModal from '../../component/station/CreatePartnerModal'
 import DivisionCascader from '../../component/DivisionCascader'
 import {action , selector} from '../../util/auth'
+import LoadActivity, {loadAction} from '../../component/loadActivity'
+
+
 const Option = Select.Option;
 const FormItem = Form.Item
 const formItemLayout = {
@@ -96,7 +99,7 @@ class AddStation extends React.Component {
       if (errors) {
         return
       }
-      // console.log('=======>',{...this.props.form.getFieldsValue()})
+      this.props.updateLoadingState({isLoading: true})
       let data = this.props.form.getFieldsValue()
       let payload = {
         ...data,
@@ -104,14 +107,15 @@ class AddStation extends React.Component {
         city: this.state.city,
         area: this.state.area,
         success: (stationId)=> {
+          this.props.updateLoadingState({isLoading: false})
           this.props.history.push({pathname: '/site/editStation/' + stationId})
         },
         error: (err)=> {
           console.log(err.message)
+          message.error('提交失败')
+          this.props.updateLoadingState({isLoading: false})
         }
       }
-      console.log('data======>', data)
-      // let count = this.state.count - 1
       this.props.createStation(payload)
     })
   }
@@ -251,6 +255,7 @@ class AddStation extends React.Component {
               </FormItem>
             </Col>
           </Row>
+          <LoadActivity tip = '正在提交...'/>
         </Form>
         <Row>
           <Col>
@@ -279,7 +284,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = {
   ...stationAction,
-  ...action
+  ...action,
+  ...loadAction,
 
 };
 
