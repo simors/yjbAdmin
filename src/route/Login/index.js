@@ -56,7 +56,7 @@ class Login extends React.Component {
     return (
       <div className={style.form}>
         <div className={style.logo}>
-          <img src={require("../../asset/image/logo.jpg")}/>
+          <img src={require("../../asset/image/logo.png")}/>
           <span>衣家宝管理平台</span>
         </div>
         <Form onSubmit={this.handleSubmit}>

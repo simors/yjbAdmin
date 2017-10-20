@@ -59,7 +59,7 @@ class Home extends Component {
       <Layout style={{height: "100%"}}>
         <Sider width={224} className={style.siderMenu}>
           <div className={style.logo}>
-            <img src={require('../../asset/image/logo.jpg')} />
+            <img src={require('../../asset/image/logo.png')} />
             <span>衣家宝</span>
           </div>
           <SiderMenu />
