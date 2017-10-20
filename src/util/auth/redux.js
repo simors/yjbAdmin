@@ -532,7 +532,7 @@ function* sagaCreateUser(action) {
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
-      payload.onFailure();
+      payload.onFailure(e.code);
     }
   }
 
