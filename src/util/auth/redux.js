@@ -532,7 +532,7 @@ function* sagaCreateUser(action) {
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
-      payload.onFailure();
+      payload.onFailure(e.code);
     }
   }
 
@@ -847,6 +847,7 @@ export const selector = {
   selectEndUsers,
   selectAdminUsers,
   selectAdminUserById,
+  selectCurAdminUser,
   selectUserById,
   selectUsersByRole,
   selectValidRoles,
@@ -932,6 +933,18 @@ function selectAdminUserById(appState, userId) {
 }
 
 /**
+ * Get current login admin user info
+ * @param appState
+ * @returns {*} JSON representation of User object with roles
+ */
+function selectCurAdminUser(appState) {
+  const curUserId = appState.AUTH.curUserId;
+  if (curUserId === undefined)
+    return undefined;
+  return selectAdminUserById(appState, curUserId)
+}
+
+/**
  * Get user detail by user id.
  * @param {Object} appState
  * @param {String} userId
@@ -987,7 +1000,6 @@ function selectValidRoles(appState, roleCodes) {
  */
 function selectValidPermissions(appState, permissionCodes) {
   const curPermissions = appState.AUTH.get('curPermissions', new Set());
-
   return curPermissions.intersect(new Set(permissionCodes)).size > 0;
 }
 

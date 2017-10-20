@@ -21,7 +21,7 @@ class UserList extends React.Component {
   }
 
   componentDidMount() {
-    this.props.listAdminUsers({limit: 100});
+    this.props.listEndUsers({});
   }
 
   rowKey = (record) => {
@@ -57,7 +57,7 @@ class UserList extends React.Component {
 
 const mapStateToProps = (appState, ownProps) => {
   const selectedUserIds = selector.selectSelectedUserIds(appState);
-  const users = authSelector.selectAdminUsers(appState);
+  const users = authSelector.selectEndUsers(appState);
 
   return {
     selectedUserIds,

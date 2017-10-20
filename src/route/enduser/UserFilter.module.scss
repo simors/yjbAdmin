@@ -1,0 +1,34 @@
+.UserFilter {
+  display: flex;
+  margin: 8px 0;
+
+  &> div {
+    display: flex;
+  }
+
+  label {
+    margin: auto 5px auto 0;
+  }
+
+  .name {
+    :global {
+      .ant-input {
+        width: 5rem;
+      }
+    }
+
+    margin-right: 16px;
+  }
+
+  .phoneNo {
+    :global {
+      .ant-input {
+        width: 12rem;
+      }
+    }
+  }
+
+  .buttonGroup {
+    margin-left: auto;
+  }
+}
