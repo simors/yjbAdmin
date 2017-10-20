@@ -106,7 +106,7 @@ function* fetchOrders(action) {
       stationId: payload.stationId,
       limit: payload.limit,
       isRefresh: payload.isRefresh,
-      lastStartTime: payload.lastStartTime || undefined
+      lastCreatedAt: payload.lastCreatedAt || undefined
     }
     let orders = yield call(fetchOrdersApi, apiPayload)
     yield put(updateOrderList({orders: orders, isRefresh: apiPayload.isRefresh}))

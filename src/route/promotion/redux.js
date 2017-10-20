@@ -288,7 +288,7 @@ function onRehydrate(state, action) {
       }
     }
   } catch (error) {
-
+    categoryMap.clear()
   }
 
   let promotionList = incoming.promotionList
