@@ -64,30 +64,60 @@ export async function logout(payload) {
   await AV.User.logOut();
 }
 
+/**
+ *
+ * @param payload
+ * @returns {Promise.<object>}
+ * {
+ *   count,
+ *   jsonUsers
+ * }
+ */
+export async function listEndUsers(payload) {
+  return await AV.Cloud.run('authListEndUsers', payload);
+}
+
+/**
+ *
+ * @param payload
+ * @returns {Promise.<object>}
+ * {
+ *   jsonUsers
+ * }
+ */
 export async function listUsers(payload) {
-  // result = {
-  //   jsonUsers,
-  // }
   return await AV.Cloud.run('authListUsers', payload);
 }
 
+/**
+ *
+ * @param payload
+ * @returns {Promise.<*>}
+ * {
+ * }
+ */
 export async function createUser(payload) {
-  // result = {
-  //
-  // }
   return await AV.Cloud.run('authCreateUser', payload);
 }
 
+/**
+ *
+ * @param payload
+ * @returns {Promise.<*>}
+ * {
+ * }
+ */
 export async function deleteUser(payload) {
-  // result = {
-  //
-  // }
   return await AV.Cloud.run('authDeleteUser', payload);
 }
 
+/**
+ *
+ * @param payload
+ * @returns {Promise.<*>}
+ * {
+ * }
+ */
 export async function updateUser(payload) {
-  // result = {
-  //
-  // }
   return await AV.Cloud.run('authUpdateUser', payload);
 }
