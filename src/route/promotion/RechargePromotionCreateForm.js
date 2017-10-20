@@ -108,7 +108,7 @@ class PromotionCreateForm extends PureComponent {
               rules: [{ type: 'array', required: true, message: '请输入活动生效区域' }],
               initialValue: ['430000', '430100', '430104'],
             })(
-              <DivisionCascader />
+              <DivisionCascader level={2}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="奖励金额">
