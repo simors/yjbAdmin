@@ -14,7 +14,7 @@ import {configSelector} from '../../util/config'
 import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from '../account/redux'
-
+import {PERMISSION_CODE} from '../../util/rolePermission'
 
 const history = createBrowserHistory()
 const Option = Select.Option;
@@ -234,10 +234,10 @@ class StationManage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
-  let showVisible = selector.selectValidPermissions(state,[20000,30000])
-  let addVisible = selector.selectValidPermissions(state,[20000,30000])
-  let editVisible = selector.selectValidPermissions(state,[20000,30000])
-
+  let showVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_QUERY_WHOLE,PERMISSION_CODE.STATION_QUERY_PART])
+  let addVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_ADD_WHOLE,PERMISSION_CODE.STATION_ADD_PART])
+  let editVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_EDIT_WHOLE,PERMISSION_CODE.STATION_EDIT_PART])
+  console.log('showVisible,showVisible',showVisible,addVisible,editVisible)
 
   return {
     stations: stations,
