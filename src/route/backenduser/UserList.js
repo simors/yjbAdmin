@@ -21,7 +21,7 @@ class UserList extends React.Component {
   }
 
   componentDidMount() {
-    this.props.listAdminUsers({});
+    this.props.listAdminUsers({limit: 100});
   }
 
   rowKey = (record) => {

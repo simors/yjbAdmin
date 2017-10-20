@@ -847,6 +847,7 @@ export const selector = {
   selectEndUsers,
   selectAdminUsers,
   selectAdminUserById,
+  selectCurAdminUser,
   selectUserById,
   selectUsersByRole,
   selectValidRoles,
@@ -929,6 +930,18 @@ function selectAdminUserById(appState, userId) {
     ...User.toJson(immUser),
     roles: immRoles.toArray()
   };
+}
+
+/**
+ * Get current login admin user info
+ * @param appState
+ * @returns {*} JSON representation of User object with roles
+ */
+function selectCurAdminUser(appState) {
+  const curUserId = appState.AUTH.curUserId;
+  if (curUserId === undefined)
+    return undefined;
+  return selectAdminUserById(appState, curUserId)
 }
 
 /**
