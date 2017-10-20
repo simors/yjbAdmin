@@ -70,12 +70,12 @@ class Profit extends React.PureComponent {
 
 const mapStateToProps = (state, ownProps) => {
   let userInfo = authSelector.selectCurAdminUser(state)
-  // let isInvestor = authSelector.selectValidRoles(state, ROLE_CODE.STATION_INVESTOR)
-  // let isProvider = authSelector.selectValidRoles(state, ROLE_CODE.STATION_PROVIDER)
+  let isInvestor = authSelector.selectValidRoles(state, [ROLE_CODE.STATION_INVESTOR])
+  let isProvider = authSelector.selectValidRoles(state, [ROLE_CODE.STATION_PROVIDER])
   return {
     userInfo,
-    isInvestor: true,
-    isProvider: true,
+    isInvestor: isInvestor,
+    isProvider: isProvider,
   }
 }
 
