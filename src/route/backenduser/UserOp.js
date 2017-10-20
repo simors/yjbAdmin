@@ -48,7 +48,7 @@ class UserOp extends React.Component {
   };
 
   onRefresh = () => {
-    this.props.listAdminUsers({});
+    this.props.listAdminUsers({limit: 100});
   };
 
   render() {

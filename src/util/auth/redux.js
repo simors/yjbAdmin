@@ -8,7 +8,7 @@ import * as api from './cloud';
 
 class User extends Record({
   id: undefined,                  // objectId
-  state: undefined,               // 'disabled'/'deleted'
+  status: undefined,              // 'disabled' or not
   email: undefined,
   emailVerified: undefined,
   mobilePhoneNumber: undefined,
@@ -36,7 +36,7 @@ class User extends Record({
 
     return imm.withMutations((m) => {
       m.set('id', json.id);
-      m.set('state', json.state);
+      m.set('status', json.status);
       m.set('email', json.email);
       m.set('emailVerified', json.emailVerified);
       m.set('mobilePhoneNumber', json.mobilePhoneNumber);
@@ -65,7 +65,7 @@ class User extends Record({
     // NOTE: IE8 does not support property access. Only use get() when supporting IE8
     return {
       id: imm.id,
-      state: imm.state,
+      status: imm.status,
       email: imm.email,
       emailVerified: imm.emailVerified,
       mobilePhoneNumber: imm.mobilePhoneNumber,
@@ -249,7 +249,7 @@ function* sagaLoginWithMobilePhone(action) {
     // result = {
     //   jsonCurUser,
     //   token,
-    //   jsonCurRoleIds,
+    //   jsonCurRoleCodes,
     //   jsonRoles,
     //   jsonPermissions,
     // }
@@ -300,7 +300,7 @@ function* sagaLoginWithToken(action) {
     // result = {
     //   jsonCurUser,
     //   token,
-    //   jsonCurRoleIds,
+    //   jsonCurRoleCodes,
     //   jsonRoles,
     //   jsonPermissions,
     // }
@@ -357,7 +357,6 @@ function* sagaLogout(action) {
  * @param action
  * payload = {
  *   limit?,
- *   lastCreatedAt?,
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,
@@ -368,18 +367,17 @@ function* sagaListEndUsers(action) {
 
   try {
     const params = {
-      type: 'end',
     };
 
     ({
       limit: params.limit,
-      lastCreatedAt: params.lastCreatedAt,
     } = payload);
 
     // result = {
+    //   count,
     //   jsonUsers,
     // }
-    const result = yield call(api.listUsers, params);
+    const result = yield call(api.listEndUsers, params);
 
     const {jsonUsers} = result;
     yield put(listedEndUsers({
@@ -889,7 +887,7 @@ function selectEndUsers(appState) {
   const userIds = appState.AUTH.get('endUsers', new List());
 
   userIds.forEach((i) => {
-    users.push(selectUserById(i));
+    users.push(selectUserById(appState, i));
   });
 
   return users;
