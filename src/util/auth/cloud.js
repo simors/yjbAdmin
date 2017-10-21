@@ -7,7 +7,6 @@ export async function loginWithMobilePhone(payload) {
   const token = leanCurUser.getSessionToken();
 
   // result = {
-  //   jsonCurRoleCodes,
   //   jsonRoles,
   //   jsonPermissions,
   // }
@@ -16,7 +15,6 @@ export async function loginWithMobilePhone(payload) {
   // result = {
   //   jsonCurUser,
   //   token,
-  //   jsonCurRoleCodes,
   //   jsonRoles,
   //   jsonPermissions,
   // }
@@ -37,7 +35,6 @@ export async function become(payload) {
   const token = leanCurUser.getSessionToken();
 
   // result = {
-  //   jsonCurRoleCodes,
   //   jsonRoles,
   //   jsonPermissions,
   // }
@@ -46,7 +43,6 @@ export async function become(payload) {
   // result = {
   //   jsonCurUser,
   //   token,
-  //   jsonCurRoleCodes,
   //   jsonRoles,
   //   jsonPermissions,
   // }
@@ -64,30 +60,84 @@ export async function logout(payload) {
   await AV.User.logOut();
 }
 
-export async function listUsers(payload) {
-  // result = {
-  //   jsonUsers,
-  // }
-  return await AV.Cloud.run('authListUsers', payload);
+/**
+ *
+ * @param payload
+ * @returns {Promise.<object>}
+ * {
+ *   count,
+ *   jsonUsers
+ * }
+ */
+export async function listEndUsers(payload) {
+  return await AV.Cloud.run('authListEndUsers', payload);
 }
 
+/**
+ *
+ * @param payload
+ * @returns {Promise.<object>}
+ * {
+ *   count,
+ *   jsonUsers
+ * }
+ */
+export async function listAdminUsers(payload) {
+  return await AV.Cloud.run('authListAdminUsers', payload);
+}
+
+/**
+ *
+ * @param payload
+ * @returns {Promise.<*>}
+ * {
+ * }
+ */
 export async function createUser(payload) {
-  // result = {
-  //
-  // }
   return await AV.Cloud.run('authCreateUser', payload);
 }
 
+/**
+ *
+ * @param payload
+ * @returns {Promise.<*>}
+ * {
+ * }
+ */
 export async function deleteUser(payload) {
-  // result = {
-  //
-  // }
   return await AV.Cloud.run('authDeleteUser', payload);
 }
 
+/**
+ *
+ * @param payload
+ * @returns {Promise.<*>}
+ * {
+ * }
+ */
 export async function updateUser(payload) {
-  // result = {
-  //
-  // }
   return await AV.Cloud.run('authUpdateUser', payload);
+}
+
+
+/**
+ *
+ * @param payload smsAuthCode,phone
+ * @returns {*}
+ */
+export async function verifySmsCode(payload) {
+  let {smsCode, phone} = payload
+  console.log('payload======>',payload)
+  return await AV.Cloud.verifySmsCode(smsCode, phone)
+}
+
+/**
+ *
+ * @param payload phone,name,op
+ * @returns {*}
+ */
+export async function requestSmsAuthCode(payload) {
+  payload.ttl = 10
+  console.log('payload======>',payload)
+  return await AV.Cloud.requestSmsCode(payload)
 }

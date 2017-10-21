@@ -8,7 +8,7 @@ import * as api from './cloud';
 
 class User extends Record({
   id: undefined,                  // objectId
-  state: undefined,               // 'disabled'/'deleted'
+  status: undefined,              // 'disabled' or not
   email: undefined,
   emailVerified: undefined,
   mobilePhoneNumber: undefined,
@@ -30,13 +30,14 @@ class User extends Record({
   type: undefined,                // user type, e.g. end user or admin user
   note: undefined,                // note for this user
   subscribe: undefined,
+  roles: Set(),                   // Set<role code>
 }, 'User') {
   static fromJson(json) {
     const imm = new User();
 
     return imm.withMutations((m) => {
       m.set('id', json.id);
-      m.set('state', json.state);
+      m.set('status', json.status);
       m.set('email', json.email);
       m.set('emailVerified', json.emailVerified);
       m.set('mobilePhoneNumber', json.mobilePhoneNumber);
@@ -58,6 +59,7 @@ class User extends Record({
       m.set('type', json.type);
       m.set('note', json.note);
       m.set('subscribe', json.subscribe);
+      m.set('roles', new Set(json.roles));
     });
   }
 
@@ -65,7 +67,7 @@ class User extends Record({
     // NOTE: IE8 does not support property access. Only use get() when supporting IE8
     return {
       id: imm.id,
-      state: imm.state,
+      status: imm.status,
       email: imm.email,
       emailVerified: imm.emailVerified,
       mobilePhoneNumber: imm.mobilePhoneNumber,
@@ -87,6 +89,7 @@ class User extends Record({
       type: imm.type,
       note: imm.note,
       subscribe: imm.subscribe,
+      roles: imm.get('roles', new Set()).toArray(),
     };
   }
 }
@@ -151,14 +154,13 @@ class AuthState extends Record({
   curRoles: Set(),              // Set<role code>
   curPermissions: Set(),        // Set<permission code>
 
-  rolesByCode: Map(),           // Map<role code, Role>
-  permissionsByCode: Map(),     // Map<permission code, Permission>
+  roles: Map(),                 // Map<role code, Role>
+  permissions: Map(),           // Map<permission code, Permission>
 
   endUsers: List(),             // List<user id>
   adminUsers: List(),           // List<user id>
-  adminRoles: Map(),            // Map<user id, Set<role code>>
+  adminsByRole: Map(),          // Map<role code, List<user id>>
 
-  usersByRole: Map(),           // Map<role code, List<user id>>
   usersById: Map(),             // Map<user id, User>
 }, 'AuthState') {
 
@@ -175,14 +177,17 @@ const LIST_END_USERS = 'AUTH/LIST_END_USERS';
 const LISTED_END_USERS = 'AUTH/LISTED_END_USERS';
 const LIST_ADMIN_USERS = 'AUTH/LIST_ADMIN_USERS';
 const LISTED_ADMIN_USERS = 'AUTH/LISTED_ADMIN_USERS';
-const LIST_USERS_BY_ROLE = 'AUTH/LIST_USERS_BY_ROLE';
-const LISTED_USERS_BY_ROLE = 'AUTH/LISTED_USERS_BY_ROLE';
+const LIST_ADMINS_BY_ROLE = 'AUTH/LIST_ADMINS_BY_ROLE';
+const LISTED_ADMINS_BY_ROLE = 'AUTH/LISTED_ADMINS_BY_ROLE';
 const CREATE_USER = 'AUTH/CREATE_USER';
 const DELETE_USER = 'AUTH/DELETE_USER';
 const UPDATE_USER = 'AUTH/UPDATE_USER';
 
 const SAVE_USER = 'AUTH/SAVE_USER';
 const SAVE_USERS = 'AUTH/SAVE_USERS';
+
+const REQUEST_SMS_CODE = 'AUTH/REQUEST_SMS_CODE'
+const VERIFY_SMS_CODE = 'AUTH/FETCH_SMS_CODE'
 
 // --- action
 
@@ -192,7 +197,7 @@ export const action = {
   logout: createAction(LOGOUT),
   listEndUsers: createAction(LIST_END_USERS),
   listAdminUsers: createAction(LIST_ADMIN_USERS),
-  listUsersByRole: createAction(LIST_USERS_BY_ROLE),
+  listUsersByRole: createAction(LIST_ADMINS_BY_ROLE),
 
   createUser: createAction(CREATE_USER),
   deleteUser: createAction(DELETE_USER),
@@ -200,13 +205,16 @@ export const action = {
 
   saveUser: createAction(SAVE_USER),
   saveUsers: createAction(SAVE_USERS),
+
+  requestSmsCode: createAction(REQUEST_SMS_CODE),
+  verifySmsCode: createAction(VERIFY_SMS_CODE)
 };
 
 const loggedIn = createAction(LOGGED_IN);
 const loggedOut = createAction(LOGGED_OUT);
 const listedEndUsers = createAction(LISTED_END_USERS);
 const listedAdminUsers = createAction(LISTED_ADMIN_USERS);
-const listedUsersByRole = createAction(LISTED_USERS_BY_ROLE);
+const listedAdminsByRole = createAction(LISTED_ADMINS_BY_ROLE);
 
 // --- saga
 
@@ -217,10 +225,12 @@ export const saga = [
 
   takeLatest(LIST_END_USERS, sagaListEndUsers),
   takeLatest(LIST_ADMIN_USERS, sagaListAdminUsers),
-  takeLatest(LIST_USERS_BY_ROLE, sagaListUsersByRole),
+  takeLatest(LIST_ADMINS_BY_ROLE, sagaListAdminsByRole),
   takeLatest(CREATE_USER, sagaCreateUser),
   takeLatest(DELETE_USER, sagaDeleteUser),
   takeLatest(UPDATE_USER, sagaUpdateUser),
+  takeLatest(REQUEST_SMS_CODE, sagaRequestSmsCode),
+  takeLatest(VERIFY_SMS_CODE, sagaVerifySmsCode)
 ];
 
 /**
@@ -249,7 +259,6 @@ function* sagaLoginWithMobilePhone(action) {
     // result = {
     //   jsonCurUser,
     //   token,
-    //   jsonCurRoleIds,
     //   jsonRoles,
     //   jsonPermissions,
     // }
@@ -300,7 +309,6 @@ function* sagaLoginWithToken(action) {
     // result = {
     //   jsonCurUser,
     //   token,
-    //   jsonCurRoleIds,
     //   jsonRoles,
     //   jsonPermissions,
     // }
@@ -353,11 +361,15 @@ function* sagaLogout(action) {
 }
 
 /**
- *
+ * List end users.
  * @param action
  * payload = {
+ *   skip?,
  *   limit?,
- *   lastCreatedAt?,
+ *   mobilePhoneNumber?: string,
+ *   province?: string,
+ *   city?: string,
+ *   status?: string, 'disabled' or empty
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,
@@ -368,21 +380,26 @@ function* sagaListEndUsers(action) {
 
   try {
     const params = {
-      type: 'end',
     };
 
     ({
+      skip: params.skip,
       limit: params.limit,
-      lastCreatedAt: params.lastCreatedAt,
+      mobilePhoneNumber: params.mobilePhoneNumber,
+      province: params.province,
+      city: params.city,
+      status: params.status,
     } = payload);
 
     // result = {
+    //   count,
     //   jsonUsers,
     // }
-    const result = yield call(api.listUsers, params);
+    const result = yield call(api.listEndUsers, params);
 
-    const {jsonUsers} = result;
+    const {count, jsonUsers} = result;
     yield put(listedEndUsers({
+      count,
       jsonUsers
     }));
 
@@ -404,13 +421,15 @@ function* sagaListEndUsers(action) {
 }
 
 /**
- *
+ * List admin users.
  * @param action
  * payload = {
- *   limit?,
- *   lastCreatedAt?,
- *   idName?,
- *   mobilePhoneNumber?,
+ *   skip?: number,
+ *   limit?: number,
+ *   idName?: string, user's real name
+ *   mobilePhoneNumber?: string,
+ *   roles?: Array<number>, an array of role codes, e.g., [100, 200]
+ *   status?: string, 'disabled' or empty
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,
@@ -421,23 +440,26 @@ function* sagaListAdminUsers(action) {
 
   try {
     const params = {
-      type: 'admin',
     };
 
     ({
+      skip: params.skip,
       limit: params.limit,
-      lastCreatedAt: params.lastCreatedAt,
       idName: params.idName,
       mobilePhoneNumber: params.mobilePhoneNumber,
+      roles: params.roles,
+      status: params.status,
     } = payload);
 
     // result = {
+    //   count,
     //   jsonUsers,
     // }
-    const result = yield call(api.listUsers, params);
+    const result = yield call(api.listAdminUsers, params);
 
-    const {jsonUsers} = result;
+    const {count, jsonUsers} = result;
     yield put(listedAdminUsers({
+      count,
       jsonUsers
     }));
 
@@ -459,43 +481,48 @@ function* sagaListAdminUsers(action) {
 }
 
 /**
- * List admin users by role code.
+ * List admin users by specified roles.
  * @param action
  * payload = {
- *   limit?,
- *   lastCreatedAt?,
- *   roleCode,
+ *   skip?: number,
+ *   limit?: number,
+ *   idName?: string, user's real name
+ *   mobilePhoneNumber?: string,
+ *   role?: number, role code
+ *   status?: string, 'disabled' or empty
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,
  * }
  */
-function* sagaListUsersByRole(action) {
+function* sagaListAdminsByRole(action) {
   const payload = action.payload;
 
   try {
-    const {roleCode} = payload;
-
-    const role = yield select(selectRoleByCode, roleCode);
-
     const params = {
-      type: 'admin',
-      roleId: role.id,
     };
 
     ({
+      skip: params.skip,
       limit: params.limit,
-      lastCreatedAt: params.lastCreatedAt,
+      idName: params.idName,
+      mobilePhoneNumber: params.mobilePhoneNumber,
+      status: params.status,
     } = payload);
 
+    const {roleCode: role} = payload;
+    params.roles = [role];
+
     // result = {
+    //   count,
     //   jsonUsers,
     // }
-    const result = yield call(api.listUsers, params);
+    const result = yield call(api.listAdminUsers, params);
 
-    const {jsonUsers} = result;
-    yield put(listedUsersByRole({
-      roleCode,
+    const {count, jsonUsers} = result;
+    yield put(listedAdminsByRole({
+      role,
+      count,
       jsonUsers
     }));
 
@@ -503,7 +530,7 @@ function* sagaListUsersByRole(action) {
       payload.onSuccess();
     }
   } catch (e) {
-    logger.error('list users by role failed：', e);
+    logger.error('list admin users by role failed：', e);
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
@@ -591,6 +618,34 @@ function* sagaUpdateUser(action) {
   }
 }
 
+function* sagaRequestSmsCode(action) {
+  const payload = action.payload
+  try{
+    yield call(api.requestSmsAuthCode, payload)
+      if(payload.success){
+        payload.success()
+      }
+  }catch(e){
+    if(payload.error){
+      payload.error(e)
+    }
+  }
+}
+
+function* sagaVerifySmsCode(action) {
+  const payload = action.payload
+  try{
+    yield call(api.verifySmsCode, payload)
+    if(payload.success){
+      payload.success()
+    }
+  }catch(e){
+    if(payload.error){
+      payload.error(e)
+    }
+  }
+}
+
 // --- reducer
 
 const initialState = new AuthState();
@@ -605,8 +660,8 @@ export function reducer(state=initialState, action) {
       return reduceListedEndUsers(state, action);
     case LISTED_ADMIN_USERS:
       return reduceListedAdminUsers(state, action);
-    case LISTED_USERS_BY_ROLE:
-      return reduceListedUsersByRole(state, action);
+    case LISTED_ADMINS_BY_ROLE:
+      return reduceListedAdminsByRole(state, action);
     case REHYDRATE:
       return reduceRehydrate(state, action);
     case SAVE_USER:
@@ -620,23 +675,22 @@ export function reducer(state=initialState, action) {
 
 function reduceLoggedIn(state, action) {
   const {login} = action.payload;
-  const {jsonCurUser, token, jsonCurRoleCodes, jsonRoles, jsonPermissions} = login;
-
-  // 'curRoleCodes'
-  const immCurRoleCodes = new Set(jsonCurRoleCodes);
+  const {token, jsonCurUser, jsonRoles, jsonPermissions} = login;
 
   const immCurUser = User.fromJson(jsonCurUser);
 
-  // 'rolesByCode'
-  const immRolesByCode = new Map().withMutations((m) => {
+  const immCurRoles = immCurUser.get('roles', new Set());
+
+  // 'roles'
+  const immRoles = new Map().withMutations((m) => {
     jsonRoles.forEach((i) => {
       const immRole = Role.fromJson(i);
       m.set(immRole.code, immRole);
     });
   });
 
-  // 'permissionsByCode'
-  const immPermissionsByCode = new Map().withMutations((m) => {
+  // 'permissions'
+  const immPermissions = new Map().withMutations((m) => {
     jsonPermissions.forEach((i) => {
       const immPermission = Permission.fromJson(i);
       m.set(immPermission.code, immPermission);
@@ -644,21 +698,21 @@ function reduceLoggedIn(state, action) {
   });
 
   // 'curPermissionCodes'
-  const immCurPermissionCodes = new Set().withMutations((m) => {
-    immCurRoleCodes.forEach((i) => {
-      const immRole = immRolesByCode.get(i);
+  const immCurPermissions = new Set().withMutations((m) => {
+    immCurRoles.forEach((i) => {
+      const immRole = immRoles.get(i);
       const immPermissionCodes = immRole.get('permissions');
       m.union(immPermissionCodes);
     });
   });
 
   return state.withMutations((m) => {
-    m.set('token', token);
     m.set('curUserId', immCurUser.id);
-    m.set('curRoles', immCurRoleCodes);
-    m.set('curPermissions', immCurPermissionCodes);
-    m.set('rolesByCode', immRolesByCode);
-    m.set('permissionsByCode', immPermissionsByCode);
+    m.set('token', token);
+    m.set('curRoles', immCurRoles);
+    m.set('curPermissions', immCurPermissions);
+    m.set('roles', immRoles);
+    m.set('permissions', immPermissions);
     m.setIn(['usersById', immCurUser.id], immCurUser);
   });
 }
@@ -671,7 +725,7 @@ function reduceLoggedOut(state, action) {
 }
 
 function reduceListedEndUsers(state, action) {
-  const {jsonUsers} = action.payload;
+  const {count, jsonUsers} = action.payload;
 
   return state.withMutations((m) => {
     const userIds = [];
@@ -688,19 +742,13 @@ function reduceListedEndUsers(state, action) {
 }
 
 function reduceListedAdminUsers(state, action) {
-  const {jsonUsers} = action.payload;
+  const {count, jsonUsers} = action.payload;
 
   return state.withMutations((m) => {
     const userIds = [];
 
-    m.delete('adminRoles');
-
     jsonUsers.forEach((i) => {
       userIds.push(i.id);
-
-      // admin users has role(s) associated with them
-      const {roles} = i;
-      m.setIn(['adminRoles', i.id], new Set(roles));
 
       const immUser = User.fromJson(i);
       m.setIn(['usersById', i.id], immUser);
@@ -710,8 +758,8 @@ function reduceListedAdminUsers(state, action) {
   });
 }
 
-function reduceListedUsersByRole(state, action) {
-  const {roleCode, jsonUsers} = action.payload;
+function reduceListedAdminsByRole(state, action) {
+  const {role, count, jsonUsers} = action.payload;
 
   return state.withMutations((m) => {
     const userIds = [];
@@ -723,7 +771,7 @@ function reduceListedUsersByRole(state, action) {
       m.setIn(['usersById', i.id], immUser);
     });
 
-    m.setIn(['usersByRole', roleCode], userIds);
+    m.setIn(['adminsByRole', role], userIds);
   });
 }
 
@@ -735,23 +783,23 @@ function reduceRehydrate(state, action) {
 
   // all data in json format
   const {token, curRoleCodes, curPermissionCodes,
-    rolesByCode, permissionsByCode, endUsers, adminUsers, adminRoles,
-    usersByRole, usersById} = storage;
+    roles, permissions, endUsers, adminUsers,
+    adminsByRole, usersById} = storage;
 
-  const immCurRoleCodes = new Set(curRoleCodes);
-  const immCurPermissionCodes = new Set(curPermissionCodes);
+  const immCurRoles = new Set(curRoleCodes);
+  const immCurPermissions = new Set(curPermissionCodes);
 
-  // 'rolesByCode'
-  const immRolesByCode = new Map().withMutations((m) => {
-    Object.values(rolesByCode).forEach((i) => {
+  // 'roles'
+  const immRoles = new Map().withMutations((m) => {
+    Object.values(roles).forEach((i) => {
       const immRole = Role.fromJson(i);
       m.set(immRole.code, immRole);
     });
   });
 
-  // 'permissionsByCode'
-  const immPermissionsByCode = new Map().withMutations((m) => {
-    Object.values(permissionsByCode).forEach((i) => {
+  // 'permissions'
+  const immPermissions = new Map().withMutations((m) => {
+    Object.values(permissions).forEach((i) => {
       const immPermission = Permission.fromJson(i);
       m.set(immPermission.code, immPermission);
     });
@@ -763,20 +811,14 @@ function reduceRehydrate(state, action) {
   // 'adminUsers'
   const immAdminUsers = new List(adminUsers);
 
-  // 'adminRoles'
-  const immAdminRoles = new Map().withMutations((m) => {
-    for (const [k, v] of Object.entries(adminRoles)) {
-      m.set(k, new Set(v));
-    }
-  });
-
-  // 'usersByRole'
+  // 'adminsByRole'
   const immUsersByRole = new Map().withMutations((m) => {
-    for (const [k, v] of Object.entries(usersByRole)) {
+    for (const [k, v] of Object.entries(adminsByRole)) {
       m.set(k, new List(v));
     }
   });
 
+  // 'usersById'
   const immUsersById = new Map().withMutations((m) => {
     Object.values(usersById).forEach((i) => {
       const immUser = User.fromJson(i);
@@ -786,14 +828,13 @@ function reduceRehydrate(state, action) {
 
   return state.withMutations((m) => {
     m.set('token', token);
-    m.set('curRoles', immCurRoleCodes);
-    m.set('curPermissions', immCurPermissionCodes);
-    m.set('rolesByCode', immRolesByCode);
-    m.set('permissionsByCode', immPermissionsByCode);
+    m.set('curRoles', immCurRoles);
+    m.set('curPermissions', immCurPermissions);
+    m.set('roles', immRoles);
+    m.set('permissions', immPermissions);
     m.set('endUsers', immEndUsers);
     m.set('adminUsers', immAdminUsers);
-    m.set('adminRoles', immAdminRoles);
-    m.set('usersByRole', immUsersByRole);
+    m.set('adminsByRole', immUsersByRole);
     m.set('usersById', immUsersById);
   });
 }
@@ -846,9 +887,8 @@ export const selector = {
   selectRoles,
   selectEndUsers,
   selectAdminUsers,
-  selectAdminUserById,
-  selectCurAdminUser,
   selectUserById,
+  selectCurAdminUser,
   selectUsersByRole,
   selectValidRoles,
   selectValidPermissions,
@@ -869,18 +909,12 @@ function selectToken(appState) {
 function selectRoles(appState) {
   const roles = [];
 
-  const immRoles = appState.AUTH.getIn(['rolesByCode'], new Map()).toArray();
+  const immRoles = appState.AUTH.getIn(['roles'], new Map()).toArray();
   immRoles.forEach((i) => {
     roles.push(Role.toJson(i));
   });
 
   return roles;
-}
-
-function selectRoleByCode(appState, roleCode) {
-  const immRole = appState.AUTH.getIn(['rolesByCode', roleCode]);
-
-  return Role.toJson(immRole);
 }
 
 function selectEndUsers(appState) {
@@ -889,7 +923,7 @@ function selectEndUsers(appState) {
   const userIds = appState.AUTH.get('endUsers', new List());
 
   userIds.forEach((i) => {
-    users.push(selectUserById(i));
+    users.push(selectUserById(appState, i));
   });
 
   return users;
@@ -899,49 +933,11 @@ function selectAdminUsers(appState) {
   const users = [];
 
   const userIds = appState.AUTH.get('adminUsers', new List());
-  const adminRoles = appState.AUTH.get('adminRoles', new Map());
-
   userIds.forEach((i) => {
-    users.push({
-      ...selectUserById(appState, i),
-      roles: adminRoles.get(i).toArray()
-    });
+    users.push(selectUserById(appState, i));
   });
 
   return users;
-}
-
-/**
- * Get admin user detail by user id
- * @param {Object} appState
- * @param {String} userId
- * @returns {Object} JSON representation of User object with roles
- */
-function selectAdminUserById(appState, userId) {
-  const immUser = appState.AUTH.getIn(['usersById', userId]);
-  if (immUser === undefined)
-    return undefined;
-
-  const immRoles = appState.AUTH.getIn(['adminRoles', userId]);
-  if (immRoles === undefined)
-    return undefined;
-
-  return {
-    ...User.toJson(immUser),
-    roles: immRoles.toArray()
-  };
-}
-
-/**
- * Get current login admin user info
- * @param appState
- * @returns {*} JSON representation of User object with roles
- */
-function selectCurAdminUser(appState) {
-  const curUserId = appState.AUTH.curUserId;
-  if (curUserId === undefined)
-    return undefined;
-  return selectAdminUserById(appState, curUserId)
 }
 
 /**
@@ -963,6 +959,18 @@ function selectUserById(appState, userId) {
 }
 
 /**
+ * Get current login admin user info
+ * @param appState
+ * @returns {*} JSON representation of User object with roles
+ */
+function selectCurAdminUser(appState) {
+  const curUserId = appState.AUTH.curUserId;
+  if (curUserId === undefined)
+    return undefined;
+  return selectUserById(appState, curUserId)
+}
+
+/**
  * Get all users with the specified role code.
  * @param {Object} appState
  * @param {Number} roleCode
@@ -971,7 +979,7 @@ function selectUserById(appState, userId) {
 function selectUsersByRole(appState, roleCode) {
   const users = [];
 
-  const userIds = appState.AUTH.getIn(['usersByRole', roleCode], new List());
+  const userIds = appState.AUTH.getIn(['adminsByRole', roleCode], new List());
 
   userIds.forEach((i) => {
     users.push(selectUserById(appState, i));
@@ -1002,4 +1010,3 @@ function selectValidPermissions(appState, permissionCodes) {
   const curPermissions = appState.AUTH.get('curPermissions', new Set());
   return curPermissions.intersect(new Set(permissionCodes)).size > 0;
 }
-
