@@ -10,6 +10,7 @@ import OperationLogList from './OperationLogList';
 import createBrowserHistory from 'history/createBrowserHistory'
 import {selector as operationLogSelector, actions as operationLogActions} from './redux'
 import mathjs from 'mathjs'
+import {action as authActions, selector as authSelector} from '../../util/auth'
 
 const history = createBrowserHistory()
 const Option = Select.Option;
@@ -30,6 +31,9 @@ class OperationLogManager extends React.Component {
       isRefresh: true,
       limit: 3
     })
+    this.props.listAdminUsers({
+      onFailure: (e)=>{console.log('falus=====>',e.message)}
+    })
   }
 
   refresh() {
@@ -43,12 +47,11 @@ class OperationLogManager extends React.Component {
 
       if(page==pageMax|| page>=pageMax){
         let payload = {
+          ...this.state,
           lastCreatedAt: this.props.operationLogs[this.props.operationLogs.length-1].createdAt,
           success: ()=> {
-            console.log('success')
           },
           error: ()=> {
-            console.log('error')
           },
           isRefresh: false,
           limit: 3
@@ -61,13 +64,15 @@ class OperationLogManager extends React.Component {
 
   search() {
     let payload = {
+      isRefresh: true ,
       userId: this.state.userId,
       success: ()=> {
         console.log('success')
       },
       error: ()=> {
         console.log('error')
-      }
+      },
+      limit: 3
     }
     this.props.fetchOperationList(payload)
   }
@@ -83,10 +88,24 @@ class OperationLogManager extends React.Component {
     })
   }
 
+  selectAdmin(value){
+    this.setState({userId: value})
+  }
+
   renderSearchBar() {
     return (
       <div style={{flex: 1}}>
         <Row >
+          <Col span={20}>
+            <Select defalutValue = '' onChange={(value)=>{this.selectAdmin(value)}} style={{width: 120}} placeholder="选择操作用户">
+              <Option value=''>全部</Option>
+              {
+                this.props.adminList.map((item, index) => (
+                <Option key={index} value={item.id}>{item.nickname}</Option>
+              ))
+              }
+            </Select>
+            </Col>
           <Col span={4}>
             <ButtonGroup>
               <Button onClick={()=> {
@@ -117,13 +136,16 @@ class OperationLogManager extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   let operationLogs = operationLogSelector.selectOperationList(state)
+  let adminList = authSelector.selectAdminUsers(state)
   return {
     operationLogs: operationLogs,
+    adminList: adminList
   };
 };
 
 const mapDispatchToProps = {
     ...operationLogActions,
+    ...authActions
 
 };
 

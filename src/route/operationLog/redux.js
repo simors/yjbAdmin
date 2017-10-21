@@ -62,11 +62,11 @@ function* sagaFetchOperationList(action) {
           userList.add(item.user)
         }
       })
-      yield put(userActions.saveUsers({users:userList}))
-      yield put(fetchOperationListSuccess({operationLogs: operationLogs,isRefresh: payload.isRefresh }))
-      if(payload.success){
-        payload.success()
-      }
+    }
+    yield put(userActions.saveUsers({users:userList}))
+    yield put(fetchOperationListSuccess({operationLogs: operationLogs,isRefresh: payload.isRefresh }))
+    if(payload.success){
+      payload.success()
     }
   }catch(e){
     if(payload.error){
@@ -105,8 +105,8 @@ function handleSetOperationList(state, action) {
       state = state.setIn(['operationLogs', item.id], operationRecord)
       operationList = operationList.push(item.id)
     })
-    state = state.set('operationLogList', operationList)
   }
+  state = state.set('operationLogList', operationList)
   return state
 }
 
