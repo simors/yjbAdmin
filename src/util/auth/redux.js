@@ -1,4 +1,4 @@
-import {call, put, select, takeLatest} from 'redux-saga/effects';
+import {call, put, takeLatest} from 'redux-saga/effects';
 import {createAction} from 'redux-actions';
 import {Record, Map, Set, List} from 'immutable';
 import {REHYDRATE} from 'redux-persist/constants';
@@ -273,7 +273,7 @@ function* sagaLoginWithMobilePhone(action) {
     logger.info('login succeeded：', login);
   } catch (e) {
     if (payload.onFailure) {
-      payload.onFailure();
+      payload.onFailure(e.code);
     }
 
     logger.error('login failed：', e);
@@ -323,7 +323,7 @@ function* sagaLoginWithToken(action) {
     logger.info('login with token succeeded：', login);
   } catch(e) {
     if (payload.onFailure) {
-      payload.onFailure();
+      payload.onFailure(e.code);
     }
 
     logger.error('login with token failed：', e);
@@ -349,7 +349,7 @@ function* sagaLogout(action) {
     }
   } catch (e) {
     if (payload.onFailure) {
-      payload.onFailure();
+      payload.onFailure(e.code);
     }
   }
 
@@ -411,7 +411,7 @@ function* sagaListEndUsers(action) {
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
-      payload.onFailure();
+      payload.onFailure(e.code);
     }
   }
 
@@ -471,7 +471,7 @@ function* sagaListAdminUsers(action) {
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
-      payload.onFailure();
+      payload.onFailure(e.code);
     }
   }
 
@@ -534,7 +534,7 @@ function* sagaListAdminsByRole(action) {
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
-      payload.onFailure();
+      payload.onFailure(e.code);
     }
   }
 
@@ -564,7 +564,7 @@ function* sagaCreateUser(action) {
   }
 
   if (payload.onComplete) {
-    payload.onComplete();
+    payload.onComplete(e.code);
   }
 }
 
@@ -584,7 +584,7 @@ function* sagaDeleteUser(action) {
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
-      payload.onFailure();
+      payload.onFailure(e.code);
     }
   }
 
@@ -609,7 +609,7 @@ function* sagaUpdateUser(action) {
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
-      payload.onFailure();
+      payload.onFailure(e.code);
     }
   }
 
@@ -911,7 +911,8 @@ function selectRoles(appState) {
 
   const immRoles = appState.AUTH.getIn(['roles'], new Map()).toArray();
   immRoles.forEach((i) => {
-    roles.push(Role.toJson(i));
+    if (i.code !== 500)  // skip system admin
+      roles.push(Role.toJson(i));
   });
 
   return roles;

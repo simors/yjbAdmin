@@ -10,14 +10,22 @@ class UserOp extends React.Component {
     super(props);
   }
 
+  onCreate = () => {
+    this.props.showUserCreateModal({});
+  };
+
   onRefresh = () => {
-    this.props.listEndUsers({limit: 100});
+    this.props.listAdminUsers({limit: 100});
   };
 
   render() {
     return (
       <div className={style.UserOp}>
         <Button.Group>
+          <Button icon="plus-circle-o"
+                  onClick={this.onCreate}>
+            新增
+          </Button>
           <Button icon="reload"
                   onClick={this.onRefresh}>
             刷新
@@ -28,19 +36,9 @@ class UserOp extends React.Component {
   }
 }
 
-const mapStateToProps = (appState, ownProps) => {
-  const selectedUserIds = selector.selectSelectedUserIds(appState);
-  const checkedUserRoles = selector.selectCheckedUserRoles(appState);
-
-  return {
-    selectedUserIds,
-    checkedUserRoles,
-  };
-};
-
 const mapDispatchToProps = {
   ...action,
   ...authAction,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserOp);
+export default connect(null, mapDispatchToProps)(UserOp);

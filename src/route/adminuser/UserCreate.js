@@ -1,8 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Modal, Button, Form, Input, Select, Checkbox} from 'antd';
+import {Modal, Button, Form, Input, Select, Checkbox, message} from 'antd';
 import {action, selector} from './redux';
 import {action as authAction, selector as authSelector} from '../../util/auth/';
+import * as errno from '../../errno';
 import style from './UserCreate.module.scss';
 
 class UserCreate extends React.Component {
@@ -48,7 +49,14 @@ class UserCreate extends React.Component {
         onSuccess: () => {
           this.props.hideUserCreateModal({});
           this.props.form.resetFields();
-          this.props.listAdminUsers({});
+          this.props.listAdminUsers({limit: 100});
+        },
+        onFailure: (code) => {
+          if (code === errno.EEXIST) {
+            message.error('用户已存在');
+          } else {
+            message.error(`创建用户失败, 错误：${code}`);
+          }
         },
         onComplete: () => {
           this.setState((prevState, props) => {
@@ -130,10 +138,10 @@ class UserCreate extends React.Component {
         <Form>
           <Form.Item
             {...formItemLayout}
-            label='姓名'
+            label='用户名'
           > {
-            getFieldDecorator('idName', {
-              rules: [{ required: true, message: '请输入姓名!' }],
+            getFieldDecorator('nickname', {
+              rules: [{ required: true, message: '请输入用户名!' }],
             })(
               <Input />
             )

@@ -1,12 +1,12 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Modal, Button, Form, Input, Select, Checkbox, message} from 'antd';
+import {Modal, Button, Form, Input, Select, Checkbox} from 'antd';
 import {action, selector} from './redux';
-import {action as authAction, selector as authSelector} from '../../util/auth/';
-import * as errno from '../../errno';
-import style from './UserCreate.module.scss';
+import {action as authAction} from '../../util/auth/';
+import {selector as authSelector} from "../../util/auth/";
+import style from './UserEdit.module.scss';
 
-class UserCreate extends React.Component {
+class UserEdit extends React.Component {
   constructor(props) {
     super(props);
 
@@ -17,7 +17,7 @@ class UserCreate extends React.Component {
   }
 
   onHideModal = () => {
-    this.props.hideUserCreateModal();
+    this.props.hideUserEditModal();
     this.props.form.resetFields();
     this.setState((prevState, props) => {
       return {
@@ -41,22 +41,16 @@ class UserCreate extends React.Component {
         };
       });
 
-      this.props.createUser({
+      this.props.updateUser({
         params: {
+          id: this.props.user.id,
           ...values,
           type: 'admin',
         },
         onSuccess: () => {
-          this.props.hideUserCreateModal({});
+          this.props.hideUserEditModal({});
           this.props.form.resetFields();
-          this.props.listAdminUsers({});
-        },
-        onFailure: (code) => {
-          if (code === errno.EEXIST) {
-            message.error('用户已存在');
-          } else {
-            message.error(`创建用户失败, 错误：${code}`);
-          }
+          this.props.listAdminUsers({limit: 100});
         },
         onComplete: () => {
           this.setState((prevState, props) => {
@@ -108,7 +102,7 @@ class UserCreate extends React.Component {
       initialValue: '86',
     })(
       <Select style={{ width: 60 }}>
-        <Select.Option value='86'>+86</Select.Option>
+        <Select.Option value='86' disabled>+86</Select.Option>
       </Select>
     );
 
@@ -120,10 +114,13 @@ class UserCreate extends React.Component {
       })
     });
 
+    if (this.props.user === undefined)
+      return null;
+
     return (
       <Modal visible={this.props.visible}
-             wrapClassName={style.UserCreate}
-             title='新增用户信息'
+             wrapClassName={style.UserEdit}
+             title='修改用户信息'
              closable={false}
              footer={[
                <Button key='1' type='primary' onClick={this.onHideModal}>
@@ -141,6 +138,7 @@ class UserCreate extends React.Component {
             label='姓名'
           > {
             getFieldDecorator('idName', {
+              initialValue: this.props.user.idName,
               rules: [{ required: true, message: '请输入姓名!' }],
             })(
               <Input />
@@ -152,9 +150,10 @@ class UserCreate extends React.Component {
             label='手机号码'
           > {
             getFieldDecorator('mobilePhoneNumber', {
+              initialValue: this.props.user.mobilePhoneNumber,
               rules: [{ required: true, message: '请输入手机号码!' }],
             })(
-              <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
+              <Input addonBefore={prefixSelector} style={{ width: '100%' }} disabled />
             )
           }
           </Form.Item>
@@ -165,7 +164,7 @@ class UserCreate extends React.Component {
           > {
             getFieldDecorator('password', {
               rules: [{
-                required: true, message: '请输入密码!',
+                required: false, message: '请输入密码!',
               }, {
                 validator: this.validateConfirm,
               }],
@@ -181,7 +180,7 @@ class UserCreate extends React.Component {
           > {
             getFieldDecorator('confirm', {
               rules: [{
-                required: true, message: '请确认密码!',
+                required: false, message: '请确认密码!',
               }, {
                 validator: this.validatePassword,
               }],
@@ -196,6 +195,7 @@ class UserCreate extends React.Component {
             hasFeedback
           > {
             getFieldDecorator('roles', {
+              initialValue: this.props.user.roles,
               rules: [{
                 required: true, message: '请选择角色!'
               }]
@@ -210,7 +210,7 @@ class UserCreate extends React.Component {
             hasFeedback
           > {
             getFieldDecorator('note', {
-
+              initialValue: this.props.user.note,
             })(
               <Input.TextArea autosize={{minRows: 2, maxRows: 4}} />
             )
@@ -224,11 +224,15 @@ class UserCreate extends React.Component {
 
 const mapStateToProps = (appState, ownProps) => {
   const allRoles = authSelector.selectRoles(appState);
-  const visible = selector.selectUserCreateModalVisible(appState);
+  const visible = selector.selectUserEditModalVisible(appState);
+
+  const userId = selector.selectCurOpUserId(appState);
+  const user = authSelector.selectUserById(appState, userId);
 
   return {
     allRoles,
     visible,
+    user,
   };
 };
 
@@ -237,4 +241,4 @@ const mapDispatchToProps = {
   ...authAction,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(UserCreate));
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(UserEdit));

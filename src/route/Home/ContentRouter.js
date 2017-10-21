@@ -6,7 +6,7 @@ import {Route, Switch} from 'react-router-dom'
 
 import Dashboard from '../../component/Dashboard'
 import {EndUser} from '../enduser/'
-import {BackendUser} from '../backenduser/'
+import {AdminUser} from '../adminuser/'
 import StationManager from '../station/StationManage'
 import Order, {Recharge} from '../order'
 import Device from '../device'
@@ -30,7 +30,7 @@ const ContentRouter = ({match}) => {
       <Route exact path={match.url} component={Dashboard}/>
       <Route exact path="/device_list" component={Device}/>
       <Route exact path="/user_list" component={EndUser}/>
-      <Route exact path="/system_user" component={BackendUser}/>
+      <Route exact path="/system_user" component={AdminUser}/>
       <Route exact path="/system_log" component={OperationLogManager}/>
       <Route exact path="/site_list" component={StationManager}/>
       <Route exact path="/site_list/showStation/:id" component={ShowStation}/>

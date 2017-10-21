@@ -1,6 +1,5 @@
 import React from 'react';
 import {Row, Col} from 'antd';
-import UserTabHeader from './UserTabHeader';
 import UserRoleTabHeader from './UserRoleTabHeader';
 import UserOp from './UserOp';
 import UserFilter from './UserFilter';
@@ -18,14 +17,6 @@ class User extends React.Component {
   render() {
     return (
       <div>
-        <Row type="flex" gutter={24} align="bottom">
-          <Col lg={{span: 18}}>
-            <UserTabHeader/>
-          </Col>
-          <Col lg={{span: 6}}>
-            <UserRoleTabHeader/>
-          </Col>
-        </Row>
         <Row type="flex" gutter={24}>
           <Col lg={{span: 18}}>
             <div style={{display: "flex", flexFlow: "column"}}>
@@ -35,6 +26,7 @@ class User extends React.Component {
             </div>
           </Col>
           <Col lg={{span: 6}}>
+            <UserRoleTabHeader/>
             <UserRole/>
           </Col>
         </Row>
