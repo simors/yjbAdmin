@@ -18,14 +18,6 @@ class User extends React.Component {
   render() {
     return (
       <div>
-        <Row type="flex" gutter={24} align="bottom">
-          <Col lg={{span: 18}}>
-            <UserTabHeader/>
-          </Col>
-          <Col lg={{span: 6}}>
-            <UserRoleTabHeader/>
-          </Col>
-        </Row>
         <Row type="flex" gutter={24}>
           <Col lg={{span: 18}}>
             <div style={{display: "flex", flexFlow: "column"}}>
@@ -35,6 +27,7 @@ class User extends React.Component {
             </div>
           </Col>
           <Col lg={{span: 6}}>
+            <UserRoleTabHeader/>
             <UserRole/>
           </Col>
         </Row>
