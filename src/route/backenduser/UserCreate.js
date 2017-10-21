@@ -49,7 +49,7 @@ class UserCreate extends React.Component {
         onSuccess: () => {
           this.props.hideUserCreateModal({});
           this.props.form.resetFields();
-          this.props.listAdminUsers({});
+          this.props.listAdminUsers({limit: 100});
         },
         onFailure: (code) => {
           if (code === errno.EEXIST) {
