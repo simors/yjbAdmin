@@ -9,9 +9,9 @@ import {configReducer} from '../util/config'
 import {deviceReducer} from '../route/device'
 import {orderReducer} from '../route/order'
 import {promotionReducer} from '../route/promotion'
+import {profitReducer} from '../route/profit'
 import {accountReducer} from '../route/account'
 import {operationLogReducer} from '../route/operationLog'
-
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
@@ -26,6 +26,7 @@ export const makeRootReducer = (asyncReducers) => {
     DEVICE: deviceReducer,
     PROMOTION: promotionReducer,
     ACCOUNT: accountReducer,
+    PROFIT: profitReducer,
     OPERATIONLOG: operationLogReducer,
     ...asyncReducers
   })

@@ -11,6 +11,7 @@ import {configSaga} from '../util/config'
 import {orderSaga} from '../route/order'
 import {deviceSaga} from '../route/device'
 import {promotionSaga} from '../route/promotion'
+import {profitSaga} from '../route/profit'
 import {accountSaga} from '../route/account'
 import {operationLogSaga} from '../route/operationLog'
 
@@ -26,6 +27,7 @@ export default function* rootSaga() {
     ...deviceSaga,
     ...promotionSaga,
     ...accountSaga,
+    ...profitSaga,
     ...operationLogSaga
   ])
 }
