@@ -11,7 +11,8 @@ import {configSaga} from '../util/config'
 import {orderSaga} from '../route/order'
 import {deviceSaga} from '../route/device'
 import {promotionSaga} from '../route/promotion'
-import {accountSaga} from '../route/account/redux'
+import {accountSaga} from '../route/account'
+import {operationLogSaga} from '../route/operationLog'
 
 export default function* rootSaga() {
   yield all([
@@ -24,6 +25,7 @@ export default function* rootSaga() {
     ...orderSaga,
     ...deviceSaga,
     ...promotionSaga,
-    ...accountSaga
+    ...accountSaga,
+    ...operationLogSaga
   ])
 }

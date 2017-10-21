@@ -23,6 +23,7 @@ import PartnerAccountChartView from '../account/PartnerAccountChartView'
 import InvestorAccountManager from '../account/InvestorAccountManager'
 import InvestorAccountChartView from '../account/InvestorAccountChartView'
 import Profit from '../profit'
+import OperationLogManager from '../operationLog'
 
 const ContentRouter = ({match}) => {
   return (
@@ -31,6 +32,7 @@ const ContentRouter = ({match}) => {
       <Route exact path="/device/list" component={Device}/>
       <Route exact path="/user/list" component={EndUser}/>
       <Route exact path="/system/user" component={BackendUser}/>
+      <Route exact path="/system/log" component={OperationLogManager}/>
       <Route exact path="/site/list" component={StationManager}/>
       <Route exact path="/order/list" component={Order}/>
       <Route exact path="/order/recharge" component={Recharge}/>
