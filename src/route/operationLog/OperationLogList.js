@@ -8,12 +8,20 @@ import mathjs from 'mathjs'
 
 
 const columns = [{
-  title: "用户名",
+  title: "操作者",
   dataIndex: "user.nickname",
+}, {
+  title: "联系方式",
+  dataIndex: "user.mobilePhoneNumber",
 }, {
   title: "操作",
   dataIndex: "operation",
-
+}, {
+  title: "操作时间",
+  dataIndex: "createdAt",
+  render: (text,record)=>{return (
+    <div>{record.createdAt}</div>
+  )}
 }];
 
 
@@ -22,14 +30,20 @@ const rowKey = (record) => {
 };
 
 
+
 const OperationLogList = (props) => {
-  let {operationLogs} = props;
+
+  let {operationLogs,changePageSize} = props;
+  let Pagination = {
+    defaultPageSize: 2,
+    onChange:(page, pageSize)=>{changePageSize(page, pageSize)}
+  }
   if (operationLogs === null) {
     operationLogs = [];
   }
   return (
     <div>
-      <Table columns={columns} dataSource={operationLogs} rowKey={rowKey} />
+      <Table columns={columns} pagination={Pagination} dataSource={operationLogs} rowKey={rowKey} />
     </div>
   );
 };

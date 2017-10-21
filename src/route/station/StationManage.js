@@ -254,13 +254,12 @@ const mapStateToProps = (state, ownProps) => {
   let showVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_QUERY_WHOLE, PERMISSION_CODE.STATION_QUERY_PART])
   let addVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_ADD_WHOLE, PERMISSION_CODE.STATION_ADD_PART])
   let editVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_EDIT_WHOLE, PERMISSION_CODE.STATION_EDIT_PART])
-  console.log('showVisible,showVisible', showVisible, addVisible, editVisible)
 
   return {
     stations: stations,
-    addVisible: true,
-    editVisible: true,
-    showVisible: true
+    addVisible: addVisible,
+    editVisible: editVisible,
+    showVisible: showVisible
   };
 };
 

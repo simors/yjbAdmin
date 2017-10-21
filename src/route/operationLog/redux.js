@@ -15,6 +15,7 @@ const OperationLogRecord = Record({
   id: undefined,                //订单id
   userId: undefined,           //订单编号
   operation: undefined,            //订单状态
+  createdAt: undefined,
 
 }, 'OperationLogRecord')
 
@@ -26,6 +27,7 @@ class OperationLog extends  OperationLogRecord
       record.set('id', obj.id)
       record.set('userId', obj.userId)
       record.set('operation', obj.operation)
+      record.set('createdAt', obj.createdAt)
     })
   }
 }

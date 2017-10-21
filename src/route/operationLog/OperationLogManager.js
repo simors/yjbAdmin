@@ -8,7 +8,8 @@ import {Row, Col, Input, Select, Button} from 'antd';
 import OperationLogList from './OperationLogList';
 // import StationMenu from './StationMenu'
 import createBrowserHistory from 'history/createBrowserHistory'
-import {selector as operationLogSelector, actions} from './redux'
+import {selector as operationLogSelector, actions as operationLogActions} from './redux'
+import mathjs from 'mathjs'
 
 const history = createBrowserHistory()
 const Option = Select.Option;
@@ -26,12 +27,36 @@ class OperationLogManager extends React.Component {
 
   componentWillMount() {
     this.props.fetchOperationList({
-      isRefresh: true
+      isRefresh: true,
+      limit: 3
     })
   }
 
   refresh() {
     this.props.fetchOperationList({...this.state})
+  }
+
+  changePageSize(page,pageSize){
+    if(this.props.operationLogs&&this.props.operationLogs.length){
+      let count = this.props.operationLogs.length
+      let pageMax = count/pageSize
+
+      if(page==pageMax|| page>=pageMax){
+        let payload = {
+          lastCreatedAt: this.props.operationLogs[this.props.operationLogs.length-1].createdAt,
+          success: ()=> {
+            console.log('success')
+          },
+          error: ()=> {
+            console.log('error')
+          },
+          isRefresh: false,
+          limit: 3
+        }
+        this.props.fetchOperationList(payload)
+      }
+    }
+
   }
 
   search() {
@@ -84,7 +109,7 @@ class OperationLogManager extends React.Component {
       <div>
         {this.renderSearchBar()}
 
-        <OperationLogList operationLogs={this.props.operationLogs}/>
+        <OperationLogList operationLogs={this.props.operationLogs} changePageSize={(page,pageSize)=>{this.changePageSize(page,pageSize)}}/>
       </div>
     )
   };
@@ -98,7 +123,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = {
-    ...actions,
+    ...operationLogActions,
 
 };
 
