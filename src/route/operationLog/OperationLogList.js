@@ -5,6 +5,7 @@
 import React from 'react';
 import {Table} from 'antd';
 import mathjs from 'mathjs'
+import moment from 'moment'
 
 
 const columns = [{
@@ -20,7 +21,7 @@ const columns = [{
   title: "操作时间",
   dataIndex: "createdAt",
   render: (text,record)=>{return (
-    <div>{record.createdAt}</div>
+    <div>{moment(record.createdAt).format('YYYY-MM-DD hh:mm:ss')}</div>
   )}
 }];
 
