@@ -52,12 +52,16 @@ class Home extends Component {
 
   render() {
     let {match, activeUser, location} = this.props
-    const pathSnippets = location.pathname.split('/').filter(i => i);
+    const pathSnippets = location.pathname.split('/').filter(i => JSON.stringify(breadcrumbNameMap).indexOf(i) > 0);
     const extraBreadcrumbItems = pathSnippets.map((_, index) => {
       const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
+      let realUrl = url
+      if (index == pathSnippets.length - 1) {
+        realUrl = location.pathname
+      }
       return (
         <Breadcrumb.Item key={url}>
-          <Link to={url}>
+          <Link to={realUrl}>
             {breadcrumbNameMap[url]}
           </Link>
         </Breadcrumb.Item>
