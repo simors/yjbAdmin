@@ -40,6 +40,7 @@ class Login extends React.Component {
         },
         onFailure: (code) => {
           message.error(`登录失败, 错误：${code}`);
+          this.props.updateLoadingState({isLoading: false})
         },
       });
     });
