@@ -38,7 +38,7 @@ class UserOp extends React.Component {
             id
           },
           onSuccess: () => {
-            this.props.listUsers({});
+            this.props.listAdminUsers({limit: 100});
           }
         });
       },
