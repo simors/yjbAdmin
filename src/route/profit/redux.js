@@ -37,19 +37,24 @@ class Profit extends Record({
 
 const GET_CURRENT_ADMIN_PROFIT = 'GET_CURRENT_ADMIN_PROFIT'
 const SAVE_ADMIN_PROFIT = 'SAVE_ADMIN_PROFIT'
+const GET_30_DAYS_INVEST_PROFIT = 'GET_30_DAYS_INVEST_PROFIT'
+const SAVE_INVEST_PROFIT_STAT = 'SAVE_INVEST_PROFIT_STAT'
 
 // --- action
 
 export const profitAction = {
   getCurrentAdminProfit: createAction(GET_CURRENT_ADMIN_PROFIT),
+  stat30DaysInvestProfit: createAction(GET_30_DAYS_INVEST_PROFIT),
 }
 
 const saveAdminProfit = createAction(SAVE_ADMIN_PROFIT)
+const saveInvestProfitStat = createAction(SAVE_INVEST_PROFIT_STAT)
 
 // --- saga
 
 export const profitSaga = [
   takeLatest(GET_CURRENT_ADMIN_PROFIT, sagaGetAdminProfit),
+  takeLatest(GET_30_DAYS_INVEST_PROFIT, sagaStat30DaysInvestProfit),
 ]
 
 function* sagaGetAdminProfit(action) {
@@ -57,6 +62,22 @@ function* sagaGetAdminProfit(action) {
   try {
     let profit = yield call(profitCloud.fetchAdminProfit)
     yield put(saveAdminProfit({profit}))
+    if (payload.success) {
+      payload.success()
+    }
+  } catch (e) {
+    if (payload.error) {
+      payload.error(e.message)
+    }
+  }
+}
+
+function* sagaStat30DaysInvestProfit(action) {
+  let payload = action.payload
+  try {
+    let stat = yield call(profitCloud.stat30DaysInvestProfit)
+    console.log('stat', stat)
+    yield put(saveInvestProfitStat({stat}))
     if (payload.success) {
       payload.success()
     }
@@ -75,6 +96,8 @@ export function profitReducer(state=initialState, action) {
   switch(action.type) {
     case SAVE_ADMIN_PROFIT:
       return reduceSaveProfit(state, action)
+    case SAVE_INVEST_PROFIT_STAT:
+      return reduceSaveInvestProfitStat(state, action)
     case REHYDRATE:
       return onRehydrate(state, action);
     default:
@@ -86,6 +109,10 @@ function reduceSaveProfit(state, action) {
   let payload = action.payload
   let profit = payload.profit
   state = state.set('adminProfit', AdminProfit.fromJson(profit))
+  return state
+}
+
+function reduceSaveInvestProfitStat(state, action) {
   return state
 }
 
