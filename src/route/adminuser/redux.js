@@ -129,31 +129,31 @@ export const selector = {
 };
 
 function selectCurOpUserId(appState) {
-  const state = appState.BACKENDUSER;
+  const state = appState.ADMINUSER;
   return state.get('curOpUserId');
 }
 
 function selectSelectedUserIds(appState) {
-  const state = appState.BACKENDUSER;
+  const state = appState.ADMINUSER;
   return state.getIn(['selectedUserIds'], new Set()).toArray();
 }
 
 function selectCheckedUserRoles(appState) {
-  const state = appState.BACKENDUSER;
+  const state = appState.ADMINUSER;
   return state.getIn(['checkedUserRoles'], new Set()).toArray();
 }
 
 function selectUserDetailModalVisible(appState) {
-  const state = appState.BACKENDUSER;
+  const state = appState.ADMINUSER;
   return state.getIn(['userDetailModalVisible'], false);
 }
 
 function selectUserCreateModalVisible(appState) {
-  const state = appState.BACKENDUSER;
+  const state = appState.ADMINUSER;
   return state.getIn(['userCreateModalVisible'], false);
 }
 
 function selectUserEditModalVisible(appState) {
-  const state = appState.BACKENDUSER;
+  const state = appState.ADMINUSER;
   return state.getIn(['userEditModalVisible'], false);
 }
