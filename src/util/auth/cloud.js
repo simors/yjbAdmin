@@ -121,3 +121,26 @@ export async function deleteUser(payload) {
 export async function updateUser(payload) {
   return await AV.Cloud.run('authUpdateUser', payload);
 }
+
+
+/**
+ *
+ * @param payload smsAuthCode,phone
+ * @returns {*}
+ */
+export async function verifySmsCode(payload) {
+  let {smsCode, phone} = payload
+  console.log('payload======>',payload)
+  return await AV.Cloud.verifySmsCode(smsCode, phone)
+}
+
+/**
+ *
+ * @param payload phone,name,op
+ * @returns {*}
+ */
+export async function requestSmsAuthCode(payload) {
+  payload.ttl = 10
+  console.log('payload======>',payload)
+  return await AV.Cloud.requestSmsCode(payload)
+}

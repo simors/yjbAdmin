@@ -184,6 +184,9 @@ const UPDATE_USER = 'AUTH/UPDATE_USER';
 const SAVE_USER = 'AUTH/SAVE_USER';
 const SAVE_USERS = 'AUTH/SAVE_USERS';
 
+const REQUEST_SMS_CODE = 'AUTH/REQUEST_SMS_CODE'
+const VERIFY_SMS_CODE = 'AUTH/FETCH_SMS_CODE'
+
 // --- action
 
 export const action = {
@@ -200,6 +203,9 @@ export const action = {
 
   saveUser: createAction(SAVE_USER),
   saveUsers: createAction(SAVE_USERS),
+
+  requestSmsCode: createAction(REQUEST_SMS_CODE),
+  verifySmsCode: createAction(VERIFY_SMS_CODE)
 };
 
 const loggedIn = createAction(LOGGED_IN);
@@ -221,6 +227,9 @@ export const saga = [
   takeLatest(CREATE_USER, sagaCreateUser),
   takeLatest(DELETE_USER, sagaDeleteUser),
   takeLatest(UPDATE_USER, sagaUpdateUser),
+  takeLatest(REQUEST_SMS_CODE, sagaRequestSmsCode),
+  takeLatest(VERIFY_SMS_CODE, sagaVerifySmsCode)
+
 ];
 
 /**
@@ -586,6 +595,34 @@ function* sagaUpdateUser(action) {
 
   if (payload.onComplete) {
     payload.onComplete();
+  }
+}
+
+function* sagaRequestSmsCode(action) {
+  const payload = action.payload
+  try{
+    yield call(api.requestSmsAuthCode, payload)
+      if(payload.success){
+        payload.success()
+      }
+  }catch(e){
+    if(payload.error){
+      payload.error(e)
+    }
+  }
+}
+
+function* sagaVerifySmsCode(action) {
+  const payload = action.payload
+  try{
+    yield call(api.verifySmsCode, payload)
+    if(payload.success){
+      payload.success()
+    }
+  }catch(e){
+    if(payload.error){
+      payload.error(e)
+    }
   }
 }
 

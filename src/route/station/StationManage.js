@@ -13,8 +13,9 @@ import {action, selector} from '../../util/auth'
 import {configSelector} from '../../util/config'
 import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
-import {accountAction,accountSelector} from '../account/redux'
+import {accountAction, accountSelector} from '../account/redux'
 import {PERMISSION_CODE} from '../../util/rolePermission'
+import SmsModal from '../../component/SmsModal'
 
 const history = createBrowserHistory()
 const Option = Select.Option;
@@ -33,7 +34,8 @@ class StationManage extends React.Component {
       area: undefined,
       addr: undefined,
       name: undefined,
-      division: []
+      division: [],
+      modalVisible: false
     }
   }
 
@@ -46,7 +48,6 @@ class StationManage extends React.Component {
   componentWillMount() {
     this.props.requestStations({
       success: ()=> {
-        console.log('hahhahah')
       }
     });
   }
@@ -66,9 +67,11 @@ class StationManage extends React.Component {
       let payload = {
         stationId: this.state.selectedRowId,
         success: ()=> {
+          this.setState({modalVisible: false})
           this.refresh()
         },
         error: ()=> {
+          this.setState({modalVisible: false})
           console.log('i m false')
         }
       }
@@ -101,7 +104,7 @@ class StationManage extends React.Component {
       province: this.state.division[0],
       city: this.state.division[1],
       area: this.state.division[2],
-      status: this.state.status&&this.state.status.key ? parseInt(this.state.status.key) : undefined,
+      status: this.state.status && this.state.status.key ? parseInt(this.state.status.key) : undefined,
       addr: this.state.addr,
       name: this.state.name,
       success: ()=> {
@@ -146,23 +149,24 @@ class StationManage extends React.Component {
       <div style={{flex: 1}}>
         <Row >
           <Col span={12}>
-            <Input  placeholder='名称' value={this.state.name} onChange={(e)=> {
+            <Input placeholder='名称' value={this.state.name} onChange={(e)=> {
               this.setState({name: e.target.value})
             }}></Input>
           </Col>
           <Col span={12}>
-            <Select labelInValue={true} placeholder="状态" value={this.state.status}  allowClear={true} style={{width: 120}} onChange={(value)=> {
+            <Select labelInValue={true} placeholder="状态" value={this.state.status} allowClear={true}
+                    style={{width: 120}} onChange={(value)=> {
               this.statusChange(value)
             }}>
-              <Option value='1' >正常</Option>
-              <Option value='0' >已停用</Option>
+              <Option value='1'>正常</Option>
+              <Option value='0'>已停用</Option>
             </Select>
           </Col>
         </Row>
         <Row>
           <Col span={6}>
             <DivisionCascader
-              value = {this.state.division}
+              value={this.state.division}
               defaultValue={this.state.division}
               onChange={(key, value)=> {
                 this.setDivision(key)
@@ -171,7 +175,7 @@ class StationManage extends React.Component {
             />
           </Col>
           <Col span={14}>
-            <Input value = {this.state.addr} placeholder='地址' onChange={(e)=> {
+            <Input value={this.state.addr} placeholder='地址' onChange={(e)=> {
               this.setState({addr: e.target.value})
             }}/>
           </Col>
@@ -191,6 +195,11 @@ class StationManage extends React.Component {
     )
   }
 
+  openModal() {
+    console.log('hahahahahahha')
+    this.setState({modalVisible: true})
+  }
+
 
   render() {
     // console.log('[DEBUG] ---> SysUser props: ', this.props);
@@ -198,25 +207,27 @@ class StationManage extends React.Component {
       <div>
         <StationMenu
           showDetail={()=> {
-            if(this.state.selectedRowId && this.state.selectedRowId.length){
+            if (this.state.selectedRowId && this.state.selectedRowId.length) {
               this.props.history.push({
                 pathname: '/site/showStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),
               })
             }
           }}
-          showVisible = {this.props.showVisible}
-          editVisible = {this.props.editVisible}
-          addVisible = {this.props.addVisible}
+          showVisible={this.props.showVisible}
+          editVisible={this.props.editVisible}
+          addVisible={this.props.addVisible}
           set={()=> {
-            if(this.state.selectedRowId && this.state.selectedRowId.length) {
+            if (this.state.selectedRowId && this.state.selectedRowId.length) {
               this.props.history.push({
                 pathname: '/site/editStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),
               })
             }
           }}
-          add={()=>{this.props.history.push({pathname: '/site/addStation'})}}
+          add={()=> {
+            this.props.history.push({pathname: '/site/addStation'})
+          }}
           setStatus={()=> {
-            this.setStatus()
+            this.openModal()
           }}
           refresh={()=> {
             this.refresh()
@@ -227,6 +238,13 @@ class StationManage extends React.Component {
         <StationList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
         }} stations={this.props.stations}/>
+        {this.state.modalVisible ? <SmsModal
+          onCancel = {()=>{this.setState({modalVisible: false})}}
+          visible = {this.state.modalVisible}
+          onOk={()=> {this.setStatus()}}
+          op='开关服务点'
+          error = {(e)=>{console.log(e.message)}}
+        /> : null}
       </div>
     )
   };
@@ -234,10 +252,10 @@ class StationManage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
-  let showVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_QUERY_WHOLE,PERMISSION_CODE.STATION_QUERY_PART])
-  let addVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_ADD_WHOLE,PERMISSION_CODE.STATION_ADD_PART])
-  let editVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_EDIT_WHOLE,PERMISSION_CODE.STATION_EDIT_PART])
-  console.log('showVisible,showVisible',showVisible,addVisible,editVisible)
+  let showVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_QUERY_WHOLE, PERMISSION_CODE.STATION_QUERY_PART])
+  let addVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_ADD_WHOLE, PERMISSION_CODE.STATION_ADD_PART])
+  let editVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_EDIT_WHOLE, PERMISSION_CODE.STATION_EDIT_PART])
+  console.log('showVisible,showVisible', showVisible, addVisible, editVisible)
 
   return {
     stations: stations,

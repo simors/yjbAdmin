@@ -17,7 +17,7 @@ import UpdateInvestorModal from '../../component/station/UpdateInvestorModal'
 import {selector, action} from '../../util/auth'
 import StationSelect from './StationSelect'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
-import {PERMISSION_CODE} from '../../util/rolePermission'
+import {ROLE_CODE,PERMISSION_CODE} from '../../util/rolePermission'
 
 const Option = Select.Option;
 
@@ -49,16 +49,14 @@ class InvestorManage extends React.Component {
   componentWillMount() {
     this.props.requestInvestors({
       success: ()=> {
-        console.log('hahhahah')
       }
     });
     this.props.requestStations({
       success: ()=> {
-        console.log('hahhahah')
       }
     });
     this.props.listUsersByRole({
-      roleCode: 300,
+      roleCode: ROLE_CODE.STATION_INVESTOR,
     });
   }
 
@@ -295,7 +293,7 @@ class InvestorManage extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let investors = stationSelector.selectInvestors(state)
-  let investorList = selector.selectUsersByRole(state, 300)
+  let investorList = selector.selectUsersByRole(state, ROLE_CODE.STATION_INVESTOR)
   let showVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_INVESTOR_QUERY_WHOLE,PERMISSION_CODE.STATION_QUERY_PART])
   let addVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_ADD_WHOLE,PERMISSION_CODE.STATION_ADD_PART])
   let editVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_EDIT_WHOLE,PERMISSION_CODE.STATION_EDIT_PART])
