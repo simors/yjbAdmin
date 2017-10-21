@@ -38,7 +38,7 @@ class UserDetail extends React.Component {
     this.props.allRoles.forEach((i) => {
       roleOptions.push({
         label: i.displayName,
-        value: i.id
+        value: i.code
       })
     });
 
@@ -111,7 +111,7 @@ const mapStateToProps = (appState, ownProps) => {
   let user = {};
   if (selectedUserIds.length === 1) {
     const id = selectedUserIds[0];
-    user = authSelector.selectAdminUserById(appState, id);
+    user = authSelector.selectUserById(appState, id);
   }
 
   return {

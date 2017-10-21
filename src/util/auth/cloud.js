@@ -7,7 +7,6 @@ export async function loginWithMobilePhone(payload) {
   const token = leanCurUser.getSessionToken();
 
   // result = {
-  //   jsonCurRoleCodes,
   //   jsonRoles,
   //   jsonPermissions,
   // }
@@ -16,7 +15,6 @@ export async function loginWithMobilePhone(payload) {
   // result = {
   //   jsonCurUser,
   //   token,
-  //   jsonCurRoleCodes,
   //   jsonRoles,
   //   jsonPermissions,
   // }
@@ -37,7 +35,6 @@ export async function become(payload) {
   const token = leanCurUser.getSessionToken();
 
   // result = {
-  //   jsonCurRoleCodes,
   //   jsonRoles,
   //   jsonPermissions,
   // }
@@ -46,7 +43,6 @@ export async function become(payload) {
   // result = {
   //   jsonCurUser,
   //   token,
-  //   jsonCurRoleCodes,
   //   jsonRoles,
   //   jsonPermissions,
   // }
@@ -82,11 +78,12 @@ export async function listEndUsers(payload) {
  * @param payload
  * @returns {Promise.<object>}
  * {
+ *   count,
  *   jsonUsers
  * }
  */
-export async function listUsers(payload) {
-  return await AV.Cloud.run('authListUsers', payload);
+export async function listAdminUsers(payload) {
+  return await AV.Cloud.run('authListAdminUsers', payload);
 }
 
 /**
