@@ -51,7 +51,7 @@ class SmsModal extends React.Component {
       let payload = {
         success: ()=>{this.props.onOk()},
         smsCode: data.smsCode,
-        phone: this.props.sysManager?this.props.sysManager.mobilePhoneNumber:'13974837930',
+        phone: this.props.currentUser.mobilePhoneNumber,
         // name: this.props.name?this.props.name:'无法获取的用户',
         // op: this.props.op?this.props.op:'无法获取的操作',
         error: (e)=>{this.props.error(e)}
@@ -64,8 +64,8 @@ class SmsModal extends React.Component {
   render() {
     return (
       <Modal
-        title='请输入短信验证码'
-        visible={this.state.visible}
+        title='请联系系统管理员并输入短信验证码'
+        visible={true}
         onOk={()=> {
           this.handleOk()
         }}
@@ -89,7 +89,7 @@ class SmsModal extends React.Component {
           </FormItem>
           </Col>
             <Col span={6}>
-              <SmsInput params={{mobilePhoneNumber:'13974837930',name:this.props.currentUser.idName,op:this.props.op }}/>
+              <SmsInput params={{mobilePhoneNumber:this.props.currentUser.mobilePhoneNumber,name:this.props.currentUser.idName,op:this.props.op }}/>
             </Col>
           </Row>
         </Form>

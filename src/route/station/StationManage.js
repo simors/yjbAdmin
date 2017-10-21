@@ -164,7 +164,7 @@ class StationManage extends React.Component {
           </Col>
         </Row>
         <Row>
-          <Col span={6}>
+          <Col span={5}>
             <DivisionCascader
               value={this.state.division}
               defaultValue={this.state.division}
@@ -179,15 +179,15 @@ class StationManage extends React.Component {
               this.setState({addr: e.target.value})
             }}/>
           </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
-              this.search()
-            }}>查询</Button>
-          </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
+          <Col span={5}>
+            <ButtonGroup>
+              <Button onClick={()=> {
+                this.search()
+              }}>查询</Button>
+              <Button onClick={()=> {
               this.clearSearch()
             }}>重置</Button>
+            </ButtonGroup>
           </Col>
         </Row>
 
@@ -240,7 +240,6 @@ class StationManage extends React.Component {
         }} stations={this.props.stations}/>
         {this.state.modalVisible ? <SmsModal
           onCancel = {()=>{this.setState({modalVisible: false})}}
-          visible = {this.state.modalVisible}
           onOk={()=> {this.setStatus()}}
           op='开关服务点'
           error = {(e)=>{console.log(e.message)}}
@@ -255,13 +254,12 @@ const mapStateToProps = (state, ownProps) => {
   let showVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_QUERY_WHOLE, PERMISSION_CODE.STATION_QUERY_PART])
   let addVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_ADD_WHOLE, PERMISSION_CODE.STATION_ADD_PART])
   let editVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_EDIT_WHOLE, PERMISSION_CODE.STATION_EDIT_PART])
-  console.log('showVisible,showVisible', showVisible, addVisible, editVisible)
 
   return {
     stations: stations,
-    addVisible: addVisible,
-    editVisible: editVisible,
-    showVisible: showVisible
+    addVisible: true,
+    editVisible: true,
+    showVisible: true
   };
 };
 
