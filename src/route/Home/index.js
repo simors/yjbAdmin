@@ -11,7 +11,7 @@ import {
   Icon,
 } from 'antd'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
-import ContentRouter from './ContentRouter'
+import ContentRouter, {breadcrumbNameMap} from './ContentRouter'
 import SiderMenu from '../../component/SiderMenu'
 import style from './style.module.scss'
 import {configAction} from '../../util/config'
@@ -51,7 +51,31 @@ class Home extends Component {
   }
 
   render() {
-    let {match, activeUser} = this.props
+    let {match, activeUser, location} = this.props
+    const pathSnippets = location.pathname.split('/').filter(i => JSON.stringify(breadcrumbNameMap).indexOf(i) > 0);
+    const extraBreadcrumbItems = pathSnippets.map((_, index) => {
+      const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
+      let realUrl = url
+      if (index == pathSnippets.length - 1) {
+        realUrl = location.pathname
+      }
+      return (
+        <Breadcrumb.Item key={url}>
+          <Link to={realUrl}>
+            {breadcrumbNameMap[url]}
+          </Link>
+        </Breadcrumb.Item>
+      );
+    });
+    const breadcrumbItems = [(
+      <Breadcrumb.Item key="home">
+        <Link to="/">
+          <Icon type="home" />
+          <span style={{marginLeft: 5}}>主页</span>
+        </Link>
+      </Breadcrumb.Item>
+    )].concat(extraBreadcrumbItems);
+
     if (!activeUser) {
       return <LoadActivity force={true}/>
     }
@@ -76,8 +100,7 @@ class Home extends Component {
           </Header>
           <Content>
             <Breadcrumb className={style.bread}>
-              <Breadcrumb.Item>User</Breadcrumb.Item>
-              <Breadcrumb.Item>Bill</Breadcrumb.Item>
+              {breadcrumbItems}
             </Breadcrumb>
             <LoadActivity/>
             <div className={style.container}>

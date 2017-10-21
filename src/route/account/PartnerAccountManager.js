@@ -182,7 +182,7 @@ class PartnerAccountManager extends React.Component {
 
   viewChart(){
     this.props.history.push({
-      pathname: '/settlement/partnerChart',
+      pathname: '/settlement_site/partnerChart',
     })
   }
 

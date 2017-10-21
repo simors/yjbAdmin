@@ -209,7 +209,7 @@ class StationManage extends React.Component {
           showDetail={()=> {
             if (this.state.selectedRowId && this.state.selectedRowId.length) {
               this.props.history.push({
-                pathname: '/site/showStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),
+                pathname: '/site_list/showStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),
               })
             }
           }}
@@ -219,12 +219,12 @@ class StationManage extends React.Component {
           set={()=> {
             if (this.state.selectedRowId && this.state.selectedRowId.length) {
               this.props.history.push({
-                pathname: '/site/editStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),
+                pathname: '/site_list/editStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),
               })
             }
           }}
           add={()=> {
-            this.props.history.push({pathname: '/site/addStation'})
+            this.props.history.push({pathname: '/site_list/addStation'})
           }}
           setStatus={()=> {
             this.openModal()
