@@ -184,7 +184,7 @@ class InvestorAccountManager extends React.Component {
 
   viewChart(){
     this.props.history.push({
-      pathname: '/settlement/investorChart',
+      pathname: '/settlement_investor/investorChart',
     })
   }
 

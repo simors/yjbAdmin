@@ -108,7 +108,7 @@ class AddStation extends React.Component {
         area: this.state.area,
         success: (stationId)=> {
           this.props.updateLoadingState({isLoading: false})
-          this.props.history.push({pathname: '/site/editStation/' + stationId})
+          this.props.history.push({pathname: '/site_list/editStation/' + stationId})
         },
         error: (err)=> {
           console.log(err.message)

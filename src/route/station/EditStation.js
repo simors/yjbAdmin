@@ -251,7 +251,7 @@ class EditStation extends React.Component {
         success: (stationId)=> {
           this.setState({spinShow: false})
           message.success('提交成功')
-          this.props.history.push({pathname: '/site/editStation/' + stationId})
+          this.props.history.push({pathname: '/site_list/editStation/' + stationId})
           this.props.updateLoadingState({isLoading: false})
 
         },

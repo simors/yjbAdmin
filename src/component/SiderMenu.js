@@ -61,41 +61,41 @@ class SiderMenu extends React.Component {
         className="app-sider-menu"
       >
         <Menu.SubMenu key="/device" title={<span><Icon type="laptop" />干衣柜综合管理</span>}>
-          <Menu.Item key="/device/list"><Link to="/device/list">干衣柜信息管理</Link></Menu.Item>
+          <Menu.Item key="/device_list"><Link to="/device_list">干衣柜信息管理</Link></Menu.Item>
         </Menu.SubMenu>
 
         <Menu.SubMenu key="/site" title={<span><Icon type="laptop" />服务点综合管理</span>}>
-          <Menu.Item key="/site/list"><Link to="/site/list">服务点信息管理</Link></Menu.Item>
-          <Menu.Item key="/site/investor"><Link to="/site/investor">投资人信息管理</Link></Menu.Item>
+          <Menu.Item key="/site_list"><Link to="/site_list">服务点信息管理</Link></Menu.Item>
+          <Menu.Item key="/site_investor"><Link to="/site_investor">投资人信息管理</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/order" title={<span><Icon type="notification" />充值与订单管理</span>}>
-          <Menu.Item key="/order/list"><Link to="/order/list">订单信息管理</Link></Menu.Item>
-          <Menu.Item key="/order/recharge"><Link to="/order/recharge">用户充值管理</Link></Menu.Item>
+          <Menu.Item key="/order_list"><Link to="/order_list">订单信息管理</Link></Menu.Item>
+          <Menu.Item key="/order_recharge"><Link to="/order_recharge">用户充值管理</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/settlement" title={<span><Icon type="notification" />结算报表</span>}>
-          <Menu.Item key="/settlement/list"><Link to="/settlement/list">服务点分成统计</Link></Menu.Item>
-          <Menu.Item key="/settlement/site"><Link to="/settlement/site">服务单位分成结算</Link></Menu.Item>
-          <Menu.Item key="/settlement/investor"><Link to="/settlement/investor">投资人分成结算</Link></Menu.Item>
+          <Menu.Item key="/settlement_list"><Link to="/settlement_list">服务点分成统计</Link></Menu.Item>
+          <Menu.Item key="/settlement_site"><Link to="/settlement_site">服务单位分成结算</Link></Menu.Item>
+          <Menu.Item key="/settlement_investor"><Link to="/settlement_investor">投资人分成结算</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/promotion" title={<span><Icon type="notification" />营销活动</span>}>
-          <Menu.Item key="/promotion/list"><Link to="/promotion/list">活动管理</Link></Menu.Item>
-          <Menu.Item key="/promotion/recharge"><Link to="/promotion/recharge">发布充值活动</Link></Menu.Item>
-          <Menu.Item key="/promotion/point"><Link to="/promotion/point">发布积分活动</Link></Menu.Item>
-          <Menu.Item key="/promotion/bonus"><Link to="/promotion/bonus">发布红包活动</Link></Menu.Item>
+          <Menu.Item key="/promotion_list"><Link to="/promotion_list">活动管理</Link></Menu.Item>
+          <Menu.Item key="/promotion_recharge"><Link to="/promotion_recharge">发布充值活动</Link></Menu.Item>
+          <Menu.Item key="/promotion_point"><Link to="/promotion_point">发布积分活动</Link></Menu.Item>
+          <Menu.Item key="/promotion_bonus"><Link to="/promotion_bonus">发布红包活动</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/user" title={<span><Icon type="notification" />用户管理</span>}>
-          <Menu.Item key="/user/list"><Link to="/user/list">用户信息管理</Link></Menu.Item>
+          <Menu.Item key="/user_list"><Link to="/user_list">用户信息管理</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/message" title={<span><Icon type="notification" />消息推送</span>}>
-          <Menu.Item key="/message/system"><Link to="/message/system">系统消息</Link></Menu.Item>
-          <Menu.Item key="/message/promotion"><Link to="/message/promotion">营销类消息</Link></Menu.Item>
+          <Menu.Item key="/message_system"><Link to="/message_system">系统消息</Link></Menu.Item>
+          <Menu.Item key="/message_promotion"><Link to="/message_promotion">营销类消息</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/system" title={<span><Icon type="notification" />系统管理</span>}>
-          <Menu.Item key="/system/user"><Link to="/system/user">用户与角色管理</Link></Menu.Item>
-          <Menu.Item key="/system/log"><Link to="/system/log">操作日志管理</Link></Menu.Item>
+          <Menu.Item key="/system_user"><Link to="/system_user">用户与角色管理</Link></Menu.Item>
+          <Menu.Item key="/system_log"><Link to="/system_log">操作日志管理</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/profit" title={<span><Icon type="notification" />投资收益</span>}>
-          <Menu.Item key="/profit/list"><Link to="/profit/list">投资收益管理</Link></Menu.Item>
+          <Menu.Item key="/profit_list"><Link to="/profit_list">投资收益管理</Link></Menu.Item>
         </Menu.SubMenu>
       </Menu>
     )
