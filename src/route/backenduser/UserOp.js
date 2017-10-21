@@ -55,11 +55,11 @@ class UserOp extends React.Component {
     return (
       <div className={style.UserOp}>
         <Button.Group>
-          <Button icon="info-circle-o"
-                  disabled={this.props.selectedUserIds.length !== 1}
-                  onClick={this.onDetail}>
-            查看
-          </Button>
+          {/*<Button icon="info-circle-o"*/}
+                  {/*disabled={this.props.selectedUserIds.length !== 1}*/}
+                  {/*onClick={this.onDetail}>*/}
+            {/*查看*/}
+          {/*</Button>*/}
           <Button icon="plus-circle-o"
                   onClick={this.onCreate}>
             新增
@@ -69,12 +69,12 @@ class UserOp extends React.Component {
                   onClick={this.onEdit}>
             编辑
           </Button>
-          <Button type="danger"
-                  icon="minus-circle-o"
-                  disabled={this.props.selectedUserIds.length < 1}
-                  onClick={this.onDelete}>
-            删除
-          </Button>
+          {/*<Button type="danger"*/}
+                  {/*icon="minus-circle-o"*/}
+                  {/*disabled={this.props.selectedUserIds.length < 1}*/}
+                  {/*onClick={this.onDelete}>*/}
+            {/*删除*/}
+          {/*</Button>*/}
           <Button icon="reload"
                   onClick={this.onRefresh}>
             刷新

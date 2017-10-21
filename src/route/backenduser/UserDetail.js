@@ -55,9 +55,9 @@ class UserDetail extends React.Component {
         <Form>
           <Form.Item
             {...formItemLayout}
-            label='姓名'
+            label='用户名'
           > {
-            getFieldDecorator('idName', {
+            getFieldDecorator('nickname', {
               initialValue: this.props.user.idName,
             })(
               <Input disabled />
@@ -107,12 +107,13 @@ const mapStateToProps = (appState, ownProps) => {
   const allRoles = authSelector.selectRoles(appState);
   const visible = selector.selectUserDetailModalVisible(appState);
 
-  const selectedUserIds = selector.selectSelectedUserIds(appState);
-  let user = {};
-  if (selectedUserIds.length === 1) {
-    const id = selectedUserIds[0];
-    user = authSelector.selectUserById(appState, id);
-  }
+  const user = selector.selectCurUserRecord(appState);
+  // const selectedUserIds = selector.selectSelectedUserIds(appState);
+  // let user = {};
+  // if (selectedUserIds.length === 1) {
+  //   const id = selectedUserIds[0];
+  //   user = authSelector.selectUserById(appState, id);
+  // }
 
   return {
     allRoles,

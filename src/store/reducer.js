@@ -3,6 +3,7 @@ import { routerReducer} from 'react-router-redux'
 import {appStateReducer} from '../util/appstate'
 import {loadReducer} from '../component/loadActivity'
 import {reducer as authReducer} from '../util/auth/'
+import {reducer as endUserReducer} from '../route/enduser/'
 import {reducer as backendUserReducer} from '../route/backenduser/'
 import {stationReducer} from '../route/station/redux'
 import {configReducer} from '../util/config'
@@ -20,6 +21,7 @@ export const makeRootReducer = (asyncReducers) => {
     CONFIG: configReducer,
     router: routerReducer,
     AUTH: authReducer,
+    ENDUSER: endUserReducer,
     BACKENDUSER: backendUserReducer,
     STATION: stationReducer,
     ORDER: orderReducer,

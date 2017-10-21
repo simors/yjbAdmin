@@ -1,6 +1,5 @@
 import React from 'react';
 import {Row, Col} from 'antd';
-import UserTabHeader from './UserTabHeader';
 import UserRoleTabHeader from './UserRoleTabHeader';
 import UserOp from './UserOp';
 import UserFilter from './UserFilter';

@@ -4,6 +4,7 @@ import {Record, Set} from 'immutable';
 // --- model
 
 const UserState = Record({
+  curUserRecord: undefined,
   selectedUserIds: Set(),
   checkedUserRoles: Set(),
   userDetailModalVisible: false,
@@ -67,6 +68,7 @@ export const reducer = (state=initialState, action) => {
 function reduceUpdateSelectedUserIds(state, action) {
   const {selected} = action.payload;
 
+  console.log("reduceUpdateSelectedUserIds: ", selected);
   return state.withMutations((m) => {
     m.setIn(['selectedUserIds'], new Set(selected));
   })
@@ -81,7 +83,10 @@ function reduceUpdateCheckedUserRoles(state, action) {
 }
 
 function reduceShowUserDetailModal(state, action) {
+  const {record} = action.payload;
+
   return state.withMutations((m) => {
+    m.set('userRecord', record);
     m.setIn(['userDetailModalVisible'], true);
   })
 }
@@ -113,12 +118,18 @@ function reduceHideUserEditModal(state, action) {
 // --- selector
 
 export const selector = {
+  selectCurUserRecord,
   selectSelectedUserIds,
   selectCheckedUserRoles,
   selectUserDetailModalVisible,
   selectUserCreateModalVisible,
   selectUserEditModalVisible,
 };
+
+function selectCurUserRecord(appState) {
+  const state = appState.BACKENDUSER;
+  return state.get('curUserRecord', {});
+}
 
 function selectSelectedUserIds(appState) {
   const state = appState.BACKENDUSER;

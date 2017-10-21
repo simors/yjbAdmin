@@ -9,14 +9,36 @@ class UserList extends React.Component {
     super(props);
 
     this.columns = [{
-      title: "姓名",
-      dataIndex: "idName",
+      title: "用户名",
+      dataIndex: "nickname",
     }, {
       title: "手机号码",
       dataIndex: "mobilePhoneNumber",
     }, {
       title: "备注",
       dataIndex: "note",
+    }, {
+      title: '操作',
+      key: 'action',
+      render: (record) => {
+        return (
+          <span>
+          <a style={{color: 'blue'}}
+             onClick={() => {
+               this.props.showUserDetailModal({record});
+             }}>
+            详情
+          </a>
+          <span className="ant-divider" />
+          {(() => {
+            if (record.status === 'disabled')
+              return <a style={{color: 'blue'}}>启用</a>;
+            else
+              return <a style={{color: 'blue'}}>禁用</a>;
+          })()}
+          </span>
+        );
+      },
     }];
   }
 
