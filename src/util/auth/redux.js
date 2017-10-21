@@ -1,4 +1,4 @@
-import {call, put, select, takeLatest} from 'redux-saga/effects';
+import {call, put, takeLatest} from 'redux-saga/effects';
 import {createAction} from 'redux-actions';
 import {Record, Map, Set, List} from 'immutable';
 import {REHYDRATE} from 'redux-persist/constants';
@@ -609,7 +609,7 @@ function* sagaUpdateUser(action) {
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
-      payload.onFailure();
+      payload.onFailure(e.code);
     }
   }
 
@@ -911,7 +911,8 @@ function selectRoles(appState) {
 
   const immRoles = appState.AUTH.getIn(['roles'], new Map()).toArray();
   immRoles.forEach((i) => {
-    roles.push(Role.toJson(i));
+    if (i.code !== 500)  // skip system admin
+      roles.push(Role.toJson(i));
   });
 
   return roles;

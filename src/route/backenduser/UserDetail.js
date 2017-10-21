@@ -42,6 +42,9 @@ class UserDetail extends React.Component {
       })
     });
 
+    if (this.props.user === undefined)
+      return null;
+
     return (
       <Modal visible={this.props.visible}
              wrapClassName={style.UserDetail}
@@ -58,7 +61,7 @@ class UserDetail extends React.Component {
             label='用户名'
           > {
             getFieldDecorator('nickname', {
-              initialValue: this.props.user.idName,
+              initialValue: this.props.user.nickname,
             })(
               <Input disabled />
             )
@@ -107,13 +110,8 @@ const mapStateToProps = (appState, ownProps) => {
   const allRoles = authSelector.selectRoles(appState);
   const visible = selector.selectUserDetailModalVisible(appState);
 
-  const user = selector.selectCurUserRecord(appState);
-  // const selectedUserIds = selector.selectSelectedUserIds(appState);
-  // let user = {};
-  // if (selectedUserIds.length === 1) {
-  //   const id = selectedUserIds[0];
-  //   user = authSelector.selectUserById(appState, id);
-  // }
+  const userId = selector.selectCurOpUserId(appState);
+  const user = authSelector.selectUserById(appState, userId);
 
   return {
     allRoles,

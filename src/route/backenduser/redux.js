@@ -4,7 +4,7 @@ import {Record, Set} from 'immutable';
 // --- model
 
 const UserState = Record({
-  curUserRecord: undefined,
+  curOpUserId: undefined,
   selectedUserIds: Set(),
   checkedUserRoles: Set(),
   userDetailModalVisible: false,
@@ -14,20 +14,20 @@ const UserState = Record({
 
 // --- constant
 
-const UPDATE_SELECTED_USER_IDS    = 'SYSUSER/UPDATE_SELECTED_USER_IDS';
-const UPDATE_CHECKED_USER_ROLES   = 'SYSUSER/UPDATE_CHECKED_USER_ROLES';
-const SHOW_USER_DETAIL_MODAL      = 'SYSUSER/SHOW_USER_DETAIL_MODAL';
-const HIDE_USER_DETAIL_MODAL      = 'SYSUSER/HIDE_USER_DETAIL_MODAL';
-const SHOW_USER_CREATE_MODAL      = 'SYSUSER/SHOW_USER_CREATE_MODAL';
-const HIDE_USER_CREATE_MODAL      = 'SYSUSER/HIDE_USER_CREATE_MODAL';
-const SHOW_USER_EDIT_MODAL        = 'SYSUSER/SHOW_USER_EDIT_MODAL';
-const HIDE_USER_EDIT_MODAL        = 'SYSUSER/HIDE_USER_EDIT_MODAL';
+const UPDATE_CUR_OP_USER_ID       = 'ADMIN/USER/UPDATE_CUR_OP_USER_ID';
+const UPDATE_SELECTED_USER_IDS    = 'ADMIN/USER/UPDATE_SELECTED_USER_IDS';
+const SHOW_USER_DETAIL_MODAL      = 'ADMIN/USER/SHOW_USER_DETAIL_MODAL';
+const HIDE_USER_DETAIL_MODAL      = 'ADMIN/USER/HIDE_USER_DETAIL_MODAL';
+const SHOW_USER_CREATE_MODAL      = 'ADMIN/USER/SHOW_USER_CREATE_MODAL';
+const HIDE_USER_CREATE_MODAL      = 'ADMIN/USER/HIDE_USER_CREATE_MODAL';
+const SHOW_USER_EDIT_MODAL        = 'ADMIN/USER/SHOW_USER_EDIT_MODAL';
+const HIDE_USER_EDIT_MODAL        = 'ADMIN/USER/HIDE_USER_EDIT_MODAL';
 
 // --- action
 
 export const action = {
+  updateCurOpUserId: createAction(UPDATE_CUR_OP_USER_ID),
   updateSelectedUserIds: createAction(UPDATE_SELECTED_USER_IDS),
-  updateCheckedUserRoles: createAction(UPDATE_CHECKED_USER_ROLES),
   showUserDetailModal: createAction(SHOW_USER_DETAIL_MODAL),
   hideUserDetailModal: createAction(HIDE_USER_DETAIL_MODAL),
   showUserCreateModal: createAction(SHOW_USER_CREATE_MODAL),
@@ -44,10 +44,10 @@ const initialState = new UserState();
 
 export const reducer = (state=initialState, action) => {
   switch (action.type) {
+    case UPDATE_CUR_OP_USER_ID:
+      return reduceUpdateCurOpUserId(state, action);
     case UPDATE_SELECTED_USER_IDS:
       return reduceUpdateSelectedUserIds(state, action);
-    case UPDATE_CHECKED_USER_ROLES:
-      return reduceUpdateCheckedUserRoles(state, action);
     case SHOW_USER_DETAIL_MODAL:
       return reduceShowUserDetailModal(state, action);
     case HIDE_USER_DETAIL_MODAL:
@@ -65,28 +65,27 @@ export const reducer = (state=initialState, action) => {
   }
 };
 
+function reduceUpdateCurOpUserId(state, action) {
+  const {curOpUserId} = action.payload;
+
+  return state.withMutations((m) => {
+    m.set('curOpUserId', curOpUserId);
+  })
+}
+
 function reduceUpdateSelectedUserIds(state, action) {
   const {selected} = action.payload;
 
-  console.log("reduceUpdateSelectedUserIds: ", selected);
   return state.withMutations((m) => {
     m.setIn(['selectedUserIds'], new Set(selected));
   })
 }
 
-function reduceUpdateCheckedUserRoles(state, action) {
-  const {checked} = action.payload;
-
-  return state.withMutations((m) => {
-    m.setIn(['checkedUserRoles'], new Set(checked));
-  })
-}
-
 function reduceShowUserDetailModal(state, action) {
-  const {record} = action.payload;
+  const {curOpUserId} = action.payload;
 
   return state.withMutations((m) => {
-    m.set('userRecord', record);
+    m.set('curOpUserId', curOpUserId);
     m.setIn(['userDetailModalVisible'], true);
   })
 }
@@ -106,7 +105,10 @@ function reduceHideUserCreateModal(state, action) {
 }
 
 function reduceShowUserEditModal(state, action) {
+  const {curOpUserId} = action.payload;
+
   return state.withMutations((m) => {
+    m.set('curOpUserId', curOpUserId);
     m.setIn(['userEditModalVisible'], true);
   })
 }
@@ -118,7 +120,7 @@ function reduceHideUserEditModal(state, action) {
 // --- selector
 
 export const selector = {
-  selectCurUserRecord,
+  selectCurOpUserId,
   selectSelectedUserIds,
   selectCheckedUserRoles,
   selectUserDetailModalVisible,
@@ -126,9 +128,9 @@ export const selector = {
   selectUserEditModalVisible,
 };
 
-function selectCurUserRecord(appState) {
+function selectCurOpUserId(appState) {
   const state = appState.BACKENDUSER;
-  return state.get('curUserRecord', {});
+  return state.get('curOpUserId');
 }
 
 function selectSelectedUserIds(appState) {

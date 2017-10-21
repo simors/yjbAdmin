@@ -114,6 +114,9 @@ class UserEdit extends React.Component {
       })
     });
 
+    if (this.props.user === undefined)
+      return null;
+
     return (
       <Modal visible={this.props.visible}
              wrapClassName={style.UserEdit}
@@ -223,12 +226,8 @@ const mapStateToProps = (appState, ownProps) => {
   const allRoles = authSelector.selectRoles(appState);
   const visible = selector.selectUserEditModalVisible(appState);
 
-  const selectedUserIds = selector.selectSelectedUserIds(appState);
-  let user = {};
-  if (selectedUserIds.length === 1) {
-    const id = selectedUserIds[0];
-    user = authSelector.selectUserById(appState, id);
-  }
+  const userId = selector.selectCurOpUserId(appState);
+  const user = authSelector.selectUserById(appState, userId);
 
   return {
     allRoles,
