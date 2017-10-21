@@ -82,6 +82,19 @@ export async function listEndUsers(payload) {
  * @param payload
  * @returns {Promise.<object>}
  * {
+ *   count,
+ *   jsonUsers
+ * }
+ */
+export async function listAdminUsers(payload) {
+  return await AV.Cloud.run('authListAdminUsers', payload);
+}
+
+/**
+ *
+ * @param payload
+ * @returns {Promise.<object>}
+ * {
  *   jsonUsers
  * }
  */

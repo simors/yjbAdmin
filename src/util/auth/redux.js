@@ -30,6 +30,7 @@ class User extends Record({
   type: undefined,                // user type, e.g. end user or admin user
   note: undefined,                // note for this user
   subscribe: undefined,
+  roles: Set(),                   // Set<role code>
 }, 'User') {
   static fromJson(json) {
     const imm = new User();
@@ -58,6 +59,7 @@ class User extends Record({
       m.set('type', json.type);
       m.set('note', json.note);
       m.set('subscribe', json.subscribe);
+      m.set('roles', new Set(json.roles));
     });
   }
 
@@ -87,6 +89,7 @@ class User extends Record({
       type: imm.type,
       note: imm.note,
       subscribe: imm.subscribe,
+      roles: imm.get('roles', new Set()).toArray(),
     };
   }
 }
@@ -156,7 +159,7 @@ class AuthState extends Record({
 
   endUsers: List(),             // List<user id>
   adminUsers: List(),           // List<user id>
-  adminRoles: Map(),            // Map<user id, Set<role code>>
+  // adminRoles: Map(),            // Map<user id, Set<role code>>
 
   usersByRole: Map(),           // Map<role code, List<user id>>
   usersById: Map(),             // Map<user id, User>
@@ -362,10 +365,15 @@ function* sagaLogout(action) {
 }
 
 /**
- *
+ * List end users.
  * @param action
  * payload = {
+ *   skip?,
  *   limit?,
+ *   mobilePhoneNumber?: string,
+ *   province?: string,
+ *   city?: string,
+ *   status?: string, 'disabled' or empty
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,
@@ -379,7 +387,12 @@ function* sagaListEndUsers(action) {
     };
 
     ({
+      skip: params.skip,
       limit: params.limit,
+      mobilePhoneNumber: params.mobilePhoneNumber,
+      province: params.province,
+      city: params.city,
+      status: params.status,
     } = payload);
 
     // result = {
@@ -388,8 +401,9 @@ function* sagaListEndUsers(action) {
     // }
     const result = yield call(api.listEndUsers, params);
 
-    const {jsonUsers} = result;
+    const {count, jsonUsers} = result;
     yield put(listedEndUsers({
+      count,
       jsonUsers
     }));
 
@@ -411,13 +425,15 @@ function* sagaListEndUsers(action) {
 }
 
 /**
- *
+ * List admin users.
  * @param action
  * payload = {
- *   limit?,
- *   lastCreatedAt?,
- *   idName?,
- *   mobilePhoneNumber?,
+ *   skip?: number,
+ *   limit?: number,
+ *   idName?: string, user's real name
+ *   mobilePhoneNumber?: string,
+ *   roles?: Array<number>, an array of role codes, e.g., [100, 200]
+ *   status?: string, 'disabled' or empty
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,
@@ -428,23 +444,26 @@ function* sagaListAdminUsers(action) {
 
   try {
     const params = {
-      type: 'admin',
     };
 
     ({
+      skip: params.skip,
       limit: params.limit,
-      lastCreatedAt: params.lastCreatedAt,
       idName: params.idName,
       mobilePhoneNumber: params.mobilePhoneNumber,
+      roles: params.roles,
+      status: params.status,
     } = payload);
 
     // result = {
+    //   count,
     //   jsonUsers,
     // }
-    const result = yield call(api.listUsers, params);
+    const result = yield call(api.listAdminUsers, params);
 
-    const {jsonUsers} = result;
+    const {count, jsonUsers} = result;
     yield put(listedAdminUsers({
+      count,
       jsonUsers
     }));
 
@@ -466,12 +485,15 @@ function* sagaListAdminUsers(action) {
 }
 
 /**
- * List admin users by role code.
+ * List admin users by specified roles.
  * @param action
  * payload = {
- *   limit?,
- *   lastCreatedAt?,
- *   roleCode,
+ *   skip?: number,
+ *   limit?: number,
+ *   idName?: string, user's real name
+ *   mobilePhoneNumber?: string,
+ *   role?: number, role code
+ *   status?: string, 'disabled' or empty
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,
@@ -481,28 +503,29 @@ function* sagaListUsersByRole(action) {
   const payload = action.payload;
 
   try {
-    const {roleCode} = payload;
-
-    const role = yield select(selectRoleByCode, roleCode);
-
     const params = {
-      type: 'admin',
-      roleId: role.id,
     };
 
     ({
+      skip: params.skip,
       limit: params.limit,
-      lastCreatedAt: params.lastCreatedAt,
+      idName: params.idName,
+      mobilePhoneNumber: params.mobilePhoneNumber,
+      status: params.status,
     } = payload);
 
+    const {role} = payload;
+    params.roles = [role];
+
     // result = {
+    //   count,
     //   jsonUsers,
     // }
-    const result = yield call(api.listUsers, params);
+    const result = yield call(api.listAdminUsers, params);
 
-    const {jsonUsers} = result;
+    const {count, jsonUsers} = result;
     yield put(listedUsersByRole({
-      roleCode,
+      count,
       jsonUsers
     }));
 
@@ -510,7 +533,7 @@ function* sagaListUsersByRole(action) {
       payload.onSuccess();
     }
   } catch (e) {
-    logger.error('list users by role failed：', e);
+    logger.error('list admin users by role failed：', e);
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
@@ -728,14 +751,14 @@ function reduceListedAdminUsers(state, action) {
   return state.withMutations((m) => {
     const userIds = [];
 
-    m.delete('adminRoles');
+    // m.delete('adminRoles');
 
     jsonUsers.forEach((i) => {
       userIds.push(i.id);
 
       // admin users has role(s) associated with them
-      const {roles} = i;
-      m.setIn(['adminRoles', i.id], new Set(roles));
+      // const {roles} = i;
+      // m.setIn(['adminRoles', i.id], new Set(roles));
 
       const immUser = User.fromJson(i);
       m.setIn(['usersById', i.id], immUser);
@@ -770,7 +793,7 @@ function reduceRehydrate(state, action) {
 
   // all data in json format
   const {token, curRoleCodes, curPermissionCodes,
-    rolesByCode, permissionsByCode, endUsers, adminUsers, adminRoles,
+    rolesByCode, permissionsByCode, endUsers, adminUsers,
     usersByRole, usersById} = storage;
 
   const immCurRoleCodes = new Set(curRoleCodes);
@@ -798,12 +821,12 @@ function reduceRehydrate(state, action) {
   // 'adminUsers'
   const immAdminUsers = new List(adminUsers);
 
-  // 'adminRoles'
-  const immAdminRoles = new Map().withMutations((m) => {
-    for (const [k, v] of Object.entries(adminRoles)) {
-      m.set(k, new Set(v));
-    }
-  });
+  // // 'adminRoles'
+  // const immAdminRoles = new Map().withMutations((m) => {
+  //   for (const [k, v] of Object.entries(adminRoles)) {
+  //     m.set(k, new Set(v));
+  //   }
+  // });
 
   // 'usersByRole'
   const immUsersByRole = new Map().withMutations((m) => {
@@ -827,7 +850,7 @@ function reduceRehydrate(state, action) {
     m.set('permissionsByCode', immPermissionsByCode);
     m.set('endUsers', immEndUsers);
     m.set('adminUsers', immAdminUsers);
-    m.set('adminRoles', immAdminRoles);
+    // m.set('adminRoles', immAdminRoles);
     m.set('usersByRole', immUsersByRole);
     m.set('usersById', immUsersById);
   });
@@ -912,11 +935,11 @@ function selectRoles(appState) {
   return roles;
 }
 
-function selectRoleByCode(appState, roleCode) {
-  const immRole = appState.AUTH.getIn(['rolesByCode', roleCode]);
-
-  return Role.toJson(immRole);
-}
+// function selectRoleByCode(appState, roleCode) {
+//   const immRole = appState.AUTH.getIn(['rolesByCode', roleCode]);
+//
+//   return Role.toJson(immRole);
+// }
 
 function selectEndUsers(appState) {
   const users = [];
@@ -934,12 +957,12 @@ function selectAdminUsers(appState) {
   const users = [];
 
   const userIds = appState.AUTH.get('adminUsers', new List());
-  const adminRoles = appState.AUTH.get('adminRoles', new Map());
+  // const adminRoles = appState.AUTH.get('adminRoles', new Map());
 
   userIds.forEach((i) => {
     users.push({
       ...selectUserById(appState, i),
-      roles: adminRoles.get(i).toArray()
+      // roles: adminRoles.get(i).toArray()
     });
   });
 
@@ -957,13 +980,13 @@ function selectAdminUserById(appState, userId) {
   if (immUser === undefined)
     return undefined;
 
-  const immRoles = appState.AUTH.getIn(['adminRoles', userId]);
-  if (immRoles === undefined)
-    return undefined;
+  // const immRoles = appState.AUTH.getIn(['adminRoles', userId]);
+  // if (immRoles === undefined)
+  //   return undefined;
 
   return {
     ...User.toJson(immUser),
-    roles: immRoles.toArray()
+    // roles: immRoles.toArray()
   };
 }
 

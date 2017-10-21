@@ -110,7 +110,7 @@ class UserEdit extends React.Component {
     this.props.allRoles.forEach((i) => {
       roleOptions.push({
         label: i.displayName,
-        value: i.id
+        value: i.code
       })
     });
 
