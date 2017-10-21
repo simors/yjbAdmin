@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
-import {Button, Row, Form, Input} from 'antd'
+import {Button, Row, Form, Input, message} from 'antd'
 import {action as authAction} from '../../util/auth/'
 import style from './style.module.scss'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
@@ -37,7 +37,10 @@ class Login extends React.Component {
         onSuccess: () => {
           this.setState({ redirectToReferrer: true });
           this.props.updateLoadingState({isLoading: false})
-        }
+        },
+        onFailure: (code) => {
+          message.error(`登录失败, 错误：${code}`);
+        },
       });
     });
   }
