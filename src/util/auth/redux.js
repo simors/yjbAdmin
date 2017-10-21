@@ -564,7 +564,7 @@ function* sagaCreateUser(action) {
   }
 
   if (payload.onComplete) {
-    payload.onComplete(e.code);
+    payload.onComplete();
   }
 }
 
