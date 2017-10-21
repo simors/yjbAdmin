@@ -23,8 +23,8 @@ class AdminProfit extends Record({
     return profit.withMutations((record) => {
       record.set('userId', json.userId)
       record.set('balance', json.balance)
-      record.set('investEarn', json.investEarn)
-      record.set('providerEarn', json.providerEarn)
+      record.set('investEarn', json.invest_earn)
+      record.set('providerEarn', json.provider_earn)
     })
   }
 }
@@ -57,6 +57,9 @@ function* sagaGetAdminProfit(action) {
   try {
     let profit = yield call(profitCloud.fetchAdminProfit)
     yield put(saveAdminProfit({profit}))
+    if (payload.success) {
+      payload.success()
+    }
   } catch (e) {
     if (payload.error) {
       payload.error(e.message)

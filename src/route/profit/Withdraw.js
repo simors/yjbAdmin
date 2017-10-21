@@ -4,6 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import { Row, Col, Modal, Form, Popconfirm, InputNumber, Button } from 'antd'
+import {profitSelector} from './redux'
 
 const FormItem = Form.Item
 
@@ -35,7 +36,11 @@ class Withdraw extends React.PureComponent {
   }
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator } = this.props.form
+    let {adminProfit} = this.props
+    if (!adminProfit) {
+      return null
+    }
     return (
       <div>
         <Modal
@@ -67,7 +72,7 @@ class Withdraw extends React.PureComponent {
                   </FormItem>
                 </Form>
               </div>
-              <div style={{marginLeft: 20}}>余额 ¥234334.12</div>
+              <div style={{marginLeft: 20}}>余额 ¥{Number(adminProfit.balance).toFixed(2)}</div>
               <div style={{marginTop: 10, marginLeft: 20, color: 'red'}}>若没有关注衣家宝微信公众号，请先关注并绑定个人信息后再提现</div>
               <div style={{marginTop: 20, marginLeft: 20}}>
                 <Popconfirm placement="top" title="确认需要取现吗？" onConfirm={this.handleSubmit} okText="是的" cancelText="再想想">
@@ -87,7 +92,9 @@ class Withdraw extends React.PureComponent {
 }
 
 const mapStateToProps = (state, ownProps) => {
+  let adminProfit = profitSelector.selectAdminProfit(state)
   return {
+    adminProfit,
   }
 }
 
