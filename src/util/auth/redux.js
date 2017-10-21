@@ -160,8 +160,8 @@ class AuthState extends Record({
   endUsers: List(),             // List<user id>
   adminUsers: List(),           // List<user id>
   // adminRoles: Map(),            // Map<user id, Set<role code>>
+  adminsByRole: Map(),          // Map<role code, List<user id>>
 
-  usersByRole: Map(),           // Map<role code, List<user id>>
   usersById: Map(),             // Map<user id, User>
 }, 'AuthState') {
 
@@ -178,8 +178,8 @@ const LIST_END_USERS = 'AUTH/LIST_END_USERS';
 const LISTED_END_USERS = 'AUTH/LISTED_END_USERS';
 const LIST_ADMIN_USERS = 'AUTH/LIST_ADMIN_USERS';
 const LISTED_ADMIN_USERS = 'AUTH/LISTED_ADMIN_USERS';
-const LIST_USERS_BY_ROLE = 'AUTH/LIST_USERS_BY_ROLE';
-const LISTED_USERS_BY_ROLE = 'AUTH/LISTED_USERS_BY_ROLE';
+const LIST_ADMINS_BY_ROLE = 'AUTH/LIST_ADMINS_BY_ROLE';
+const LISTED_ADMINS_BY_ROLE = 'AUTH/LISTED_ADMINS_BY_ROLE';
 const CREATE_USER = 'AUTH/CREATE_USER';
 const DELETE_USER = 'AUTH/DELETE_USER';
 const UPDATE_USER = 'AUTH/UPDATE_USER';
@@ -198,7 +198,7 @@ export const action = {
   logout: createAction(LOGOUT),
   listEndUsers: createAction(LIST_END_USERS),
   listAdminUsers: createAction(LIST_ADMIN_USERS),
-  listUsersByRole: createAction(LIST_USERS_BY_ROLE),
+  listUsersByRole: createAction(LIST_ADMINS_BY_ROLE),
 
   createUser: createAction(CREATE_USER),
   deleteUser: createAction(DELETE_USER),
@@ -215,7 +215,7 @@ const loggedIn = createAction(LOGGED_IN);
 const loggedOut = createAction(LOGGED_OUT);
 const listedEndUsers = createAction(LISTED_END_USERS);
 const listedAdminUsers = createAction(LISTED_ADMIN_USERS);
-const listedUsersByRole = createAction(LISTED_USERS_BY_ROLE);
+const listedAdminsByRole = createAction(LISTED_ADMINS_BY_ROLE);
 
 // --- saga
 
@@ -226,13 +226,12 @@ export const saga = [
 
   takeLatest(LIST_END_USERS, sagaListEndUsers),
   takeLatest(LIST_ADMIN_USERS, sagaListAdminUsers),
-  takeLatest(LIST_USERS_BY_ROLE, sagaListUsersByRole),
+  takeLatest(LIST_ADMINS_BY_ROLE, sagaListAdminsByRole),
   takeLatest(CREATE_USER, sagaCreateUser),
   takeLatest(DELETE_USER, sagaDeleteUser),
   takeLatest(UPDATE_USER, sagaUpdateUser),
   takeLatest(REQUEST_SMS_CODE, sagaRequestSmsCode),
   takeLatest(VERIFY_SMS_CODE, sagaVerifySmsCode)
-
 ];
 
 /**
@@ -499,7 +498,7 @@ function* sagaListAdminUsers(action) {
  *   onComplete?,
  * }
  */
-function* sagaListUsersByRole(action) {
+function* sagaListAdminsByRole(action) {
   const payload = action.payload;
 
   try {
@@ -514,7 +513,7 @@ function* sagaListUsersByRole(action) {
       status: params.status,
     } = payload);
 
-    const {role} = payload;
+    const {roleCode: role} = payload;
     params.roles = [role];
 
     // result = {
@@ -524,7 +523,8 @@ function* sagaListUsersByRole(action) {
     const result = yield call(api.listAdminUsers, params);
 
     const {count, jsonUsers} = result;
-    yield put(listedUsersByRole({
+    yield put(listedAdminsByRole({
+      role,
       count,
       jsonUsers
     }));
@@ -663,8 +663,8 @@ export function reducer(state=initialState, action) {
       return reduceListedEndUsers(state, action);
     case LISTED_ADMIN_USERS:
       return reduceListedAdminUsers(state, action);
-    case LISTED_USERS_BY_ROLE:
-      return reduceListedUsersByRole(state, action);
+    case LISTED_ADMINS_BY_ROLE:
+      return reduceListedAdminsByRole(state, action);
     case REHYDRATE:
       return reduceRehydrate(state, action);
     case SAVE_USER:
@@ -681,9 +681,11 @@ function reduceLoggedIn(state, action) {
   const {jsonCurUser, token, jsonCurRoleCodes, jsonRoles, jsonPermissions} = login;
 
   // 'curRoleCodes'
-  const immCurRoleCodes = new Set(jsonCurRoleCodes);
+  // const immCurRoleCodes = new Set(jsonCurRoleCodes);
 
   const immCurUser = User.fromJson(jsonCurUser);
+
+  const immCurRoles = immCurUser.get('roles', new Set());
 
   // 'rolesByCode'
   const immRolesByCode = new Map().withMutations((m) => {
@@ -703,7 +705,7 @@ function reduceLoggedIn(state, action) {
 
   // 'curPermissionCodes'
   const immCurPermissionCodes = new Set().withMutations((m) => {
-    immCurRoleCodes.forEach((i) => {
+    immCurRoles.forEach((i) => {
       const immRole = immRolesByCode.get(i);
       const immPermissionCodes = immRole.get('permissions');
       m.union(immPermissionCodes);
@@ -713,7 +715,7 @@ function reduceLoggedIn(state, action) {
   return state.withMutations((m) => {
     m.set('token', token);
     m.set('curUserId', immCurUser.id);
-    m.set('curRoles', immCurRoleCodes);
+    m.set('curRoles', immCurRoles);
     m.set('curPermissions', immCurPermissionCodes);
     m.set('rolesByCode', immRolesByCode);
     m.set('permissionsByCode', immPermissionsByCode);
@@ -729,7 +731,7 @@ function reduceLoggedOut(state, action) {
 }
 
 function reduceListedEndUsers(state, action) {
-  const {jsonUsers} = action.payload;
+  const {count, jsonUsers} = action.payload;
 
   return state.withMutations((m) => {
     const userIds = [];
@@ -746,7 +748,7 @@ function reduceListedEndUsers(state, action) {
 }
 
 function reduceListedAdminUsers(state, action) {
-  const {jsonUsers} = action.payload;
+  const {count, jsonUsers} = action.payload;
 
   return state.withMutations((m) => {
     const userIds = [];
@@ -768,8 +770,8 @@ function reduceListedAdminUsers(state, action) {
   });
 }
 
-function reduceListedUsersByRole(state, action) {
-  const {roleCode, jsonUsers} = action.payload;
+function reduceListedAdminsByRole(state, action) {
+  const {role, count, jsonUsers} = action.payload;
 
   return state.withMutations((m) => {
     const userIds = [];
@@ -781,7 +783,7 @@ function reduceListedUsersByRole(state, action) {
       m.setIn(['usersById', i.id], immUser);
     });
 
-    m.setIn(['usersByRole', roleCode], userIds);
+    m.setIn(['adminsByRole', role], userIds);
   });
 }
 
@@ -794,7 +796,7 @@ function reduceRehydrate(state, action) {
   // all data in json format
   const {token, curRoleCodes, curPermissionCodes,
     rolesByCode, permissionsByCode, endUsers, adminUsers,
-    usersByRole, usersById} = storage;
+    adminsByRole, usersById} = storage;
 
   const immCurRoleCodes = new Set(curRoleCodes);
   const immCurPermissionCodes = new Set(curPermissionCodes);
@@ -828,9 +830,9 @@ function reduceRehydrate(state, action) {
   //   }
   // });
 
-  // 'usersByRole'
+  // 'adminsByRole'
   const immUsersByRole = new Map().withMutations((m) => {
-    for (const [k, v] of Object.entries(usersByRole)) {
+    for (const [k, v] of Object.entries(adminsByRole)) {
       m.set(k, new List(v));
     }
   });
@@ -851,7 +853,7 @@ function reduceRehydrate(state, action) {
     m.set('endUsers', immEndUsers);
     m.set('adminUsers', immAdminUsers);
     // m.set('adminRoles', immAdminRoles);
-    m.set('usersByRole', immUsersByRole);
+    m.set('adminsByRole', immUsersByRole);
     m.set('usersById', immUsersById);
   });
 }
@@ -1029,7 +1031,7 @@ function selectUserById(appState, userId) {
 function selectUsersByRole(appState, roleCode) {
   const users = [];
 
-  const userIds = appState.AUTH.getIn(['usersByRole', roleCode], new List());
+  const userIds = appState.AUTH.getIn(['adminsByRole', roleCode], new List());
 
   userIds.forEach((i) => {
     users.push(selectUserById(appState, i));
