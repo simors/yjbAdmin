@@ -445,7 +445,7 @@ function* sagaListAdminUsers(action) {
     ({
       skip: params.skip,
       limit: params.limit,
-      idName: params.idName,
+      nickname: params.nickname,
       mobilePhoneNumber: params.mobilePhoneNumber,
       roles: params.roles,
       status: params.status,
