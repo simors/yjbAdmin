@@ -6,8 +6,8 @@ import {createAction} from 'redux-actions'
 import {Record, Map, Set, List} from 'immutable'
 import {REHYDRATE} from 'redux-persist/constants'
 import * as profitCloud from './cloud'
-import {stationAction} from '../station/index'
-import {accountAction} from '../account/index'
+import {stationAction} from '../station'
+import {accountAction, ACCOUNT_TYPE} from '../account'
 
 // --- model
 
@@ -88,9 +88,9 @@ function* sagaStat30DaysAccountProfit(action) {
     })
     yield put(stationAction.saveStations({stations}))
     yield put(accountAction.saveBatchAccountProfit({accoutProfits: stat}))
-    if (1 == payload.accountType) {
+    if (ACCOUNT_TYPE.INVESTOR_ACCOUNT == payload.accountType) {
       yield put(saveInvestProfitStat({stat}))
-    } else if (2 == payload.accountType) {
+    } else if (ACCOUNT_TYPE.PARTNER_ACCOUNT == payload.accountType) {
       yield put(savePartnerProfitStat({stat}))
     }
     if (payload.success) {
