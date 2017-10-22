@@ -65,7 +65,7 @@ class PromotionCreateForm extends PureComponent {
         region: values.region,
         awards: {rechargeList: values.awards},
         success: () => {
-          this.props.history.push('/promotion/list')
+          this.props.history.push('/promotion_list')
         },
         error: (error) => {
           message.error("充值活动发布失败")

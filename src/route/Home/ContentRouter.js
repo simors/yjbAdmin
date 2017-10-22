@@ -14,7 +14,7 @@ import InvestorManager from '../station/InvestorManage'
 import ShowStation from '../station/ShowStation'
 import EditStation from '../station/EditStation'
 import AddStation from '../station/AddStation'
-import Promotion, {RechargePromotion} from '../promotion'
+import Promotion, {RechargePromotion, RechargePromotionStat} from '../promotion'
 import StationAccountManager from '../account/StationAccountManager'
 import StationAccountChartView from '../account/StationAccountChartView'
 import PartnerAccountManager from '../account/PartnerAccountManager'
@@ -40,6 +40,7 @@ const ContentRouter = ({match}) => {
       <Route exact path="/order_list" component={Order}/>
       <Route exact path="/order_recharge" component={Recharge}/>
       <Route exact path="/promotion_list" component={Promotion}/>
+      <Route exact path="/promotion_list/stat" component={RechargePromotionStat}/>
       <Route exact path="/promotion_recharge" component={RechargePromotion}/>
       <Route exact path="/settlement_list" component={StationAccountManager}/>
       <Route exact path="/settlement_list/stationChart" component={StationAccountChartView}/>
@@ -48,7 +49,6 @@ const ContentRouter = ({match}) => {
       <Route exact path="/settlement_investor" component={InvestorAccountManager}/>
       <Route exact path="/settlement_investor/investorChart" component={InvestorAccountChartView}/>
       <Route exact path="/profit_list" component={Profit}/>
-
     </Switch>
   )
 }
@@ -66,6 +66,7 @@ export const breadcrumbNameMap = {
   '/order_list': '订单信息管理',
   '/order_recharge': '用户充值管理',
   '/promotion_list': '活动管理',
+  '/promotion_list/stat': '活动统计',
   '/promotion_recharge': '发布充值活动',
   '/settlement_list': '服务点分成统计',
   '/settlement_list/stationChart': '服务点分成报表',

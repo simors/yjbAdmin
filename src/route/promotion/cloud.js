@@ -18,3 +18,7 @@ export async function fetchPromotionsApi(payload) {
 export async function editPromotionApi(payload) {
   return await AV.Cloud.run('promEditPromotion', payload)
 }
+
+export async function fetchRechargePromRecordApi(payload) {
+  return await AV.Cloud.run('promFetchRechargePromRecord', payload)
+}

@@ -79,6 +79,19 @@ function getOptionData(level) {
   }
 }
 
+function getPlaceholder(level) {
+  switch (level) {
+    case 3:
+      return "省／市／区"
+    case 2:
+      return "省／市"
+    case 1:
+      return "省份"
+    default:
+      return "省／市／区"
+  }
+}
+
 class DivisionCascader extends PureComponent {
   constructor(props) {
     super(props)
@@ -113,7 +126,7 @@ class DivisionCascader extends PureComponent {
       <Cascader style={{width: `200px`}}
                 options={getOptionData(level)}
                 value={this.state.value}
-                placeholder="省／市／区"
+                placeholder={getPlaceholder(level)}
                 changeOnSelect
                 disabled={disabled}
                 onChange={this.onSelectChange} />
