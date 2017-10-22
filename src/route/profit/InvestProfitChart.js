@@ -5,6 +5,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import createG2 from 'g2-react'
 import {Stat, Frame} from 'g2'
+import {profitAction} from './redux'
 
 const data = [
   {date: '2017-09-01', '中南大学': 100, '中电软件园': 120},
@@ -53,6 +54,10 @@ class InvestProfitChart extends React.PureComponent {
     });
   }
 
+  componentDidMount() {
+    this.props.stat30DaysInvestProfit({})
+  }
+
   render() {
     let frame = new Frame(data);
     frame = Frame.combineColumns(frame, ['中南大学', '中电软件园'], 'profit', 'stationName', ['date'])
@@ -70,6 +75,7 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = {
+  ...profitAction,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(InvestProfitChart)

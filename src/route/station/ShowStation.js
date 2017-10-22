@@ -17,6 +17,7 @@ import PartnerList from './PartnerList'
 import CreatePartnerModal from '../../component/station/CreatePartnerModal'
 import DivisionCascader from '../../component/DivisionCascader'
 import {action,selector} from '../../util/auth'
+import {ROLE_CODE, PERMISSION_CODE} from '../../util/rolePermission'
 
 const Option = Select.Option;
 const FormItem = Form.Item
@@ -251,7 +252,7 @@ class ShowStation extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   let partners = stationSelector.selectPartners(state)
-  let adminList = selector.selectUsersByRole(state,200)
+  let adminList = selector.selectUsersByRole(state,ROLE_CODE.STATION_MANAGER)
 
   // let station={name:'123',adminName:'321'}
   // console.log('areaList========>', areaList)

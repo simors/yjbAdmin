@@ -226,6 +226,7 @@ function* fetchInvestorsAction(action) {
   let investors = []
   let investorList = []
   let users = new Set()
+  let stations = new Set()
   if (data.success) {
     if (data.investors && data.investors.length > 0) {
       for (let i = 0; i < data.investors.length; i++) {
@@ -235,9 +236,14 @@ function* fetchInvestorsAction(action) {
         if (item.shareholder) {
           users.add(item.shareholder)
         }
+        if (item.station) {
+          stations.add(item.station)
+        }
       }
     }
     yield put(authAction.saveUsers({users: users}))
+    yield put(stationAction.saveStations({stations: stations}))
+
     yield put(requestInvestorsSuccess({investors: investors, investorList: investorList}))
     if (payload.success) {
       payload.success()
@@ -311,6 +317,7 @@ function* fetchPartnersAction(action) {
   let partners = []
   let partnerList = []
   let users = new Set()
+  let stations = new Set()
   if (data.success) {
     if (data.partners && data.partners.length > 0) {
       for (let i = 0; i < data.partners.length; i++) {
@@ -320,9 +327,13 @@ function* fetchPartnersAction(action) {
         if (item.shareholder) {
           users.add(item.shareholder)
         }
+        if (item.station) {
+          stations.add(item.station)
+        }
       }
     }
     yield put(authAction.saveUsers({users: users}))
+    yield put(stationAction.saveStations({stations: stations}))
     yield put(requestPartnersSuccess({partners: partners, partnerList: partnerList}))
     if (payload.success) {
       payload.success()

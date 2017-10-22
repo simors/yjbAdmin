@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
-import {Button, Row, Form, Input} from 'antd'
+import {Button, Row, Form, Input, message} from 'antd'
 import {action as authAction} from '../../util/auth/'
 import style from './style.module.scss'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
@@ -37,7 +37,11 @@ class Login extends React.Component {
         onSuccess: () => {
           this.setState({ redirectToReferrer: true });
           this.props.updateLoadingState({isLoading: false})
-        }
+        },
+        onFailure: (code) => {
+          message.error(`登录失败, 错误：${code}`);
+          this.props.updateLoadingState({isLoading: false})
+        },
       });
     });
   }
@@ -56,7 +60,7 @@ class Login extends React.Component {
     return (
       <div className={style.form}>
         <div className={style.logo}>
-          <img src={require("../../asset/image/logo.jpg")}/>
+          <img src={require("../../asset/image/logo.png")}/>
           <span>衣家宝管理平台</span>
         </div>
         <Form onSubmit={this.handleSubmit}>

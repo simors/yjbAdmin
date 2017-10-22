@@ -185,7 +185,7 @@ class StationAccountManager extends React.Component {
 
   viewChart(){
     this.props.history.push({
-      pathname: '/settlement/stationChart',
+      pathname: '/settlement_list/stationChart',
     })
   }
 

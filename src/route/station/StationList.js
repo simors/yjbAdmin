@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import {Table} from 'antd';
+import moment from 'moment'
 
 const columns = [{
   title: "服务点名称",

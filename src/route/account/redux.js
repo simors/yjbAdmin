@@ -80,6 +80,36 @@ export class SharingAccount extends SharingAccountRecord {
     })
   }
 }
+
+class AccountProfit extends Record({
+  id: undefined,
+  stationId: undefined,
+  stationAccountId: undefined,
+  profit: undefined,
+  profitSharingId: undefined,
+  accountDay: undefined,
+  accountType: undefined,
+  userId: undefined,
+  createdAt: undefined,
+  updatedAt: undefined,
+}, 'AccountProfit') {
+  static fromJson(json) {
+    let profit = new AccountProfit()
+    return profit.withMutations((record) => {
+      record.set('id', json.id)
+      record.set('stationId', json.stationId)
+      record.set('stationAccountId', json.stationAccountId)
+      record.set('profit', json.profit)
+      record.set('profitSharingId', json.profitSharingId)
+      record.set('accountDay', json.accountDay)
+      record.set('accountType', json.accountType)
+      record.set('userId', json.userId)
+      record.set('createdAt', json.createdAt)
+      record.set('updatedAt', json.updatedAt)
+    })
+  }
+}
+
 /**** Constant ****/
 
 const FETCH_STATION_ACCOUNT = 'FETCH_STATION_ACCOUNT'

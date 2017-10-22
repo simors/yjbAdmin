@@ -14,6 +14,7 @@ import UpdatePartnerModal from '../../component/station/UpdatePartnerModal'
 import DivisionCascader from '../../component/DivisionCascader'
 import {action, selector} from '../../util/auth'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
+import {ROLE_CODE, PERMISSION_CODE} from '../../util/rolePermission'
 
 const Option = Select.Option;
 const FormItem = Form.Item
@@ -250,7 +251,7 @@ class EditStation extends React.Component {
         success: (stationId)=> {
           this.setState({spinShow: false})
           message.success('提交成功')
-          this.props.history.push({pathname: '/site/editStation/' + stationId})
+          this.props.history.push({pathname: '/site_list/editStation/' + stationId})
           this.props.updateLoadingState({isLoading: false})
 
         },
@@ -474,10 +475,8 @@ class EditStation extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   let partners = stationSelector.selectPartners(state)
-  let adminList = selector.selectUsersByRole(state, 200)
-  let partnerList = selector.selectUsersByRole(state, 400)
-  console.log('adminList======>',adminList)
-  console.log('partnerList======>',partnerList)
+  let adminList = selector.selectUsersByRole(state, ROLE_CODE.STATION_MANAGER)
+  let partnerList = selector.selectUsersByRole(state, ROLE_CODE.STATION_PROVIDER)
 
   return {
     station: station,

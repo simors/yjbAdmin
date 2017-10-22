@@ -44,7 +44,7 @@ class Promotion extends PureComponent {
 
   showRowStatModal(record) {
     const {history} = this.props
-    history.push('/promotion/recharge/stat', {promotionId: record.id})
+    history.push('/promotion_list/stat', {promotionId: record.id})
   }
 
   renderStatusColum = (disabled, record) => {

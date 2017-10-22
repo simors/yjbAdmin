@@ -10,24 +10,20 @@ class UserRole extends React.Component {
     super(props);
   }
 
-  onChange = (checkedValue) => {
-    // this.props.updateCheckedUserRoles({checked: checkedValue});
-  };
-
   render() {
     const roleOptions = [];
     this.props.allRoles.forEach((i) => {
       roleOptions.push({
         label: i.displayName,
-        value: i.id
+        value: i.code
       })
     });
 
     return (
       <div className={style.UserRole}>
-        <Checkbox.Group disabled={this.props.selectedUserIds.length !== 1}
-                        options={roleOptions} value={this.props.checkedUserRoles}
-                        onChange={this.onChange}/>
+        <Checkbox.Group
+          options={roleOptions} value={this.props.checkedUserRoles}
+        />
       </div>
     );
   }
@@ -36,7 +32,14 @@ class UserRole extends React.Component {
 const mapStateToProps = (appState, ownProps) => {
   const allRoles = authSelector.selectRoles(appState);
   const selectedUserIds = selector.selectSelectedUserIds(appState);
-  const checkedUserRoles = selector.selectCheckedUserRoles(appState);
+
+  let checkedUserRoles = [];
+  if (selectedUserIds.length === 1) {
+    const userId = selectedUserIds[0];
+    const user = authSelector.selectUserById(appState, userId);
+
+    checkedUserRoles = user.roles;
+  }
 
   return {
     allRoles,

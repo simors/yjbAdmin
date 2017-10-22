@@ -1,0 +1,19 @@
+.UserFilter {
+  padding: 12px 0;
+}
+
+.nickname {
+  :global {
+    .ant-form-item-control-wrapper {
+      width: 6rem;
+    }
+  }
+}
+
+.mobilePhoneNumber {
+  :global {
+    .ant-form-item-control-wrapper {
+      width: 10rem;
+    }
+  }
+}
