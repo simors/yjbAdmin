@@ -127,7 +127,6 @@ export async function updateUser(payload) {
  */
 export async function verifySmsCode(payload) {
   let {smsCode, phone} = payload
-  console.log('payload======>',payload)
   return await AV.Cloud.verifySmsCode(smsCode, phone)
 }
 
@@ -138,6 +137,5 @@ export async function verifySmsCode(payload) {
  */
 export async function requestSmsAuthCode(payload) {
   payload.ttl = 10
-  console.log('payload======>',payload)
   return await AV.Cloud.requestSmsCode(payload)
 }
