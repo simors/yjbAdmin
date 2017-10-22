@@ -16,4 +16,7 @@ export const accountAction = redux.accountAction
 /* export selector */
 export const accountSelector = redux.accountSelector
 
+/* export constants */
+export const ACCOUNT_TYPE = redux.ACCOUNT_TYPE
+
 export default StationAccountManager

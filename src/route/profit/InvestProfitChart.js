@@ -6,6 +6,7 @@ import {connect} from 'react-redux'
 import createG2 from 'g2-react'
 import {Stat, Frame} from 'g2'
 import {profitAction} from './redux'
+import {ACCOUNT_TYPE} from '../account'
 
 const data = [
   {date: '2017-09-01', '中南大学': 100, '中电软件园': 120},
@@ -55,7 +56,7 @@ class InvestProfitChart extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.props.stat30DaysInvestProfit({})
+    this.props.stat30DaysAccountProfit({accountType: ACCOUNT_TYPE.INVESTOR_ACCOUNT})
   }
 
   render() {
