@@ -1,34 +1,29 @@
 .UserFilter {
-  display: flex;
-  margin: 8px 0;
+  padding: 12px 0;
+}
 
-  &> div {
-    display: flex;
-  }
-
-  label {
-    margin: auto 5px auto 0;
-  }
-
-  .name {
-    :global {
-      .ant-input {
-        width: 5rem;
-      }
-    }
-
-    margin-right: 16px;
-  }
-
-  .phoneNo {
-    :global {
-      .ant-input {
-        width: 12rem;
-      }
+.nickname {
+  :global {
+    .ant-form-item-control-wrapper {
+      width: 6rem;
     }
   }
+}
 
-  .buttonGroup {
-    margin-left: auto;
+.mobilePhoneNumber {
+  :global {
+    .ant-form-item-control-wrapper {
+      width: 10rem;
+    }
+  }
+}
+
+.area {
+  :global {
+    .ant-cascader-picker {
+      input {
+        height: 32px;
+      }
+    }
   }
 }

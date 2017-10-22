@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Form, Input, Button, Icon} from 'antd';
+import {Form, Input, Button} from 'antd';
 import {action} from './redux';
 import {action as authAction} from '../../util/auth/';
 import style from './UserFilter.module.scss';

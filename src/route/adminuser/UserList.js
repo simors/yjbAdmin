@@ -29,7 +29,6 @@ class UserList extends React.Component {
             })()}
           </span>
         );
-
       },
     }, {
       title: "备注",

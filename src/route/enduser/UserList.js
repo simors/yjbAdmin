@@ -9,14 +9,32 @@ class UserList extends React.Component {
     super(props);
 
     this.columns = [{
-      title: "姓名",
-      dataIndex: "idName",
+      title: '用户名',
+      dataIndex: 'nickname',
     }, {
-      title: "手机号码",
-      dataIndex: "mobilePhoneNumber",
+      title: '手机号码',
+      dataIndex: 'mobilePhoneNumber',
     }, {
-      title: "备注",
-      dataIndex: "note",
+      title: '所在地区',
+      render: (record) => {
+        return (
+          null
+        );
+      },
+    }, {
+      title: '最近登录时间',
+      render: (record) => {
+        return (
+          null
+        );
+      },
+    }, {
+      title: '状态',
+      render: (record) => {
+        return (
+          null
+        );
+      },
     }];
   }
 
