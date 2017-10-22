@@ -16,8 +16,7 @@ export const AccountRecord = Record({
   stationAccountList: List(),
   stationAccountsDetailList: List(),
   allStationAccounts: Map(),
-  allPartnerAccounts: Map(),
-  allInvestorAccounts: Map(),
+  allAccountProfits: Map(),
   partnerAccountList: List(),
   investorAccountList: List(),
   partnerAccountsDetailList: List(),
@@ -124,6 +123,9 @@ const FETCH_PARTNER_ACCOUNT_DETAIL = 'FETCH_PARTNER_ACCOUNT_DETAIL'
 const FETCH_PARTNER_ACCOUNT_DETAIL_SUCCESS = 'FETCH_PARTNER_ACCOUNT_DETAIL_SUCCESS'
 const FETCH_INVESTOR_ACCOUNT_DETAIL = 'FETCH_INVESTOR_ACCOUNT_DETAIL'
 const FETCH_INVESTOR_ACCOUNT_DETAIL_SUCCESS = 'FETCH_INVESTOR_ACCOUNT_DETAIL_SUCCESS'
+const SAVE_ACCOUNT_PROFIT = 'SAVE_ACCOUNT_PROFIT'
+const SAVE_BATCH_ACCOUNT_PORFIT = 'SAVE_BATCH_ACCOUNT_PORFIT'
+
 /**** Action ****/
 
 export const accountAction = {
@@ -133,6 +135,8 @@ export const accountAction = {
   fetchPartnerAccountsDetail: createAction(FETCH_PARTNER_ACCOUNT_DETAIL),
   fetchInvestorAccounts: createAction(FETCH_INVESTOR_ACCOUNT),
   fetchInvestorAccountsDetail: createAction(FETCH_INVESTOR_ACCOUNT_DETAIL),
+  saveAccountProfit: createAction(SAVE_ACCOUNT_PROFIT),
+  saveBatchAccountProfit: createAction(SAVE_BATCH_ACCOUNT_PORFIT),
 }
 
 const fetchStationAccountsSuccess = createAction(FETCH_STATION_ACCOUNT_SUCCESS)
@@ -366,15 +370,42 @@ export function accountReducer(state = initialState, action) {
     return handleSaveInvestorAccounts(state, action)
     case FETCH_INVESTOR_ACCOUNT_DETAIL_SUCCESS:
       return handleSaveInvestorAccountsDetail(state, action)
+    case SAVE_ACCOUNT_PROFIT:
+      return reduceSaveAccountProfit(state, action)
+    case SAVE_BATCH_ACCOUNT_PORFIT:
+      return reduceSaveBatchAccountProfit(state, action)
     default:
       return state
   }
 }
 
+function handleSetAccountProfit(state, accountProfit) {
+  state = state.setIn(['allAccountProfits', accountProfit.id], AccountProfit.fromJson(accountProfit))
+  return state
+}
+
+function handleSetBatchAccountProfit(state, accountProfits) {
+  accountProfits.forEach((accountProfit) => {
+    state = state.setIn(['allAccountProfits', accountProfit.id], AccountProfit.fromJson(accountProfit))
+  })
+  return state
+}
+
+function reduceSaveAccountProfit(state, action) {
+  let payload = action.payload
+  let accountProfit = payload.accountProfit
+  return handleSetAccountProfit(state, accountProfit)
+}
+
+function reduceSaveBatchAccountProfit(state, action) {
+  let payload = action.payload
+  let accountProfits = payload.accoutProfits
+  return handleSetBatchAccountProfit(state, accountProfits)
+}
+
 function handleSetAllStationAccounts(state, stationAccounts) {
   stationAccounts.forEach((item)=> {
     state = state.setIn(['allStationAccounts', item.id], StationAccount.fromApi(item))
-
   })
   return state
 }
@@ -407,23 +438,13 @@ function handleSaveStationAccountsDetail(state, action) {
   return state
 }
 
-
-function handleSetAllPartnerAccounts(state, stationAccounts) {
-  stationAccounts.forEach((item)=> {
-    state = state.setIn(['allPartnerAccounts', item.id], SharingAccount.fromApi(item))
-
-  })
-  return state
-}
-
 function handleSavePartnerAccounts(state, action) {
 
   let partnerAccounts = action.payload.partnerAccounts
   let partnerAccountList = action.payload.partnerAccountList
-  // console.log('stationAccounts=========>', stationAccounts, stationAccountList)
   if (partnerAccountList && partnerAccountList.length > 0) {
     state = state.set('partnerAccountList', new List(partnerAccountList))
-    state = handleSetAllPartnerAccounts(state, partnerAccounts)
+    state = handleSetBatchAccountProfit(state, partnerAccounts)
   } else {
     state = state.set('partnerAccountList', new List())
   }
@@ -436,19 +457,10 @@ function handleSavePartnerAccountsDetail(state, action) {
   let partnerAccountList = action.payload.partnerAccountList
   if (partnerAccountList && partnerAccountList.length > 0) {
     state = state.set('partnerAccountsDetailList', new List(partnerAccountList))
-    state = handleSetAllPartnerAccounts(state, partnerAccounts)
+    state = handleSetBatchAccountProfit(state, partnerAccounts)
   } else {
     state = state.set('partnerAccountsDetailList', new List())
   }
-  return state
-}
-
-
-function handleSetAllInvestorAccounts(state, stationAccounts) {
-  stationAccounts.forEach((item)=> {
-    state = state.setIn(['allInvestorAccounts', item.id], SharingAccount.fromApi(item) )
-
-  })
   return state
 }
 
@@ -458,7 +470,7 @@ function handleSaveInvestorAccounts(state, action) {
   let investorAccountList = action.payload.investorAccountList
   if (investorAccountList && investorAccountList.length > 0) {
     state = state.set('investorAccountList', new List(investorAccountList))
-    state = handleSetAllInvestorAccounts(state, investorAccounts)
+    state = handleSetBatchAccountProfit(state, investorAccounts)
   } else {
     state = state.set('investorAccountList', new List())
   }
@@ -472,7 +484,7 @@ function handleSaveInvestorAccountsDetail(state, action) {
 
   if (investorAccountList && investorAccountList.length > 0) {
     state = state.set('investorAccountsDetailList', new List(investorAccountList))
-    state = handleSetAllInvestorAccounts(state, investorAccounts)
+    state = handleSetBatchAccountProfit(state, investorAccounts)
   } else {
     state = state.set('investorAccountsDetailList', new List())
   }
@@ -524,7 +536,7 @@ function selectPartnerAccounts(state) {
   let partnerAccounts = []
   if (partnerAccountList && partnerAccountList.size > 0) {
     partnerAccountList.forEach((item)=> {
-      let accountInfo = account.getIn(['allPartnerAccounts', item])
+      let accountInfo = account.getIn(['allAccountProfits', item])
       if(accountInfo){
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
         accountInfo = accountInfo.toJS()
@@ -544,7 +556,7 @@ function selectPartnerAccountsDetail(state) {
   let partnerAccounts = []
   if (partnerAccountsDetailList && partnerAccountsDetailList.size > 0) {
     partnerAccountsDetailList.forEach((item)=> {
-      let accountInfo = account.getIn(['allPartnerAccounts', item])
+      let accountInfo = account.getIn(['allAccountProfits', item])
       if(accountInfo){
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
         accountInfo = accountInfo.toJS()
@@ -563,7 +575,7 @@ function selectInvestorAccounts(state) {
   let investorAccounts = []
   if (investorAccountList && investorAccountList.size > 0) {
     investorAccountList.forEach((item)=> {
-      let accountInfo = account.getIn(['allInvestorAccounts', item])
+      let accountInfo = account.getIn(['allAccountProfits', item])
       if(accountInfo){
         let station = stationSelector.selectStationById(state,accountInfo.stationId)
         accountInfo = accountInfo.toJS()
@@ -583,7 +595,7 @@ function selectInvestorAccountsDetail(state) {
   let investorAccounts = []
   if (investorAccountsDetailList && investorAccountsDetailList.size > 0) {
     investorAccountsDetailList.forEach((item)=> {
-      let accountInfo = account.getIn(['allInvestorAccounts', item])
+      let accountInfo = account.getIn(['allAccountProfits', item])
       if(accountInfo){
         accountInfo = accountInfo.toJS()
         let user = selector.selectUserById(state,accountInfo.userId)
