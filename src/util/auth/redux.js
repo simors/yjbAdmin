@@ -166,6 +166,19 @@ class AuthState extends Record({
 
 }
 
+// --- enum
+
+export const AUTH_USER_TYPE = {
+  END:      1,
+  ADMIN:    2,
+  BOTH:     3,
+};
+
+export const AUTH_USER_STATUS = {
+  NORMAL:  1,
+  DISABLED: 2,
+};
+
 // --- constant
 
 const LOGIN_WITH_MOBILE_PHONE = 'AUTH/LOGIN_WITH_MOBILE_PHONE';
