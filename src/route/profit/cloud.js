@@ -8,5 +8,9 @@ export async function fetchAdminProfit() {
 }
 
 export async function stat30DaysInvestProfit() {
+  return await AV.Cloud.run('accountStatLast30DaysInvestorProfit', {})
+}
+
+export async function stat30DaysPartnerProfit() {
   return await AV.Cloud.run('accountStatLast30DaysPartnerProfit', {})
 }

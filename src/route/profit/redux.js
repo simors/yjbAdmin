@@ -6,6 +6,7 @@ import {createAction} from 'redux-actions'
 import {Record, Map, Set, List} from 'immutable'
 import {REHYDRATE} from 'redux-persist/constants'
 import * as profitCloud from './cloud'
+import {stationAction} from '../station/index'
 
 // --- model
 
@@ -77,6 +78,11 @@ function* sagaStat30DaysInvestProfit(action) {
   try {
     let stat = yield call(profitCloud.stat30DaysInvestProfit)
     console.log('stat', stat)
+    let stations = []
+    stat.forEach((statData) => {
+      stations.push(statData.station)
+    })
+    yield put(stationAction.saveStations({stations}))
     yield put(saveInvestProfitStat({stat}))
     if (payload.success) {
       payload.success()
