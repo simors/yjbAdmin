@@ -591,6 +591,15 @@ function selectInvestorAccountsDetail(state) {
   }
   return investorAccounts
 }
+
+function selectAccountProfitById(state, id) {
+  let accountInfo = state.ACCOUNT.getIn(['allAccountProfits', id])
+  if (!accountInfo) {
+    return undefined
+  }
+  return accountInfo.toJS()
+}
+
 export const accountSelector = {
   selectStationAccounts,
   selectStationAccountsDetail,
@@ -598,5 +607,5 @@ export const accountSelector = {
   selectPartnerAccountsDetail,
   selectInvestorAccounts,
   selectInvestorAccountsDetail,
-
+  selectAccountProfitById,
 }
