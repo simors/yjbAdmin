@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import {connect} from 'react-redux'
-import {profitAction} from './redux'
+import {profitAction, profitSelector} from './redux'
 import {ACCOUNT_TYPE} from '../account'
 
 class ParticipationProfitChart extends React.PureComponent {
@@ -25,6 +25,7 @@ class ParticipationProfitChart extends React.PureComponent {
 }
 
 const mapStateToProps = (state, ownProps) => {
+  let partnerProfitList = profitSelector.selectPartnerProfitList(state)
   return {
   }
 }

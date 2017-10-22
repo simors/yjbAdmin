@@ -5,7 +5,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import createG2 from 'g2-react'
 import {Stat, Frame} from 'g2'
-import {profitAction} from './redux'
+import {profitAction, profitSelector} from './redux'
 import {ACCOUNT_TYPE} from '../account'
 
 const data = [
@@ -71,6 +71,7 @@ class InvestProfitChart extends React.PureComponent {
 }
 
 const mapStateToProps = (state, ownProps) => {
+  let investProfitList = profitSelector.selectInvestProfitList(state)
   return {
   }
 }

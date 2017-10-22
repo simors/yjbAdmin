@@ -166,6 +166,8 @@ function onRehydrate(state, action) {
 
 export const profitSelector = {
   selectAdminProfit,
+  selectInvestProfitList,
+  selectPartnerProfitList,
 }
 
 function selectAdminProfit(state) {
@@ -174,4 +176,20 @@ function selectAdminProfit(state) {
     return undefined
   }
   return profit.toJS()
+}
+
+function selectInvestProfitList(state) {
+  let investProfits = state.PROFIT.statInvestorProfits
+  if (!investProfits) {
+    return []
+  }
+  return investProfits.toJS()
+}
+
+function selectPartnerProfitList(state) {
+  let partnetProfits = state.PROFIT.statPartnerProfits
+  if (!partnetProfits) {
+    return []
+  }
+  return partnetProfits.toJS()
 }
