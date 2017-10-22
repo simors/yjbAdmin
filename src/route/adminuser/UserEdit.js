@@ -135,11 +135,11 @@ class UserEdit extends React.Component {
         <Form>
           <Form.Item
             {...formItemLayout}
-            label='姓名'
+            label='用户名'
           > {
-            getFieldDecorator('idName', {
-              initialValue: this.props.user.idName,
-              rules: [{ required: true, message: '请输入姓名!' }],
+            getFieldDecorator('nickname', {
+              initialValue: this.props.user.nickname,
+              rules: [{ required: true, message: '请输入用户名!' }],
             })(
               <Input />
             )
