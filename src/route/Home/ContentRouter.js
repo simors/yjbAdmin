@@ -15,7 +15,7 @@ import InvestorManager from '../station/InvestorManage'
 import ShowStation from '../station/ShowStation'
 import EditStation from '../station/EditStation'
 import AddStation from '../station/AddStation'
-import Promotion, {RechargePromotion} from '../promotion'
+import Promotion, {RechargePromotion, RechargePromotionStat} from '../promotion'
 import StationAccountManager from '../account/StationAccountManager'
 import StationAccountChartView from '../account/StationAccountChartView'
 import PartnerAccountManager from '../account/PartnerAccountManager'
@@ -40,6 +40,7 @@ const ContentRouter = ({match}) => {
       <Route exact path="/site/investor" component={InvestorManager}/>
       <Route exact path="/promotion/list" component={Promotion}/>
       <Route exact path="/promotion/recharge" component={RechargePromotion}/>
+      <Route exact path="/promotion/recharge/stat" component={RechargePromotionStat}/>
       <Route exact path="/settlement/list" component={StationAccountManager}/>
       <Route exact path="/settlement/stationChart" component={StationAccountChartView}/>
       <Route exact path="/settlement/site" component={PartnerAccountManager}/>
