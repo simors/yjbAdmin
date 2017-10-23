@@ -38,6 +38,9 @@ class InvestProfitChart extends React.PureComponent {
       });
       chart.col('date', {
         alias: '日期',
+        type: 'time',
+        mask: 'mm-dd',
+        range: [0, 1],
       })
       chart.axis('profit', {
         title: {
@@ -51,9 +54,9 @@ class InvestProfitChart extends React.PureComponent {
       chart.legend('stationName', {
         title: null, // 不展示图例 title
       });
-      chart.line().position(Stat.summary.max('date*profit')).color('stationName').shape('stationName').size(5);
+      chart.line().position('date*profit').color('stationName').shape('stationName', () => 'smooth').size(3);
       chart.render();
-    });
+    })
   }
 
   componentDidMount() {
@@ -61,8 +64,13 @@ class InvestProfitChart extends React.PureComponent {
   }
 
   render() {
-    let frame = new Frame(data);
-    frame = Frame.combineColumns(frame, ['中南大学', '中电软件园'], 'profit', 'stationName', ['date'])
+    let {stationNameList, profitData} = this.props
+    if (!stationNameList || !profitData) {
+      return null
+    }
+    let frame = new Frame(profitData);
+    frame = Frame.combineColumns(frame, stationNameList, 'profit', 'stationName', ['date'])
+    // frame = Frame.combineColumns(frame, ['中南大学', '中电软件园'], 'profit', 'stationName', ['date'])
     return (
       <div>
         <this.ProfitChart forceFit={true} height={500} width={200} data={frame} plotCfg={{margin: [50, 150, 80, 100]}} />
@@ -80,8 +88,27 @@ const mapStateToProps = (state, ownProps) => {
     let accountProfit = accountSelector.selectAccountProfitById(state, investProfit)
     let station = stationSelector.selectStationById(state, accountProfit.stationId)
     stationNameSet.add(station.name)
-    investProfitMap.set(accountProfit.accountDay, {stationName: station.name, profit: accountProfit.profit})
+    let stationProfit = {stationName: station.name, profit: accountProfit.profit}
+    let profitMapValue = investProfitMap.get(accountProfit.accountDay)
+    if (!profitMapValue) {
+      investProfitMap.set(accountProfit.accountDay, [stationProfit])
+    } else {
+      profitMapValue.push(stationProfit)
+      investProfitMap.set(accountProfit.accountDay, profitMapValue)
+    }
   })
+  for (let dateKey of investProfitMap.keys()) {
+    let profitObj = {}
+    profitObj.date = dateKey
+    for (let stationName of stationNameSet) {
+      profitObj[stationName] = 0
+    }
+    let profitValue = investProfitMap.get(dateKey)
+    for (let value of profitValue) {
+      profitObj[value.stationName] = value.profit
+    }
+    profitData.push(profitObj)
+  }
   return {
     stationNameList: Array.from(stationNameSet),
     profitData,

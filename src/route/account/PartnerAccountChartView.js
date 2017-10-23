@@ -46,7 +46,6 @@ class StationAccountManager extends React.Component {
   componentWillMount() {
 
     this.props.fetchPartnerAccountsDetail({
-      userId:'59be24ddac502e00601af692',
       success: ()=> {
         console.log('hahhahah')
       },

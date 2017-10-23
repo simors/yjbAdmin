@@ -302,9 +302,9 @@ const mapStateToProps = (state, ownProps) => {
     investors: investors,
     stations: stations,
     investorList: investorList,
-    editVisible: true,
-    addVisible: true,
-    showVisible: true
+    editVisible: editVisible,
+    addVisible: addVisible,
+    showVisible: showVisible
   };
 };
 

@@ -12,19 +12,19 @@ const columns = [{
   title: "省",
   dataIndex: "province",
   render: (text, record)=> {
-    return (<p>{record.province.label}</p>)
+    return (<div>{record.province?record.province.label:''}</div>)
   }
 }, {
   title: "市",
   dataIndex: "city",
   render: (text, record)=> {
-    return (<p>{record.city.label}</p>)
+    return (<div>{record.city?record.city.label:''}</div>)
   }
 }, {
   title: "区",
   dataIndex: "area",
   render: (text, record)=> {
-    return (<p>{record.area.label}</p>)
+    return (<div>{record.area?record.area.label:''}</div>)
   }
 }, {
   title: "服务点地址",

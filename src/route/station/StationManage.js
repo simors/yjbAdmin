@@ -257,9 +257,9 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     stations: stations,
-    addVisible: true,
-    editVisible: true,
-    showVisible: true
+    addVisible: addVisible,
+    editVisible: editVisible,
+    showVisible: showVisible
   };
 };
 
