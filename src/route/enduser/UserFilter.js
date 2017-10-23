@@ -88,7 +88,6 @@ class UserFilter extends React.Component {
         >
           {getFieldDecorator('mobilePhoneNumber', {
             rules: [{
-              message: undefined,
               validator: validateMobilePhoneNumber,
             },]
           })(

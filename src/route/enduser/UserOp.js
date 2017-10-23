@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {Button, Modal} from 'antd';
 import {action, selector} from './redux';
 import {action as authAction} from '../../util/auth';
-import style from './UserOp.module.scss';
 
 class UserOp extends React.Component {
   constructor(props) {
@@ -16,25 +15,21 @@ class UserOp extends React.Component {
 
   render() {
     return (
-      <div className={style.UserOp}>
-        <Button.Group>
-          <Button icon="reload"
-                  onClick={this.onRefresh}>
-            刷新
-          </Button>
-        </Button.Group>
-      </div>
+      <Button.Group>
+        <Button icon="reload"
+                onClick={this.onRefresh}>
+          刷新
+        </Button>
+      </Button.Group>
     );
   }
 }
 
 const mapStateToProps = (appState, ownProps) => {
   const selectedUserIds = selector.selectSelectedUserIds(appState);
-  const checkedUserRoles = selector.selectCheckedUserRoles(appState);
 
   return {
     selectedUserIds,
-    checkedUserRoles,
   };
 };
 
