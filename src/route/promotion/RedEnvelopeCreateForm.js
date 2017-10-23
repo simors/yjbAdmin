@@ -1,5 +1,5 @@
 /**
- * Created by wanpeng on 2017/10/11.
+ * Created by wanpeng on 2017/10/23.
  */
 import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
@@ -16,21 +16,19 @@ import {
 } from 'antd'
 import style from './promotion.module.scss'
 import DivisionCascader from '../../component/DivisionCascader'
-import AwardsInput from './AwardsInput'
 import {actions, selector} from './redux'
 import * as errno from '../../errno'
-
+import RedEnvelopeParamsInput from './RedEnvelopeParamsInput'
 
 const FormItem = Form.Item
 const RangePicker = DatePicker.RangePicker
 const TextArea = Input.TextArea
 
-
 function hasErrors(fieldsError) {
   return Object.keys(fieldsError).some(field => fieldsError[field])
 }
 
-class PromotionCreateForm extends PureComponent {
+class CreateForm extends PureComponent {
   constructor(props) {
     super(props)
   }
@@ -73,7 +71,6 @@ class PromotionCreateForm extends PureComponent {
         }
       }
       console.log("handleSubmit values:", values)
-
       this.props.publishPromotion({
         title: values.title,
         start: values.rangeTimePicker[0],
@@ -81,7 +78,7 @@ class PromotionCreateForm extends PureComponent {
         description: values.description,
         categoryId: this.props.category.id,
         region: values.region,
-        awards: {rechargeList: values.awards},
+        awards: values.awards,
         success: () => {
           this.props.history.push('/promotion_list')
         },
@@ -92,6 +89,7 @@ class PromotionCreateForm extends PureComponent {
 
   render() {
     const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched, getFieldsValue } = this.props.form
+    const {category} = this.props
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -102,7 +100,8 @@ class PromotionCreateForm extends PureComponent {
         sm: { span: 13 },
       },
     };
-    if(this.props.category) {
+    if(category) {
+      //TODO 根据用户地理位置设置活动区域默认位置
       return (
         <Form onSubmit={this.handleSubmit}>
           <FormItem {...formItemLayout} label="活动名称">
@@ -127,11 +126,11 @@ class PromotionCreateForm extends PureComponent {
               <DivisionCascader level={2}/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="奖励金额">
+          <FormItem {...formItemLayout} label="红包参数">
             {getFieldDecorator("awards", {
-              rules: [{ type: 'array', required: true, message: '请输入奖励金额', min: 1, max: 5}],
+              rules: [{ type: 'object', required: true, message: '请输入红包活动参数' }],
             })(
-              <AwardsInput />
+              <RedEnvelopeParamsInput />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="活动说明">
@@ -156,15 +155,14 @@ class PromotionCreateForm extends PureComponent {
         </div>
       )
     }
-
   }
 }
 
-const RechargePromotionCreateForm = Form.create()(PromotionCreateForm)
+const RedEnvelopeCreateForm = Form.create() (CreateForm)
 
 const mapStateToProps = (appState, ownProps) => {
   return {
-    category: selector.selectCategoryByTitle(appState, '充值奖励')
+    category: selector.selectCategoryByTitle(appState, '随机红包')
   }
 }
 
@@ -172,4 +170,4 @@ const mapDispatchToProps = {
   ...actions,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(RechargePromotionCreateForm)
+export default connect(mapStateToProps, mapDispatchToProps)(RedEnvelopeCreateForm)

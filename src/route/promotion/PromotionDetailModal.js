@@ -16,6 +16,8 @@ import style from './promotion.module.scss'
 import moment from 'moment'
 import DivisionCascader from '../../component/DivisionCascader'
 import AwardsInput from './AwardsInput'
+import {PromotionCategoryType, selector} from './redux'
+import RedEnvelopeParamsInput from './RedEnvelopeParamsInput'
 
 const RangePicker = DatePicker.RangePicker
 const TextArea = Input.TextArea
@@ -25,9 +27,46 @@ class PromotionDetailModal extends PureComponent {
     super(props)
   }
 
+  renderCategoryParams() {
+    const {promotion, category} = this.props
+
+    switch (category.type) {
+      case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_RECHARGE:
+      {
+        return (
+          <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
+            <Col span={4}>充值奖励金额</Col>
+            <Col span={14}>
+              <AwardsInput disabled={true} value={promotion.awards.rechargeList} />
+            </Col>
+          </Row>
+        )
+      }
+      case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_SCORE:
+      {
+        return null
+      }
+      case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_REDENVELOPE:
+      {
+        return (
+          <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
+            <Col span={4}>红包参数</Col>
+            <Col span={20}>
+              <RedEnvelopeParamsInput disabled={true} value={promotion.awards} />
+            </Col>
+          </Row>
+        )
+      }
+      default:
+      {
+        return null
+      }
+    }
+  }
+
   render() {
     const dateFormat = 'YYYY-MM-DD'
-    let promotion = this.props.promotion
+    const {promotion} = this.props
     if(promotion) {
       return (
         <Modal title="活动详情"
@@ -38,13 +77,13 @@ class PromotionDetailModal extends PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>活动名称</Col>
             <Col span={6}>
-              <Input disabled={true} value={this.props.promotion.title} />
+              <Input disabled={true} value={promotion.title} />
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>活动起始时间</Col>
             <Col span={10}>
-              <RangePicker disabled value={[moment(promotion.start, dateFormat), moment(promotion.end, dateFormat)]}/>
+              <RangePicker disabled value={[moment(new Date(promotion.start), dateFormat), moment(new Date(promotion.end), dateFormat)]}/>
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
@@ -53,12 +92,7 @@ class PromotionDetailModal extends PureComponent {
               <DivisionCascader disabled={true} value={promotion.region} />
             </Col>
           </Row>
-          <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
-            <Col span={4}>充值奖励金额</Col>
-            <Col span={14}>
-              <AwardsInput disabled={true} value={promotion.awards.rechargeList} />
-            </Col>
-          </Row>
+          {this.renderCategoryParams()}
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>活动描述</Col>
             <Col span={10}>
@@ -74,7 +108,13 @@ class PromotionDetailModal extends PureComponent {
 }
 
 const mapStateToProps = (appState, ownProps) => {
+  const {promotion} = ownProps
+  let category = undefined
+  if(promotion) {
+    category = selector.selectCategory(appState, promotion.categoryId)
+  }
   return {
+    category: category,
   }
 }
 

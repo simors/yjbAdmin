@@ -56,7 +56,7 @@ class Order extends PureComponent {
   render() {
     const columns = [
       { title: '订单编号', dataIndex: 'orderNo', key: 'orderNo' },
-      { title: '下单时间', dataIndex: 'start', key: 'start', render: (start) => (<span>{moment(start).format('LLLL')}</span>)},
+      { title: '下单时间', dataIndex: 'start', key: 'start', render: (start) => (<span>{moment(new Date(start)).format('LLLL')}</span>)},
       { title: '服务点', dataIndex: 'stationName', key: 'stationName' },
       { title: '干衣柜编号', dataIndex: 'deviceNo', key: 'deviceNo', render: this.renderDevicePopover},
       { title: '用户名', dataIndex: 'nickname', key: 'nickname' },
