@@ -38,6 +38,22 @@ class EditForm extends  Component {
     this.props.form.validateFields()
   }
 
+  onSubmitError = (error) => {
+    switch (error.code) {
+      case errno.EPERM:
+        message.error("用户未登录")
+        break
+      case error.EINVAL:
+        message.error("参数错误")
+        break
+      case  error.ENODATA:
+        message.error("没找到该活动对象")
+        break
+      default:
+        message.error(`创建活动失败, 错误：${error.code}`)
+    }
+  }
+
   handleSubmit = (e) => {
     const {promotion} = this.props
     e.preventDefault()
@@ -57,23 +73,21 @@ class EditForm extends  Component {
         }
       }
       console.log("handleSubmit values:", values)
-      // this.props.editPromotion({
-      //   promotionId: promotion.id,
-      //   title: values.title,
-      //   start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
-      //   end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
-      //   description: values.description,
-      //   region: values.region,
-      //   awards: {rechargeList: values.awards},
-      //   disabled: !values.disabled,
-      //   success: () => {
-      //     message.success("修改成功")
-      //     this.props.onSubmit()
-      //   },
-      //   error: (error) => {
-      //     message.error("活动修改失败")
-      //   }
-      // })
+      this.props.editPromotion({
+        promotionId: promotion.id,
+        title: values.title,
+        start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
+        end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
+        description: values.description,
+        region: values.region,
+        awards: values.awards,
+        disabled: !values.disabled,
+        success: () => {
+          message.success("修改成功")
+          this.props.onSubmit()
+        },
+        error: this.onSubmitError
+      })
     })
   }
 
@@ -115,7 +129,7 @@ class EditForm extends  Component {
             rules: [{ required: true}],
             initialValue: [moment(new Date(promotion.start), dateFormat), moment(new Date(promotion.end), dateFormat)],
           })(
-            <RangePicker showTime format="LLLL"/>
+            <RangePicker disabled showTime format="LLLL"/>
           )}
         </FormItem>
         <FormItem hasFeedback {...formItemLayout} label="活动区域">
@@ -123,7 +137,7 @@ class EditForm extends  Component {
             rules: [{ type: 'array', required: true, message: '请输入活动生效区域' }],
             initialValue: promotion.region,
           })(
-            <DivisionCascader />
+            <DivisionCascader disabled={true} />
           )}
         </FormItem>
         <FormItem hasFeedback {...formItemLayout} label="红包参数">
@@ -131,7 +145,7 @@ class EditForm extends  Component {
             rules: [{ type: 'object', required: true, message: '请输入红包活动参数'}],
             initialValue: promotion.awards
           })(
-            <RedEnvelopeParamsInput />
+            <RedEnvelopeParamsInput disabled={true} />
           )}
         </FormItem>
         <FormItem hasFeedback {...formItemLayout} label="活动说明">

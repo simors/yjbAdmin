@@ -115,7 +115,7 @@ class EditForm extends Component {
             rules: [{ required: true}],
             initialValue: [moment(new Date(promotion.start), dateFormat), moment(new Date(promotion.end), dateFormat)],
           })(
-            <RangePicker showTime format="LLLL"/>
+            <RangePicker disabled showTime format="LLLL"/>
           )}
         </FormItem>
         <FormItem hasFeedback {...formItemLayout} label="活动区域">
@@ -123,7 +123,7 @@ class EditForm extends Component {
             rules: [{ type: 'array', required: true, message: '请输入活动生效区域' }],
             initialValue: promotion.region,
           })(
-            <DivisionCascader />
+            <DivisionCascader disabled={true} />
           )}
         </FormItem>
         <FormItem hasFeedback {...formItemLayout} label="奖励金额">
@@ -131,7 +131,7 @@ class EditForm extends Component {
             rules: [{ type: 'array', required: true, message: '请输入奖励金额', min: 1, max: 5}],
             initialValue: promotion.awards.rechargeList
           })(
-            <AwardsInput />
+            <AwardsInput disabled={true} />
           )}
         </FormItem>
         <FormItem hasFeedback {...formItemLayout} label="活动说明">

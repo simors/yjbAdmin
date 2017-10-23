@@ -17,6 +17,7 @@ import style from './device.module.scss'
 import DivisionCascader from '../../component/DivisionCascader'
 import {stationSelector} from '../station/redux'
 import {selector as userSelector} from '../../util/auth'
+import * as appConfig from '../../util/appConfig'
 
 const RadioGroup = Radio.Group
 const Option = Select.Option
@@ -93,7 +94,7 @@ class DeviceDetailModal extends React.PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} >
             <Col span={4}>二维码</Col>
             <Col span={6}>
-              <QRCode ref="qrcode" value={"http://dev.yiijiabao.com/openDevice/" + device.deviceNo} />
+              <QRCode ref="qrcode" value={appConfig.MP_CLIENT_DOMAIN + '/' + device.deviceNo} />
             </Col>
             <Col>
               <a href="" id="download" download={device.deviceNo} onClick={this.downloadQRCode}>下载二维码</a>
