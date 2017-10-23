@@ -39,17 +39,28 @@ class Profit extends Record({
 
 // --- constant
 
+export const DEAL_TYPE = {
+  DEPOSIT: 1,           // 押金
+  RECHARGE: 2,          // 充值
+  SERVICE: 3,           // 服务消费
+  REFUND: 4,            // 押金退款
+  WITHDRAW: 5,          // 提现
+  SYS_PRESENT: 6,       // 系统赠送
+}
+
 const GET_CURRENT_ADMIN_PROFIT = 'GET_CURRENT_ADMIN_PROFIT'
 const SAVE_ADMIN_PROFIT = 'SAVE_ADMIN_PROFIT'
 const GET_30_DAYS_ACCOUNT_PROFIT = 'GET_30_DAYS_ACCOUNT_PROFIT'
 const SAVE_INVEST_PROFIT_STAT = 'SAVE_INVEST_PROFIT_STAT'
 const SAVE_PARTNER_PROFIT_STAT = 'SAVE_PARTNER_PROFIT_STAT'
+const REQUEST_WITHDRAW = 'REQUEST_WITHDRAW'
 
 // --- action
 
 export const profitAction = {
   getCurrentAdminProfit: createAction(GET_CURRENT_ADMIN_PROFIT),
   stat30DaysAccountProfit: createAction(GET_30_DAYS_ACCOUNT_PROFIT),
+  requestWithdraw: createAction(REQUEST_WITHDRAW),
 }
 
 const saveAdminProfit = createAction(SAVE_ADMIN_PROFIT)
@@ -61,6 +72,7 @@ const savePartnerProfitStat = createAction(SAVE_PARTNER_PROFIT_STAT)
 export const profitSaga = [
   takeLatest(GET_CURRENT_ADMIN_PROFIT, sagaGetAdminProfit),
   takeLatest(GET_30_DAYS_ACCOUNT_PROFIT, sagaStat30DaysAccountProfit),
+  takeLatest(REQUEST_WITHDRAW, sagaRequestWithdraw),
 ]
 
 function* sagaGetAdminProfit(action) {
@@ -99,6 +111,30 @@ function* sagaStat30DaysAccountProfit(action) {
   } catch (e) {
     if (payload.error) {
       payload.error(e.message)
+    }
+  }
+}
+
+function* sagaRequestWithdraw(action) {
+  let payload = action.payload
+
+  let transferPayload = {
+    amount: payload.amount,
+    channel: payload.channel,
+    metadata: payload.metadata,
+    openid: payload.openid,
+    username: payload.username,
+  }
+
+  try {
+    let transfer = yield call(profitCloud.createTransfer, transferPayload)
+    if(payload.success) {
+      payload.success(transfer)
+    }
+
+  } catch(error) {
+    if(payload.error) {
+      payload.error(error)
     }
   }
 }
