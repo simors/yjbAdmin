@@ -152,7 +152,6 @@ class UserEdit extends React.Component {
           <Form.Item
             {...formItemLayout}
             label='备注'
-            hasFeedback
           > {
             getFieldDecorator('note', {
               initialValue: this.props.user.note,
