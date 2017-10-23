@@ -140,12 +140,10 @@ class UserList extends React.Component {
     };
 
     return (
-      <div>
-        <Table size="small" bordered
-               columns={this.columns} dataSource={this.props.users}
-               rowKey={this.rowKey} rowSelection={rowSelection}
-        />
-      </div>
+      <Table
+             columns={this.columns} dataSource={this.props.users}
+             rowKey={this.rowKey} rowSelection={rowSelection}
+      />
     );
   }
 }
