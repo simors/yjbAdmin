@@ -175,11 +175,11 @@ export const AUTH_USER_TYPE = {
 };
 
 export const AUTH_USER_STATUS = {
-  NORMAL:  1,
-  DISABLED: 2,
+  MP_NORMAL:      1,
+  MP_DISABLED:    2,
 
-  MP_NORMAL:    100,
-  MP_DISABLED:  101,
+  ADMIN_NORMAL:   101,
+  ADMIN_DISABLED: 102,
 };
 
 // --- constant

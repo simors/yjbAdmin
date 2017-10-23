@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Button, Modal} from 'antd';
+import {Button} from 'antd';
 import {action, selector} from './redux';
 import {action as authAction} from '../../util/auth';
 

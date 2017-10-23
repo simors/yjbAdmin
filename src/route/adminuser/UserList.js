@@ -23,7 +23,7 @@ class UserList extends React.Component {
         return (
           <span>
             {(() => {
-              if (status === AUTH_USER_STATUS.DISABLED) {
+              if (status === AUTH_USER_STATUS.ADMIN_DISABLED) {
                 return (<span style={{color: 'red'}}>禁用</span>);
               } else {
                 return (<span>正常</span>);
@@ -62,7 +62,7 @@ class UserList extends React.Component {
                 this.props.updateUser({
                   params: {
                     id: record.id,
-                    status: AUTH_USER_STATUS.DISABLED,
+                    status: AUTH_USER_STATUS.ADMIN_DISABLED,
                   },
                   onSuccess: () => {
                     this.props.listAdminUsers({limit: 100});
@@ -77,7 +77,7 @@ class UserList extends React.Component {
                 this.props.updateUser({
                   params: {
                     id: record.id,
-                    status: AUTH_USER_STATUS.NORMAL,
+                    status: AUTH_USER_STATUS.ADMIN_NORMAL,
                   },
                   onSuccess: () => {
                     this.props.listAdminUsers({limit: 100});
@@ -88,7 +88,7 @@ class UserList extends React.Component {
                 });
               };
 
-              if (record.status === AUTH_USER_STATUS.DISABLED) {
+              if (record.status === AUTH_USER_STATUS.ADMIN_DISABLED) {
                 return (
                   <Popconfirm title='确定要启用该用户吗？' onConfirm={onEnable}>
                     <a style={{color: 'blue'}}>启用</a>
