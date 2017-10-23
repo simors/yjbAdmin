@@ -1,8 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Table} from 'antd';
+import {Table, Popconfirm, message} from 'antd';
+import moment from 'moment';
 import {action, selector} from './redux';
-import {action as authAction, selector as authSelector} from '../../util/auth/';
+import {action as authAction, selector as authSelector, AUTH_USER_STATUS} from '../../util/auth/';
 
 class UserList extends React.Component {
   constructor(props) {
@@ -17,22 +18,97 @@ class UserList extends React.Component {
     }, {
       title: '所在地区',
       render: (record) => {
+        const {province={}, city={}} = record;
+        const {label: provinceStr=''} = province;
+        const {label: cityStr=''} = city;
+        let area = provinceStr;
+        if (cityStr) {
+          area = `${provinceStr}/${cityStr}`;
+        }
         return (
-          null
+          <span>
+            {area}
+          </span>
         );
       },
     }, {
       title: '最近登录时间',
       render: (record) => {
+        const {updatedAt} = record;
+        const updatedAtStr = moment(updatedAt).format('lll');
         return (
-          null
+          <span>
+            {updatedAtStr}
+          </span>
         );
       },
     }, {
       title: '状态',
       render: (record) => {
+        const {status} = record;
+        let statusStr = '正常';
+        let color = 'inherit';
+        if (status === AUTH_USER_STATUS.DISABLED) {
+          statusStr = '禁用';
+          color = 'red';
+        }
+
         return (
-          null
+          <span style={{color}}>{statusStr}</span>
+        );
+      },
+    }, {
+      title: '操作',
+      key: 'action',
+      render: (record) => {
+        const onDisable = () => {
+          this.props.updateUser({
+            params: {
+              id: record.id,
+              status: AUTH_USER_STATUS.DISABLED,
+            },
+            onSuccess: () => {
+              this.props.listEndUsers({limit: 100});
+            },
+            onFailure: (code) => {
+              message.error(`禁用用户失败, 错误：${code}`);
+            },
+          });
+        };
+
+        const onEnable = () => {
+          this.props.updateUser({
+            params: {
+              id: record.id,
+              status: AUTH_USER_STATUS.NORMAL,
+            },
+            onSuccess: () => {
+              this.props.listEndUsers({limit: 100});
+            },
+            onFailure: (code) => {
+              message.error(`启用用户失败, 错误：${code}`);
+            },
+          });
+        };
+
+        return (
+          <span>
+            {(() => {
+              if (record.status === AUTH_USER_STATUS.DISABLED) {
+                return (
+                  <Popconfirm title='确定要启用该用户吗？' onConfirm={onEnable}>
+                    <a style={{color: 'blue'}}>启用</a>
+                  </Popconfirm>
+                );
+              } else {
+                return (
+                  <Popconfirm title='确定要禁用该用户吗？' onConfirm={onDisable}>
+                    <a style={{color: 'blue'}}>禁用</a>
+                  </Popconfirm>
+                );
+              }
+            })()}
+          </span>
         );
       },
     }];
@@ -50,12 +126,13 @@ class UserList extends React.Component {
     this.props.updateSelectedUserIds({selected: selectedRowKeys});
 
     if (selectedRowKeys.length === 1) {
-      const roles = selectedRows[0].roles;
-      this.props.updateCheckedUserRoles({checked: roles});
     }
   };
 
   render() {
+    if (this.props.users === undefined)
+      return null;
+
     const rowSelection = {
       type: 'radio',
       selectedRowKeys: this.props.selectedUserIds,
