@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Modal, Button, Form, Input, Select, Checkbox, message} from 'antd';
 import {action, selector} from './redux';
-import {action as authAction, selector as authSelector} from '../../util/auth/';
+import {action as authAction, selector as authSelector, AUTH_USER_TYPE} from '../../util/auth/';
 import * as errno from '../../errno';
 import style from './UserCreate.module.scss';
 
@@ -44,7 +44,7 @@ class UserCreate extends React.Component {
       this.props.createUser({
         params: {
           ...values,
-          type: 'admin',
+          type: AUTH_USER_TYPE.ADMIN,
         },
         onSuccess: () => {
           this.props.hideUserCreateModal({});

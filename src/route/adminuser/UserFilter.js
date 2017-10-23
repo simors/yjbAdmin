@@ -8,6 +8,14 @@ import style from './UserFilter.module.scss';
 class UserFilter extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      mobilePhoneNumber: {
+        hasFeedback: false,
+        validateStatus: undefined,
+        valid: true,
+      },
+    };
   }
 
   handleSubmit = (e) => {
@@ -17,17 +25,51 @@ class UserFilter extends React.Component {
         return;
       }
 
+      const {valid: mobilePhoneNumberValid} = this.state.mobilePhoneNumber;
+      if (!mobilePhoneNumberValid) {
+        return;
+      }
+
       const {nickname, mobilePhoneNumber} = values;
       this.props.listAdminUsers({
+        limit: 100,
         nickname,
         mobilePhoneNumber,
-        limit: 100
+
       });
     });
   };
 
   render() {
     const {getFieldDecorator} = this.props.form;
+
+    const validateMobilePhoneNumber = (rule, value, callback) => {
+      let hasFeedback = false;
+      let validateStatus = undefined;
+      let valid = true;
+
+      if (value) {
+        const reMobilePhoneNumber = /^1\d{10}$/;
+        if (!reMobilePhoneNumber.test(value)) {
+          hasFeedback = true;
+          validateStatus = 'error';
+          valid = false;
+        }
+      }
+
+      this.setState((prevState, props) => {
+        return {
+          ...prevState,
+          mobilePhoneNumber: {
+            hasFeedback,
+            validateStatus,
+            valid,
+          },
+        };
+      });
+
+      callback();
+    };
 
     return (
       <Form layout="inline" onSubmit={this.handleSubmit} className={style.UserFilter}>
@@ -36,9 +78,16 @@ class UserFilter extends React.Component {
             <Input placeholder="用户名" />
           )}
         </Form.Item>
-        <Form.Item className={style.mobilePhoneNumber}>
-          {getFieldDecorator('mobilePhoneNumber', {})(
-            <Input placeholder="手机号码" />
+        <Form.Item className={style.mobilePhoneNumber}
+                   hasFeedback={this.state.mobilePhoneNumber.hasFeedback}
+                   validateStatus={this.state.mobilePhoneNumber.validateStatus}
+        >
+          {getFieldDecorator('mobilePhoneNumber', {
+            rules: [{
+              validator: validateMobilePhoneNumber,
+            },]
+          })(
+            <Input placeholder="手机号码"/>
           )}
         </Form.Item>
         <Form.Item>

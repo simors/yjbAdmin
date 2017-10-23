@@ -60,7 +60,7 @@ class RechargePromotionStat extends PureComponent {
           </Col>
           <Col span={3}>
             <div>参与人数</div>
-            <div>{"¥" + promotion.stat.participant + '元'}</div>
+            <div>{promotion.stat.participant}</div>
           </Col>
         </Row>
         <hr/>
