@@ -105,7 +105,6 @@ const mapStateToProps = (state, ownProps) => {
     }
     profitData.push(profitObj)
   }
-  console.log('profitData', profitData)
   return {
     stationNameList: Array.from(stationNameSet),
     profitData,
