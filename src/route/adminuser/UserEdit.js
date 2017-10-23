@@ -62,28 +62,6 @@ class UserEdit extends React.Component {
     });
   };
 
-  onConfirmBlur = (e) => {
-    const value = e.target.value;
-    this.setState({ confirmDirty: this.state.confirmDirty || !!value });
-  };
-
-  validatePassword = (rule, value, callback) => {
-    const form = this.props.form;
-    if (value && value !== form.getFieldValue('password')) {
-      callback('两次输入的密码不一致!');
-    } else {
-      callback();
-    }
-  };
-
-  validateConfirm = (rule, value, callback) => {
-    const form = this.props.form;
-    if (value && this.state.confirmDirty) {
-      form.validateFields(['confirm'], { force: true });
-    }
-    callback();
-  };
-
   render() {
     const {getFieldDecorator} = this.props.form;
 
@@ -134,6 +112,7 @@ class UserEdit extends React.Component {
           <Form.Item
             {...formItemLayout}
             label='用户名'
+            hasFeedback
           > {
             getFieldDecorator('nickname', {
               initialValue: this.props.user.nickname,
@@ -157,38 +136,6 @@ class UserEdit extends React.Component {
           </Form.Item>
           <Form.Item
             {...formItemLayout}
-            label='密码'
-            hasFeedback
-          > {
-            getFieldDecorator('password', {
-              rules: [{
-                required: false, message: '请输入密码!',
-              }, {
-                validator: this.validateConfirm,
-              }],
-            })(
-              <Input type='password' />
-            )
-          }
-          </Form.Item>
-          <Form.Item
-            {...formItemLayout}
-            label='确认密码'
-            hasFeedback
-          > {
-            getFieldDecorator('confirm', {
-              rules: [{
-                required: false, message: '请确认密码!',
-              }, {
-                validator: this.validatePassword,
-              }],
-            })(
-              <Input type='password' onBlur={this.onConfirmBlur} />
-            )
-          }
-          </Form.Item>
-          <Form.Item
-            {...formItemLayout}
             label='角色'
             hasFeedback
           > {
@@ -205,7 +152,6 @@ class UserEdit extends React.Component {
           <Form.Item
             {...formItemLayout}
             label='备注'
-            hasFeedback
           > {
             getFieldDecorator('note', {
               initialValue: this.props.user.note,

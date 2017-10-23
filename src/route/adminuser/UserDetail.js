@@ -59,46 +59,28 @@ class UserDetail extends React.Component {
           <Form.Item
             {...formItemLayout}
             label='用户名'
-          > {
-            getFieldDecorator('nickname', {
-              initialValue: this.props.user.nickname,
-            })(
-              <Input disabled />
-            )
-          }
+          >
+            <Input value={this.props.user.nickname} readOnly />
           </Form.Item>
           <Form.Item
             {...formItemLayout}
             label='手机号码'
-          > {
-            getFieldDecorator('mobilePhoneNumber', {
-              initialValue: this.props.user.mobilePhoneNumber,
-            })(
-              <Input addonBefore={prefixSelector} style={{ width: '100%' }} disabled />
-            )
-          }
+          >
+            <Input addonBefore={prefixSelector} style={{ width: '100%' }}
+                   value={this.props.user.mobilePhoneNumber} readOnly />
           </Form.Item>
           <Form.Item
             {...formItemLayout}
             label='角色'
-          > {
-            getFieldDecorator('roles', {
-              initialValue: this.props.user.roles,
-             })(
-              <Checkbox.Group options={roleOptions} disabled />
-            )
-          }
+          >
+            <Checkbox.Group options={roleOptions} value={this.props.user.roles} />
           </Form.Item>
           <Form.Item
             {...formItemLayout}
             label='备注'
-          > {
-            getFieldDecorator('note', {
-              initialValue: this.props.user.note ? this.props.user.note : '',
-            })(
-              <Input.TextArea autosize={{minRows: 2, maxRows: 4}} disabled />
-            )
-          }
+          >
+            <Input.TextArea autosize={{minRows: 2, maxRows: 4}}
+                            value={this.props.user.note ? this.props.user.note : ''} readOnly />
           </Form.Item>
         </Form>
       </Modal>
