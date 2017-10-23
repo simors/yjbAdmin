@@ -112,6 +112,7 @@ class UserEdit extends React.Component {
           <Form.Item
             {...formItemLayout}
             label='用户名'
+            hasFeedback
           > {
             getFieldDecorator('nickname', {
               initialValue: this.props.user.nickname,

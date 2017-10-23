@@ -119,6 +119,7 @@ class UserCreate extends React.Component {
           <Form.Item
             {...formItemLayout}
             label='用户名'
+            hasFeedback
           > {
             getFieldDecorator('nickname', {
               rules: [{ required: true, message: '请输入用户名!' }],
@@ -130,9 +131,14 @@ class UserCreate extends React.Component {
           <Form.Item
             {...formItemLayout}
             label='手机号码'
+            hasFeedback
           > {
             getFieldDecorator('mobilePhoneNumber', {
-              rules: [{ required: true, message: '请输入手机号码!' }],
+              rules: [{
+                required: true, message: '请输入手机号码!'
+              }, {
+                pattern: /^1\d{10}$/, message: '无效的手机号码!'
+              }],
             })(
               <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
             )
@@ -155,7 +161,6 @@ class UserCreate extends React.Component {
           <Form.Item
             {...formItemLayout}
             label='备注'
-            hasFeedback
           > {
             getFieldDecorator('note', {
 
