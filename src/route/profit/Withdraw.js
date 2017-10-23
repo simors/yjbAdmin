@@ -5,6 +5,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import { Row, Col, Modal, Form, Popconfirm, InputNumber, Button } from 'antd'
 import {profitSelector} from './redux'
+import {selector as authSelector} from '../../util/auth'
 
 const FormItem = Form.Item
 
@@ -93,8 +94,10 @@ class Withdraw extends React.PureComponent {
 
 const mapStateToProps = (state, ownProps) => {
   let adminProfit = profitSelector.selectAdminProfit(state)
+  let currentUser = authSelector.selectCurUser(state)
   return {
     adminProfit,
+    currentUser,
   }
 }
 
