@@ -18,6 +18,8 @@ import style from './promotion.module.scss'
 import DivisionCascader from '../../component/DivisionCascader'
 import AwardsInput from './AwardsInput'
 import {actions, selector} from './redux'
+import * as errno from '../../errno'
+
 
 const FormItem = Form.Item
 const RangePicker = DatePicker.RangePicker
@@ -35,6 +37,22 @@ class PromotionCreateForm extends PureComponent {
 
   componentDidMount() {
     this.props.form.validateFields()
+  }
+
+  onSubmitError = (error) => {
+    switch (error.code) {
+      case errno.ERROR_PROM_REPEAT:
+        message.error("活动重复")
+        break
+      case errno.EPERM:
+        message.error("用户未登录")
+        break
+      case error.EINVAL:
+        message.error("参数错误")
+        break
+      default:
+        message.error(`创建活动失败, 错误：${error.code}`)
+    }
   }
 
   handleSubmit = (e) => {
@@ -67,9 +85,7 @@ class PromotionCreateForm extends PureComponent {
         success: () => {
           this.props.history.push('/promotion_list')
         },
-        error: (error) => {
-          message.error("充值活动发布失败")
-        }
+        error: this.onSubmitError
       })
     })
   }

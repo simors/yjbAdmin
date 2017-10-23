@@ -91,6 +91,8 @@ class EditForm extends Component {
       },
     }
     const dateFormat = 'YYYY-MM-DD HH:mm:ss'
+    console.log("promotion:", promotion)
+    console.log("promotion.start:", moment(promotion.start, dateFormat))
     return (
       <Form onSubmit={this.handleSubmit}>
         <FormItem hasFeedback {...formItemLayout} label="活动名称">
@@ -115,7 +117,7 @@ class EditForm extends Component {
             rules: [{ required: true}],
             initialValue: [moment(promotion.start, dateFormat), moment(promotion.end, dateFormat)],
           })(
-            <RangePicker showTime format={dateFormat}/>
+            <RangePicker showTime format="LLLL"/>
           )}
         </FormItem>
         <FormItem hasFeedback {...formItemLayout} label="活动区域">
