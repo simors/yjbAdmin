@@ -23,6 +23,9 @@ class ParticipationProfitChart extends React.PureComponent {
       });
       chart.col('date', {
         alias: '日期',
+        type: 'time',
+        mask: 'mm-dd',
+        range: [0, 1],
       })
       chart.axis('profit', {
         title: {
@@ -36,9 +39,9 @@ class ParticipationProfitChart extends React.PureComponent {
       chart.legend('stationName', {
         title: null, // 不展示图例 title
       });
-      chart.line().position(Stat.summary.max('date*profit')).color('stationName').shape('stationName').size(5);
+      chart.line().position('date*profit').color('stationName').shape('stationName', () => 'smooth').size(3);
       chart.render();
-    });
+    })
   }
 
   componentDidMount() {
