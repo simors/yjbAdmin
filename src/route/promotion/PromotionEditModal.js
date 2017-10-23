@@ -2,10 +2,13 @@
  * Created by wanpeng on 2017/10/17.
  */
 import React, {PureComponent} from 'react'
+import {connect} from 'react-redux'
 import {
   Modal,
 } from 'antd'
+import {selector, PromotionCategoryType} from './redux'
 import RechargePromEditForm from './RechargePromEditForm'
+import RedEnvelopePromEditForm from './RedEnvelopePromEditForm'
 
 class PromotionEditModal extends PureComponent {
   constructor(props) {
@@ -14,6 +17,32 @@ class PromotionEditModal extends PureComponent {
 
   onSubmit = (e) => {
 
+  }
+
+  renderCategoryEditForm() {
+    const {history, category, promotion, onCancel} = this.props
+    switch (category.type) {
+      case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_RECHARGE:
+      {
+        return (
+          <RechargePromEditForm history={history} promotion={promotion} onSubmit={onCancel} />
+        )
+      }
+      case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_SCORE:
+      {
+        return null
+      }
+      case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_REDENVELOPE:
+      {
+        return(
+          <RedEnvelopePromEditForm history={history} promotion={promotion} onSubmit={onCancel}/>
+        )
+      }
+      default:
+      {
+        return null
+      }
+    }
   }
 
   render() {
@@ -26,7 +55,9 @@ class PromotionEditModal extends PureComponent {
                onOk={this.onSubmit}
                onCancel={onCancel}
                footer={null}>
-          <RechargePromEditForm history={history} promotion={promotion} onSubmit={onCancel} />
+          {
+            this.renderCategoryEditForm()
+          }
         </Modal>
       )
     }
@@ -34,4 +65,15 @@ class PromotionEditModal extends PureComponent {
   }
 }
 
-export default PromotionEditModal
+const mapStateToProps = (appState, ownProps) => {
+  const {promotion} = ownProps
+  let category = undefined
+  if(promotion) {
+    category = selector.selectCategory(appState, promotion.categoryId)
+  }
+  return {
+    category: category,
+  }
+}
+
+export default connect(mapStateToProps)(PromotionEditModal)

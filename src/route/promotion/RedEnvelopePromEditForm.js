@@ -1,5 +1,5 @@
 /**
- * Created by wanpeng on 2017/10/17.
+ * Created by wanpeng on 2017/10/23.
  */
 import React, {Component, PureComponent} from 'react'
 import {connect} from 'react-redux'
@@ -14,7 +14,7 @@ import {
 import {actions}  from './redux'
 import moment from 'moment'
 import DivisionCascader from '../../component/DivisionCascader'
-import AwardsInput from './AwardsInput'
+import RedEnvelopeParamsInput from './RedEnvelopeParamsInput'
 
 const FormItem = Form.Item
 const RangePicker = DatePicker.RangePicker
@@ -28,7 +28,7 @@ function hasChanges(initialValues, fieldsValue) {
   return Object.keys(fieldsValue).some(field => fieldsValue[field] != initialValues[field])
 }
 
-class EditForm extends Component {
+class EditForm extends  Component {
   constructor(props) {
     super(props)
   }
@@ -36,6 +36,22 @@ class EditForm extends Component {
   componentDidMount() {
     // To disabled submit button at the beginning.
     this.props.form.validateFields()
+  }
+
+  onSubmitError = (error) => {
+    switch (error.code) {
+      case errno.EPERM:
+        message.error("用户未登录")
+        break
+      case error.EINVAL:
+        message.error("参数错误")
+        break
+      case  error.ENODATA:
+        message.error("没找到该活动对象")
+        break
+      default:
+        message.error(`创建活动失败, 错误：${error.code}`)
+    }
   }
 
   handleSubmit = (e) => {
@@ -64,15 +80,13 @@ class EditForm extends Component {
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
         description: values.description,
         region: values.region,
-        awards: {rechargeList: values.awards},
+        awards: values.awards,
         disabled: !values.disabled,
         success: () => {
           message.success("修改成功")
           this.props.onSubmit()
         },
-        error: (error) => {
-          message.error("活动修改失败")
-        }
+        error: this.onSubmitError
       })
     })
   }
@@ -126,12 +140,12 @@ class EditForm extends Component {
             <DivisionCascader disabled={true} />
           )}
         </FormItem>
-        <FormItem hasFeedback {...formItemLayout} label="奖励金额">
+        <FormItem hasFeedback {...formItemLayout} label="红包参数">
           {getFieldDecorator("awards", {
-            rules: [{ type: 'array', required: true, message: '请输入奖励金额', min: 1, max: 5}],
-            initialValue: promotion.awards.rechargeList
+            rules: [{ type: 'object', required: true, message: '请输入红包活动参数'}],
+            initialValue: promotion.awards
           })(
-            <AwardsInput disabled={true} />
+            <RedEnvelopeParamsInput disabled={true} />
           )}
         </FormItem>
         <FormItem hasFeedback {...formItemLayout} label="活动说明">
@@ -154,7 +168,7 @@ class EditForm extends Component {
   }
 }
 
-const RechargePromEditForm = Form.create()(EditForm)
+const RedEnvelopePromEditForm = Form.create()(EditForm)
 
 const mapStateToProps = (appState, ownProps) => {
   return {
@@ -165,5 +179,4 @@ const mapDispatchToProps = {
   ...actions,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(RechargePromEditForm)
-
+export default connect(mapStateToProps, mapDispatchToProps)(RedEnvelopePromEditForm)

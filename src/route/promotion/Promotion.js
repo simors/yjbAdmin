@@ -5,7 +5,6 @@ import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import {
-  Button,
   Table,
   Row,
 } from 'antd'
@@ -15,8 +14,6 @@ import PromotionSearchForm from './PromotionSearchForm'
 import {selector} from './redux'
 import PromotionDetailModal from './PromotionDetailModal'
 import PromotionEditModal from './PromotionEditModal'
-
-const ButtonGroup = Button.Group
 
 class Promotion extends PureComponent {
   constructor(props) {
@@ -99,11 +96,15 @@ class Promotion extends PureComponent {
     const columns = [
       { title: '活动类型', dataIndex: 'categoryTitle', key: 'categoryTitle' },
       { title: '活动名称', dataIndex: 'title', key: 'title' },
-      { title: '活动开始时间', dataIndex: 'start', key: 'start', render: (start) => (<span>{moment(start).format('LLLL')}</span>)},
-      { title: '活动结束时间', dataIndex: 'end', key: 'end', render: (end) => (<span>{moment(end).format('LLLL')}</span>)},
+      { title: '活动开始时间', dataIndex: 'start', key: 'start',
+        render: (start) => (<span>{moment(new Date(start)).format('LLLL')}</span>)},
+      { title: '活动结束时间', dataIndex: 'end', key: 'end',
+        render: (end) => (<span>{moment(new Date(end)).format('LLLL')}</span>)},
       { title: '发布人', dataIndex: 'username', key: 'username'},
-      { title: '活动状态', dataIndex: 'disabled', key: 'disabled', render: this.renderStatusColum},
-      { title: '操作', key: 'action', render: this.renderActionColumn}
+      { title: '活动状态', dataIndex: 'disabled', key: 'disabled',
+        render: this.renderStatusColum},
+      { title: '操作', key: 'action',
+        render: this.renderActionColumn}
     ]
     return (
       <div className={style.content}>

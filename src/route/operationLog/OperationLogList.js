@@ -21,7 +21,7 @@ const columns = [{
   title: "操作时间",
   dataIndex: "createdAt",
   render: (text,record)=>{return (
-    <div>{moment(record.createdAt).format('YYYY-MM-DD hh:mm:ss')}</div>
+    <div>{moment(new Date(record.createdAt)).format('YYYY-MM-DD hh:mm:ss')}</div>
   )}
 }];
 

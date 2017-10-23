@@ -177,6 +177,9 @@ export const AUTH_USER_TYPE = {
 export const AUTH_USER_STATUS = {
   NORMAL:  1,
   DISABLED: 2,
+
+  MP_NORMAL:    100,
+  MP_DISABLED:  101,
 };
 
 // --- constant

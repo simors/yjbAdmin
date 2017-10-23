@@ -32,7 +32,7 @@ class Recharge extends PureComponent {
   render() {
     const columns = [
       { title: '充值单号', dataIndex: 'orderNo', key: 'orderNo' },
-      { title: '充值时间', dataIndex: 'dealTime', key: 'dealTime', render: (dealTime) => (<span>{moment(dealTime).format('LLLL')}</span>) },
+      { title: '充值时间', dataIndex: 'dealTime', key: 'dealTime', render: (dealTime) => (<span>{moment(new Date(dealTime)).format('LLLL')}</span>) },
       { title: '用户名', dataIndex: 'nickname', key: 'nickname' },
       { title: '手机号码', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
       { title: '充值金额', dataIndex: 'amount', key: 'amount', render: (amount) => (<span>{'¥ ' + amount}</span>) },

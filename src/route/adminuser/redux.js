@@ -6,6 +6,7 @@ import {Record, Set} from 'immutable';
 const UserState = Record({
   curOpUserId: undefined,
   selectedUserIds: Set(),
+  needResetFilter: false,
   checkedUserRoles: Set(),
   userDetailModalVisible: false,
   userCreateModalVisible: false,
@@ -16,6 +17,7 @@ const UserState = Record({
 
 const UPDATE_CUR_OP_USER_ID       = 'ADMIN/USER/UPDATE_CUR_OP_USER_ID';
 const UPDATE_SELECTED_USER_IDS    = 'ADMIN/USER/UPDATE_SELECTED_USER_IDS';
+const RESET_FILTER                = 'ADMIN/USER/RESET_FILTER';
 const SHOW_USER_DETAIL_MODAL      = 'ADMIN/USER/SHOW_USER_DETAIL_MODAL';
 const HIDE_USER_DETAIL_MODAL      = 'ADMIN/USER/HIDE_USER_DETAIL_MODAL';
 const SHOW_USER_CREATE_MODAL      = 'ADMIN/USER/SHOW_USER_CREATE_MODAL';
@@ -28,6 +30,7 @@ const HIDE_USER_EDIT_MODAL        = 'ADMIN/USER/HIDE_USER_EDIT_MODAL';
 export const action = {
   updateCurOpUserId: createAction(UPDATE_CUR_OP_USER_ID),
   updateSelectedUserIds: createAction(UPDATE_SELECTED_USER_IDS),
+  resetFilter: createAction(RESET_FILTER),
   showUserDetailModal: createAction(SHOW_USER_DETAIL_MODAL),
   hideUserDetailModal: createAction(HIDE_USER_DETAIL_MODAL),
   showUserCreateModal: createAction(SHOW_USER_CREATE_MODAL),
@@ -48,6 +51,8 @@ export const reducer = (state=initialState, action) => {
       return reduceUpdateCurOpUserId(state, action);
     case UPDATE_SELECTED_USER_IDS:
       return reduceUpdateSelectedUserIds(state, action);
+    case RESET_FILTER:
+      return reduceNeedResetFilter(state, action);
     case SHOW_USER_DETAIL_MODAL:
       return reduceShowUserDetailModal(state, action);
     case HIDE_USER_DETAIL_MODAL:
@@ -79,6 +84,14 @@ function reduceUpdateSelectedUserIds(state, action) {
   return state.withMutations((m) => {
     m.setIn(['selectedUserIds'], new Set(selected));
   })
+}
+
+function reduceNeedResetFilter(state, action) {
+  const {reset} = action.payload;
+
+  return state.withMutations((m) => {
+    m.set('needResetFilter', reset);
+  });
 }
 
 function reduceShowUserDetailModal(state, action) {
@@ -122,6 +135,7 @@ function reduceHideUserEditModal(state, action) {
 export const selector = {
   selectCurOpUserId,
   selectSelectedUserIds,
+  selectNeedResetFilter,
   selectCheckedUserRoles,
   selectUserDetailModalVisible,
   selectUserCreateModalVisible,
@@ -136,6 +150,11 @@ function selectCurOpUserId(appState) {
 function selectSelectedUserIds(appState) {
   const state = appState.ADMINUSER;
   return state.getIn(['selectedUserIds'], new Set()).toArray();
+}
+
+function selectNeedResetFilter(appState) {
+  const state = appState.ADMINUSER;
+  return state.getIn(['needResetFilter'], false);
 }
 
 function selectCheckedUserRoles(appState) {

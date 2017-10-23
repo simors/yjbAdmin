@@ -48,6 +48,7 @@ const PromotionCategoryRecord = Record({
   id: undefined,                //活动类型id
   title: undefined,             //活动类型名称
   description: undefined,       //活动类型描述
+  type: undefined,
 }, 'PromotionRecord')
 
 const RechargeRecord = Record({
@@ -81,6 +82,7 @@ class PromotionCategory extends PromotionCategoryRecord {
       record.set('id', obj.id)
       record.set('title', obj.title)
       record.set('description', obj.description)
+      record.set('type', obj.type)
     })
   }
 }
@@ -97,7 +99,7 @@ const FETCH_PROMOTIONS = 'FETCH_PROMOTIONS'
 const UPDATE_PROMOTION_LIST = 'UPDATE_PROMOTION_LIST'
 const SAVE_PROMOTION = 'SAVE_PROMOTION'
 const SAVE_PROMOTIONS = 'SAVE_PROMOTIONS'
-const PUBLISH_RECHARGE_PROMOTION = 'PUBLISH_RECHARGE_PROMOTION'
+const PUBLISH_PROMOTION = 'PUBLISH_PROMOTION'
 const SAVE_PROMOTION_CATEGORIES = 'SAVE_PROMOTION_CATEGORIES'
 const FETCH_PROMOTION_CATEGORYLIST = 'FETCH_PROMOTION_CATEGORYLIST'
 const EDIT_PROMOTION = 'EDIT_PROMOTION'
@@ -106,6 +108,11 @@ const UPDATE_RECHARGE_RECORD_LIST = 'UPDATE_RECHARGE_RECORD_LIST'
 const SAVE_RECHARGE_RECORD = 'SAVE_RECHARGE_RECORD'
 const SAVE_RECHARGE_RECORDS = 'SAVE_RECHARGE_RECORDS'
 
+export const PromotionCategoryType = {
+  PROMOTION_CATEGORY_TYPE_RECHARGE : 1,       //充值奖励
+  PROMOTION_CATEGORY_TYPE_SCORE : 2,          //积分活动
+  PROMOTION_CATEGORY_TYPE_REDENVELOPE : 3,    //随机红包
+}
 /**** Action ****/
 const updatePromotionList = createAction(UPDATE_PROMOTION_LIST)
 const updateRechargeRecordList = createAction(UPDATE_RECHARGE_RECORD_LIST)
@@ -114,7 +121,7 @@ export const actions = {
   fetchPromotionsAction: createAction(FETCH_PROMOTIONS),
   savePromotion: createAction(SAVE_PROMOTION),
   savePromotions: createAction(SAVE_PROMOTIONS),
-  publishRechargePromotion: createAction(PUBLISH_RECHARGE_PROMOTION),
+  publishPromotion: createAction(PUBLISH_PROMOTION),
   savePromotionCategories: createAction(SAVE_PROMOTION_CATEGORIES),
   fetchPromCategoryAction: createAction(FETCH_PROMOTION_CATEGORYLIST),
   editPromotion: createAction(EDIT_PROMOTION),
@@ -179,7 +186,7 @@ function* fetchPromotionCategories(action) {
   }
 }
 
-function* publishRechargePromotion(action) {
+function* publishPromotion(action) {
   let payload = action.payload
 
   let apiPayload = {
@@ -281,7 +288,7 @@ function* fetchRechargeRecord(action) {
 
 export const saga = [
   takeLatest(FETCH_PROMOTIONS, fetchPromotions),
-  takeLatest(PUBLISH_RECHARGE_PROMOTION, publishRechargePromotion),
+  takeLatest(PUBLISH_PROMOTION, publishPromotion),
   takeLatest(FETCH_PROMOTION_CATEGORYLIST, fetchPromotionCategories),
   takeLatest(EDIT_PROMOTION, editPromotion),
   takeLatest(FETCH_RECHARGE_RECORD, fetchRechargeRecord),

@@ -41,7 +41,7 @@ class RechargePromotionStat extends PureComponent {
       { title: '充值金额(¥)', dataIndex: 'recharge', key: 'recharge' },
       { title: '赠送金额(¥)', dataIndex: 'award', key: 'award' },
       { title: '参与时间', dataIndex: 'createdAt', key: 'createdAt',
-        render: (createdAt) => (<span>{moment(createdAt).format('LLLL')}</span>) },
+        render: (createdAt) => (<span>{moment(new Date(createdAt)).format('LLLL')}</span>) },
     ]
     return (
       <div className={style.content}>
