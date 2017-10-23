@@ -9,7 +9,8 @@ import {call, put, takeEvery, takeLatest} from 'redux-saga/effects'
 import { action as authAction, selector} from '../../util/auth'
 import * as accountFunc from './cloud'
 import {stationAction,stationSelector} from '../station/'
-import {formatLeancloudTime} from '../../util/datetime'
+import moment from 'moment'
+
 /****  Model  ****/
 
 export const AccountRecord = Record({
@@ -43,7 +44,7 @@ export class StationAccount extends StationAccountRecord {
     let stationDetail = new StationAccountRecord()
     return stationDetail.withMutations((record) => {
       record.set('id', obj.id)
-      record.set('accountDay', formatLeancloudTime(new Date(obj.accountDay),'YYYY-MM-DD'))
+      record.set('accountDay', moment(new Date(obj.accountDay)).format('YYYY-MM-DD'))
       record.set('profit', obj.profit)
       record.set('platformProfit', obj.platformProfit)
       record.set('cost', obj.cost)
@@ -53,29 +54,6 @@ export class StationAccount extends StationAccountRecord {
       record.set('powerUnitPrice', obj.powerUnitPrice)
       record.set('stationId', obj.stationId)
       record.set('createdAt', obj.createdAt)
-    })
-  }
-}
-
-export const SharingAccountRecord = Record({
-  id: undefined,
-  accountDay: undefined,
-  profit: undefined,
-  stationId: undefined,
-  userId: undefined,
-
-}, 'SharingAccountRecord')
-
-export class SharingAccount extends SharingAccountRecord {
-  static fromApi(obj) {
-    // console.log('obj====>', obj)
-    let stationDetail = new SharingAccountRecord()
-    return stationDetail.withMutations((record) => {
-      record.set('id', obj.id)
-      record.set('accountDay', formatLeancloudTime(new Date(obj.accountDay),'YYYY-MM-DD'))
-      record.set('profit', obj.profit)
-      record.set('stationId', obj.stationId)
-      record.set('userId', obj.userId)
     })
   }
 }
@@ -100,7 +78,7 @@ class AccountProfit extends Record({
       record.set('stationAccountId', json.stationAccountId)
       record.set('profit', json.profit)
       record.set('profitSharingId', json.profitSharingId)
-      record.set('accountDay', json.accountDay)
+      record.set('accountDay', moment(new Date(json.accountDay)).format('YYYY-MM-DD'))
       record.set('accountType', json.accountType)
       record.set('userId', json.userId)
       record.set('createdAt', json.createdAt)
@@ -110,6 +88,11 @@ class AccountProfit extends Record({
 }
 
 /**** Constant ****/
+
+export const ACCOUNT_TYPE = {
+  INVESTOR_ACCOUNT: 1,
+  PARTNER_ACCOUNT: 2,
+}
 
 const FETCH_STATION_ACCOUNT = 'FETCH_STATION_ACCOUNT'
 const FETCH_STATION_ACCOUNT_SUCCESS = 'FETCH_STATION_ACCOUNT_SUCCESS'
@@ -608,6 +591,15 @@ function selectInvestorAccountsDetail(state) {
   }
   return investorAccounts
 }
+
+function selectAccountProfitById(state, id) {
+  let accountInfo = state.ACCOUNT.getIn(['allAccountProfits', id])
+  if (!accountInfo) {
+    return undefined
+  }
+  return accountInfo.toJS()
+}
+
 export const accountSelector = {
   selectStationAccounts,
   selectStationAccountsDetail,
@@ -615,5 +607,5 @@ export const accountSelector = {
   selectPartnerAccountsDetail,
   selectInvestorAccounts,
   selectInvestorAccountsDetail,
-
+  selectAccountProfitById,
 }

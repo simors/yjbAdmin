@@ -2,8 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Modal, Button, Form, Input, Select, Checkbox} from 'antd';
 import {action, selector} from './redux';
-import {action as authAction} from '../../util/auth/';
-import {selector as authSelector} from "../../util/auth/";
+import {action as authAction, selector as authSelector} from '../../util/auth/';
 import style from './UserEdit.module.scss';
 
 class UserEdit extends React.Component {
@@ -45,7 +44,6 @@ class UserEdit extends React.Component {
         params: {
           id: this.props.user.id,
           ...values,
-          type: 'admin',
         },
         onSuccess: () => {
           this.props.hideUserEditModal({});

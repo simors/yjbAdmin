@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Table, Popconfirm, message} from 'antd';
 import {action, selector} from './redux';
-import {action as authAction, selector as authSelector} from '../../util/auth/';
+import {action as authAction, selector as authSelector, AUTH_USER_STATUS} from '../../util/auth/';
 
 class UserList extends React.Component {
   constructor(props) {
@@ -21,7 +21,7 @@ class UserList extends React.Component {
         return (
           <span>
             {(() => {
-              if (record.status === 'disabled') {
+              if (record.status === AUTH_USER_STATUS.DISABLED) {
                 return ('禁用');
               } else {
                 return ('正常');
@@ -29,7 +29,6 @@ class UserList extends React.Component {
             })()}
           </span>
         );
-
       },
     }, {
       title: "备注",
@@ -61,7 +60,7 @@ class UserList extends React.Component {
               this.props.updateUser({
                 params: {
                   id: record.id,
-                  status: 'disabled',
+                  status: AUTH_USER_STATUS.DISABLED,
                 },
                 onSuccess: () => {
                   this.props.listAdminUsers({limit: 100});
@@ -76,7 +75,7 @@ class UserList extends React.Component {
               this.props.updateUser({
                 params: {
                   id: record.id,
-                  status: '',
+                  status: AUTH_USER_STATUS.NORMAL,
                 },
                 onSuccess: () => {
                   this.props.listAdminUsers({limit: 100});
@@ -87,7 +86,7 @@ class UserList extends React.Component {
               });
             };
 
-            if (record.status === 'disabled') {
+            if (record.status === AUTH_USER_STATUS.DISABLED) {
               return (
                 <Popconfirm title='确定要启用该用户吗？' onConfirm={onEnable}>
                   <a style={{color: 'blue'}}>启用</a>
