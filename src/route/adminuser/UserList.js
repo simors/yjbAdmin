@@ -39,67 +39,67 @@ class UserList extends React.Component {
       render: (record) => {
         return (
           <span>
-          <a style={{color: 'blue'}}
-             onClick={() => {
-               this.props.showUserDetailModal({curOpUserId: record.id});
-             }}
-          >
-            详情
-          </a>
-          <span className="ant-divider" />
-          <a style={{color: 'blue'}}
-             onClick={() => {
-               this.props.showUserEditModal({curOpUserId: record.id});
-             }}
-          >
-            编辑
-          </a>
-          <span className="ant-divider" />
-          {(() => {
-            const onDisable = () => {
-              this.props.updateUser({
-                params: {
-                  id: record.id,
-                  status: AUTH_USER_STATUS.DISABLED,
-                },
-                onSuccess: () => {
-                  this.props.listAdminUsers({limit: 100});
-                },
-                onFailure: (code) => {
-                  message.error(`禁用用户失败, 错误：${code}`);
-                },
-              });
-            };
+            <a style={{color: 'blue'}}
+               onClick={() => {
+                 this.props.showUserDetailModal({curOpUserId: record.id});
+               }}
+            >
+              详情
+            </a>
+            <span className="ant-divider" />
+            <a style={{color: 'blue'}}
+               onClick={() => {
+                 this.props.showUserEditModal({curOpUserId: record.id});
+               }}
+            >
+              编辑
+            </a>
+            <span className="ant-divider" />
+            {(() => {
+              const onDisable = () => {
+                this.props.updateUser({
+                  params: {
+                    id: record.id,
+                    status: AUTH_USER_STATUS.DISABLED,
+                  },
+                  onSuccess: () => {
+                    this.props.listAdminUsers({limit: 100});
+                  },
+                  onFailure: (code) => {
+                    message.error(`禁用用户失败, 错误：${code}`);
+                  },
+                });
+              };
 
-            const onEnable = () => {
-              this.props.updateUser({
-                params: {
-                  id: record.id,
-                  status: AUTH_USER_STATUS.NORMAL,
-                },
-                onSuccess: () => {
-                  this.props.listAdminUsers({limit: 100});
-                },
-                onFailure: (code) => {
-                  message.error(`启用用户失败, 错误：${code}`);
-                },
-              });
-            };
+              const onEnable = () => {
+                this.props.updateUser({
+                  params: {
+                    id: record.id,
+                    status: AUTH_USER_STATUS.NORMAL,
+                  },
+                  onSuccess: () => {
+                    this.props.listAdminUsers({limit: 100});
+                  },
+                  onFailure: (code) => {
+                    message.error(`启用用户失败, 错误：${code}`);
+                  },
+                });
+              };
 
-            if (record.status === AUTH_USER_STATUS.DISABLED) {
-              return (
-                <Popconfirm title='确定要启用该用户吗？' onConfirm={onEnable}>
-                  <a style={{color: 'blue'}}>启用</a>
-                </Popconfirm>
-              );
-            } else {
-              return (
-                <Popconfirm title='确定要禁用该用户吗？' onConfirm={onDisable}>
-                  <a style={{color: 'blue'}}>禁用</a>
-                </Popconfirm>
-              );
-            }
-          })()}
+              if (record.status === AUTH_USER_STATUS.DISABLED) {
+                return (
+                  <Popconfirm title='确定要启用该用户吗？' onConfirm={onEnable}>
+                    <a style={{color: 'blue'}}>启用</a>
+                  </Popconfirm>
+                );
+              } else {
+                return (
+                  <Popconfirm title='确定要禁用该用户吗？' onConfirm={onDisable}>
+                    <a style={{color: 'blue'}}>禁用</a>
+                  </Popconfirm>
+                );
+              }
+            })()}
           </span>
         );
       },
