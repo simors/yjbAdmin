@@ -122,7 +122,7 @@ class PromotionCreateForm extends PureComponent {
           <FormItem {...formItemLayout} label="活动区域">
             {getFieldDecorator("region", {
               rules: [{ type: 'array', required: true, message: '请输入活动生效区域' }],
-              initialValue: ['430000', '430100', '430104'],
+              initialValue: ['430000', '430100'],
             })(
               <DivisionCascader level={2}/>
             )}
