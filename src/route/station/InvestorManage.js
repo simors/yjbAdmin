@@ -20,6 +20,7 @@ import LoadActivity, {loadAction} from '../../component/loadActivity'
 import {ROLE_CODE,PERMISSION_CODE} from '../../util/rolePermission'
 
 const Option = Select.Option;
+const ButtonGroup = Button.Group
 
 class InvestorManage extends React.Component {
   constructor(props) {
@@ -165,14 +166,14 @@ class InvestorManage extends React.Component {
         </Row>
         <Row>
           <Col span={2}>
+            <ButtonGroup>
             <Button type="primary" onClick={()=> {
               this.search()
             }}>查询</Button>
-          </Col>
-          <Col span={2}>
             <Button type="primary" onClick={()=> {
               this.clearSearch()
             }}>重置</Button>
+                        </ButtonGroup>
           </Col>
         </Row>
       </div>

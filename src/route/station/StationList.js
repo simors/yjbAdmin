@@ -42,7 +42,7 @@ const columns = [{
   title: "状态",
   dataIndex: "status",
   render: (text, record)=> {
-    return <p>{record.status ? '正常' : '已停用'}</p>
+    return <div>{record.status ? '正常' : '已停用'}</div>
   }
 }];
 

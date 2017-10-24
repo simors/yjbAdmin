@@ -27,7 +27,7 @@ const columns = [{
   title: "投资占比",
   dataIndex: "royalty",
   render: (text, record)=> {
-    return <p>{record.royalty * 100 + '%'}</p>
+    return <div>{record.royalty * 100 + '%'}</div>
   }
 }, {
   title: "状态",
