@@ -143,9 +143,8 @@ class InvestorManage extends React.Component {
   renderSearchBar() {
     return (
       <div style={{flex: 1}}>
-        <Row >
-
-          <Col span={8}>
+        <Row gutter={24}>
+          <Col span={4}>
             <Select allowClear={true} style={{width: 120}} placeholder='状态' onChange={(value)=> {
               this.statusChange(value)
             }}>
@@ -153,7 +152,7 @@ class InvestorManage extends React.Component {
               <Option value='0'>已停用</Option>
             </Select>
           </Col>
-          <Col span={16}>
+          <Col span={4}>
             <Select style={{width: 120}} placeholder="选择服务网点" onChange={(value)=>{this.selectStation(value)}}>
               <Option value="">全部</Option>
               {
@@ -163,9 +162,7 @@ class InvestorManage extends React.Component {
               }
             </Select>
             </Col>
-        </Row>
-        <Row>
-          <Col span={2}>
+          <Col span={4}>
             <ButtonGroup>
             <Button type="primary" onClick={()=> {
               this.search()
@@ -176,6 +173,7 @@ class InvestorManage extends React.Component {
                         </ButtonGroup>
           </Col>
         </Row>
+
       </div>
     )
   }

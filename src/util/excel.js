@@ -24,8 +24,6 @@ export function exportExcel(params) {
   new_workbook.SheetNames.push(sheetName);
   new_workbook.Sheets[sheetName] = worksheet;
   let wbout = XLSX.write(new_workbook,wopts);
-  console.log('worksheet=>',worksheet)
-  // let fname =  'test.xlsx' ;
   try {
     FileSaver.saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), fileName+'.xlsx');
   } catch(e) { if(typeof console != 'undefined') console.log(e); }

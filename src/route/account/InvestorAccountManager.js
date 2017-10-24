@@ -20,7 +20,9 @@ import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
 import AccountChart from '../../component/account/AccountChart'
+import {action as authAction, selector as authSelector} from '../../util/auth'
 import * as excelFuncs from '../../util/excel'
+import {PERMISSION_CODE,ROLE_CODE} from '../../util/rolePermission'
 
 const history = createBrowserHistory()
 const Option = Select.Option;
@@ -36,13 +38,19 @@ class InvestorAccountManager extends React.Component {
       selectedRowData: undefined,
       status: undefined,
       stationId: undefined,
-      division: []
+      userId: undefined
     }
   }
 
   selectStation(value) {
     this.setState({
       stationId: value
+    })
+  }
+
+  selectInvestor(value){
+    this.setState({
+      userId: value
     })
   }
 
@@ -56,6 +64,7 @@ class InvestorAccountManager extends React.Component {
     this.props.requestStations({
 
     })
+    this.props.listUsersByRole({roleCode:ROLE_CODE.STATION_INVESTOR})
   }
 
   refresh() {
@@ -92,20 +101,10 @@ class InvestorAccountManager extends React.Component {
   }
 
 
-  areaList() {
-    if (this.state.city && this.state.city.sub.length > 0) {
-      let areaList = this.state.city.sub.map((item, key)=> {
-        return <Option key={key} value={key}>{item.area_name}</Option>
-      })
-      return areaList
-    } else {
-      return null
-    }
-  }
-
   search() {
     let payload = {
       stationId: this.state.stationId,
+      userId: this.state.userId,
       success: ()=> {
         console.log('success')
       },
@@ -116,19 +115,10 @@ class InvestorAccountManager extends React.Component {
     this.props.fetchInvestorAccounts(payload)
   }
 
-  setDivision(value) {
-    if (value && value.length) {
-      this.setState({
-        division: value
-      }, ()=> {
-        console.log('state', this.state.division)
-      })
-    }
-  }
-
   clearSearch() {
     this.setState({
-      stationId: undefined
+      stationId: undefined,
+      userId: undefined
     })
     this.props.fetchInvestorAccounts({
       success: ()=> {
@@ -140,26 +130,37 @@ class InvestorAccountManager extends React.Component {
   renderSearchBar() {
     return (
       <div style={{flex: 1}}>
-        <Row >
-          <Col span={12}>
-            <Select defalutValue = '' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
+        <Row gutter={24}>
+          <Col span={4}>
+          <Select defalutValue = '' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
+            <Option value=''>全部</Option>
+            {
+              this.props.stations.map((station, index) => (
+                <Option key={index} value={station.id}>{station.name}</Option>
+              ))
+            }
+          </Select>
+        </Col>
+          <Col span={4}>
+            <Select defalutValue = '' onChange={(value)=>{this.selectInvestor(value)}} style={{width: 120}} placeholder="选择投资人">
               <Option value=''>全部</Option>
               {
-                this.props.stations.map((station, index) => (
-                  <Option key={index} value={station.id}>{station.name}</Option>
+                this.props.userList.map((user, index) => (
+                  <Option key={index} value={user.id}>{user.nickname+'  '+user.mobilePhoneNumber}</Option>
                 ))
               }
             </Select>
           </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
+          <Col span={4}>
+            <ButtonGroup>
+            <Button type='primary' onClick={()=> {
               this.search()
             }}>查询</Button>
-          </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
+
+            <Button type='primary' onClick={()=> {
               this.clearSearch()
             }}>重置</Button>
+              </ButtonGroup>
           </Col>
         </Row>
 
@@ -176,7 +177,7 @@ class InvestorAccountManager extends React.Component {
         data.push(account2Arr)
       })
     }
-    let params={data: data, sheetName:'服务点日结数据', fileName:'服务点日结数据'}
+    let params={data: data, sheetName:'投资人日结数据', fileName:'投资人日结数据'}
 
     excelFuncs.exportExcel(params)
 
@@ -193,31 +194,10 @@ class InvestorAccountManager extends React.Component {
     return (
       <div>
         <ButtonGroup>
-          <Button onClick={()=>{this.downloadFile()}}>ceshi</Button>
+          <Button onClick={()=>{this.downloadFile()}}>导出Excel</Button>
           <Button onClick={()=>{this.viewChart()}}>查看图表</Button>
-
         </ButtonGroup>
-        {/*<StationMenu*/}
-        {/*showDetail={()=> {*/}
-        {/*this.props.history.push({*/}
-        {/*pathname: '/site/showStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),*/}
-        {/*})*/}
-        {/*}}*/}
-        {/*set={()=> {*/}
-        {/*this.props.history.push({*/}
-        {/*pathname: '/site/editStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),*/}
-        {/*})*/}
-        {/*}}*/}
-        {/*add={()=>{this.props.history.push({pathname: '/site/addStation'})}}*/}
-        {/*setStatus={()=> {*/}
-        {/*this.setStatus()*/}
-        {/*}}*/}
-        {/*refresh={()=> {*/}
-        {/*this.refresh()*/}
-        {/*}}*/}
-        {/*/>*/}
         {this.renderSearchBar()}
-
         <InvestorAccountList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
         }} stationAccounts={this.props.investorAccounts}/>
@@ -229,18 +209,19 @@ class InvestorAccountManager extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectInvestorAccounts(state)
-  // let areaList = configSelector.selectAreaList(state)
-  console.log('accounts========>', accounts)
+  let userList = authSelector.selectUsersByRole(state,ROLE_CODE.STATION_INVESTOR)
   return {
     investorAccounts: accounts,
-    stations: stations
+    stations: stations,
+    userList: userList
     // areaList: areaList,
   };
 };
 
 const mapDispatchToProps = {
   ...stationAction,
-  ...accountAction
+  ...accountAction,
+  ...authAction
 
 };
 

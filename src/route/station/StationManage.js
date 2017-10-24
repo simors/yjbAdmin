@@ -147,7 +147,7 @@ class StationManage extends React.Component {
   renderSearchBar() {
     return (
       <div style={{flex: 1}}>
-        <Row >
+        <Row style={{marginTop:12}}>
           <Col span={12}>
             <Input placeholder='名称' value={this.state.name} onChange={(e)=> {
               this.setState({name: e.target.value})
@@ -179,6 +179,9 @@ class StationManage extends React.Component {
               this.setState({addr: e.target.value})
             }}/>
           </Col>
+          <Col span={5}>
+            <div></div>
+            </Col>
           <Col span={5}>
             <ButtonGroup>
               <Button type="primary" onClick={()=> {
