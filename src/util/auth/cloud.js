@@ -3,6 +3,9 @@ import AV from 'leancloud-storage';
 export async function loginWithMobilePhone(payload) {
   const {phone, password} = payload;
 
+  // only admin users are allowed to login
+  await AV.Cloud.run('authValidateLogin', {phone});
+
   const leanCurUser = await AV.User.logInWithMobilePhone(phone, password);
   const token = leanCurUser.getSessionToken();
 
