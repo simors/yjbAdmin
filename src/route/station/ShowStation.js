@@ -23,6 +23,15 @@ const Option = Select.Option;
 const FormItem = Form.Item
 const formItemLayout = {
   labelCol: {
+    span: 6
+  },
+  wrapperCol: {
+    span: 18
+  }
+}
+
+const formItemLayout2 = {
+  labelCol: {
     span: 12
   },
   wrapperCol: {
@@ -78,7 +87,7 @@ class ShowStation extends React.Component {
   adminList() {
     if (this.props.adminList && this.props.adminList.length > 0) {
       let adminList = this.props.adminList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.idName+' '+item.mobilePhoneNumber}</Option>
+        return <Option key={key} value={item.id}>{item.idName+'  '+item.mobilePhoneNumber}</Option>
       })
       return adminList
     } else {
@@ -105,7 +114,7 @@ class ShowStation extends React.Component {
     }
     return (
       <div>
-        <Form layout="horizontal">
+        <Form >
           <Row>
             <Col span={12}>
               <FormItem label='服务点名称' hasFeedback {...formItemLayout}>
@@ -189,7 +198,7 @@ class ShowStation extends React.Component {
           </Row>
           <Row>
             <Col span={6}>
-              <FormItem label='干衣柜单价：' hasFeedback {...formItemLayout}>
+              <FormItem label='干衣柜单价：' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('unitPrice', {
                   initialValue: station ? station.unitPrice : 0,
                   rules: [
@@ -202,7 +211,7 @@ class ShowStation extends React.Component {
               </FormItem>
             </Col>
             <Col span={6}>
-              <FormItem label='干衣柜押金：' hasFeedback {...formItemLayout}>
+              <FormItem label='干衣柜押金：' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('deposit', {
                   initialValue: station ? station.deposit : 0,
                   rules: [
@@ -215,7 +224,7 @@ class ShowStation extends React.Component {
               </FormItem>
             </Col>
             <Col span={6}>
-              <FormItem label='电费单价：' hasFeedback {...formItemLayout}>
+              <FormItem label='电费单价：' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('powerUnitPrice', {
                   initialValue: station ? station.powerUnitPrice : 0,
                   rules: [
@@ -228,7 +237,7 @@ class ShowStation extends React.Component {
               </FormItem>
             </Col>
             <Col span={6}>
-              <FormItem label='平台分成比例：' hasFeedback {...formItemLayout}>
+              <FormItem label='平台分成比例：' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('platformProp', {
                   initialValue: station ? station.platformProp : 0,
                   rules: [

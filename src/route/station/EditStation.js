@@ -174,7 +174,7 @@ class EditStation extends React.Component {
   adminList() {
     if (this.props.adminList && this.props.adminList.length > 0) {
       let adminList = this.props.adminList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.idName}</Option>
+        return <Option key={key} value={item.id}>{item.nickname+'  '+item.mobilePhoneNumber}</Option>
       })
       return adminList
     } else {
@@ -185,7 +185,7 @@ class EditStation extends React.Component {
   partnerList() {
     if (this.props.partnerList && this.props.partnerList.length > 0) {
       let partnerList = this.props.partnerList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.idName}</Option>
+        return <Option key={key} value={item.id}>{item.nickname+'  '+item.mobilePhoneNumber}</Option>
       })
       return partnerList
     } else {

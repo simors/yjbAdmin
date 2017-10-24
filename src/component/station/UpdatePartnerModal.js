@@ -48,7 +48,7 @@ class UpdatePartnerModal extends Component {
   userList() {
     if (this.props.userList && this.props.userList.length > 0) {
       let userList = this.props.userList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.idName}</Option>
+        return <Option key={key} value={item.id}>{item.nickname+'  '+item.mobilePhoneNumber}</Option>
       })
       return userList
     } else {
