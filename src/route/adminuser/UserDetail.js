@@ -1,9 +1,11 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Modal, Button, Form, Input, Select, Checkbox} from 'antd';
+import moment from 'moment';
 import {action, selector} from "./redux";
 import {selector as authSelector} from "../../util/auth/";
 import style from './UserDetail.module.scss';
+import {AUTH_USER_STATUS} from "../../util/auth/redux";
 
 class UserDetail extends React.Component {
   constructor(props) {
@@ -45,6 +47,16 @@ class UserDetail extends React.Component {
     if (this.props.user === undefined)
       return null;
 
+    const {status, createdAt, updatedAt} = this.props.user;
+
+    let statusElem = (<span>正常</span>);
+    if (this.props.user.status === AUTH_USER_STATUS.ADMIN_DISABLED) {
+      statusElem = (<span style={{color: 'red'}}>禁用</span>);
+    }
+
+    const createdAtElem = (<span>{moment(createdAt).format('lll')}</span>);
+    const updatedAtElem = (<span>{moment(updatedAt).format('lll')}</span>);
+
     return (
       <Modal visible={this.props.visible}
              wrapClassName={style.UserDetail}
@@ -81,6 +93,24 @@ class UserDetail extends React.Component {
           >
             <Input.TextArea autosize={{minRows: 2, maxRows: 4}}
                             value={this.props.user.note ? this.props.user.note : ''} readOnly />
+          </Form.Item>
+          <Form.Item
+            {...formItemLayout}
+            label='状态'
+          >
+            {statusElem}
+          </Form.Item>
+          <Form.Item
+            {...formItemLayout}
+            label='注册时间'
+          >
+            {createdAtElem}
+          </Form.Item>
+          <Form.Item
+            {...formItemLayout}
+            label='最近登录时间'
+          >
+            {updatedAtElem}
           </Form.Item>
         </Form>
       </Modal>
