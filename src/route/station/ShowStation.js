@@ -78,7 +78,7 @@ class ShowStation extends React.Component {
   adminList() {
     if (this.props.adminList && this.props.adminList.length > 0) {
       let adminList = this.props.adminList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.idName+' '+item.mobilePhoneNumber}</Option>
+        return <Option key={key} value={item.id}>{item.idName+'  '+item.mobilePhoneNumber}</Option>
       })
       return adminList
     } else {

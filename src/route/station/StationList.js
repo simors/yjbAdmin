@@ -34,7 +34,7 @@ const columns = [{
   dataIndex: "deviceNo",
 }, {
   title: "管理员",
-  dataIndex: "admin.idName",
+  dataIndex: "admin.nickname",
 }, {
   title: "联系方式",
   dataIndex: "admin.mobilePhoneNumber",

@@ -8,7 +8,7 @@ import {Table, Button} from 'antd';
 
 const showColumns = [{
   title: "分成方",
-  dataIndex: "shareholder.idName",
+  dataIndex: "shareholder.nickname",
 }, {
   title: "分成比例",
   dataIndex: "royalty",

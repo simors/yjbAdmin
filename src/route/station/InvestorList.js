@@ -13,7 +13,7 @@ const columns = [{
   }
 }, {
   title: "姓名",
-  dataIndex: "shareholder.idName",
+  dataIndex: "shareholder.nickname",
 }, {
   title: "联系方式",
   dataIndex: "shareholder.mobilePhoneNumber",
