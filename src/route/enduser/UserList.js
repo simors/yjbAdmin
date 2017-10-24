@@ -45,10 +45,10 @@ class UserList extends React.Component {
     }, {
       title: '状态',
       render: (record) => {
-        const {status} = record;
+        const {mpStatus} = record;
         let statusStr = '正常';
         let color = 'inherit';
-        if (status === AUTH_USER_STATUS.MP_DISABLED) {
+        if (mpStatus === AUTH_USER_STATUS.MP_DISABLED) {
           statusStr = '禁用';
           color = 'red';
         }
@@ -65,7 +65,7 @@ class UserList extends React.Component {
           this.props.updateUser({
             params: {
               id: record.id,
-              status: AUTH_USER_STATUS.MP_DISABLED,
+              mpStatus: AUTH_USER_STATUS.MP_DISABLED,
             },
             onSuccess: () => {
               this.props.listEndUsers({limit: 100});
@@ -80,7 +80,7 @@ class UserList extends React.Component {
           this.props.updateUser({
             params: {
               id: record.id,
-              status: AUTH_USER_STATUS.MP_NORMAL,
+              mpStatus: AUTH_USER_STATUS.MP_NORMAL,
             },
             onSuccess: () => {
               this.props.listEndUsers({limit: 100});
@@ -94,7 +94,7 @@ class UserList extends React.Component {
         return (
           <span>
             {(() => {
-              if (record.status === AUTH_USER_STATUS.MP_DISABLED) {
+              if (record.mpStatus === AUTH_USER_STATUS.MP_DISABLED) {
                 return (
                   <Popconfirm title='确定要启用该用户吗？' onConfirm={onEnable}>
                     <a style={{color: 'blue'}}>启用</a>
