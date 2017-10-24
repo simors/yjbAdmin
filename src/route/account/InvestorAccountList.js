@@ -14,7 +14,7 @@ const columns = [{
   dataIndex: "station.name",
 }, {
   title: "分成方信息",
-  dataIndex: "user.idName",
+  dataIndex: "user.nickname",
 }, {
   title: "利润",
   dataIndex: "profit",

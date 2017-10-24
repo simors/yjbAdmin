@@ -327,8 +327,11 @@ function selectOrderList(state) {
     let orderInfo = selectOrder(state, orderId)
     let deviceInfo = orderInfo? deviceSelector.selectDevice(state, orderInfo.deviceId) : undefined
     let stationInfo = deviceInfo? stationSelector.selectStationById(state, deviceInfo.stationId) : undefined
+    let userInfo = orderInfo? userSelector.selectUserById(state, orderInfo.userId) : undefined
     orderInfo.deviceNo = deviceInfo? deviceInfo.deviceNo: undefined
     orderInfo.stationName = stationInfo? stationInfo.name : undefined
+    orderInfo.nickname = userInfo? userInfo.nickname : undefined
+    orderInfo.mobilePhoneNumber = userInfo? userInfo.mobilePhoneNumber : undefined
     orderInfoList.push(orderInfo)
   })
   return orderInfoList

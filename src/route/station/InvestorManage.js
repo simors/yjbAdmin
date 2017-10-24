@@ -165,12 +165,12 @@ class InvestorManage extends React.Component {
         </Row>
         <Row>
           <Col span={2}>
-            <Button onClick={()=> {
+            <Button type="primary" onClick={()=> {
               this.search()
             }}>查询</Button>
           </Col>
           <Col span={2}>
-            <Button onClick={()=> {
+            <Button type="primary" onClick={()=> {
               this.clearSearch()
             }}>重置</Button>
           </Col>

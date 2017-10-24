@@ -13,13 +13,13 @@ const columns = [{
   }
 }, {
   title: "姓名",
-  dataIndex: "shareholder.idName",
+  dataIndex: "shareholder.nickname",
 }, {
   title: "联系方式",
   dataIndex: "shareholder.mobilePhoneNumber",
 }, {
   title: "投资服务点",
-  dataIndex: "stationName",
+  dataIndex: "station.name",
 }, {
   title: "投资金额",
   dataIndex: "investment",

@@ -181,10 +181,10 @@ class StationManage extends React.Component {
           </Col>
           <Col span={5}>
             <ButtonGroup>
-              <Button onClick={()=> {
+              <Button type="primary" onClick={()=> {
                 this.search()
               }}>查询</Button>
-              <Button onClick={()=> {
+              <Button type="primary" onClick={()=> {
               this.clearSearch()
             }}>重置</Button>
             </ButtonGroup>
