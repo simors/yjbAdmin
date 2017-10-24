@@ -19,7 +19,7 @@ const columns = [{
   dataIndex: "shareholder.mobilePhoneNumber",
 }, {
   title: "投资服务点",
-  dataIndex: "stationName",
+  dataIndex: "station.name",
 }, {
   title: "投资金额",
   dataIndex: "investment",
