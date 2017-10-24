@@ -41,9 +41,11 @@ class UserCreate extends React.Component {
         };
       });
 
+      const {mobilePhoneNumber} = values;
       this.props.createUser({
         params: {
           ...values,
+          password: mobilePhoneNumber.slice(-6),
           type: AUTH_USER_TYPE.ADMIN,
         },
         onSuccess: () => {
@@ -68,28 +70,6 @@ class UserCreate extends React.Component {
         },
       });
     });
-  };
-
-  onConfirmBlur = (e) => {
-    const value = e.target.value;
-    this.setState({ confirmDirty: this.state.confirmDirty || !!value });
-  };
-
-  validatePassword = (rule, value, callback) => {
-    const form = this.props.form;
-    if (value && value !== form.getFieldValue('password')) {
-      callback('两次输入的密码不一致!');
-    } else {
-      callback();
-    }
-  };
-
-  validateConfirm = (rule, value, callback) => {
-    const form = this.props.form;
-    if (value && this.state.confirmDirty) {
-      form.validateFields(['confirm'], { force: true });
-    }
-    callback();
   };
 
   render() {
@@ -139,6 +119,7 @@ class UserCreate extends React.Component {
           <Form.Item
             {...formItemLayout}
             label='用户名'
+            hasFeedback
           > {
             getFieldDecorator('nickname', {
               rules: [{ required: true, message: '请输入用户名!' }],
@@ -150,43 +131,16 @@ class UserCreate extends React.Component {
           <Form.Item
             {...formItemLayout}
             label='手机号码'
+            hasFeedback
           > {
             getFieldDecorator('mobilePhoneNumber', {
-              rules: [{ required: true, message: '请输入手机号码!' }],
+              rules: [{
+                required: true, message: '请输入手机号码!'
+              }, {
+                pattern: /^1\d{10}$/, message: '无效的手机号码!'
+              }],
             })(
               <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
-            )
-          }
-          </Form.Item>
-          <Form.Item
-            {...formItemLayout}
-            label='密码'
-            hasFeedback
-          > {
-            getFieldDecorator('password', {
-              rules: [{
-                required: true, message: '请输入密码!',
-              }, {
-                validator: this.validateConfirm,
-              }],
-            })(
-              <Input type='password' />
-            )
-          }
-          </Form.Item>
-          <Form.Item
-            {...formItemLayout}
-            label='确认密码'
-            hasFeedback
-          > {
-            getFieldDecorator('confirm', {
-              rules: [{
-                required: true, message: '请确认密码!',
-              }, {
-                validator: this.validatePassword,
-              }],
-            })(
-              <Input type='password' onBlur={this.onConfirmBlur} />
             )
           }
           </Form.Item>
@@ -207,7 +161,6 @@ class UserCreate extends React.Component {
           <Form.Item
             {...formItemLayout}
             label='备注'
-            hasFeedback
           > {
             getFieldDecorator('note', {
 

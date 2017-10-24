@@ -8,7 +8,8 @@ import * as api from './cloud';
 
 class User extends Record({
   id: undefined,                  // objectId
-  status: undefined,              // 'disabled' or not
+  mpStatus: undefined,            // wechat user status, AUTH_USER_STATUS.MP_XXX
+  status: undefined,              // admin user status, AUTH_USER_STATUS.ADMIN_XXX
   email: undefined,
   emailVerified: undefined,
   mobilePhoneNumber: undefined,
@@ -27,7 +28,7 @@ class User extends Record({
   idNameVerified: undefined,
   createdAt: undefined,
   updatedAt: undefined,
-  type: undefined,                // user type, e.g. end user or admin user
+  type: undefined,                // AUTH_USER_TYPE.XXX
   note: undefined,                // note for this user
   subscribe: undefined,
   roles: Set(),                   // Set<role code>
@@ -37,6 +38,7 @@ class User extends Record({
 
     return imm.withMutations((m) => {
       m.set('id', json.id);
+      m.set('mpStatus', json.mpStatus);
       m.set('status', json.status);
       m.set('email', json.email);
       m.set('emailVerified', json.emailVerified);
@@ -67,6 +69,7 @@ class User extends Record({
     // NOTE: IE8 does not support property access. Only use get() when supporting IE8
     return {
       id: imm.id,
+      mpStatus: imm.mpStatus,
       status: imm.status,
       email: imm.email,
       emailVerified: imm.emailVerified,
@@ -175,8 +178,11 @@ export const AUTH_USER_TYPE = {
 };
 
 export const AUTH_USER_STATUS = {
-  NORMAL:  1,
-  DISABLED: 2,
+  MP_NORMAL:      1,
+  MP_DISABLED:    2,
+
+  ADMIN_NORMAL:   101,
+  ADMIN_DISABLED: 102,
 };
 
 // --- constant
@@ -401,7 +407,7 @@ function* sagaListEndUsers(action) {
       mobilePhoneNumber: params.mobilePhoneNumber,
       province: params.province,
       city: params.city,
-      status: params.status,
+      mpStatus: params.mpStatus,
     } = payload);
 
     // result = {

@@ -13,3 +13,7 @@ export async function stat30DaysAccountProfit(payload) {
   }
   return await AV.Cloud.run('accountStatLast30DaysAccountProfit', params)
 }
+
+export async function createTransfer(payload) {
+  return await AV.Cloud.run('pingppCreateTransfer', payload)
+}

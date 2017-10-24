@@ -3,8 +3,9 @@
  */
 import React from 'react'
 import {connect} from 'react-redux'
-import { Row, Col, Modal, Form, Popconfirm, InputNumber, Button } from 'antd'
-import {profitSelector} from './redux'
+import { Row, Col, Modal, Form, Popconfirm, InputNumber, Button, message } from 'antd'
+import {profitSelector, profitAction, DEAL_TYPE} from './redux'
+import {selector as authSelector} from '../../util/auth'
 
 const FormItem = Form.Item
 
@@ -20,11 +21,26 @@ class Withdraw extends React.PureComponent {
 
   handleSubmit = (e) => {
     e.preventDefault();
+    let {currentUser} = this.props
     this.props.form.validateFields((err, values) => {
-      if (!err) {
+      if (err) {
         console.log('Received values of form: ', values);
+        message.error('数据输入错误，请检查输入金额')
       }
-    });
+      this.props.requestWithdraw({
+        amount: values.withdraw,
+        channel: 'wx_pub',
+        metadata: {
+          'fromUser': 'platform',
+          'toUser': currentUser.id,
+          'dealType': DEAL_TYPE.WITHDRAW
+        },
+        openid: currentUser.authData.weixin.openid,
+        username: '',
+        success: this.closeModel,
+        error: (error) => {message.error('提现失败')}
+      })
+    })
   }
 
   checkConfirm = (rule, value, callback) => {
@@ -93,12 +109,15 @@ class Withdraw extends React.PureComponent {
 
 const mapStateToProps = (state, ownProps) => {
   let adminProfit = profitSelector.selectAdminProfit(state)
+  let currentUser = authSelector.selectCurUser(state)
   return {
     adminProfit,
+    currentUser,
   }
 }
 
 const mapDispatchToProps = {
+  ...profitAction,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(Withdraw))

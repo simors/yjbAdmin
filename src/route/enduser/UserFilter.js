@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Form, Input, Button} from 'antd';
 import Division from '../../component/DivisionCascader'
-import {action} from './redux';
+import {action, selector} from './redux';
 import {action as authAction} from '../../util/auth/';
 import style from './UserFilter.module.scss';
 
@@ -17,6 +17,26 @@ class UserFilter extends React.Component {
         valid: true,
       },
     };
+  }
+
+  componentWillReceiveProps(newProps) {
+    const {form, needResetFilter, resetFilter} = newProps;
+
+    if (needResetFilter) {
+      resetFilter({reset: false});
+
+      form.resetFields();
+      this.setState((prevState, props) => {
+        return {
+          ...prevState,
+          mobilePhoneNumber: {
+            hasFeedback: false,
+            validateStatus: 'success',
+            valid: true,
+          },
+        };
+      });
+    }
   }
 
   handleSubmit = (e) => {
@@ -102,7 +122,19 @@ class UserFilter extends React.Component {
         <Form.Item>
           <Button.Group>
             <Button
-              onClick={() => {this.props.form.resetFields()}}
+              onClick={() => {
+                this.props.form.resetFields();
+                this.setState((prevState, props) => {
+                  return {
+                    ...prevState,
+                    mobilePhoneNumber: {
+                      hasFeedback: false,
+                      validateStatus: 'success',
+                      valid: true,
+                    },
+                  };
+                });
+              }}
             >
               重置
             </Button>
@@ -119,9 +151,17 @@ class UserFilter extends React.Component {
   }
 }
 
+const mapStateToProps = (appState, ownProps) => {
+  const needResetFilter = selector.selectNeedResetFilter(appState);
+
+  return {
+    needResetFilter,
+  };
+};
+
 const mapDispatchToProps = {
   ...action,
   ...authAction,
 };
 
-export default connect(null, mapDispatchToProps)(Form.create()(UserFilter));
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(UserFilter));

@@ -18,13 +18,15 @@ class UserList extends React.Component {
       title: '状态',
       key: 'status',
       render: (record) => {
+        const {status} = record;
+
         return (
           <span>
             {(() => {
-              if (record.status === AUTH_USER_STATUS.DISABLED) {
-                return ('禁用');
+              if (status === AUTH_USER_STATUS.ADMIN_DISABLED) {
+                return (<span style={{color: 'red'}}>禁用</span>);
               } else {
-                return ('正常');
+                return (<span>正常</span>);
               }
             })()}
           </span>
@@ -60,7 +62,7 @@ class UserList extends React.Component {
                 this.props.updateUser({
                   params: {
                     id: record.id,
-                    status: AUTH_USER_STATUS.DISABLED,
+                    status: AUTH_USER_STATUS.ADMIN_DISABLED,
                   },
                   onSuccess: () => {
                     this.props.listAdminUsers({limit: 100});
@@ -75,7 +77,7 @@ class UserList extends React.Component {
                 this.props.updateUser({
                   params: {
                     id: record.id,
-                    status: AUTH_USER_STATUS.NORMAL,
+                    status: AUTH_USER_STATUS.ADMIN_NORMAL,
                   },
                   onSuccess: () => {
                     this.props.listAdminUsers({limit: 100});
@@ -86,7 +88,7 @@ class UserList extends React.Component {
                 });
               };
 
-              if (record.status === AUTH_USER_STATUS.DISABLED) {
+              if (record.status === AUTH_USER_STATUS.ADMIN_DISABLED) {
                 return (
                   <Popconfirm title='确定要启用该用户吗？' onConfirm={onEnable}>
                     <a style={{color: 'blue'}}>启用</a>
@@ -126,12 +128,10 @@ class UserList extends React.Component {
     };
 
     return (
-      <div>
-        <Table
-               columns={this.columns} dataSource={this.props.users}
-               rowKey={this.rowKey} rowSelection={rowSelection}
-        />
-      </div>
+      <Table
+             columns={this.columns} dataSource={this.props.users}
+             rowKey={this.rowKey} rowSelection={rowSelection}
+      />
     );
   }
 }
