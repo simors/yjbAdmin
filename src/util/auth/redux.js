@@ -180,9 +180,11 @@ export const AUTH_USER_TYPE = {
 export const AUTH_USER_STATUS = {
   MP_NORMAL:      1,
   MP_DISABLED:    2,
+  MP_ALL:         100,
 
   ADMIN_NORMAL:   101,
   ADMIN_DISABLED: 102,
+  ADMIN_ALL:      200,
 };
 
 // --- constant

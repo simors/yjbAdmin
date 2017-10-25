@@ -1,9 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Form, Input, Button} from 'antd';
+import {Form, Input, Button, Select} from 'antd';
 import Division from '../../component/DivisionCascader'
 import {action, selector} from './redux';
-import {action as authAction} from '../../util/auth/';
+import {action as authAction, AUTH_USER_STATUS} from '../../util/auth/';
 import style from './UserFilter.module.scss';
 
 class UserFilter extends React.Component {
@@ -51,7 +51,7 @@ class UserFilter extends React.Component {
         return;
       }
 
-      const {nickname, mobilePhoneNumber, area=[]} = values;
+      const {nickname, mobilePhoneNumber, area=[], mpStatus} = values;
       const [province, city] = area;
 
       this.props.listEndUsers({
@@ -60,6 +60,7 @@ class UserFilter extends React.Component {
         mobilePhoneNumber,
         province,
         city,
+        mpStatus: mpStatus && parseInt(mpStatus),
       });
     });
   };
@@ -117,6 +118,15 @@ class UserFilter extends React.Component {
         <Form.Item className={style.area}>
           {getFieldDecorator('area', {})(
             <Division level={2}/>
+          )}
+        </Form.Item>
+        <Form.Item className={style.status}>
+          {getFieldDecorator("mpStatus", {})(
+            <Select placeholder="选择状态">
+              <Select.Option value={AUTH_USER_STATUS.MP_ALL.toString()}>全部</Select.Option>
+              <Select.Option value={AUTH_USER_STATUS.MP_NORMAL.toString()}>正常</Select.Option>
+              <Select.Option value={AUTH_USER_STATUS.MP_DISABLED.toString()}>禁用</Select.Option>
+            </Select>
           )}
         </Form.Item>
         <Form.Item>

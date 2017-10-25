@@ -112,6 +112,8 @@ export const PromotionCategoryType = {
   PROMOTION_CATEGORY_TYPE_RECHARGE : 1,       //充值奖励
   PROMOTION_CATEGORY_TYPE_SCORE : 2,          //积分活动
   PROMOTION_CATEGORY_TYPE_REDENVELOPE : 3,    //随机红包
+  PROMOTION_CATEGORY_TYPE_LOTTERY : 4,        //抽奖
+  PROMOTION_CATEGORY_TYPE_EXCHANGE_SCORE : 5  //积分兑换
 }
 /**** Action ****/
 const updatePromotionList = createAction(UPDATE_PROMOTION_LIST)
@@ -463,13 +465,13 @@ function selectCategoryList(state) {
   return categoryMap? categoryMap.toJS() : undefined
 }
 
-function selectCategoryByTitle(state, title) {
-  if(!title) {
+function selectCategoryByType(state, type) {
+  if(!type) {
     return undefined
   }
   let categoryMap = state.PROMOTION.get('categories')
   let categoryRecord = categoryMap.find((category) => {
-    return category.title == title
+    return category.type == type
   })
   return categoryRecord? categoryRecord.toJS() : undefined
 }
@@ -500,6 +502,6 @@ export const selector = {
   selectPromotionList,
   selectCategory,
   selectCategoryList,
-  selectCategoryByTitle,
+  selectCategoryByType,
   selectRechargePromRecordList,
 }

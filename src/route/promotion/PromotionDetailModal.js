@@ -7,6 +7,7 @@ import {
   Row,
   Col,
   Input,
+  InputNumber,
   Select,
   Modal,
   Radio,
@@ -44,7 +45,18 @@ class PromotionDetailModal extends PureComponent {
       }
       case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_SCORE:
       {
-        return null
+        return (
+          <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
+            <Col span={4}>积分倍率</Col>
+            <Col span={14}>
+              <InputNumber disabled={true}
+                           value={promotion.awards.rate}
+                           formatter={value => `x${value}`}
+                           parser={value => value.replace('x', '')}
+                           style={{ width: '30%' }}/>
+            </Col>
+          </Row>
+        )
       }
       case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_REDENVELOPE:
       {
@@ -53,6 +65,17 @@ class PromotionDetailModal extends PureComponent {
             <Col span={4}>红包参数</Col>
             <Col span={20}>
               <RedEnvelopeParamsInput disabled={true} value={promotion.awards} />
+            </Col>
+          </Row>
+        )
+        break
+      }
+      case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_EXCHANGE_SCORE:
+      {
+        return(
+          <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
+            <Col span={4}></Col>
+            <Col span={20}>
             </Col>
           </Row>
         )
