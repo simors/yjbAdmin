@@ -142,3 +142,15 @@ export async function requestSmsAuthCode(payload) {
   payload.ttl = 10
   return await AV.Cloud.requestSmsCode(payload)
 }
+
+/**
+ * 根据用户手机号生成关注公众号的二维码
+ * @param payload
+ * @returns {*|Promise}
+ */
+export async function requestGenerateUserQrcode(payload) {
+  let params = {
+    phone: payload.phone
+  }
+  return await AV.Cloud.run('wechatGenerateUserQrcode', params)
+}

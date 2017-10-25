@@ -165,6 +165,8 @@ class AuthState extends Record({
   adminsByRole: Map(),          // Map<role code, List<user id>>
 
   usersById: Map(),             // Map<user id, User>
+
+  adminQrcode: Map(),           // Map<phone, qrcode> save admin user mp qrcode
 }, 'AuthState') {
 
 }
@@ -210,6 +212,9 @@ const SAVE_USERS = 'AUTH/SAVE_USERS';
 const REQUEST_SMS_CODE = 'AUTH/REQUEST_SMS_CODE'
 const VERIFY_SMS_CODE = 'AUTH/FETCH_SMS_CODE'
 
+const GENERATE_ADMIN_QRCODE       = 'GENERATE_ADMIN_QRCODE'
+const SAVE_ADMIN_QRCODE           = 'SAVE_ADMIN_QRCODE'
+
 // --- action
 
 export const action = {
@@ -228,7 +233,9 @@ export const action = {
   saveUsers: createAction(SAVE_USERS),
 
   requestSmsCode: createAction(REQUEST_SMS_CODE),
-  verifySmsCode: createAction(VERIFY_SMS_CODE)
+  verifySmsCode: createAction(VERIFY_SMS_CODE),
+
+  generateAdminQrcode: createAction(GENERATE_ADMIN_QRCODE),
 };
 
 const loggedIn = createAction(LOGGED_IN);
@@ -236,6 +243,7 @@ const loggedOut = createAction(LOGGED_OUT);
 const listedEndUsers = createAction(LISTED_END_USERS);
 const listedAdminUsers = createAction(LISTED_ADMIN_USERS);
 const listedAdminsByRole = createAction(LISTED_ADMINS_BY_ROLE);
+const saveAdminQrcode = createAction(SAVE_ADMIN_QRCODE);
 
 // --- saga
 
@@ -251,7 +259,8 @@ export const saga = [
   takeLatest(DELETE_USER, sagaDeleteUser),
   takeLatest(UPDATE_USER, sagaUpdateUser),
   takeLatest(REQUEST_SMS_CODE, sagaRequestSmsCode),
-  takeLatest(VERIFY_SMS_CODE, sagaVerifySmsCode)
+  takeLatest(VERIFY_SMS_CODE, sagaVerifySmsCode),
+  takeLatest(GENERATE_ADMIN_QRCODE, sagaGenerateUserQrcode),
 ];
 
 /**
@@ -641,11 +650,12 @@ function* sagaUpdateUser(action) {
 
 function* sagaRequestSmsCode(action) {
   const payload = action.payload
+  console.log('payload', payload)
   try{
     yield call(api.requestSmsAuthCode, payload)
-      if(payload.success){
-        payload.success()
-      }
+    if(payload.success){
+      payload.success()
+    }
   }catch(e){
     if(payload.error){
       payload.error(e)
@@ -661,6 +671,21 @@ function* sagaVerifySmsCode(action) {
       payload.success()
     }
   }catch(e){
+    if(payload.error){
+      payload.error(e)
+    }
+  }
+}
+
+function *sagaGenerateUserQrcode(action) {
+  let payload = action.payload
+  try {
+    let qrcodeUrl = yield call(api.requestGenerateUserQrcode, payload)
+    yield put(saveAdminQrcode({phone: payload.phone, qrcode: qrcodeUrl}))
+    if(payload.success){
+      payload.success()
+    }
+  } catch (e) {
     if(payload.error){
       payload.error(e)
     }
@@ -689,6 +714,8 @@ export function reducer(state=initialState, action) {
       return reduceSaveUser(state, action);
     case SAVE_USERS:
       return reduceSaveUsers(state, action);
+    case SAVE_ADMIN_QRCODE:
+      return reduceSaveAdminQrcode(state, action)
     default:
       return state
   }
@@ -900,6 +927,11 @@ function reduceSaveUsers(state, action) {
   });
 }
 
+function reduceSaveAdminQrcode(state, action) {
+  let payload = action.payload
+  return state.setIn(['adminQrcode', payload.phone], payload.qrcode)
+}
+
 // --- selector
 
 export const selector = {
@@ -913,6 +945,7 @@ export const selector = {
   selectUsersByRole,
   selectValidRoles,
   selectValidPermissions,
+  selectAdminQrcode,
 };
 
 function selectCurUser(appState) {
@@ -1031,4 +1064,15 @@ function selectValidRoles(appState, roleCodes) {
 function selectValidPermissions(appState, permissionCodes) {
   const curPermissions = appState.AUTH.get('curPermissions', new Set());
   return curPermissions.intersect(new Set(permissionCodes)).size > 0;
+}
+
+/**
+ * Get saved admin user qrcode by user phone number
+ * @param state
+ * @param phone
+ * @returns {*|any}
+ */
+function selectAdminQrcode(state, phone) {
+  let qrcode = state.AUTH.getIn(['adminQrcode', phone])
+  return qrcode
 }
