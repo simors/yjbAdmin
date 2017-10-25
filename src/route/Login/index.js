@@ -6,6 +6,7 @@ import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
 import {Button, Row, Form, Input, message} from 'antd'
 import {action as authAction} from '../../util/auth/'
+import * as errno from '../../errno'
 import style from './style.module.scss'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
 
@@ -39,7 +40,23 @@ class Login extends React.Component {
           this.props.updateLoadingState({isLoading: false})
         },
         onFailure: (code) => {
-          message.error(`登录失败, 错误：${code}`);
+          switch (code) {
+            case errno.EINVAL:
+              message.error('用户不存在');
+              break;
+            case errno.EACCES:
+              message.error('用户已禁用');
+              break;
+            case 210:
+              message.error('用户名或密码不正确');
+              break;
+            case 211:
+            case 213:
+              message.error('用户不存在');
+              break;
+            default:
+              message.error(`登录失败, 错误：${code}`);
+          }
           this.props.updateLoadingState({isLoading: false})
         },
       });

@@ -50,7 +50,7 @@ class UserDetail extends React.Component {
     const {status, createdAt, updatedAt} = this.props.user;
 
     let statusElem = (<span>正常</span>);
-    if (this.props.user.status === AUTH_USER_STATUS.ADMIN_DISABLED) {
+    if (status === AUTH_USER_STATUS.ADMIN_DISABLED) {
       statusElem = (<span style={{color: 'red'}}>禁用</span>);
     }
 
