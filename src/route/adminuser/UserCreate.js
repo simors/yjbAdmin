@@ -101,26 +101,20 @@ class UserCreate extends React.Component {
       validPhone = phone
       let smsCode = form.getFieldValue('smsCode')
 
-      this.props.generateAdminQrcode({phone: phone})
-      this.setState({
-        step: 2,
-        title: '新增用户 —— 关联公众号',
-      })
-
-      // let payload = {
-      //   success: ()=>{
-      //     message.success('手机号验证成功')
-      //     this.props.generateAdminQrcode({phone: phone})
-      //     this.setState({
-      //       step: 2,
-      //       title: '新增用户 —— 关联公众号',
-      //     })
-      //   },
-      //   smsCode: smsCode,
-      //   phone: phone,
-      //   error: (e)=>{message.error('手机号验证失败，请确认手机号或验证码填写正确')}
-      // }
-      // this.props.verifySmsCode(payload)
+      let payload = {
+        success: ()=>{
+          message.success('手机号验证成功')
+          this.props.generateAdminQrcode({phone: phone})
+          this.setState({
+            step: 2,
+            title: '新增用户 —— 关联公众号',
+          })
+        },
+        smsCode: smsCode,
+        phone: phone,
+        error: (e)=>{message.error('手机号验证失败，请确认手机号或验证码填写正确')}
+      }
+      this.props.verifySmsCode(payload)
     })
   }
 
