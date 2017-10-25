@@ -13,7 +13,7 @@ import {
   Select,
   DatePicker,
 } from 'antd'
-import {actions} from './redux'
+import {actions, PromotionCategoryType} from './redux'
 import style from './promotion.module.scss'
 
 const FormItem = Form.Item
@@ -44,7 +44,8 @@ class SearchForm extends PureComponent {
           ],
         }
       }
-      this.props.fetchRechargeRecordAction({
+      this.props.fetchPromotionRecordAction({
+        type: PromotionCategoryType.PROMOTION_CATEGORY_TYPE_RECHARGE,
         promotionId: promotion.id,
         isRefresh: true,
         limit: 10,

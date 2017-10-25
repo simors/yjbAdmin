@@ -6,7 +6,7 @@ import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
 import {action as userActions, selector as userSelector} from '../../util/auth'
-import {createPromotionApi, fetchPromotionsApi, fetchPromotionCategoriesApi, editPromotionApi, fetchRechargePromRecordApi} from './cloud'
+import {createPromotionApi, fetchPromotionsApi, fetchPromotionCategoriesApi, editPromotionApi, fetchPromotionRecordApi} from './cloud'
 
 /****  Model  ****/
 const PromotionRecord = Record({
@@ -51,25 +51,22 @@ const PromotionCategoryRecord = Record({
   type: undefined,
 }, 'PromotionRecord')
 
-const RechargeRecord = Record({
-  id: undefined,                //充值活动记录id
-  promotionId: undefined,       //充值活动id
-  userId: undefined,            //充值用户id
-  recharge: undefined,          //充值金额
-  award: undefined,             //赠送金额
-  createdAt: undefined,         //充值时间
+const PromotionRDRecord = Record({
+  id: undefined,                //活动记录id
+  promotionId: undefined,       //活动id
+  userId: undefined,            //用户id
+  metadata: undefined,          //活动记录数据
+  createdAt: undefined,         //活动记录创建时间
+}, 'PromotionRecordRecord')
 
-}, 'RechargeRecord')
-
-class Recharge extends RechargeRecord {
-  static fromApi(obj) {
-    let recharge = new RechargeRecord()
-    return recharge.withMutations((record) => {
+class PromotionRD extends PromotionRDRecord {
+  static fromJSON(obj) {
+    let promotionRD = new PromotionRDRecord()
+    return promotionRD.withMutations((record) => {
       record.set('id', obj.id)
       record.set('promotionId', obj.promotionId)
       record.set('userId', obj.userId)
-      record.set('recharge', obj.recharge)
-      record.set('award', obj.award)
+      record.set('metadata', obj.metadata)
       record.set('createdAt', obj.createdAt)
     })
   }
@@ -91,8 +88,12 @@ const PromotionState = Record({
   promotions: Map(),
   promotionList: List(),
   categories: Map(),
-  rechargeList: List(),         //充值活动记录id列表
-  recharges: Map(),             //充值活动记录
+  // rechargeList: List(),         //充值活动记录id列表
+  // recharges: Map(),             //充值活动记录
+  records: Map,                 //活动参与记录
+  rechargePromList: List(),     //充值活动记录id列表
+  scorePromList: List(),        //积分活动记录id列表
+  redEnvelopePromList: List(),  //随机红包记录id列表
 }, 'PromotionState')
 /**** Constant ****/
 const FETCH_PROMOTIONS = 'FETCH_PROMOTIONS'
@@ -103,10 +104,11 @@ const PUBLISH_PROMOTION = 'PUBLISH_PROMOTION'
 const SAVE_PROMOTION_CATEGORIES = 'SAVE_PROMOTION_CATEGORIES'
 const FETCH_PROMOTION_CATEGORYLIST = 'FETCH_PROMOTION_CATEGORYLIST'
 const EDIT_PROMOTION = 'EDIT_PROMOTION'
-const FETCH_RECHARGE_RECORD = 'FETCH_RECHARGE_RECORD'
-const UPDATE_RECHARGE_RECORD_LIST = 'UPDATE_RECHARGE_RECORD_LIST'
-const SAVE_RECHARGE_RECORD = 'SAVE_RECHARGE_RECORD'
-const SAVE_RECHARGE_RECORDS = 'SAVE_RECHARGE_RECORDS'
+
+const FETCH_PROMOTION_RECORD = 'FETCH_PROMOTION_RECORD'
+const UPDATE_PROMOTION_RECORD_LIST = 'UPDATE_PROMOTION_RECORD_LIST'
+const SAVE_PROMOTION_RECORD = 'SAVE_PROMOTION_RECORD'
+const SAVE_PROMOTION_RECORDS = 'SAVE_PROMOTION_RECORDS'
 
 export const PromotionCategoryType = {
   PROMOTION_CATEGORY_TYPE_RECHARGE : 1,       //充值奖励
@@ -117,7 +119,7 @@ export const PromotionCategoryType = {
 }
 /**** Action ****/
 const updatePromotionList = createAction(UPDATE_PROMOTION_LIST)
-const updateRechargeRecordList = createAction(UPDATE_RECHARGE_RECORD_LIST)
+const updatePromotionRecordList = createAction(UPDATE_PROMOTION_RECORD_LIST)
 
 export const actions = {
   fetchPromotionsAction: createAction(FETCH_PROMOTIONS),
@@ -127,9 +129,10 @@ export const actions = {
   savePromotionCategories: createAction(SAVE_PROMOTION_CATEGORIES),
   fetchPromCategoryAction: createAction(FETCH_PROMOTION_CATEGORYLIST),
   editPromotion: createAction(EDIT_PROMOTION),
-  fetchRechargeRecordAction: createAction(FETCH_RECHARGE_RECORD),
-  saveRechargeRecord: createAction(SAVE_RECHARGE_RECORD),
-  saveRechargeRecords: createAction(SAVE_RECHARGE_RECORDS),
+
+  fetchPromotionRecordAction: createAction(FETCH_PROMOTION_RECORD),
+  savePromotionRecord: createAction(SAVE_PROMOTION_RECORD),
+  savePromotionRecords: createAction(SAVE_PROMOTION_RECORDS),
 }
 
 /**** Saga ****/
@@ -243,7 +246,7 @@ function* editPromotion(action) {
   }
 }
 
-function* fetchRechargeRecord(action) {
+function* fetchPromotionRecord(action) {
   let payload = action.payload
   let apiPayload = {
     promotionId: payload.promotionId,
@@ -252,16 +255,22 @@ function* fetchRechargeRecord(action) {
     start: payload.start,
     isRefresh: payload.isRefresh,
     limit: payload.limit,
-    lastCreatedAt: payload.lastCreatedAt,
+    lastCreatedAt: payload.lastCreatedAt
   }
+
   try {
-    let rechargeRecords = yield call(fetchRechargePromRecordApi, apiPayload)
-    yield put(updateRechargeRecordList({ rechargeRecords: rechargeRecords, isRefresh: apiPayload.isRefresh }))
+    let promotionRecords = yield call(fetchPromotionRecordApi, apiPayload)
+    yield put(updatePromotionRecordList({
+      promotionRecords: promotionRecords,
+      isRefresh: apiPayload.isRefresh,
+      type: payload.type,
+    }))
+
     let users = new Set()
     let promotions = new Set()
-    rechargeRecords.forEach((rechargeRecord) => {
-      let user = rechargeRecord.user
-      let promotion = rechargeRecords.promotion
+    promotionRecords.forEach((promotionRecord) => {
+      let user = promotionRecord.user
+      let promotion = promotionRecord.promotion
       if(user) {
         users.add(user)
       }
@@ -275,7 +284,6 @@ function* fetchRechargeRecord(action) {
     if(promotions.size > 0) {
       yield put(actions.savePromotions({ promotions }))
     }
-
     if(payload.success) {
       payload.success()
     }
@@ -293,7 +301,7 @@ export const saga = [
   takeLatest(PUBLISH_PROMOTION, publishPromotion),
   takeLatest(FETCH_PROMOTION_CATEGORYLIST, fetchPromotionCategories),
   takeLatest(EDIT_PROMOTION, editPromotion),
-  takeLatest(FETCH_RECHARGE_RECORD, fetchRechargeRecord),
+  takeLatest(FETCH_PROMOTION_RECORD, fetchPromotionRecord),
 ]
 
 /**** Reducer ****/
@@ -308,12 +316,12 @@ export function reducer(state = initialState, action) {
       return handleUpdatePromotionList(state, action)
     case SAVE_PROMOTION_CATEGORIES:
       return handleSavePromotionCategories(state, action)
-    case UPDATE_RECHARGE_RECORD_LIST:
-      return handleUpdateRechargeRecordList(state, action)
-    case SAVE_RECHARGE_RECORD:
-      return handleSaveRechargeRecord(state, action)
-    case SAVE_RECHARGE_RECORDS:
-      return handleSaveRechargeRecords(state, action)
+    case UPDATE_PROMOTION_RECORD_LIST:
+      return handleUpdatePromotionRecordList(state, action)
+    case SAVE_PROMOTION_RECORD:
+      return
+    case SAVE_PROMOTION_RECORDS:
+      return
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -328,27 +336,11 @@ function handleSavePromotion(state, action) {
   return state
 }
 
-function handleSaveRechargeRecord(state, action) {
-  let rechargeRecord = action.payload.rechargeRecord
-  let record = Recharge.fromApi(rechargeRecord)
-  state = state.setIn(['recharges', rechargeRecord.id], record)
-  return state
-}
-
 function handleSavePromotions(state, action) {
   let promotions = action.payload.promotions
   promotions.forEach((promotion) => {
     let promotionRecord = Promotion.fromApi(promotion)
     state = state.setIn(['promotions', promotion.id], promotionRecord)
-  })
-  return state
-}
-
-function handleSaveRechargeRecords(state, action) {
-  let rechargeRecords = action.payload.rechargeRecords
-  rechargeRecords.forEach((rechargeRecord) => {
-    let record = Recharge.fromApi(rechargeRecord)
-    state = state.setIn(['recharges', rechargeRecord.id], record)
   })
   return state
 }
@@ -374,22 +366,55 @@ function handleUpdatePromotionList(state, action) {
   return state
 }
 
-function handleUpdateRechargeRecordList(state, action) {
-  let rechargeRecords = action.payload.rechargeRecords
+function handleUpdatePromotionRecordList(state, action) {
+  let promotionRecords = action.payload.promotionRecords
   let isRefresh = action.payload.isRefresh
+  let type = action.payload.type
 
-  let rechargeRecordList = List()
-  if(!isRefresh) {
-    rechargeRecordList = state.get('rechargeList')
+  let promotionRecordList = List()
+  switch (type) {
+    case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_RECHARGE:
+    {
+      if(!isRefresh) {
+        promotionRecordList = state.get('rechargePromList')
+      }
+      break
+    }
+    case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_SCORE:
+    {
+      if(!isRefresh) {
+        promotionRecordList = state.get('scorePromList')
+      }
+      break
+    }
+    case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_REDENVELOPE:
+    {
+      if(!isRefresh) {
+        promotionRecordList = state.get('redEnvelopePromList')
+      }
+      break
+    }
+    default:
+      break
   }
-
-  rechargeRecords.forEach((record) => {
-    let rechargeRecord = Recharge.fromApi(record)
-    state = state.setIn(['recharges', record.id], rechargeRecord)
-    console.log("record", record)
-    rechargeRecordList = rechargeRecordList.push(record.id)
+  promotionRecords.forEach((record) => {
+    let promotionRD = PromotionRD.fromJSON(record)
+    state = state.setIn(['records', record.id], promotionRD)
+    promotionRecordList = promotionRecordList.push(record.id)
   })
-  state = state.set('rechargeList', rechargeRecordList)
+  switch (type) {
+    case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_RECHARGE:
+      state = state.set('rechargePromList', promotionRecordList)
+      break
+    case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_SCORE:
+      state = state.set('scorePromList', promotionRecordList)
+      break
+    case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_REDENVELOPE:
+      state = state.set('redEnvelopePromList', promotionRecordList)
+      break
+    default:
+      break
+  }
   return state
 }
 
@@ -476,27 +501,56 @@ function selectCategoryByType(state, type) {
   return categoryRecord? categoryRecord.toJS() : undefined
 }
 
-function selectRechargePromRecord(state, rechargeRecordId) {
-  if(!rechargeRecordId) {
+function selectRecord(state, recordId) {
+  if(!recordId) {
     return undefined
   }
-  let record = state.PROMOTION.getIn(['recharges', rechargeRecordId])
+  let record = state.PROMOTION.getIn(['records', recordId])
   return record? record.toJS() : undefined
 }
 
-function selectRechargePromRecordList(state) {
-  let rechargeList = state.PROMOTION.get('rechargeList')
-  let rechargeRecordInfolist = []
-  rechargeList.toArray().forEach((rechargeRecordId) => {
-    let rechargeRecordInfo = selectRechargePromRecord(state, rechargeRecordId)
-    let userInfo = rechargeRecordInfo? userSelector.selectUserById(state, rechargeRecordInfo.userId): undefined
-    rechargeRecordInfo.mobilePhoneNumber = userInfo? userInfo.mobilePhoneNumber: undefined
-    if(rechargeRecordInfo) {
-      rechargeRecordInfolist.push(rechargeRecordInfo)
+function selectRechargePromRecordList(state, promotionId) {
+  let rechargePromList = state.PROMOTION.get('rechargePromList')
+  let recordList = []
+  rechargePromList.toArray().forEach((id) => {
+    let recordInfo = selectRecord(state, id)
+    let userInfo = recordInfo? userSelector.selectUserById(state, recordInfo.userId) : undefined
+    recordInfo.mobilePhoneNumber = userInfo? userInfo.mobilePhoneNumber : undefined
+    if(recordInfo && recordInfo.promotionId === promotionId) {
+      recordList.push(recordInfo)
     }
   })
-  return rechargeRecordInfolist
+  return recordList
 }
+
+function selectScorePromRecordList(state, promotionId) {
+  let scorePromList = state.PROMOTION.get('scorePromList')
+  let recordList = []
+  scorePromList.toArray().forEach((id) => {
+    let recordInfo = selectRecord(state, id)
+    let userInfo = recordInfo? userSelector.selectUserById(state, recordInfo.userId) : undefined
+    recordInfo.mobilePhoneNumber = userInfo? userInfo.mobilePhoneNumber : undefined
+    if(recordInfo && recordInfo.promotionId === promotionId) {
+      recordList.push(recordInfo)
+    }
+  })
+  return recordList
+}
+
+function selectRedEnvelopePromRecordList(state, promotionId) {
+  let redEnvelopePromList = state.PROMOTION.get('redEnvelopePromList')
+  let recordList = []
+  redEnvelopePromList.toArray().forEach((id) => {
+    let recordInfo = selectRecord(state, id)
+    let userInfo = recordInfo? userSelector.selectUserById(state, recordInfo.userId) : undefined
+    recordInfo.mobilePhoneNumber = userInfo? userInfo.mobilePhoneNumber : undefined
+    if(recordInfo && recordInfo.promotionId === promotionId) {
+      recordList.push(recordInfo)
+    }
+  })
+  return recordList
+}
+
 export const selector = {
   selectPromotion,
   selectPromotionList,
@@ -504,4 +558,6 @@ export const selector = {
   selectCategoryList,
   selectCategoryByType,
   selectRechargePromRecordList,
+  selectScorePromRecordList,
+  selectRedEnvelopePromRecordList,
 }
