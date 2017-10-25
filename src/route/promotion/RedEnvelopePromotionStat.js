@@ -1,5 +1,5 @@
 /**
- * Created by wanpeng on 2017/10/21.
+ * Created by wanpeng on 2017/10/25.
  */
 import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
@@ -15,7 +15,8 @@ import moment from 'moment'
 import style from './promotion.module.scss'
 import PromotionRecordSearchForm from './PromotionRecordSearchForm'
 
-class RechargePromotionStat extends PureComponent {
+
+class RedEnvelopePromotionStat extends PureComponent {
   constructor(props) {
     super(props)
   }
@@ -51,12 +52,12 @@ class RechargePromotionStat extends PureComponent {
             <div>{this.getPromotionStatus(promotion)}</div>
           </Col>
           <Col span={3} offset={9}>
-            <div>充值总额</div>
-            <div>{"¥" + promotion.stat.rechargeAmount + '元'}</div>
+            <div>中奖总金额</div>
+            <div>{"¥" + promotion.stat.winAmount + '元'}</div>
           </Col>
-          <Col span={3}>
-            <div>赠送总额</div>
-            <div>{"¥" + promotion.stat.awardAmount + '元'}</div>
+          <Col span={3} offset={9}>
+            <div>中奖量</div>
+            <div>{"¥" + promotion.stat.winCount + '元'}</div>
           </Col>
           <Col span={3}>
             <div>参与人数</div>
@@ -76,18 +77,18 @@ class RechargePromotionStat extends PureComponent {
 const mapStateToProps = (appState, ownProps) => {
   const promotionId = ownProps.location.state ? ownProps.location.state.promotionId: undefined
   let promotion = undefined
-  let rechargeRecordInfolist = []
+  let redEnvelopeRecordInfolist = []
   if(promotionId) {
     promotion = selector.selectPromotion(appState, promotionId)
-    rechargeRecordInfolist = selector.selectRechargePromRecordList(appState, promotionId)
+    redEnvelopeRecordInfolist = selector.selectRechargePromRecordList(appState, promotionId)
   }
   return {
-    promotion: promotion,
-    rechargeRecordInfolist: rechargeRecordInfolist,
+    promotion,
+    redEnvelopeRecordInfolist,
   }
 }
 
 const mapDispatchToProps = {
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(RechargePromotionStat))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(RedEnvelopePromotionStat))

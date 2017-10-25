@@ -27,7 +27,6 @@ class SearchForm extends PureComponent {
 
   handleSubmit = (e) => {
     const {promotion} = this.props
-    console.log("promotion", promotion)
     e.preventDefault()
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
@@ -87,7 +86,7 @@ class SearchForm extends PureComponent {
   }
 }
 
-const RechargeRecordSearchForm = Form.create()(SearchForm)
+const PromotionRecordSearchForm = Form.create()(SearchForm)
 
 const mapStateToProps = (appState, ownProps) => {
   return {
@@ -98,4 +97,4 @@ const mapDispatchToProps = {
   ...actions,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(RechargeRecordSearchForm)
+export default connect(mapStateToProps, mapDispatchToProps)(PromotionRecordSearchForm)
