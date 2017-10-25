@@ -100,19 +100,27 @@ class UserCreate extends React.Component {
       let phone = form.getFieldValue('mobilePhoneNumber')
       validPhone = phone
       let smsCode = form.getFieldValue('smsCode')
-      let payload = {
-        success: ()=>{
-          message.success('手机号验证成功')
-          this.setState({
-            step: 2,
-            title: '新增用户 —— 关联公众号',
-          })
-        },
-        smsCode: smsCode,
-        phone: phone,
-        error: (e)=>{message.error('手机号验证失败，请确认手机号或验证码填写正确')}
-      }
-      this.props.verifySmsCode(payload)
+
+      this.props.generateAdminQrcode({phone: phone})
+      this.setState({
+        step: 2,
+        title: '新增用户 —— 关联公众号',
+      })
+
+      // let payload = {
+      //   success: ()=>{
+      //     message.success('手机号验证成功')
+      //     this.props.generateAdminQrcode({phone: phone})
+      //     this.setState({
+      //       step: 2,
+      //       title: '新增用户 —— 关联公众号',
+      //     })
+      //   },
+      //   smsCode: smsCode,
+      //   phone: phone,
+      //   error: (e)=>{message.error('手机号验证失败，请确认手机号或验证码填写正确')}
+      // }
+      // this.props.verifySmsCode(payload)
     })
   }
 
@@ -189,8 +197,17 @@ class UserCreate extends React.Component {
   }
 
   renderFocusMp() {
+    let {qrcode} = this.props
+    if (!qrcode) {
+      return null
+    }
     return (
-      <div></div>
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <img src={qrcode} width={200} />
+        <div style={{marginTop: 10, fontSize: 16, color: 'red', width: 300}}>
+          使用待添加后台用户的微信扫描上方二维码，并关注衣家宝公众号完成绑定操作
+        </div>
+      </div>
     )
   }
 
@@ -312,10 +329,12 @@ class UserCreate extends React.Component {
 const mapStateToProps = (appState, ownProps) => {
   const allRoles = authSelector.selectRoles(appState);
   const visible = selector.selectUserCreateModalVisible(appState);
+  let qrcode = authSelector.selectAdminQrcode(appState, validPhone);
 
   return {
     allRoles,
     visible,
+    qrcode,
   };
 };
 
