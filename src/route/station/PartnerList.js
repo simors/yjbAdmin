@@ -30,7 +30,7 @@ const PartnerList = (props) => {
 
   const columns = [{
     title: "分成方",
-    dataIndex: "shareholder.idName",
+    dataIndex: "shareholder.nickname",
   }, {
     title: "分成比例",
     dataIndex: "royalty",

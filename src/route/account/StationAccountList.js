@@ -80,13 +80,23 @@ const StationAccountList = (props) => {
   if (stationAccounts === null) {
     stationAccounts = [];
   }
-  // const rowSelection = {
-  //   type: 'radio',
-  //   onChange: (rowKey, rowData)=> {
-  //     selectStation(rowKey, rowData)
-  //   },
-  // };
-  // console.log('[DEBUG] ---> UserList users: ', stations);
+  let startDate = {
+    title:'开始日期',
+    dataIndex: 'startDate',
+    render:(text,record)=>{return(<div>{record.startDate}</div>)}
+  }
+  let endDate = {
+    title:'结束日期',
+    dataIndex: 'endDate',
+    render:(text,record)=>{return(<div>{record.endDate}</div>)}
+  }
+
+  if(stationAccounts&&stationAccounts[0]&&stationAccounts[0].startDate){
+    columns.push(startDate)
+  }
+  if(stationAccounts&&stationAccounts[0]&&stationAccounts[0].endDate){
+    columns.push(endDate)
+  }
 
   return (
     <div>

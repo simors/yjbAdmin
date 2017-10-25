@@ -1,16 +1,10 @@
 /**
  * Created by lilu on 2017/10/16.
  */
-/**
- * Created by lilu on 2017/10/15.
- */
-/**
- * Created by lilu on 2017/9/18.
- */
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {Row, Col, Input, Select, Button} from 'antd';
+import {Row, Col, Input, Select, Button,DatePicker} from 'antd';
 import ContentHead from '../../component/ContentHead'
 import InvestorAccountList from './InvestorAccountList';
 // import StationMenu from './StationMenu'
@@ -23,7 +17,7 @@ import AccountChart from '../../component/account/AccountChart'
 import {action as authAction, selector as authSelector} from '../../util/auth'
 import * as excelFuncs from '../../util/excel'
 import {PERMISSION_CODE,ROLE_CODE} from '../../util/rolePermission'
-
+import moment from 'moment'
 const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
@@ -38,7 +32,10 @@ class InvestorAccountManager extends React.Component {
       selectedRowData: undefined,
       status: undefined,
       stationId: undefined,
-      userId: undefined
+      userId: undefined,
+      startDate: undefined,
+      endDate: undefined,
+      selectedType: 'all'
     }
   }
 
@@ -71,40 +68,12 @@ class InvestorAccountManager extends React.Component {
     // this.props.requestStations({...this.state})
   }
 
-  setStatus() {
-    if (this.state.selectedRowId) {
-      let data = undefined
-      this.props.stations.forEach((item, key)=> {
-        if (item.id == this.state.selectedRowId[0]) {
-          data = item
-        }
-      })
-      let payload = {
-        stationId: this.state.selectedRowId,
-        success: ()=> {
-          this.refresh()
-        },
-        error: ()=> {
-          console.log('i m false')
-        }
-      }
-      if (data.status == 1) {
-        this.props.closeStation(payload)
-      } else {
-        this.props.openStation(payload)
-      }
-    }
-  }
-
-  statusChange(value) {
-    this.setState({status: value})
-  }
-
-
   search() {
     let payload = {
       stationId: this.state.stationId,
       userId: this.state.userId,
+      startDate: this.state.startDate,
+      endDate: this.state.endDate,
       success: ()=> {
         console.log('success')
       },
@@ -112,19 +81,37 @@ class InvestorAccountManager extends React.Component {
         console.log('error')
       }
     }
-    this.props.fetchInvestorAccounts(payload)
+    if(this.state.selectedType=='all'){
+      this.props.fetchInvestorAccounts(payload)
+    }else{
+      this.props.fetchInvestorAccountsDetail(payload)
+    }
+  }
+
+  selectType(value){
+    console.log('value----------------',value)
+    this.setState({selectedType: value})
   }
 
   clearSearch() {
     this.setState({
       stationId: undefined,
-      userId: undefined
+      userId: undefined,
+      startDate: undefined,
+      endDate: undefined,
+      selectedType: 'all'
+    },()=>{
+        this.props.fetchInvestorAccounts()
     })
-    this.props.fetchInvestorAccounts({
-      success: ()=> {
-        console.log('hahhahah')
-      }
-    })
+
+  }
+
+  selectStartDate(date,dateString){
+    this.setState({startDate: dateString})
+  }
+
+  selectEndDate(date,dateString){
+    this.setState({endDate: dateString})
   }
 
   renderSearchBar() {
@@ -152,6 +139,18 @@ class InvestorAccountManager extends React.Component {
             </Select>
           </Col>
           <Col span={4}>
+            <DatePicker key='startDate' defaultValue={undefined} value={this.state.startDate?moment(this.state.startDate):undefined} onChange={(date,dateString)=>{this.selectStartDate(date,dateString)}} placeholder="选择开始日期"/>
+          </Col>
+          <Col span={4}>
+            <DatePicker key='endDate' defaultValue={undefined} value={this.state.endDate?moment(this.state.endDate):undefined} onChange={(date,dateString)=>{this.selectEndDate(date,dateString)}} placeholder="选择结束时间"/>
+          </Col>
+          <Col span={4}>
+            <Select defalutValue = 'all' onChange={(value)=>{this.selectType(value)}} style={{width: 120}} placeholder="选择查询方式">
+              <Option value='all'>按周期</Option>
+              <Option value='detail'>按日期</Option>
+            </Select>
+          </Col>
+          <Col span={4}>
             <ButtonGroup>
             <Button type='primary' onClick={()=> {
               this.search()
@@ -169,7 +168,7 @@ class InvestorAccountManager extends React.Component {
   }
 
   downloadFile(){
-    let data = [[ "日期",    "利润", "成本" , "收益" , "服务点名称" ],]
+    let data = [[ "服务点名称",    "投资人名称" , "利润" ,"日期"],]
     // let accountArray = []
     if(this.props.investorAccounts&&this.props.investorAccounts.length){
       this.props.investorAccounts.forEach((account)=>{
@@ -198,9 +197,9 @@ class InvestorAccountManager extends React.Component {
           <Button onClick={()=>{this.viewChart()}}>查看图表</Button>
         </ButtonGroup>
         {this.renderSearchBar()}
-        <InvestorAccountList selectStation={(rowId, rowData)=> {
+        {<InvestorAccountList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
-        }} stationAccounts={this.props.investorAccounts}/>
+        }} investorAccounts={this.state.selectedType=='all'?this.props.investorAccounts:this.props.investorAccountsDetail}/>}
       </div>
     )
   };
@@ -209,11 +208,16 @@ class InvestorAccountManager extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectInvestorAccounts(state)
+  let accountsDetail = accountSelector.selectInvestorAccountsDetail(state)
+  console.log('accounts====>',accounts)
+
+  console.log('accountsDetail====>',accountsDetail)
   let userList = authSelector.selectUsersByRole(state,ROLE_CODE.STATION_INVESTOR)
   return {
     investorAccounts: accounts,
     stations: stations,
-    userList: userList
+    userList: userList,
+    investorAccountsDetail: accountsDetail
     // areaList: areaList,
   };
 };

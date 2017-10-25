@@ -52,8 +52,6 @@ class SmsModal extends React.Component {
         success: ()=>{this.props.onOk()},
         smsCode: data.smsCode,
         phone: this.props.currentUser.mobilePhoneNumber,
-        // name: this.props.name?this.props.name:'无法获取的用户',
-        // op: this.props.op?this.props.op:'无法获取的操作',
         error: (e)=>{this.props.error(e)}
       }
       this.props.verifySmsCode(payload)

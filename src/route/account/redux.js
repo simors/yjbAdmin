@@ -36,6 +36,8 @@ export const StationAccountRecord = Record({
   powerUnitPrice: undefined,
   stationId: undefined,
   createdAt: undefined,
+  startDate: undefined,
+  endDate: undefined
 }, 'StationAccountRecord')
 
 export class StationAccount extends StationAccountRecord {
@@ -54,6 +56,9 @@ export class StationAccount extends StationAccountRecord {
       record.set('powerUnitPrice', obj.powerUnitPrice)
       record.set('stationId', obj.stationId)
       record.set('createdAt', obj.createdAt)
+      record.set('startDate', obj.startDate)
+      record.set('endDate', obj.endDate)
+
     })
   }
 }
@@ -69,6 +74,8 @@ class AccountProfit extends Record({
   userId: undefined,
   createdAt: undefined,
   updatedAt: undefined,
+  startDate: undefined,
+  endDate: undefined
 }, 'AccountProfit') {
   static fromJson(json) {
     let profit = new AccountProfit()
@@ -83,6 +90,9 @@ class AccountProfit extends Record({
       record.set('userId', json.userId)
       record.set('createdAt', json.createdAt)
       record.set('updatedAt', json.updatedAt)
+      record.set('startDate', json.startDate)
+      record.set('endDate', json.endDate)
+
     })
   }
 }
@@ -171,7 +181,7 @@ function* fetchStationAccountsDetail(action) {
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for(let i = 0; i<data.accounts.length; i++){
-        stationAccountList.push(data.accounts[i].id)
+        stationAccountList.push(data.accounts[i].stationId)
         stationAccounts.push(data.accounts[i])
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
@@ -201,7 +211,7 @@ function* fetchPartnerAccounts(action) {
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
-        partnerAccountList.push(data.accounts[i].id)
+        partnerAccountList.push(data.accounts[i].userId)
         partnerAccounts.push(data.accounts[i])
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
@@ -268,7 +278,7 @@ function* fetchInvestorAccounts(action) {
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
-        investorAccountList.push(data.accounts[i].id)
+        investorAccountList.push(data.accounts[i].userId)
         investorAccounts.push(data.accounts[i])
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
@@ -374,6 +384,13 @@ function handleSetBatchAccountProfit(state, accountProfits) {
   return state
 }
 
+function handleSetBatchAccountProfitSum(state, accountProfits) {
+  accountProfits.forEach((accountProfit) => {
+    state = state.setIn(['allAccountProfits', accountProfit.userId], AccountProfit.fromJson(accountProfit))
+  })
+  return state
+}
+
 function reduceSaveAccountProfit(state, action) {
   let payload = action.payload
   let accountProfit = payload.accountProfit
@@ -388,7 +405,7 @@ function reduceSaveBatchAccountProfit(state, action) {
 
 function handleSetAllStationAccounts(state, stationAccounts) {
   stationAccounts.forEach((item)=> {
-    state = state.setIn(['allStationAccounts', item.id], StationAccount.fromApi(item))
+    state = state.setIn(['allStationAccounts', item.stationId], StationAccount.fromApi(item))
   })
   return state
 }
@@ -427,7 +444,7 @@ function handleSavePartnerAccounts(state, action) {
   let partnerAccountList = action.payload.partnerAccountList
   if (partnerAccountList && partnerAccountList.length > 0) {
     state = state.set('partnerAccountList', new List(partnerAccountList))
-    state = handleSetBatchAccountProfit(state, partnerAccounts)
+    state = handleSetBatchAccountProfitSum(state, partnerAccounts)
   } else {
     state = state.set('partnerAccountList', new List())
   }
@@ -453,7 +470,7 @@ function handleSaveInvestorAccounts(state, action) {
   let investorAccountList = action.payload.investorAccountList
   if (investorAccountList && investorAccountList.length > 0) {
     state = state.set('investorAccountList', new List(investorAccountList))
-    state = handleSetBatchAccountProfit(state, investorAccounts)
+    state = handleSetBatchAccountProfitSum(state, investorAccounts)
   } else {
     state = state.set('investorAccountList', new List())
   }

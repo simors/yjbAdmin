@@ -27,6 +27,7 @@ export async function fetchInvestorAccounts(payload) {
 
   try {
     let accounts = await AV.Cloud.run('accountGetInvestorAccounts', payload)
+    console.log('accounts=====>',accounts)
     return {success: true, accounts: accounts.accountList}
   } catch (error) {
     console.error(error)
