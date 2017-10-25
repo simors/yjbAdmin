@@ -142,7 +142,7 @@ class EditForm extends Component {
             <DivisionCascader disabled={true} />
           )}
         </FormItem>
-        <FormItem {...formItemLayout} label="积分倍率">
+        <FormItem hasFeedback {...formItemLayout} label="积分倍率">
           {getFieldDecorator("rate", {
             rules: [{ required: true, message: '请输入积分倍率'}],
             initialValue: promotion.awards.rate
