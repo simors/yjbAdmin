@@ -11,7 +11,7 @@ import {
 import moment from "moment"
 import style from './promotion.module.scss'
 import PromotionSearchForm from './PromotionSearchForm'
-import {selector} from './redux'
+import {selector, PromotionCategoryType} from './redux'
 import PromotionDetailModal from './PromotionDetailModal'
 import PromotionEditModal from './PromotionEditModal'
 
@@ -40,8 +40,23 @@ class Promotion extends PureComponent {
   }
 
   showRowStatModal(record) {
+    console.log("record", record)
     const {history} = this.props
-    history.push('/promotion_list/stat', {promotionId: record.id})
+    switch (record.categoryType) {
+      case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_RECHARGE:
+        history.push('/promotion_list/recharge_stat', {promotionId: record.id})
+        break
+      case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_SCORE:
+        history.push('/promotion_list/score_stat', {promotionId: record.id})
+        break
+      case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_REDENVELOPE:
+        history.push('/promotion_list/redEnvelope_stat', {promotionId: record.id})
+        break
+      case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_EXCHANGE_SCORE:
+        break
+      default:
+        break
+    }
   }
 
   renderStatusColum = (disabled, record) => {

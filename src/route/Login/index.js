@@ -22,7 +22,6 @@ class Login extends React.Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.updateLoadingState({isLoading: true})
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
@@ -31,6 +30,8 @@ class Login extends React.Component {
       }
 
       const {phone, password} = values;
+
+      this.props.updateLoadingState({isLoading: true})
 
       this.props.loginWithMobilePhone({
         phone,

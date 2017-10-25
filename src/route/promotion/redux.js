@@ -469,6 +469,7 @@ function selectPromotionList(state) {
     let promotionInfo = selectPromotion(state, promotionId)
     let categoryInfo = promotionInfo? selectCategory(state, promotionInfo.categoryId) : undefined
     promotionInfo.categoryTitle = categoryInfo? categoryInfo.title: undefined
+    promotionInfo.categoryType = categoryInfo? categoryInfo.type: undefined
     let userInfo = promotionInfo? userSelector.selectUserById(state, promotionInfo.userId) : undefined
     promotionInfo.username = userInfo? userInfo.nickname : undefined
     promotionInfoList.push(promotionInfo)
@@ -530,6 +531,7 @@ function selectScorePromRecordList(state, promotionId) {
     let recordInfo = selectRecord(state, id)
     let userInfo = recordInfo? userSelector.selectUserById(state, recordInfo.userId) : undefined
     recordInfo.mobilePhoneNumber = userInfo? userInfo.mobilePhoneNumber : undefined
+
     if(recordInfo && recordInfo.promotionId === promotionId) {
       recordList.push(recordInfo)
     }
