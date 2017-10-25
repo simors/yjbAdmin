@@ -6,6 +6,7 @@ import * as redux from './redux'
 import RechargePromotion from './RechargePromotion'
 import RechargePromotionStat from './RechargePromotionStat'
 import RedEnvelopePromotion from './RedEnvelopePromotion'
+import ScorePromotion from './ScorePromotion'
 
 /* export saga */
 export const promotionSaga = redux.saga
@@ -20,4 +21,4 @@ export const promotionActions = redux.actions
 export const promotionSelector = redux.selector
 
 export default Promotion
-export {RechargePromotion, RechargePromotionStat, RedEnvelopePromotion}
+export {RechargePromotion, RechargePromotionStat, RedEnvelopePromotion, ScorePromotion}
