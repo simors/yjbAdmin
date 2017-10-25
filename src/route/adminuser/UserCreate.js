@@ -6,6 +6,9 @@ import {action as authAction, selector as authSelector, AUTH_USER_TYPE} from '..
 import * as errno from '../../errno';
 import style from './UserCreate.module.scss';
 import SmsInput from '../../component/SmsInput'
+import {getAuthorizeURL} from '../../util/wxUtil'
+import appConfig from '../../util/appConfig'
+import QRCode from 'qrcode.react'
 
 const formItemLayout = {
   labelCol: {
@@ -104,7 +107,6 @@ class UserCreate extends React.Component {
       let payload = {
         success: ()=>{
           message.success('手机号验证成功')
-          this.props.generateAdminQrcode({phone: phone})
           this.setState({
             step: 2,
             title: '新增用户 —— 关联公众号',
@@ -191,13 +193,11 @@ class UserCreate extends React.Component {
   }
 
   renderFocusMp() {
-    let {qrcode} = this.props
-    if (!qrcode) {
-      return null
-    }
+    let redirectUrl = appConfig.MP_CLIENT_DOMAIN + '/authUser/' + validPhone
+    let authUrl = getAuthorizeURL(redirectUrl, '', 'snsapi_userinfo')
     return (
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <img src={qrcode} width={200} />
+        <QRCode ref="qrcode" value={authUrl} size={200}/>
         <div style={{marginTop: 10, fontSize: 16, color: 'red', width: 300}}>
           使用待添加后台用户的微信扫描上方二维码，并关注衣家宝公众号完成绑定操作
         </div>
@@ -323,12 +323,10 @@ class UserCreate extends React.Component {
 const mapStateToProps = (appState, ownProps) => {
   const allRoles = authSelector.selectRoles(appState);
   const visible = selector.selectUserCreateModalVisible(appState);
-  let qrcode = authSelector.selectAdminQrcode(appState, validPhone);
 
   return {
     allRoles,
     visible,
-    qrcode,
   };
 };
 
