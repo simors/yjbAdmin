@@ -87,7 +87,7 @@ class SmsModal extends React.Component {
           </FormItem>
           </Col>
             <Col span={6}>
-              <SmsInput params={{mobilePhoneNumber:this.props.currentUser.mobilePhoneNumber,name:this.props.currentUser.idName,op:this.props.op }}/>
+              <SmsInput params={{template:'管理员操作权限确认',mobilePhoneNumber:this.props.currentUser.mobilePhoneNumber,adminUser:this.props.currentUser.nickname,opName:this.props.op }}/>
             </Col>
           </Row>
         </Form>

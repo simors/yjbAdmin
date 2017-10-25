@@ -137,14 +137,11 @@ export default class AccountChart extends Component {
   render() {
 
     return (
-      <Tabs defaultActiveKey='1' className='content-inner'>
-        <TabPane tab='地区统计' key='2'>
-          <div>
 
+          <div>
             {this.renderStatisticsLocal()}
           </div>
-        </TabPane>
-      </Tabs>
+
     )
   }
 }

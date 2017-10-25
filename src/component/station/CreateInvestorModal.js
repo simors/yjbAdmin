@@ -100,10 +100,6 @@ class CreateInvestorModal extends Component {
         <Form layout="horizontal">
           <FormItem label='投资人' hasFeedback {...formItemLayout}>
             {this.props.form.getFieldDecorator('userId', {
-              // getValueFromEvent:(e)=>{
-              //  let value=this.setTrimValue(e.target.value)
-              //  return value
-              //},
               rules: [
                 {
                   required: true,
@@ -111,7 +107,7 @@ class CreateInvestorModal extends Component {
                 }
               ]
             })(
-              <Select allowClear={true} style={{width: 140}}>
+              <Select allowClear={true} style={{width: 200}}>
                 {this.userList()}
               </Select>
             )}
@@ -124,7 +120,7 @@ class CreateInvestorModal extends Component {
                   message: '投资服务点未选择'
                 }
               ]
-            })(<Select allowClear={true} style={{width: 140}}>
+            })(<Select allowClear={true} style={{width: 200}}>
               {this.stationList()}
             </Select>)}
           </FormItem>

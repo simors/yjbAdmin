@@ -77,6 +77,7 @@ class EditStation extends React.Component {
   refresh() {
     this.props.requestPartners({
       stationId: this.props.match.params.id, success: ()=> {
+        this.setState({spinShow: true})
       }
     })
   }
@@ -175,7 +176,7 @@ class EditStation extends React.Component {
   adminList() {
     if (this.props.adminList && this.props.adminList.length > 0) {
       let adminList = this.props.adminList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.idName}</Option>
+        return <Option key={key} value={item.id}>{item.nickName+ '  '+ item.mobilePhoneNumber}</Option>
       })
       return adminList
     } else {
@@ -186,7 +187,7 @@ class EditStation extends React.Component {
   partnerList() {
     if (this.props.partnerList && this.props.partnerList.length > 0) {
       let partnerList = this.props.partnerList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.idName}</Option>
+        return <Option key={key} value={item.id}>{item.nickName+ '  '+ item.mobilePhoneNumber}</Option>
       })
       return partnerList
     } else {
@@ -205,39 +206,43 @@ class EditStation extends React.Component {
         })
       },
       error: (err)=> {
-        message.error('提交失败')
-        console.log('err===>', err.message)
+        this.setState({spinShow: false, createModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+        message.error('err.message')
+          this.refresh()
+
+        })
       }
     }
     this.setState({spinShow: true})
-
     this.props.createPartner(payload)
   }
 
   updatePartner(data) {
-    this.setState({spinShow: true})
+    this.props.updateLoadingState({isLoading: true})
     let payload = {
       ...data,
       stationId: this.props.match.params.id,
       partnerId: this.state.selectedPartner.id,
       success: ()=> {
-        this.setState({spinShow: false, updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+        this.setState({ updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+          this.props.updateLoadingState({isLoading: false})
           message.success('提交成功')
           this.refresh()
         })
       },
       error: (err)=> {
-        message.error('提交失败')
-        console.log('err===>', err.message)
+
+        this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+          this.props.updateLoadingState({isLoading: false})
+          message.error('err.message')
+      })
       }
     }
-    console.log('payload----------111', payload)
     this.props.updatePartner(payload)
   }
 
   submitStation() {
     this.props.form.validateFields((errors) => {
-      this.setState({spinShow: true})
       if (errors) {
         return
       }
@@ -256,7 +261,6 @@ class EditStation extends React.Component {
           message.success('提交成功')
           this.props.history.push({pathname: '/site_list/editStation/' + stationId})
           this.props.updateLoadingState({isLoading: false})
-
         },
         error: (err)=> {
           message.error('提交失败')
@@ -414,7 +418,7 @@ class EditStation extends React.Component {
               <Col span={6}>
                 <FormItem label='平台分成比例：' hasFeedback {...formItemLayout2}>
                   {this.props.form.getFieldDecorator('platformProp', {
-                    initialValue: station ? station.platformProp : 0,
+                    initialValue: station ? station.platformProp*100 : 0,
                     rules: [
                       {
                         required: true,
@@ -422,6 +426,8 @@ class EditStation extends React.Component {
                       }
                     ]
                   })(<InputNumber
+                    max={100}
+                    min={0}
                     formatter={value => `${value}%`}
                     parser={value => value.replace('%', '')}
                   />)}
@@ -437,8 +443,8 @@ class EditStation extends React.Component {
               }}>提交</Button>
             </Col>
           </Row>
-          <Row></Row>
-          <Row>
+          <Row ></Row>
+          <Row style={{height: 20,marginTop: 20, marginBottom: 20}}>
             <Col span={4}>
               <div>服务点分成</div>
             </Col>
