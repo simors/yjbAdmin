@@ -16,7 +16,7 @@ import {
 } from 'antd'
 import style from './promotion.module.scss'
 import DivisionCascader from '../../component/DivisionCascader'
-import {actions, selector} from './redux'
+import {actions, selector, PromotionCategoryType} from './redux'
 import * as errno from '../../errno'
 import RedEnvelopeParamsInput from './RedEnvelopeParamsInput'
 
@@ -162,7 +162,7 @@ const RedEnvelopeCreateForm = Form.create() (CreateForm)
 
 const mapStateToProps = (appState, ownProps) => {
   return {
-    category: selector.selectCategoryByTitle(appState, '随机红包')
+    category: selector.selectCategoryByType(appState, PromotionCategoryType.PROMOTION_CATEGORY_TYPE_REDENVELOPE),
   }
 }
 
