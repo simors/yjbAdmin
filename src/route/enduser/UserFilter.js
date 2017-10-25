@@ -19,12 +19,10 @@ class UserFilter extends React.Component {
     };
   }
 
-  componentWillReceiveProps(newProps) {
-    const {form, needResetFilter, resetFilter} = newProps;
+  componentWillReceiveProps(nextProps) {
+    const {form, needResetFilter} = nextProps;
 
-    if (needResetFilter) {
-      resetFilter({reset: false});
-
+    if (this.props.needResetFilter !== needResetFilter) {
       form.resetFields();
       this.setState((prevState, props) => {
         return {
