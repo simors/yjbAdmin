@@ -7,7 +7,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {Row, Col, Input, Select, Button} from 'antd';
+import {Row, Col, Input, Select, Button,DatePicker} from 'antd';
 import ContentHead from '../../component/ContentHead'
 import StationAccountList from './StationAccountList';
 // import StationMenu from './StationMenu'
@@ -35,6 +35,9 @@ class StationAccountManager extends React.Component {
       selectedRowData: undefined,
       status: undefined,
       stationId: undefined,
+      startDate: undefined,
+      endDate: undefined,
+      selectedType: 'all',
       division: []
     }
   }
@@ -43,6 +46,20 @@ class StationAccountManager extends React.Component {
     this.setState({
       stationId: value
     })
+  }
+
+  selectType(value){
+    this.setState({
+      selectedType: value
+    })
+  }
+
+  selectStartDate(date,dateString){
+    this.setState({startDate: dateString})
+  }
+
+  selectEndDate(date,dateString){
+    this.setState({endDate: dateString})
   }
 
   componentWillMount() {
@@ -61,50 +78,11 @@ class StationAccountManager extends React.Component {
     // this.props.requestStations({...this.state})
   }
 
-  setStatus() {
-    if (this.state.selectedRowId) {
-      let data = undefined
-      this.props.stations.forEach((item, key)=> {
-        if (item.id == this.state.selectedRowId[0]) {
-          data = item
-        }
-      })
-      let payload = {
-        stationId: this.state.selectedRowId,
-        success: ()=> {
-          this.refresh()
-        },
-        error: ()=> {
-          console.log('i m false')
-        }
-      }
-      if (data.status == 1) {
-        this.props.closeStation(payload)
-      } else {
-        this.props.openStation(payload)
-      }
-    }
-  }
-
-  statusChange(value) {
-    this.setState({status: value})
-  }
-
-
-  areaList() {
-    if (this.state.city && this.state.city.sub.length > 0) {
-      let areaList = this.state.city.sub.map((item, key)=> {
-        return <Option key={key} value={key}>{item.area_name}</Option>
-      })
-      return areaList
-    } else {
-      return null
-    }
-  }
-
   search() {
     let payload = {
       stationId: this.state.stationId,
+      startDate: this.state.startDate,
+      endDate: this.state.endDate,
       success: ()=> {
         console.log('success')
       },
@@ -112,60 +90,76 @@ class StationAccountManager extends React.Component {
         console.log('error')
       }
     }
-    this.props.fetchStationAccounts(payload)
-  }
-
-  setDivision(value) {
-    if (value && value.length) {
-      this.setState({
-        division: value
-      }, ()=> {
-        console.log('state', this.state.division)
-      })
+    if(this.state.selectedType=='all'){
+      this.props.fetchStationAccounts(payload)
+    }else{
+      this.props.fetchStationAccountsDetail(payload)
     }
   }
 
   clearSearch() {
     this.setState({
-      stationId: undefined
+      stationId: undefined,
+      startDate: undefined,
+      endDate: undefined,
     })
-    this.props.fetchStationAccounts({
-      success: ()=> {
-        console.log('hahhahah')
-      }
-    })
-  }
+    if(this.state.selectedType=='all'){
+      this.props.fetchStationAccounts({
+        success: ()=> {
+          console.log('hahhahah')
+        }
+      })
+    }else{
+      this.props.fetchStationAccountsDetail({
+        success: ()=> {
+          console.log('hahhahah')
+        }
+      })
+    }
 
+  }
   renderSearchBar() {
     return (
       <div style={{flex: 1}}>
-          <Row >
-            <Col span={12}>
-              <Select defalutValue = '' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
-                <Option value=''>全部</Option>
-                {
-                  this.props.stations.map((station, index) => (
-                    <Option key={index} value={station.id}>{station.name}</Option>
-                  ))
-                }
-              </Select>
-            </Col>
-            <Col span={2}>
-              <Button onClick={()=> {
+        <Row gutter={24}>
+          <Col span={4}>
+            <Select defalutValue = '' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
+              <Option value=''>全部</Option>
+              {
+                this.props.stations.map((station, index) => (
+                  <Option key={index} value={station.id}>{station.name}</Option>
+                ))
+              }
+            </Select>
+          </Col>
+          <Col span={4}>
+            <DatePicker key='startDate' defaultValue={undefined} value={this.state.startDate?moment(this.state.startDate):undefined} onChange={(date,dateString)=>{this.selectStartDate(date,dateString)}} placeholder="选择开始日期"/>
+          </Col>
+          <Col span={4}>
+            <DatePicker key='endDate' defaultValue={undefined} value={this.state.endDate?moment(this.state.endDate):undefined} onChange={(date,dateString)=>{this.selectEndDate(date,dateString)}} placeholder="选择结束时间"/>
+          </Col>
+          <Col span={4}>
+            <Select defalutValue = 'all' onChange={(value)=>{this.selectType(value)}} style={{width: 120}} placeholder="选择查询方式">
+              <Option value='all'>按周期</Option>
+              <Option value='detail'>按日期</Option>
+            </Select>
+          </Col>
+          <Col span={4}>
+            <ButtonGroup>
+              <Button type='primary' onClick={()=> {
                 this.search()
               }}>查询</Button>
-            </Col>
-            <Col span={2}>
-              <Button onClick={()=> {
+
+              <Button type='primary' onClick={()=> {
                 this.clearSearch()
               }}>重置</Button>
-            </Col>
-          </Row>
+            </ButtonGroup>
+          </Col>
+        </Row>
 
       </div>
     )
   }
-
 
 
   downloadFile(){
@@ -221,7 +215,7 @@ class StationAccountManager extends React.Component {
 
         <StationAccountList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
-        }} stationAccounts={this.props.stationAccounts}/>
+        }} stationAccounts={this.state.selectedType=='all'?this.props.stationAccounts:this.props.stationAccountsDetail}/>
       </div>
     )
   };
@@ -230,11 +224,13 @@ class StationAccountManager extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectStationAccounts(state)
+  let accountsDetail = accountSelector.selectStationAccountsDetail(state)
   // let areaList = configSelector.selectAreaList(state)
-  console.log('accounts========>', accounts)
+  console.log('accountsDetail========>', accountsDetail)
   return {
     stationAccounts: accounts,
-    stations: stations
+    stations: stations,
+    stationAccountsDetail: accountsDetail
     // areaList: areaList,
   };
 };

@@ -151,7 +151,7 @@ function* fetchStationAccounts(action) {
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for(let i = 0; i<data.accounts.length; i++){
-        stationAccountList.push(data.accounts[i].id)
+        stationAccountList.push(data.accounts[i].stationId)
         stationAccounts.push(data.accounts[i])
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
@@ -181,7 +181,7 @@ function* fetchStationAccountsDetail(action) {
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for(let i = 0; i<data.accounts.length; i++){
-        stationAccountList.push(data.accounts[i].stationId)
+        stationAccountList.push(data.accounts[i].id)
         stationAccounts.push(data.accounts[i])
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
@@ -410,6 +410,13 @@ function handleSetAllStationAccounts(state, stationAccounts) {
   return state
 }
 
+function handleSetAllStationAccountsDetall(state, stationAccounts) {
+  stationAccounts.forEach((item)=> {
+    state = state.setIn(['allStationAccounts', item.id], StationAccount.fromApi(item))
+  })
+  return state
+}
+
 function handleSaveStationAccounts(state, action) {
 
   let stationAccounts = action.payload.stationAccounts
@@ -431,7 +438,7 @@ function handleSaveStationAccountsDetail(state, action) {
   // console.log('stationAccounts=========>', stationAccounts, stationAccountList)
   if (stationAccountList && stationAccountList.length > 0) {
     state = state.set('stationAccountsDetailList', new List(stationAccountList))
-    state = handleSetAllStationAccounts(state, stationAccounts)
+    state = handleSetAllStationAccountsDetall(state, stationAccounts)
   } else {
     state = state.set('stationAccountsDetailList', new List())
   }

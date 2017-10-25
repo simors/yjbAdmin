@@ -7,7 +7,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {Row, Col, Input, Select, Button} from 'antd';
+import {Row, Col, Input, Select, Button,DatePicker} from 'antd';
 import ContentHead from '../../component/ContentHead'
 import PartnerAccountList from './PartnerAccountList';
 // import StationMenu from './StationMenu'
@@ -18,6 +18,11 @@ import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
 import AccountChart from '../../component/account/AccountChart'
 import * as excelFuncs from '../../util/excel'
+import {PERMISSION_CODE,ROLE_CODE} from '../../util/rolePermission'
+import moment from 'moment'
+import {action as authAction, selector as authSelector} from '../../util/auth'
+
+
 
 const history = createBrowserHistory()
 const Option = Select.Option;
@@ -33,6 +38,10 @@ class PartnerAccountManager extends React.Component {
       selectedRowData: undefined,
       status: undefined,
       stationId: undefined,
+      userId: undefined,
+      selectedType: 'all',
+      startDate: undefined,
+      endDate: undefined,
       division: []
     }
   }
@@ -40,6 +49,12 @@ class PartnerAccountManager extends React.Component {
   selectStation(value) {
     this.setState({
       stationId: value
+    })
+  }
+
+  selectPartner(value){
+    this.setState({
+      userId: value
     })
   }
 
@@ -51,12 +66,15 @@ class PartnerAccountManager extends React.Component {
       },
     })
     this.props.requestStations({
-
     })
   }
 
   refresh() {
     // this.props.requestStations({...this.state})
+  }
+
+  selectType(value){
+    this.setState({selectedType: value})
   }
 
   setStatus() {
@@ -118,6 +136,9 @@ class PartnerAccountManager extends React.Component {
   search() {
     let payload = {
       stationId: this.state.stationId,
+      userId: this.state.userId,
+      startDate: this.state.startDate,
+      endDate: this.state.endDate,
       success: ()=> {
         console.log('success')
       },
@@ -125,35 +146,41 @@ class PartnerAccountManager extends React.Component {
         console.log('error')
       }
     }
-    this.props.fetchPartnerAccounts(payload)
-  }
-
-  setDivision(value) {
-    if (value && value.length) {
-      this.setState({
-        division: value
-      }, ()=> {
-        console.log('state', this.state.division)
-      })
+    if(this.state.selectedType=='all'){
+      this.props.fetchPartnerAccounts(payload)
+    }else{
+      this.props.fetchPartnerAccountsDetail(payload)
     }
   }
 
   clearSearch() {
     this.setState({
-      stationId: undefined
+      stationId: undefined,
+      userId: undefined,
+      startDate: undefined,
+      endDate: undefined
     })
-    this.props.fetchPartnerAccounts({
-      success: ()=> {
-        console.log('hahhahah')
-      }
-    })
+    if(this.state.selectedType=='all'){
+      this.props.fetchPartnerAccounts(payload)
+    }else{
+      this.props.fetchPartnerAccountsDetail(payload)
+    }
+
+  }
+
+  selectStartDate(date,dateString){
+    this.setState({startDate: dateString})
+  }
+
+  selectEndDate(date,dateString){
+    this.setState({endDate: dateString})
   }
 
   renderSearchBar() {
     return (
       <div style={{flex: 1}}>
-        <Row >
-          <Col span={12}>
+        <Row gutter={24}>
+          <Col span={4}>
             <Select defalutValue = '' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
               <Option value=''>全部</Option>
               {
@@ -163,15 +190,38 @@ class PartnerAccountManager extends React.Component {
               }
             </Select>
           </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
-              this.search()
-            }}>查询</Button>
+          <Col span={4}>
+            <Select defalutValue = '' onChange={(value)=>{this.selectPartner(value)}} style={{width: 120}} placeholder="选择投资人">
+              <Option value=''>全部</Option>
+              {
+                this.props.userList.map((user, index) => (
+                  <Option key={index} value={user.id}>{user.nickname+'  '+user.mobilePhoneNumber}</Option>
+                ))
+              }
+            </Select>
           </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
-              this.clearSearch()
-            }}>重置</Button>
+          <Col span={4}>
+            <DatePicker key='startDate' defaultValue={undefined} value={this.state.startDate?moment(this.state.startDate):undefined} onChange={(date,dateString)=>{this.selectStartDate(date,dateString)}} placeholder="选择开始日期"/>
+          </Col>
+          <Col span={4}>
+            <DatePicker key='endDate' defaultValue={undefined} value={this.state.endDate?moment(this.state.endDate):undefined} onChange={(date,dateString)=>{this.selectEndDate(date,dateString)}} placeholder="选择结束时间"/>
+          </Col>
+          <Col span={4}>
+            <Select defalutValue = 'all' onChange={(value)=>{this.selectType(value)}} style={{width: 120}} placeholder="选择查询方式">
+              <Option value='all'>按周期</Option>
+              <Option value='detail'>按日期</Option>
+            </Select>
+          </Col>
+          <Col span={4}>
+            <ButtonGroup>
+              <Button type='primary' onClick={()=> {
+                this.search()
+              }}>查询</Button>
+
+              <Button type='primary' onClick={()=> {
+                this.clearSearch()
+              }}>重置</Button>
+            </ButtonGroup>
           </Col>
         </Row>
 
@@ -195,30 +245,10 @@ class PartnerAccountManager extends React.Component {
           <Button onClick={()=>{this.viewChart()}}>查看图表</Button>
 
         </ButtonGroup>
-        {/*<StationMenu*/}
-        {/*showDetail={()=> {*/}
-        {/*this.props.history.push({*/}
-        {/*pathname: '/site/showStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),*/}
-        {/*})*/}
-        {/*}}*/}
-        {/*set={()=> {*/}
-        {/*this.props.history.push({*/}
-        {/*pathname: '/site/editStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),*/}
-        {/*})*/}
-        {/*}}*/}
-        {/*add={()=>{this.props.history.push({pathname: '/site/addStation'})}}*/}
-        {/*setStatus={()=> {*/}
-        {/*this.setStatus()*/}
-        {/*}}*/}
-        {/*refresh={()=> {*/}
-        {/*this.refresh()*/}
-        {/*}}*/}
-        {/*/>*/}
         {this.renderSearchBar()}
 
-        <PartnerAccountList selectStation={(rowId, rowData)=> {
-          this.selectStation(rowId, rowData)
-        }} stationAccounts={this.props.partnerAccounts}/>
+        <PartnerAccountList
+         stationAccounts={this.state.selectedType=='all'?this.props.partnerAccounts:this.props.partnerAccountsDetail}/>
       </div>
     )
   };
@@ -227,18 +257,24 @@ class PartnerAccountManager extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectPartnerAccounts(state)
+  let accountsDetail = accountSelector.selectPartnerAccountsDetail(state)
+  let userList = authSelector.selectUsersByRole(state,ROLE_CODE.STATION_INVESTOR)
+
   // let areaList = configSelector.selectAreaList(state)
   console.log('accounts========>', accounts)
   return {
     partnerAccounts: accounts,
-    stations: stations
+    stations: stations,
+    partnerAccountsDetail: accountsDetail,
+    userList: userList
     // areaList: areaList,
   };
 };
 
 const mapDispatchToProps = {
   ...stationAction,
-  ...accountAction
+  ...accountAction,
+  ...authAction
 
 };
 
