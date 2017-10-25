@@ -16,6 +16,8 @@ const formItemLayout = {
   }
 };
 
+let validPhone = ''
+
 class UserCreate extends React.Component {
   constructor(props) {
     super(props);
@@ -26,7 +28,6 @@ class UserCreate extends React.Component {
       step: 1,
       title: '新增用户 —— 验证手机号',
     };
-    this.validPhone = ""
   }
 
   onHideModal = () => {
@@ -92,9 +93,27 @@ class UserCreate extends React.Component {
 
   submitValidatePhone() {
     let {form} = this.props
-    let phone = form.getFieldValue('mobilePhoneNumber')
-    console.log('phone', phone)
-    this.validPhone = phone
+    form.validateFields((errors) => {
+      if (errors) {
+        return
+      }
+      let phone = form.getFieldValue('mobilePhoneNumber')
+      validPhone = phone
+      let smsCode = form.getFieldValue('smsCode')
+      let payload = {
+        success: ()=>{
+          message.success('手机号验证成功')
+          this.setState({
+            step: 2,
+            title: '新增用户 —— 关联公众号',
+          })
+        },
+        smsCode: smsCode,
+        phone: phone,
+        error: (e)=>{message.error('手机号验证失败，请确认手机号或验证码填写正确')}
+      }
+      this.props.verifySmsCode(payload)
+    })
   }
 
   onSubmit = (e) => {
@@ -102,13 +121,9 @@ class UserCreate extends React.Component {
     let step = this.state.step
     if (step == 1) {
       this.submitValidatePhone()
-      this.setState({
-        step: step+1,
-        title: '新增用户 —— 关联公众号',
-      })
     } else if (step == 2) {
       this.setState({
-        step: step+1,
+        step: 3,
         title: '新增用户 —— 完善用户信息',
       })
     } else {
@@ -151,7 +166,7 @@ class UserCreate extends React.Component {
             label='验证码'
             hasFeedback
           >
-            <Row>
+            <Row gutter={8}>
               <Col span={16}>
                 {getFieldDecorator('smsCode', {
                   initialValue: '',
@@ -164,7 +179,7 @@ class UserCreate extends React.Component {
                 })(<Input />)}
               </Col>
               <Col span={8}>
-                <SmsInput/>
+                <SmsInput params={{mobilePhoneNumber: validPhone, name: '衣家宝', op: '新增后台用户'}}/>
               </Col>
             </Row>
           </Form.Item>
@@ -224,7 +239,7 @@ class UserCreate extends React.Component {
               }, {
                 pattern: /^1\d{10}$/, message: '无效的手机号码!'
               }],
-              initialValue: this.validPhone
+              initialValue: validPhone
             },
             )(
               <Input addonBefore={prefixSelector} disabled={true} style={{ width: '100%' }} />
@@ -309,4 +324,13 @@ const mapDispatchToProps = {
   ...authAction,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(UserCreate));
+const UserCreateForm = Form.create({
+  onFieldsChange(props, changedFields) {
+    let {mobilePhoneNumber} = changedFields
+    if (mobilePhoneNumber) {
+      validPhone = mobilePhoneNumber.value
+    }
+  },
+})(UserCreate)
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserCreateForm);
