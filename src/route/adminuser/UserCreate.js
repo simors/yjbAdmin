@@ -193,7 +193,7 @@ class UserCreate extends React.Component {
   }
 
   renderFocusMp() {
-    let redirectUrl = appConfig.MP_CLIENT_DOMAIN + '/authUser/' + validPhone
+    let redirectUrl = appConfig.MP_SERVER_DOMAIN + '/authUser/' + validPhone
     let authUrl = getAuthorizeURL(redirectUrl, '', 'snsapi_userinfo')
     return (
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
