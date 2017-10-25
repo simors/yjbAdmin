@@ -36,7 +36,8 @@ class InvestorAccountManager extends React.Component {
       userId: undefined,
       startDate: undefined,
       endDate: undefined,
-      selectedType: 'all'
+      selectedType: 'all',
+      viewType: 'all'
     }
   }
 
@@ -70,6 +71,7 @@ class InvestorAccountManager extends React.Component {
   }
 
   search() {
+
     let payload = {
       stationId: this.state.stationId,
       userId: this.state.userId,
@@ -82,11 +84,14 @@ class InvestorAccountManager extends React.Component {
         console.log('error')
       }
     }
-    if(this.state.selectedType=='all'){
-      this.props.fetchInvestorAccounts(payload)
-    }else{
-      this.props.fetchInvestorAccountsDetail(payload)
-    }
+    this.setState({viewType:this.state.selectedType},()=>{
+      if(this.state.selectedType=='all'){
+        this.props.fetchInvestorAccounts(payload)
+      }else{
+        this.props.fetchInvestorAccountsDetail(payload)
+      }
+    })
+
   }
 
   selectType(value){
@@ -100,9 +105,13 @@ class InvestorAccountManager extends React.Component {
       userId: undefined,
       startDate: undefined,
       endDate: undefined,
-      selectedType: 'all'
     },()=>{
+      if(this.state.selectedType=='all'){
         this.props.fetchInvestorAccounts()
+      }else{
+        this.props.fetchInvestorAccountsDetail()
+
+      }
     })
 
   }
@@ -200,7 +209,7 @@ class InvestorAccountManager extends React.Component {
         {this.renderSearchBar()}
         {<InvestorAccountList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
-        }} investorAccounts={this.state.selectedType=='all'?this.props.investorAccounts:this.props.investorAccountsDetail}/>}
+        }} investorAccounts={this.state.viewType=='all'?this.props.investorAccounts:this.props.investorAccountsDetail}/>}
       </div>
     )
   };

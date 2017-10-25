@@ -77,47 +77,6 @@ class PartnerAccountManager extends React.Component {
     this.setState({selectedType: value})
   }
 
-  setStatus() {
-    if (this.state.selectedRowId) {
-      let data = undefined
-      this.props.stations.forEach((item, key)=> {
-        if (item.id == this.state.selectedRowId[0]) {
-          data = item
-        }
-      })
-      let payload = {
-        stationId: this.state.selectedRowId,
-        success: ()=> {
-          this.refresh()
-        },
-        error: ()=> {
-          console.log('i m false')
-        }
-      }
-      if (data.status == 1) {
-        this.props.closeStation(payload)
-      } else {
-        this.props.openStation(payload)
-      }
-    }
-  }
-
-  statusChange(value) {
-    this.setState({status: value})
-  }
-
-
-  areaList() {
-    if (this.state.city && this.state.city.sub.length > 0) {
-      let areaList = this.state.city.sub.map((item, key)=> {
-        return <Option key={key} value={key}>{item.area_name}</Option>
-      })
-      return areaList
-    } else {
-      return null
-    }
-  }
-
   downloadFile(){
     let data = [[ "日期",    "利润", "成本" , "收益" , "服务点名称" ],]
     // let accountArray = []

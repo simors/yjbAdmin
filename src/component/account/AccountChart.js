@@ -48,24 +48,48 @@ export default class AccountChart extends Component {
     }
   }
 
-
+//   this.ProfitChart = createG2(chart => {
+//     chart.forceFit();
+//     chart.axis('date', {
+//       title: {
+//         fontSize: '16',
+//         textAlign: 'center',
+//       },
+//     });
+//     chart.col('date', {
+//       alias: '日期',
+//       type: 'time',
+//       mask: 'mm-dd',
+//       range: [0, 1],
+//     })
+//     chart.axis('profit', {
+//       title: {
+//         fontSize: '16',
+//         textAlign: 'center',
+//       },
+//     });
+//     chart.col('profit', {
+//       alias: '收益（元）',
+//     })
+//     chart.legend('stationName', {
+//       title: null, // 不展示图例 title
+//     });
+//     chart.line().position('date*profit').color('stationName').shape('stationName', () => 'smooth').size(3);
+//     chart.render();
+//   })
+// }
 
   renderStatisticsLocal() {
     if(this.props.data&&this.props.data.length>0){
 
       const LineEarning = createG2(chart => {
-        chart.axis(this.props.yline, {
-          position:'left',
-          title: null,
-          labels: {
-            label: {
-              'textAlign': 'start'
-            }
-          },
+        chart.forceFit();
 
-          formatter:function (value) {
-            return value+'元'
-          }
+        chart.axis(this.props.yline, {
+          title: {
+            fontSize: '16',
+            textAlign: 'center',
+          },
         });
         chart.tooltip({
           title: null,
@@ -74,26 +98,27 @@ export default class AccountChart extends Component {
           }
         })
         chart.axis(this.props.xline, {
-          formatter:function (value) {
-            return value
+          title: {
+            fontSize: '16',
+            textAlign: 'center',
           },
-          title: null,
-          tickLine:{
-            value:30,
-            lineWidth:1,
-          }
         });
+        chart.col(this.props.xline, {
+          alias: '日期',
+          type: 'time',
+          mask: 'mm-dd',
+          range: [0, 1],
+        })
         chart.legend({
           title: null,
           position: 'right',
           itemWrap: true,
         });
         chart.col(this.props.yline,{
-          range:[0,1],
-          min:0
+          alias: '收益（元）',
         })
         // chart.source(this.props.lastMonthsPerformance,defs)
-        chart.line().position(this.props.xline+'*'+this.props.yline).label(this.props.yline).shape('spline').size(1);
+        chart.line().position(this.props.xline+'*'+this.props.yline).label(this.props.yline).shape('spline').size(3);
         chart.render();
       });
       return (

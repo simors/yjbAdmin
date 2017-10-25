@@ -15,6 +15,7 @@ import DivisionCascader from '../../component/DivisionCascader'
 import {action, selector} from '../../util/auth'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
 import {ROLE_CODE, PERMISSION_CODE} from '../../util/rolePermission'
+import mathjs from 'mathjs'
 
 const Option = Select.Option;
 const FormItem = Form.Item
@@ -174,7 +175,7 @@ class EditStation extends React.Component {
   adminList() {
     if (this.props.adminList && this.props.adminList.length > 0) {
       let adminList = this.props.adminList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.nickname+'  '+item.mobilePhoneNumber}</Option>
+        return <Option key={key} value={item.id}>{item.idName}</Option>
       })
       return adminList
     } else {
@@ -185,7 +186,7 @@ class EditStation extends React.Component {
   partnerList() {
     if (this.props.partnerList && this.props.partnerList.length > 0) {
       let partnerList = this.props.partnerList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.nickname+'  '+item.mobilePhoneNumber}</Option>
+        return <Option key={key} value={item.id}>{item.idName}</Option>
       })
       return partnerList
     } else {
@@ -242,6 +243,8 @@ class EditStation extends React.Component {
       }
       this.props.updateLoadingState({isLoading: true})
       let data = this.props.form.getFieldsValue()
+      data.platformProp = mathjs.chain(data.platformProp).multiply(1/100).done()
+
       let payload = {
         ...data,
         stationId: this.props.match.params.id,
@@ -369,7 +372,10 @@ class EditStation extends React.Component {
                         message: '干衣柜单价未填写'
                       }
                     ]
-                  })(<InputNumber />)}
+                  })(<InputNumber
+                    formatter={value => `${value}元`}
+                    parser={value => value.replace('元', '')}
+                  />)}
                 </FormItem>
               </Col>
               <Col span={6}>
@@ -382,7 +388,10 @@ class EditStation extends React.Component {
                         message: '干衣柜押金未填写'
                       }
                     ]
-                  })(<InputNumber />)}
+                  })(<InputNumber
+                    formatter={value => `${value}元`}
+                    parser={value => value.replace('元', '')}
+                  />)}
                 </FormItem>
               </Col>
               <Col span={6}>
@@ -395,7 +404,11 @@ class EditStation extends React.Component {
                         message: '电费单价未填写'
                       }
                     ]
-                  })(<InputNumber />)}
+                  })(<InputNumber
+
+                    formatter={value => `${value}元／度`}
+                    parser={value => value.replace('元／度', '')}
+                  />)}
                 </FormItem>
               </Col>
               <Col span={6}>
@@ -408,7 +421,10 @@ class EditStation extends React.Component {
                         message: '平台分成比例未填写'
                       }
                     ]
-                  })(<InputNumber />)}
+                  })(<InputNumber
+                    formatter={value => `${value}%`}
+                    parser={value => value.replace('%', '')}
+                  />)}
                 </FormItem>
               </Col>
             </Row>

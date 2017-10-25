@@ -13,7 +13,8 @@ import CreatePartnerModal from '../../component/station/CreatePartnerModal'
 import DivisionCascader from '../../component/DivisionCascader'
 import {action , selector} from '../../util/auth'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
-
+import {ROLE_CODE} from '../../util/rolePermission'
+import mathjs from 'mathjs'
 
 const Option = Select.Option;
 const FormItem = Form.Item
@@ -77,7 +78,7 @@ class AddStation extends React.Component {
 
   componentWillMount() {
     this.props.listUsersByRole({
-      roleCode: 200,
+      roleCode: ROLE_CODE.STATION_MANAGER,
       onFailure: (e)=>{console.log(e.message)}
     })
   }
@@ -86,7 +87,7 @@ class AddStation extends React.Component {
     if (this.props.userList && this.props.userList.length > 0) {
       // console.log('this.props.userList',this.props.userList)
       let userList = this.props.userList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.nickname+'  '+item.mobilePhoneNumber}</Option>
+        return <Option key={key} value={item.id}>{item.nickname}</Option>
       })
       return userList
     } else {
@@ -101,6 +102,7 @@ class AddStation extends React.Component {
       }
       this.props.updateLoadingState({isLoading: true})
       let data = this.props.form.getFieldsValue()
+      data.platformProp = mathjs.chain(data.platformProp).multiply(1/100).done()
       let payload = {
         ...data,
         province: this.state.province,
@@ -116,6 +118,9 @@ class AddStation extends React.Component {
           this.props.updateLoadingState({isLoading: false})
         }
       }
+      // console.log('data====>',data.platformProp)
+      // console.log('typeOf====>',typeof(data.powerUnitPrice))
+
       this.props.createStation(payload)
     })
   }
@@ -212,7 +217,11 @@ class AddStation extends React.Component {
                       message: '干衣柜单价未填写'
                     }
                   ]
-                })(<InputNumber />)}
+                })(<InputNumber
+                  formatter={value => `${value}元`}
+                  parser={value => value.replace('元', '')}
+
+                />)}
               </FormItem>
             </Col>
             <Col span={6}>
@@ -225,7 +234,10 @@ class AddStation extends React.Component {
                       message: '干衣柜押金未填写'
                     }
                   ]
-                })(<InputNumber />)}
+                })(<InputNumber
+                  formatter={value => `${value}元`}
+                  parser={value => value.replace('元', '')}
+                />)}
               </FormItem>
             </Col>
             <Col span={6}>
@@ -238,7 +250,10 @@ class AddStation extends React.Component {
                       message: '电费单价未填写'
                     }
                   ]
-                })(<InputNumber />)}
+                })(<InputNumber
+                  formatter={value => `${value}元／度`}
+                  parser={value => value.replace('元／度', '')}
+                />)}
               </FormItem>
             </Col>
             <Col span={6}>
@@ -251,7 +266,10 @@ class AddStation extends React.Component {
                       message: '平台分成比例未填写'
                     }
                   ]
-                })(<InputNumber />)}
+                })(<InputNumber
+                  formatter={value => `${value}%`}
+                  parser={value => value.replace('%', '')}
+                />)}
               </FormItem>
             </Col>
           </Row>
@@ -273,7 +291,7 @@ class AddStation extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   let partners = stationSelector.selectPartners(state)
-  let userList = selector.selectUsersByRole(state, 200)
+  let userList = selector.selectUsersByRole(state, ROLE_CODE.STATION_MANAGER)
   return {
     station: station,
     partners: partners,

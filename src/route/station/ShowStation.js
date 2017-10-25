@@ -207,7 +207,10 @@ class ShowStation extends React.Component {
                       message: '干衣柜单价未填写'
                     }
                   ]
-                })(<InputNumber disabled={true} />)}
+                })(<InputNumber disabled={true}
+                                formatter={value => `${value}元`}
+                                parser={value => value.replace('元', '')}
+                />)}
               </FormItem>
             </Col>
             <Col span={6}>
@@ -220,7 +223,10 @@ class ShowStation extends React.Component {
                       message: '干衣柜押金未填写'
                     }
                   ]
-                })(<InputNumber disabled={true} />)}
+                })(<InputNumber disabled={true}
+                                formatter={value => `${value}元`}
+                                parser={value => value.replace('元', '')}
+                />)}
               </FormItem>
             </Col>
             <Col span={6}>
@@ -233,7 +239,10 @@ class ShowStation extends React.Component {
                       message: '电费单价未填写'
                     }
                   ]
-                })(<InputNumber disabled={true} />)}
+                })(<InputNumber disabled={true}
+                                formatter={value => `${value}元／度`}
+                                parser={value => value.replace('元／度', '')}
+                />)}
               </FormItem>
             </Col>
             <Col span={6}>
@@ -246,7 +255,10 @@ class ShowStation extends React.Component {
                       message: '平台分成比例未填写'
                     }
                   ]
-                })(<InputNumber disabled={true}/>)}
+                })(<InputNumber disabled={true}
+                                formatter={value => `${value}%`}
+                                parser={value => value.replace('%', '')}
+                />)}
               </FormItem>
             </Col>
           </Row>
