@@ -46,10 +46,9 @@ function reduceUpdateSelectedUserIds(state, action) {
 }
 
 function reduceNeedResetFilter(state, action) {
-  const {reset} = action.payload;
-
   return state.withMutations((m) => {
-    m.set('needResetFilter', reset);
+    const reset = m.get('needResetFilter');
+    m.set('needResetFilter', !reset);
   });
 }
 
