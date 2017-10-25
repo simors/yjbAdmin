@@ -8,7 +8,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {Row, Col, Input, Select, Button,DatePicker} from 'antd';
+import {Row, Col, Input, Select, Button, DatePicker} from 'antd';
 import ContentHead from '../../component/ContentHead'
 import StationAccountList from './StationAccountList';
 // import StationMenu from './StationMenu'
@@ -16,9 +16,9 @@ import {stationAction, stationSelector} from '../station/redux';
 import {configSelector} from '../../util/config'
 import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
-import {accountAction,accountSelector} from './redux'
+import {accountAction, accountSelector} from './redux'
 import AccountChart from '../../component/account/AccountChart'
-import {PERMISSION_CODE,ROLE_CODE} from '../../util/rolePermission'
+import {PERMISSION_CODE, ROLE_CODE} from '../../util/rolePermission'
 import moment from 'moment'
 import {action as authAction, selector as authSelector} from '../../util/auth'
 
@@ -49,7 +49,7 @@ class StationAccountManager extends React.Component {
     })
   }
 
-  selectPartner(value){
+  selectPartner(value) {
     this.setState({
       userId: value
     })
@@ -63,9 +63,8 @@ class StationAccountManager extends React.Component {
       },
 
     })
-    this.props.requestStations({
-
-    })
+    this.props.listUsersByRole({roleCode:ROLE_CODE.STATION_PROVIDER})
+    this.props.requestStations({})
 
   }
 
@@ -93,7 +92,7 @@ class StationAccountManager extends React.Component {
   clearSearch() {
     this.setState({
       status: undefined,
-     startDate: undefined,
+      startDate: undefined,
       endDate: undefined,
       userId: undefined,
       division: []
@@ -105,11 +104,11 @@ class StationAccountManager extends React.Component {
     })
   }
 
-  selectStartDate(date,dateString){
+  selectStartDate(date, dateString) {
     this.setState({startDate: dateString})
   }
 
-  selectEndDate(date,dateString){
+  selectEndDate(date, dateString) {
     this.setState({endDate: dateString})
   }
 
@@ -119,20 +118,30 @@ class StationAccountManager extends React.Component {
       <div style={{flex: 1}}>
         <Row >
           <Col span={4}>
-            <Select defalutValue = '' onChange={(value)=>{this.selectPartner(value)}} style={{width: 120}} placeholder="选择投资人">
+            <Select defalutValue='' onChange={(value)=> {
+              this.selectPartner(value)
+            }} style={{width: 120}} placeholder="选择分成方">
               <Option value=''>全部</Option>
               {
                 this.props.userList.map((user, index) => (
-                  <Option key={index} value={user.id}>{user.nickname+'  '+user.mobilePhoneNumber}</Option>
+                  <Option key={index} value={user.id}>{user.nickname + '  ' + user.mobilePhoneNumber}</Option>
                 ))
               }
             </Select>
           </Col>
           <Col span={4}>
-            <DatePicker key='startDate' defaultValue={undefined} value={this.state.startDate?moment(this.state.startDate):undefined} onChange={(date,dateString)=>{this.selectStartDate(date,dateString)}} placeholder="选择开始日期"/>
+            <DatePicker key='startDate' defaultValue={undefined}
+                        value={this.state.startDate ? moment(this.state.startDate) : undefined}
+                        onChange={(date, dateString)=> {
+                          this.selectStartDate(date, dateString)
+                        }} placeholder="选择开始日期"/>
           </Col>
           <Col span={4}>
-            <DatePicker key='endDate' defaultValue={undefined} value={this.state.endDate?moment(this.state.endDate):undefined} onChange={(date,dateString)=>{this.selectEndDate(date,dateString)}} placeholder="选择结束时间"/>
+            <DatePicker key='endDate' defaultValue={undefined}
+                        value={this.state.endDate ? moment(this.state.endDate) : undefined}
+                        onChange={(date, dateString)=> {
+                          this.selectEndDate(date, dateString)
+                        }} placeholder="选择结束时间"/>
           </Col>
           <Col span={2}>
             <Button onClick={()=> {
@@ -149,7 +158,7 @@ class StationAccountManager extends React.Component {
     )
   }
 
-  downloadFile(fileName, content){
+  downloadFile(fileName, content) {
     // var workbook = new Excel.Workbook();
     // // var workbook = createAndFillWorkbook();
     // workbook.xlsx.writeFile('hahahah')
@@ -164,14 +173,14 @@ class StationAccountManager extends React.Component {
     return (
       <div>
         {this.renderSearchBar()}
-        <AccountChart data = {this.props.stationAccounts} yline = 'profit' xline = 'accountDay'/>
+        <AccountChart data={this.props.stationAccounts} yline='profit' xline='accountDay'/>
       </div>
     )
   };
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let userList = authSelector.selectUsersByRole(state,ROLE_CODE.STATION_INVESTOR)
+  let userList = authSelector.selectUsersByRole(state, ROLE_CODE.STATION_PROVIDER)
   let accounts = accountSelector.selectPartnerAccountsDetail(state)
   // let areaList = configSelector.selectAreaList(state)
   console.log('accounts========>', accounts)
@@ -184,7 +193,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = {
   ...stationAction,
-  ...accountAction
+  ...accountAction,
+  ...authAction
 
 };
 

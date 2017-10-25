@@ -12,6 +12,9 @@ import mathjs from 'mathjs'
 const columns = [{
   title: "服务点名称",
   dataIndex: "station.name",
+  render: (text,record)=>{return(
+    <div>{record.station&&record.station.name?record.station.name:'全平台'}</div>
+  )}
 }, {
   title: "成本",
   dataIndex: "cost",
