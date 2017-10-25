@@ -193,8 +193,8 @@ class UserCreate extends React.Component {
   }
 
   renderFocusMp() {
-    let redirectUrl = appConfig.MP_SERVER_DOMAIN + '/authUser/' + validPhone
-    let authUrl = getAuthorizeURL(redirectUrl, '', 'snsapi_userinfo')
+    let redirectUrl = appConfig.MP_SERVER_DOMAIN + '/wechatOauth/adminUserAuth/'
+    let authUrl = getAuthorizeURL(redirectUrl, validPhone, 'snsapi_userinfo')
     return (
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
         <QRCode ref="qrcode" value={authUrl} size={200}/>
