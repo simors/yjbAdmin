@@ -55,7 +55,6 @@ class EditStation extends React.Component {
       selectedPartner: undefined,
       modalKey: -1,
       partnerList: [],
-      spinShow: false
     }
   }
 
@@ -65,10 +64,10 @@ class EditStation extends React.Component {
       }
     })
     this.props.listUsersByRole({
-      roleCode: 400,
+      roleCode: ROLE_CODE.STATION_MANAGER,
       onFailure: (e)=>{console.log(e.message)},
       onSuccess: ()=>{this.props.listUsersByRole({
-        roleCode: 200,
+        roleCode: ROLE_CODE.STATION_PROVIDER,
         onFailure: (e)=>{console.log(e.message)}
       })}
     })
@@ -77,7 +76,7 @@ class EditStation extends React.Component {
   refresh() {
     this.props.requestPartners({
       stationId: this.props.match.params.id, success: ()=> {
-        this.setState({spinShow: true})
+        this.props.updateLoadingState({isLoading: false})
       }
     })
   }
@@ -176,7 +175,7 @@ class EditStation extends React.Component {
   adminList() {
     if (this.props.adminList && this.props.adminList.length > 0) {
       let adminList = this.props.adminList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.nickName+ '  '+ item.mobilePhoneNumber}</Option>
+        return <Option key={key} value={item.id}>{item.idName}</Option>
       })
       return adminList
     } else {
@@ -187,7 +186,7 @@ class EditStation extends React.Component {
   partnerList() {
     if (this.props.partnerList && this.props.partnerList.length > 0) {
       let partnerList = this.props.partnerList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.nickName+ '  '+ item.mobilePhoneNumber}</Option>
+        return <Option key={key} value={item.id}>{item.idName}</Option>
       })
       return partnerList
     } else {
@@ -208,12 +207,15 @@ class EditStation extends React.Component {
       error: (err)=> {
         this.setState({spinShow: false, createModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
         message.error('err.message')
-          this.refresh()
+          this.props.updateLoadingState({isLoading: false})
+
+          // this.refresh()
 
         })
       }
     }
-    this.setState({spinShow: true})
+    this.props.updateLoadingState({isLoading: true})
+
     this.props.createPartner(payload)
   }
 
@@ -225,7 +227,7 @@ class EditStation extends React.Component {
       partnerId: this.state.selectedPartner.id,
       success: ()=> {
         this.setState({ updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
-          this.props.updateLoadingState({isLoading: false})
+          // this.props.updateLoadingState({isLoading: false})
           message.success('提交成功')
           this.refresh()
         })
@@ -246,7 +248,6 @@ class EditStation extends React.Component {
       if (errors) {
         return
       }
-      this.props.updateLoadingState({isLoading: true})
       let data = this.props.form.getFieldsValue()
       data.platformProp = mathjs.chain(data.platformProp).multiply(1/100).done()
 
@@ -263,11 +264,12 @@ class EditStation extends React.Component {
           this.props.updateLoadingState({isLoading: false})
         },
         error: (err)=> {
-          message.error('提交失败')
+          message.error(err.message)
           this.props.updateLoadingState({isLoading: false})
-          console.log(err.message)
+          // console.log(err.message)
         }
       }
+      this.props.updateLoadingState({isLoading: true})
       console.log('data======>', data)
       this.props.updateStation(payload)
     })
@@ -288,10 +290,8 @@ class EditStation extends React.Component {
         division.push(station.area.value)
       }
     }
-    console.log('station===>', station)
     return (
       <div>
-        <Spin size='large' spinning={this.state.spinShow}>
           <Form >
             <Row>
               <Col span={12}>
@@ -487,7 +487,6 @@ class EditStation extends React.Component {
             stationList={this.props.stations}
             modalVisible={this.state.updateModalVisible}
           />
-        </Spin>
       </div>
     )
 

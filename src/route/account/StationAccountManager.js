@@ -39,7 +39,8 @@ class StationAccountManager extends React.Component {
       startDate: undefined,
       endDate: undefined,
       selectedType: 'all',
-      division: []
+      division: [],
+      viewType:'all',
     }
   }
 
@@ -85,6 +86,7 @@ class StationAccountManager extends React.Component {
       startDate: this.state.startDate,
       endDate: this.state.endDate,
       success: ()=> {
+        this.setState({viewType: this.state.selectedType})
         console.log('success')
       },
       error: ()=> {
@@ -216,7 +218,7 @@ class StationAccountManager extends React.Component {
 
         <StationAccountList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
-        }} stationAccounts={this.state.selectedType=='all'?this.props.stationAccounts:this.props.stationAccountsDetail}/>
+        }} stationAccounts={this.state.viewType=='all'?this.props.stationAccounts:this.props.stationAccountsDetail}/>
       </div>
     )
   };

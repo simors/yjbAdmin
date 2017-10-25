@@ -42,7 +42,9 @@ class PartnerAccountManager extends React.Component {
       selectedType: 'all',
       startDate: undefined,
       endDate: undefined,
-      division: []
+      division: [],
+      viewType: 'all'
+
     }
   }
 
@@ -99,6 +101,7 @@ class PartnerAccountManager extends React.Component {
       startDate: this.state.startDate,
       endDate: this.state.endDate,
       success: ()=> {
+        this.setState({viewType: this.state.selectedType})
         console.log('success')
       },
       error: ()=> {
@@ -120,9 +123,9 @@ class PartnerAccountManager extends React.Component {
       endDate: undefined
     })
     if(this.state.selectedType=='all'){
-      this.props.fetchPartnerAccounts(payload)
+      this.props.fetchPartnerAccounts()
     }else{
-      this.props.fetchPartnerAccountsDetail(payload)
+      this.props.fetchPartnerAccountsDetail()
     }
 
   }
@@ -207,7 +210,7 @@ class PartnerAccountManager extends React.Component {
         {this.renderSearchBar()}
 
         <PartnerAccountList
-         stationAccounts={this.state.selectedType=='all'?this.props.partnerAccounts:this.props.partnerAccountsDetail}/>
+         stationAccounts={this.state.viewType=='all'?this.props.partnerAccounts:this.props.partnerAccountsDetail}/>
       </div>
     )
   };
