@@ -1,8 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Form, Input, Button} from 'antd';
+import {Form, Input, Button, Select} from 'antd';
 import {action, selector} from './redux';
-import {action as authAction} from '../../util/auth/';
+import {action as authAction, AUTH_USER_STATUS} from '../../util/auth/';
 import style from './UserFilter.module.scss';
 
 class UserFilter extends React.Component {
@@ -50,12 +50,12 @@ class UserFilter extends React.Component {
         return;
       }
 
-      const {nickname, mobilePhoneNumber} = values;
+      const {nickname, mobilePhoneNumber, status} = values;
       this.props.listAdminUsers({
         limit: 100,
         nickname,
         mobilePhoneNumber,
-
+        status: status && parseInt(status),
       });
     });
   };
@@ -108,6 +108,15 @@ class UserFilter extends React.Component {
             },]
           })(
             <Input placeholder="手机号码"/>
+          )}
+        </Form.Item>
+        <Form.Item className={style.status}>
+          {getFieldDecorator("status", {})(
+            <Select placeholder="选择状态">
+              <Select.Option value={AUTH_USER_STATUS.ADMIN_ALL.toString()}>全部</Select.Option>
+              <Select.Option value={AUTH_USER_STATUS.ADMIN_NORMAL.toString()}>正常</Select.Option>
+              <Select.Option value={AUTH_USER_STATUS.ADMIN_DISABLED.toString()}>禁用</Select.Option>
+            </Select>
           )}
         </Form.Item>
         <Form.Item>
