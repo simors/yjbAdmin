@@ -9,6 +9,7 @@ import SmsInput from '../../component/SmsInput'
 import {getAuthorizeURL} from '../../util/wxUtil'
 import appConfig from '../../util/appConfig'
 import QRCode from 'qrcode.react'
+import {ROLE_CODE} from '../../util/rolePermission'
 
 const formItemLayout = {
   labelCol: {
@@ -34,6 +35,10 @@ class UserCreate extends React.Component {
     this.addUserId = undefined
   }
 
+  componentWillMount(){
+    this.props.listUsersByRole({roleCode: ROLE_CODE.SYS_MANAGER})
+  }
+
   onHideModal = () => {
     this.props.hideUserCreateModal();
     this.props.form.resetFields();
@@ -49,7 +54,37 @@ class UserCreate extends React.Component {
     }, 1000)
   };
 
-  submitPersonalInfo() {
+  onUpdateUser(values) {
+    this.props.updateUser({
+      params: {
+        ...values,
+        id: this.addUserId,
+        password: validPhone.slice(-6),
+        type: AUTH_USER_TYPE.BOTH,
+      },
+      onSuccess: () => {
+        this.props.hideUserCreateModal({});
+        this.props.form.resetFields();
+        this.props.listAdminUsers({limit: 100});
+      },
+      onFailure: (code) => {
+        message.error(`创建管理员用户失败,请重试, 错误：${code}`);
+      },
+      onComplete: () => {
+        this.setState((prevState, props) => {
+          return {
+            ...prevState,
+            loading: false,
+          };
+        });
+      },
+    });
+  }
+
+  submitPersonalInfo = (e) => {
+    console.log('submitPersonalInfo')
+    e.preventDefault();
+    let {sysManager, currentUser} = this.props
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (err) {
         return;
@@ -62,30 +97,25 @@ class UserCreate extends React.Component {
         };
       });
 
-      this.props.updateUser({
-        params: {
-          ...values,
-          id: this.addUserId,
-          password: validPhone.slice(-6),
-          type: AUTH_USER_TYPE.BOTH,
+      let {sysSmsCode} = values
+      let sysValidParams = {
+        success: ()=>{
+          message.success('操作授权成功')
+          this.onUpdateUser(values)
         },
-        onSuccess: () => {
-          this.props.hideUserCreateModal({});
-          this.props.form.resetFields();
-          this.props.listAdminUsers({limit: 100});
-        },
-        onFailure: (code) => {
-          message.error(`创建管理员用户失败,请重试, 错误：${code}`);
-        },
-        onComplete: () => {
+        smsCode: sysSmsCode,
+        phone: currentUser.mobilePhoneNumber,
+        error: (e)=>{
+          message.error('操作授权失败或保存用户失败，请重试')
           this.setState((prevState, props) => {
             return {
               ...prevState,
               loading: false,
             };
           });
-        },
-      });
+        }
+      }
+      this.props.verifySmsCode(sysValidParams)
     });
   }
 
@@ -128,7 +158,9 @@ class UserCreate extends React.Component {
     this.props.verifySmsCode(updatePayload)
   }
 
-  submitValidatePhone() {
+  submitValidatePhone = (e) => {
+    console.log('submitValidatePhone')
+    e.preventDefault();
     let {form} = this.props
     form.validateFields((errors) => {
       if (errors) {
@@ -149,7 +181,8 @@ class UserCreate extends React.Component {
     })
   }
 
-  checkUserAuth() {
+  checkUserAuth = (e) => {
+    e.preventDefault();
     let phoneParams = {
       phone: validPhone,
       onSuccess: (user) => {
@@ -168,18 +201,6 @@ class UserCreate extends React.Component {
       },
     }
     this.props.fetchUserByPhone(phoneParams)
-  }
-
-  onSubmit = (e) => {
-    e.preventDefault();
-    let step = this.state.step
-    if (step == 1) {
-      this.submitValidatePhone()
-    } else if (step == 2) {
-      this.checkUserAuth()
-    } else {
-      this.submitPersonalInfo()
-    }
   }
 
   renderValidatePhone() {
@@ -253,8 +274,12 @@ class UserCreate extends React.Component {
   }
 
   renderCompletePersonalInfo() {
-    let {form} = this.props
+    let {form, sysManager, currentUser} = this.props
     const {getFieldDecorator} = form;
+
+    // if (!sysManager) {
+    //   message.error('没有获取到系统管理员手机号')
+    // }
 
     const prefixSelector = getFieldDecorator('prefix', {
       initialValue: '86',
@@ -271,6 +296,13 @@ class UserCreate extends React.Component {
         value: i.code
       })
     });
+
+    let sysSmsInput = {
+      template:'管理员操作权限确认',
+      mobilePhoneNumber: currentUser.mobilePhoneNumber,
+      adminUser: currentUser.nickname,
+      opName: '新增后台用户',
+    }
     return (
       <div>
         <Form>
@@ -329,6 +361,28 @@ class UserCreate extends React.Component {
             )
           }
           </Form.Item>
+          <Form.Item
+            {...formItemLayout}
+            label='授权码'
+            hasFeedback
+          >
+            <Row gutter={8}>
+              <Col span={16}>
+                {getFieldDecorator('sysSmsCode', {
+                  initialValue: '',
+                  rules: [
+                    {
+                      required: true,
+                      message: '向系统管理员索要授权码'
+                    }
+                  ]
+                })(<Input />)}
+              </Col>
+              <Col span={8}>
+                <SmsInput getSmsAuthText="获取授权码" params={sysSmsInput}/>
+              </Col>
+            </Row>
+          </Form.Item>
         </Form>
       </div>
     )
@@ -345,6 +399,31 @@ class UserCreate extends React.Component {
     }
   }
 
+  renderStepBtn() {
+    switch (this.state.step) {
+      case 1:
+        return (
+          <Button key='2' type='primary' onClick={this.submitValidatePhone}>
+            下一步
+          </Button>
+        )
+      case 2:
+        return (
+          <Button key='2' type='primary' onClick={this.checkUserAuth}>
+            下一步
+          </Button>
+        )
+      case 3:
+        return (
+          <Button key='2' type='primary' onClick={this.submitPersonalInfo}
+                  loading={this.state.loading}
+          >
+            提交
+          </Button>
+        )
+    }
+  }
+
   render() {
     return (
       <Modal visible={this.props.visible}
@@ -355,11 +434,7 @@ class UserCreate extends React.Component {
                <Button key='1' type='primary' onClick={this.onHideModal}>
                  关闭
                </Button>,
-               <Button key='2' type='primary' onClick={this.onSubmit}
-                       loading={this.state.loading}
-               >
-                 {this.state.step != 3 ? '下一步' : '提交'}
-               </Button>
+               this.renderStepBtn()
              ]}>
         {this.renderStepView()}
       </Modal>
@@ -371,10 +446,14 @@ const mapStateToProps = (appState, ownProps) => {
   const allRoles = authSelector.selectRoles(appState);
   const visible = selector.selectUserCreateModalVisible(appState);
 
+  let sysManager = authSelector.selectUsersByRole(appState, ROLE_CODE.SYS_MANAGER)
+  let currentUser = authSelector.selectCurAdminUser(appState)
   return {
     allRoles,
     visible,
-  };
+    sysManager: sysManager[0],
+    currentUser: currentUser,
+  }
 };
 
 const mapDispatchToProps = {
