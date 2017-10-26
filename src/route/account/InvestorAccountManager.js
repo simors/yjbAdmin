@@ -18,7 +18,9 @@ import {action as authAction, selector as authSelector} from '../../util/auth'
 import * as excelFuncs from '../../util/excel'
 import {PERMISSION_CODE,ROLE_CODE} from '../../util/rolePermission'
 import moment from 'moment'
+import mathjs from 'mathjs'
 
+const RangePicker = DatePicker.RangePicker;
 const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
@@ -34,8 +36,8 @@ class InvestorAccountManager extends React.Component {
       status: undefined,
       stationId: undefined,
       userId: undefined,
-      startDate: undefined,
-      endDate: undefined,
+      startDate: moment().day(-30).format(),
+      endDate: moment().format(),
       selectedType: 'all',
       viewType: 'all'
     }
@@ -56,6 +58,7 @@ class InvestorAccountManager extends React.Component {
   componentWillMount() {
 
     this.props.fetchInvestorAccounts({
+      ...this.state,
       success: ()=> {
         console.log('hahhahah')
       },
@@ -103,25 +106,27 @@ class InvestorAccountManager extends React.Component {
     this.setState({
       stationId: undefined,
       userId: undefined,
-      startDate: undefined,
-      endDate: undefined,
+      startDate: moment().day(-30).format(),
+      endDate: moment().format(),
     },()=>{
       if(this.state.selectedType=='all'){
-        this.props.fetchInvestorAccounts()
+        this.props.fetchInvestorAccounts({...this.state})
       }else{
-        this.props.fetchInvestorAccountsDetail()
-
+        this.props.fetchInvestorAccountsDetail(...this.state)
       }
     })
 
   }
 
-  selectStartDate(date,dateString){
-    this.setState({startDate: dateString})
-  }
+  selectDate(date,dateString){
+    let dateRange = mathjs.chain(date[1]- date[0]).multiply(1/31536000000).done()
 
-  selectEndDate(date,dateString){
-    this.setState({endDate: dateString})
+    if(dateRange>2){
+      message.error('时间范围请不要超过2年')
+    }else{
+      this.setState({startDate: dateString[0],endDate: dateString[1]})
+
+    }
   }
 
   renderSearchBar() {
@@ -148,11 +153,8 @@ class InvestorAccountManager extends React.Component {
               }
             </Select>
           </Col>
-          <Col span={4}>
-            <DatePicker key='startDate' defaultValue={undefined} value={this.state.startDate?moment(this.state.startDate):undefined} onChange={(date,dateString)=>{this.selectStartDate(date,dateString)}} placeholder="选择开始日期"/>
-          </Col>
-          <Col span={4}>
-            <DatePicker key='endDate' defaultValue={undefined} value={this.state.endDate?moment(this.state.endDate):undefined} onChange={(date,dateString)=>{this.selectEndDate(date,dateString)}} placeholder="选择结束时间"/>
+          <Col span={8}>
+            <RangePicker key='selectDate' defaultValue={undefined} value={[this.state.startDate?moment(this.state.startDate):undefined,moment(this.state.endDate)]} onChange={(date,dateString)=>{this.selectDate(date,dateString)}} placeholder="选择日期"/>
           </Col>
           <Col span={4}>
             <Select defalutValue = 'all' onChange={(value)=>{this.selectType(value)}} style={{width: 120}} placeholder="选择查询方式">
@@ -207,9 +209,9 @@ class InvestorAccountManager extends React.Component {
           <Button onClick={()=>{this.viewChart()}}>查看图表</Button>
         </ButtonGroup>
         {this.renderSearchBar()}
-        {<InvestorAccountList selectStation={(rowId, rowData)=> {
-          this.selectStation(rowId, rowData)
-        }} investorAccounts={this.state.viewType=='all'?this.props.investorAccounts:this.props.investorAccountsDetail}/>}
+        {<InvestorAccountList
+          viewType = {this.state.viewType}
+          investorAccounts={this.state.viewType=='all'?this.props.investorAccounts:this.props.investorAccountsDetail}/>}
       </div>
     )
   };

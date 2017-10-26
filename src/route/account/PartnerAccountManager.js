@@ -21,9 +21,9 @@ import * as excelFuncs from '../../util/excel'
 import {PERMISSION_CODE,ROLE_CODE} from '../../util/rolePermission'
 import moment from 'moment'
 import {action as authAction, selector as authSelector} from '../../util/auth'
+import mathjs from 'mathjs'
 
-
-
+const RangePicker = DatePicker.RangePicker;
 const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
@@ -40,8 +40,8 @@ class PartnerAccountManager extends React.Component {
       stationId: undefined,
       userId: undefined,
       selectedType: 'all',
-      startDate: undefined,
-      endDate: undefined,
+      startDate: moment().day(-30).format(),
+      endDate: moment().format(),
       division: [],
       viewType: 'all'
 
@@ -63,11 +63,15 @@ class PartnerAccountManager extends React.Component {
   componentWillMount() {
 
     this.props.fetchPartnerAccounts({
+      ...this.state,
       success: ()=> {
         console.log('hahhahah')
       },
     })
     this.props.requestStations({
+    })
+    this.props.listUsersByRole({
+      roleCode: ROLE_CODE.STATION_PROVIDER
     })
   }
 
@@ -119,23 +123,29 @@ class PartnerAccountManager extends React.Component {
     this.setState({
       stationId: undefined,
       userId: undefined,
-      startDate: undefined,
-      endDate: undefined
+      startDate: moment().day(-30).format(),
+      endDate: moment().format(),
+    },()=>{
+      if(this.state.selectedType=='all'){
+        this.props.fetchPartnerAccounts({...this.state})
+      }else{
+        this.props.fetchPartnerAccountsDetail({...this.state})
+      }
     })
-    if(this.state.selectedType=='all'){
-      this.props.fetchPartnerAccounts()
+
+
+  }
+
+  selectDate(date,dateString){
+    console.log('date=====>',mathjs.chain(date[1]- date[0]).multiply(1/31536000000).done())
+    let dateRange = mathjs.chain(date[1]- date[0]).multiply(1/31536000000).done()
+
+    if(dateRange>2){
+      message.error('时间范围请不要超过2年')
     }else{
-      this.props.fetchPartnerAccountsDetail()
+      this.setState({startDate: dateString[0],endDate: dateString[1]})
+
     }
-
-  }
-
-  selectStartDate(date,dateString){
-    this.setState({startDate: dateString})
-  }
-
-  selectEndDate(date,dateString){
-    this.setState({endDate: dateString})
   }
 
   renderSearchBar() {
@@ -162,11 +172,8 @@ class PartnerAccountManager extends React.Component {
               }
             </Select>
           </Col>
-          <Col span={4}>
-            <DatePicker key='startDate' defaultValue={undefined} value={this.state.startDate?moment(this.state.startDate):undefined} onChange={(date,dateString)=>{this.selectStartDate(date,dateString)}} placeholder="选择开始日期"/>
-          </Col>
-          <Col span={4}>
-            <DatePicker key='endDate' defaultValue={undefined} value={this.state.endDate?moment(this.state.endDate):undefined} onChange={(date,dateString)=>{this.selectEndDate(date,dateString)}} placeholder="选择结束时间"/>
+          <Col span={8}>
+            <RangePicker key='selectDate' defaultValue={undefined} value={[this.state.startDate?moment(this.state.startDate):undefined,moment(this.state.endDate)]} onChange={(date,dateString)=>{this.selectDate(date,dateString)}} placeholder="选择日期"/>
           </Col>
           <Col span={4}>
             <Select defalutValue = 'all' onChange={(value)=>{this.selectType(value)}} style={{width: 120}} placeholder="选择查询方式">
@@ -210,6 +217,7 @@ class PartnerAccountManager extends React.Component {
         {this.renderSearchBar()}
 
         <PartnerAccountList
+          viewType={this.state.viewType}
          stationAccounts={this.state.viewType=='all'?this.props.partnerAccounts:this.props.partnerAccountsDetail}/>
       </div>
     )
@@ -220,10 +228,10 @@ const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectPartnerAccounts(state)
   let accountsDetail = accountSelector.selectPartnerAccountsDetail(state)
-  let userList = authSelector.selectUsersByRole(state,ROLE_CODE.STATION_INVESTOR)
+  let userList = authSelector.selectUsersByRole(state,ROLE_CODE.STATION_PROVIDER)
 
   // let areaList = configSelector.selectAreaList(state)
-  console.log('accounts========>', accounts)
+  console.log('userList========>', userList)
   return {
     partnerAccounts: accounts,
     stations: stations,
