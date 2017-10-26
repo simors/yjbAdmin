@@ -3,9 +3,6 @@ import AV from 'leancloud-storage';
 export async function loginWithMobilePhone(payload) {
   const {phone, password} = payload;
 
-  // only admin users are allowed to login
-  await AV.Cloud.run('authValidateLogin', {phone});
-
   const leanCurUser = await AV.User.logInWithMobilePhone(phone, password);
   const token = leanCurUser.getSessionToken();
 
@@ -87,6 +84,18 @@ export async function listEndUsers(payload) {
  */
 export async function listAdminUsers(payload) {
   return await AV.Cloud.run('authListAdminUsers', payload);
+}
+
+/**
+ *
+ * @param payload
+ * @returns {Promise.<object>}
+ * {
+ *   jsonUsers
+ * }
+ */
+export async function listSysAdminUsers(payload) {
+  return await AV.Cloud.run('authListSysAdminUsers', payload);
 }
 
 /**
