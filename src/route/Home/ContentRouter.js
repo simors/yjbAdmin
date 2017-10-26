@@ -15,7 +15,7 @@ import ShowStation from '../station/ShowStation'
 import EditStation from '../station/EditStation'
 import AddStation from '../station/AddStation'
 import Promotion, {RechargePromotion, RechargePromotionStat, RedEnvelopePromotion, ScorePromotion,
-  RedEnvelopePromotionStat, ScorePromotionStat} from '../promotion'
+  RedEnvelopePromotionStat, ScorePromotionStat, ScoreExchangePromotion} from '../promotion'
 import StationAccountManager from '../account/StationAccountManager'
 import StationAccountChartView from '../account/StationAccountChartView'
 import PartnerAccountManager from '../account/PartnerAccountManager'
@@ -47,6 +47,7 @@ const ContentRouter = ({match}) => {
       <Route exact path="/promotion_recharge" component={RechargePromotion}/>
       <Route exact path="/promotion_redEnvelope" component={RedEnvelopePromotion}/>
       <Route exact path="/promotion_score" component={ScorePromotion}/>
+      <Route exact path="/promotion_scoreExchange" component={ScoreExchangePromotion}/>
       <Route exact path="/settlement_list" component={StationAccountManager}/>
       <Route exact path="/settlement_list/stationChart" component={StationAccountChartView}/>
       <Route exact path="/settlement_site" component={PartnerAccountManager}/>
@@ -77,6 +78,7 @@ export const breadcrumbNameMap = {
   '/promotion_recharge': '发布充值活动',
   '/promotion_redEnvelope': '发布红包活动',
   '/promotion_score': '发布积分活动',
+  '/promotion_scoreExchange': '发布积分兑换活动',
   '/settlement_list': '服务点分成统计',
   '/settlement_list/stationChart': '服务点分成报表',
   '/settlement_site': '服务单位分成结算',

@@ -81,6 +81,7 @@ class SiderMenu extends React.Component {
           <Menu.Item key="/promotion_list"><Link to="/promotion_list">活动管理</Link></Menu.Item>
           <Menu.Item key="/promotion_recharge"><Link to="/promotion_recharge">发布充值活动</Link></Menu.Item>
           <Menu.Item key="/promotion_score"><Link to="/promotion_score">发布积分活动</Link></Menu.Item>
+          <Menu.Item key="/promotion_scoreExchange"><Link to="/promotion_scoreExchange">发布积分兑换活动</Link></Menu.Item>
           <Menu.Item key="/promotion_redEnvelope"><Link to="/promotion_redEnvelope">发布红包活动</Link></Menu.Item>
         </Menu.SubMenu>
         <Menu.SubMenu key="/user" title={<span><Icon type="notification" />用户管理</span>}>
