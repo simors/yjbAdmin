@@ -560,6 +560,10 @@ function selectRedEnvelopePromRecordList(state, promotionId) {
   return recordList
 }
 
+function selectScoreExchangePromRecordList(state, promotionId) {
+
+}
+
 export const selector = {
   selectPromotion,
   selectPromotionList,
@@ -569,4 +573,5 @@ export const selector = {
   selectRechargePromRecordList,
   selectScorePromRecordList,
   selectRedEnvelopePromRecordList,
+  selectScoreExchangePromRecordList,
 }

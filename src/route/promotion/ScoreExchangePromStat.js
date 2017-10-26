@@ -1,5 +1,5 @@
 /**
- * Created by wanpeng on 2017/10/25.
+ * Created by wanpeng on 2017/10/26.
  */
 import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
@@ -16,8 +16,7 @@ import moment from 'moment'
 import style from './promotion.module.scss'
 import PromotionRecordSearchForm from './PromotionRecordSearchForm'
 
-
-class ScorePromotionStat extends PureComponent {
+class ScoreExchangePromStat extends PureComponent {
   constructor(props) {
     super(props)
   }
@@ -37,43 +36,27 @@ class ScorePromotionStat extends PureComponent {
   }
 
   render() {
-    const {promotion, scoreRecordInfolist} = this.props
+    const {promotion, scoreExchangeRecordInfoList} = this.props
     const columns = [
       { title: '参与用户', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
-      { title: '赠送积分', dataIndex: 'metadata.score', key: 'score' },
-      { title: '操作', dataIndex: 'metadata.type', key: 'type', render: (type) => {
-        console.log("type", type)
-        switch (type) {
-          case ScoreType.SCORE_OP_TYPE_DEPOSIT:
-            return(<span>押金</span>)
-          case ScoreType.SCORE_OP_TYPE_BIND_PHONE:
-            return(<span>绑定手机</span>)
-          case ScoreType.SCORE_OP_TYPE_EXCHANGE:
-            return(<span>积分兑换</span>)
-          case ScoreType.SCORE_OP_TYPE_FOCUS:
-            return(<span>关注公众号</span>)
-          case ScoreType.SCORE_OP_TYPE_ID_AUTH:
-            return(<span>实名认证</span>)
-          case ScoreType.SCORE_OP_TYPE_RECHARGE:
-            return(<span>充值</span>)
-          default:
-            return null
-        }
-      }},
+      { title: '使用积分', dataIndex: 'metadata.scores', key: 'scores' },
+      { title: '兑换礼品', dataIndex: 'metadata.gift', key: 'gift' },
+      { title: '预留手机号码', dataIndex: 'metadata.phone', key: 'phone' },
+      { title: '预留地址', dataIndex: 'metadata.addr', key: 'addr' },
       { title: '参与时间', dataIndex: 'createdAt', key: 'createdAt',
         render: (createdAt) => (<span>{moment(new Date(createdAt)).format('LLLL')}</span>)},
     ]
-    return (
+    return(
       <div className={style.content}>
         <Row type="flex" gutter={24}>
           <Col span={4}>
             <div>{promotion.title}</div>
             <div>{this.getPromotionStatus(promotion)}</div>
           </Col>
-          <Col span={8} offset={9}>
+          <Col span={10} offset={9}>
             <Card bordered={false}>
               <Card.Grid className={style.card}>
-                <div className={style.title}>赠送总积分: </div>
+                <div className={style.title}>总兑换积分: </div>
                 <div className={style.amount}>{promotion.stat.scoreAmount}</div>
               </Card.Grid>
               <Card.Grid className={style.card}>
@@ -87,28 +70,28 @@ class ScorePromotionStat extends PureComponent {
         <Row>
           <PromotionRecordSearchForm promotion={promotion}/>
         </Row>
-        <Table rowKey="id" columns={columns} dataSource={scoreRecordInfolist}/>
+        <Table rowKey="id" columns={columns} dataSource={scoreExchangeRecordInfoList}/>
       </div>
     )
   }
+
 }
 
 const mapStateToProps = (appState, ownProps) => {
   const promotionId = ownProps.location.state ? ownProps.location.state.promotionId: undefined
   let promotion = undefined
-  let scoreRecordInfolist = []
+  let scoreExchangeRecordInfoList = []
   if(promotionId) {
     promotion = selector.selectPromotion(appState, promotionId)
-    scoreRecordInfolist = selector.selectScorePromRecordList(appState, promotionId)
-    console.log("scoreRecordInfolist", scoreRecordInfolist)
+    scoreExchangeRecordInfoList = selector.selectScoreExchangePromRecordList(appState, promotionId)
   }
   return {
     promotion,
-    scoreRecordInfolist,
+    scoreExchangeRecordInfoList,
   }
 }
 
 const mapDispatchToProps = {
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ScorePromotionStat))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ScoreExchangePromStat))

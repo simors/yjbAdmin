@@ -53,6 +53,7 @@ class Promotion extends PureComponent {
         history.push('/promotion_list/redEnvelope_stat', {promotionId: record.id})
         break
       case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_EXCHANGE_SCORE:
+        history.push('/promotion_list/scoreExchange_stat', {promotionId: record.id})
         break
       default:
         break
