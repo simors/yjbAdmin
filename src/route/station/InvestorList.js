@@ -3,39 +3,7 @@
  */
 
 import React from 'react';
-import {Table} from 'antd';
-
-const columns = [{
-  title: "创建时间",
-  dataIndex: "createdAt",
-  render: (createdAt)=> {
-    return <div>{createdAt.slice(0,10) }</div>
-  }
-}, {
-  title: "姓名",
-  dataIndex: "shareholder.nickname",
-}, {
-  title: "联系方式",
-  dataIndex: "shareholder.mobilePhoneNumber",
-}, {
-  title: "投资服务点",
-  dataIndex: "station.name",
-}, {
-  title: "投资金额",
-  dataIndex: "investment",
-}, {
-  title: "投资占比",
-  dataIndex: "royalty",
-  render: (text, record)=> {
-    return <div>{record.royalty * 100 + '%'}</div>
-  }
-}, {
-  title: "状态",
-  dataIndex: "status",
-  render: (text, record)=> {
-    return <div>{record.status ? '正常' : '已停用'}</div>
-  }
-}];
+import {Table,Button} from 'antd';
 
 
 const rowKey = (record) => {
@@ -45,7 +13,7 @@ const rowKey = (record) => {
 
 const InvestorList = (props) => {
   // console.log('[DEBUG] ---> UserList props: ', props);
-  let {investors, selectStation} = props;
+  let {investors, selectStation,editInvestor,setInvestorStatus} = props;
   if (investors === null) {
     investors = [];
   }
@@ -55,6 +23,52 @@ const InvestorList = (props) => {
       selectStation(rowKey, rowData)
     },
   };
+
+  const columns = [{
+    title: "创建时间",
+    dataIndex: "createdAt",
+    render: (createdAt)=> {
+      return <div>{createdAt.slice(0,10) }</div>
+    }
+  }, {
+    title: "姓名",
+    dataIndex: "shareholder.nickname",
+  }, {
+    title: "联系方式",
+    dataIndex: "shareholder.mobilePhoneNumber",
+  }, {
+    title: "投资服务点",
+    dataIndex: "station.name",
+  }, {
+    title: "投资金额",
+    dataIndex: "investment",
+  }, {
+    title: "投资占比",
+    dataIndex: "royalty",
+    render: (text, record)=> {
+      return <div>{record.royalty * 100 + '%'}</div>
+    }
+  }, {
+    title: "状态",
+    dataIndex: "status",
+    render: (text, record)=> {
+      return <div>{record.status ? '正常' : '已停用'}</div>
+    }
+  }, {
+    title: '操作',
+    render: (text, record)=> {
+      return (
+        <div>
+          <Button onClick={()=> {
+            editInvestor(record)
+          }}>编辑</Button>
+          <Button onClick={()=> {
+            setInvestorStatus(record)
+          }}>启用／停用</Button>
+        </div>
+      )
+    }
+  }];
   // console.log('[DEBUG] ---> UserList users: ', stations);
 
   return (

@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Input, Select, Button} from 'antd';
+import {Row, Col, Input, Select, Button, message} from 'antd';
 import ContentHead from '../../component/ContentHead'
 import InvestorList from './InvestorList';
 import StationMenu from './StationMenu'
@@ -37,13 +37,13 @@ class InvestorManage extends React.Component {
       name: undefined,
       createModalVisible: false,
       updateModalVisible: false,
+      selectedInvestor: undefined,
       modalKey: -1
     }
   }
 
   selectInvestor(rowId, rowData) {
     this.setState({selectedRowId: rowId, selectedRowData: rowData}, ()=> {
-      console.log('selectRow========>', this.state.selectedRowId)
     })
   }
 
@@ -67,17 +67,9 @@ class InvestorManage extends React.Component {
     }})
   }
 
-  setStatus() {
-    if (this.state.selectedRowId) {
-      let data = undefined
-      this.props.investors.forEach((item, key)=> {
-        if (item.id == this.state.selectedRowId[0]) {
-          data = item
-        }
-      })
-      console.log('data====>', data)
+  setStatus(value) {
       let payload = {
-        investorId: data.id,
+        investorId: value.id,
         success: ()=> {
           this.refresh()
         },
@@ -85,12 +77,12 @@ class InvestorManage extends React.Component {
           console.log('i m false', err.message)
         }
       }
-      if (data.status == 1) {
+      if (value.status == 1) {
         this.props.closeInvestor(payload)
       } else {
         this.props.openInvestor(payload)
       }
-    }
+
   }
 
   statusChange(value) {
@@ -186,12 +178,12 @@ class InvestorManage extends React.Component {
     this.setState({createModalVisible: true})
   }
 
-  openUpdateModal() {
+  openUpdateModal(value) {
     this.props.requestStations({
       success: ()=> {
       }
     })
-    this.setState({updateModalVisible: true})
+    this.setState({selectedInvestor:value,updateModalVisible: true})
   }
 
   createInvestor(data) {
@@ -205,7 +197,8 @@ class InvestorManage extends React.Component {
         })
       },
       error: (err)=> {
-        console.log('err===>', err.message)
+        message.error(err.message)
+        this.props.updateLoadingState({isLoading: false})
       }
     }
     this.props.createInvestor(payload)
@@ -252,9 +245,14 @@ class InvestorManage extends React.Component {
           }}
         />
         {this.renderSearchBar()}
-        <InvestorList selectStation={(rowId, rowData)=> {
+        <InvestorList
+          selectStation={(rowId, rowData)=> {
           this.selectInvestor(rowId, rowData)
-        }} investors={this.props.investors}/>
+        }}
+          investors={this.props.investors}
+          editInvestor={(value)=>{this.openUpdateModal(value)}}
+          setInvestorStatus={(value)=>{this.setStatus(value)}}
+        />
         <CreateInvestorModal
           modalKey={this.state.modalKey}
           onOk={(data)=> {
@@ -277,7 +275,7 @@ class InvestorManage extends React.Component {
             console.log('i, m cancel')
             this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1})
           }}
-          investor={this.state.selectedRowData ? this.state.selectedRowData[0] : undefined}
+          investor={this.state.selectedInvestor}
           userList={this.props.investorList}
           stationList={this.props.stations}
           modalVisible={this.state.updateModalVisible}

@@ -263,7 +263,7 @@ class EditStation extends React.Component {
         province: this.state.province,
         city: this.state.city,
         area: this.state.area,
-        success: (stationId)=> {
+        success: ()=> {
           this.setState({spinShow: false})
           message.success('提交成功')
           this.props.history.push({
