@@ -9,6 +9,7 @@ import RedEnvelopePromotion from './RedEnvelopePromotion'
 import ScorePromotion from './ScorePromotion'
 import ScorePromotionStat from './ScorePromotionStat'
 import RedEnvelopePromotionStat from './RedEnvelopePromotionStat'
+import ScoreExchangePromotion from './ScoreExchangePromotion'
 
 /* export saga */
 export const promotionSaga = redux.saga
@@ -24,4 +25,4 @@ export const promotionSelector = redux.selector
 
 export default Promotion
 export {RechargePromotion, RechargePromotionStat, RedEnvelopePromotion,
-  ScorePromotion, ScorePromotionStat, RedEnvelopePromotionStat}
+  ScorePromotion, ScorePromotionStat, RedEnvelopePromotionStat, ScoreExchangePromotion}
