@@ -17,6 +17,7 @@ import style from './style.module.scss'
 import {configAction} from '../../util/config'
 import {action as authAction, selector as authSelector} from '../../util/auth/'
 import LoadActivity from '../../component/loadActivity'
+import Profile from '../../component/Profile'
 
 const {Header, Footer, Sider, Content} = Layout
 
@@ -25,30 +26,11 @@ class Home extends Component {
     super(props)
   }
 
-  userMenuOnClick = ({key}) => {
-    let history = this.props.history
-    if (key == 'logout') {
-      console.log('user logout')
-      this.props.logout({
-        onSuccess: () => {
-          history.push('/login');
-        }
-      });
-    }
-  }
-
-  renderUserLoginMenu() {
+  renderUserLoginMenu = () =>  {
     return (
-      <Menu onClick={this.userMenuOnClick}>
-        <Menu.Item key="profile">
-          个人信息
-        </Menu.Item>
-        <Menu.Item key="logout">
-          注销
-        </Menu.Item>
-      </Menu>
+      <Profile />
     )
-  }
+  };
 
   render() {
     let {match, activeUser, location} = this.props
@@ -93,7 +75,7 @@ class Home extends Component {
               <img src={require('../../asset/image/yijiabao.png')} width={350}/>
             </div>
             <div>
-              <Dropdown overlay={this.renderUserLoginMenu()}>
+              <Dropdown trigger={['click']} overlay={this.renderUserLoginMenu()}>
                 <a className="ant-dropdown-link" href="#" style={{color: '#fff'}}>
                   <Icon type="user" style={{color: '#fff', marginRight: 5}} />{activeUser.nickname}<Icon type="caret-down" style={{color: '#fff', marginLeft: 5}} />
                 </a>
