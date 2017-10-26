@@ -36,8 +36,8 @@ class StationAccountManager extends React.Component {
       selectedRowData: undefined,
       status: undefined,
       stationId: undefined,
-      startDate: undefined,
-      endDate: undefined,
+      startDate: moment().day(-30).format(),
+      endDate: moment().format(),
       selectedType: 'all',
       division: [],
       viewType:'all',
@@ -65,8 +65,9 @@ class StationAccountManager extends React.Component {
   }
 
   componentWillMount() {
-
+    console.log('this.state......',this.state.startDate, this.state.endDate)
     this.props.fetchStationAccounts({
+      ...this.state,
       success: ()=> {
         console.log('hahhahah')
       },
@@ -216,9 +217,12 @@ class StationAccountManager extends React.Component {
         {/*/>*/}
         {this.renderSearchBar()}
 
-        <StationAccountList selectStation={(rowId, rowData)=> {
+        <StationAccountList
+          selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
-        }} stationAccounts={this.state.viewType=='all'?this.props.stationAccounts:this.props.stationAccountsDetail}/>
+        }}
+          viewType = {this.state.viewType}
+          stationAccounts={this.state.viewType=='all'?this.props.stationAccounts:this.props.stationAccountsDetail}/>
       </div>
     )
   };

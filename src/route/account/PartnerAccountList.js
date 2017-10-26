@@ -24,6 +24,12 @@ const columns = [{
 }, {
   title: "日期",
   dataIndex: "accountDay",
+},{
+  title:'开始日期',
+  dataIndex: 'startDate',
+},{
+  title:'结束日期',
+  dataIndex: 'endDate',
 }];
 
 

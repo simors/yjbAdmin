@@ -69,6 +69,12 @@ const columns = [{
 }, {
   title: "日期",
   dataIndex: "accountDay",
+},{
+  title:'开始日期',
+  dataIndex: 'startDate',
+},{
+  title:'结束日期',
+  dataIndex: 'endDate',
 }];
 
 
@@ -79,27 +85,12 @@ const rowKey = (record) => {
 
 const StationAccountList = (props) => {
   // console.log('[DEBUG] ---> UserList props: ', props);
-  let {stationAccounts} = props;
+  let {stationAccounts,viewType,startDate,endDate} = props;
   if (stationAccounts === null) {
     stationAccounts = [];
   }
-  let startDate = {
-    title:'开始日期',
-    dataIndex: 'startDate',
-    render:(text,record)=>{return(<div>{record.startDate}</div>)}
-  }
-  let endDate = {
-    title:'结束日期',
-    dataIndex: 'endDate',
-    render:(text,record)=>{return(<div>{record.endDate}</div>)}
-  }
 
-  if(stationAccounts&&stationAccounts[0]&&stationAccounts[0].startDate){
-    columns.push(startDate)
-  }
-  if(stationAccounts&&stationAccounts[0]&&stationAccounts[0].endDate){
-    columns.push(endDate)
-  }
+
 
   return (
     <div>

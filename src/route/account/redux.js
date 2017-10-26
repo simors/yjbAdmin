@@ -56,8 +56,8 @@ export class StationAccount extends StationAccountRecord {
       record.set('powerUnitPrice', obj.powerUnitPrice)
       record.set('stationId', obj.stationId)
       record.set('createdAt', obj.createdAt)
-      record.set('startDate', obj.startDate)
-      record.set('endDate', obj.endDate)
+      record.set('startDate', moment(new Date(obj.startDate)).format('YYYY-MM-DD'))
+      record.set('endDate', moment(new Date(obj.endDate)).format('YYYY-MM-DD'))
 
     })
   }
@@ -90,8 +90,8 @@ class AccountProfit extends Record({
       record.set('userId', json.userId)
       record.set('createdAt', json.createdAt)
       record.set('updatedAt', json.updatedAt)
-      record.set('startDate', json.startDate)
-      record.set('endDate', json.endDate)
+      record.set('startDate', moment(new Date(json.startDate)).format('YYYY-MM-DD'))
+      record.set('endDate', moment(new Date(json.endDate)).format('YYYY-MM-DD'))
 
     })
   }
@@ -150,9 +150,18 @@ function* fetchStationAccounts(action) {
   let stations = new Set()
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
+      console.log('data.accounts.length======>',data.accounts.length)
+
       for(let i = 0; i<data.accounts.length; i++){
         stationAccountList.push(data.accounts[i].stationId)
-        stationAccounts.push(data.accounts[i])
+        let account = data.accounts[i]
+        if(!account.startDate){
+          account.startDate = data.accounts[0].accountDay
+        }
+        if(!account.endDate){
+          account.endDate = data.accounts[data.accounts.length-1].accountDay
+        }
+        stationAccounts.push(account)
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
         }
@@ -182,7 +191,14 @@ function* fetchStationAccountsDetail(action) {
     if (data.accounts && data.accounts.length > 0) {
       for(let i = 0; i<data.accounts.length; i++){
         stationAccountList.push(data.accounts[i].id)
-        stationAccounts.push(data.accounts[i])
+        let account = data.accounts[i]
+        if(!account.startDate){
+          account.startDate = data.accounts[0].accountDay
+        }
+        if(!account.endDate){
+          account.endDate = data.accounts[data.accounts.length-1].accountDay
+        }
+        stationAccounts.push(account)
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
         }
@@ -212,7 +228,14 @@ function* fetchPartnerAccounts(action) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
         partnerAccountList.push(data.accounts[i].userId)
-        partnerAccounts.push(data.accounts[i])
+        let account = data.accounts[i]
+        if(!account.startDate){
+          account.startDate = data.accounts[0].accountDay
+        }
+        if(!account.endDate){
+          account.endDate = data.accounts[data.accounts.length-1].accountDay
+        }
+        partnerAccounts.push(account)
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
         }
@@ -245,7 +268,14 @@ function* fetchPartnerAccountsDetail(action) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
         partnerAccountList.push(data.accounts[i].id)
-        partnerAccounts.push(data.accounts[i])
+        let account = data.accounts[i]
+        if(!account.startDate){
+          account.startDate = data.accounts[0].accountDay
+        }
+        if(!account.endDate){
+          account.endDate = data.accounts[data.accounts.length-1].accountDay
+        }
+        partnerAccounts.push(account)
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
         }
@@ -279,7 +309,14 @@ function* fetchInvestorAccounts(action) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
         investorAccountList.push(data.accounts[i].userId)
-        investorAccounts.push(data.accounts[i])
+        let account = data.accounts[i]
+        if(!account.startDate){
+          account.startDate = data.accounts[0].accountDay
+        }
+        if(!account.endDate){
+          account.endDate = data.accounts[data.accounts.length-1].accountDay
+        }
+        investorAccounts.push(account)
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
         }
@@ -313,7 +350,14 @@ function* fetchInvestorAccountsDetail(action) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
         investorAccountList.push(data.accounts[i].id)
-        investorAccounts.push(data.accounts[i])
+        let account = data.accounts[i]
+        if(!account.startDate){
+          account.startDate = data.accounts[0].accountDay
+        }
+        if(!account.endDate){
+          account.endDate = data.accounts[data.accounts.length-1].accountDay
+        }
+        investorAccounts.push(account)
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
         }
