@@ -39,7 +39,6 @@ class SmsModal extends React.Component {
 
   componentDidMount() {
     this.setState({visible: !!this.props.visible})
-    console.log(...this.props)
   }
 
   handleOk() {
@@ -98,7 +97,6 @@ class SmsModal extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   let sysManager = authSelector.selectUsersByRole(state,ROLE_CODE.SYS_MANAGER)
-  console.log('sysManager======>',sysManager[0])
   let currentUser = authSelector.selectCurAdminUser(state)
   return {
     sysManager: sysManager[0],

@@ -148,12 +148,12 @@ class StationManage extends React.Component {
     return (
       <div style={{flex: 1}}>
         <Row style={{marginTop:12}}>
-          <Col span={12}>
+          <Col span={5}>
             <Input placeholder='名称' value={this.state.name} onChange={(e)=> {
               this.setState({name: e.target.value})
             }}></Input>
           </Col>
-          <Col span={12}>
+          <Col span={3}>
             <Select labelInValue={true} placeholder="状态" value={this.state.status} allowClear={true}
                     style={{width: 120}} onChange={(value)=> {
               this.statusChange(value)
@@ -162,27 +162,16 @@ class StationManage extends React.Component {
               <Option value='0'>已停用</Option>
             </Select>
           </Col>
-        </Row>
-        <Row>
           <Col span={5}>
             <DivisionCascader
               value={this.state.division}
               defaultValue={this.state.division}
               onChange={(key, value)=> {
                 this.setDivision(key)
-                console.log('value===>', value, key)
               }}
             />
           </Col>
-          <Col span={14}>
-            <Input value={this.state.addr} placeholder='地址' onChange={(e)=> {
-              this.setState({addr: e.target.value})
-            }}/>
-          </Col>
-          <Col span={5}>
-            <div></div>
-            </Col>
-          <Col span={5}>
+          <Col span={4}>
             <ButtonGroup>
               <Button type="primary" onClick={()=> {
                 this.search()

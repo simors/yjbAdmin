@@ -7,7 +7,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {Row, Col, Input, Select, Button,DatePicker} from 'antd';
+import {Row, Col, Input, Select, Button,DatePicker,message} from 'antd';
 import ContentHead from '../../component/ContentHead'
 import StationAccountList from './StationAccountList';
 // import StationMenu from './StationMenu'
@@ -21,8 +21,9 @@ import XLSX from 'xlsx'
 import FileSaver from 'file-saver'
 import * as excelFuncs from '../../util/excel'
 import moment from 'moment'
-
+import mathjs from 'mathjs'
 const history = createBrowserHistory()
+const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
 const ButtonGroup = Button.Group
 // var Excel = require('exceljs');
@@ -56,16 +57,21 @@ class StationAccountManager extends React.Component {
     })
   }
 
-  selectStartDate(date,dateString){
-    this.setState({startDate: dateString})
+  selectDate(date,dateString){
+    console.log('date=====>',mathjs.chain(date[1]- date[0]).multiply(1/31536000000).done())
+    let dateRange = mathjs.chain(date[1]- date[0]).multiply(1/31536000000).done()
+
+    if(dateRange>2){
+      message.error('时间范围请不要超过2年')
+    }else{
+      this.setState({startDate: dateString[0],endDate: dateString[1]})
+
+    }
   }
 
-  selectEndDate(date,dateString){
-    this.setState({endDate: dateString})
-  }
+
 
   componentWillMount() {
-    console.log('this.state......',this.state.startDate, this.state.endDate)
     this.props.fetchStationAccounts({
       ...this.state,
       success: ()=> {
@@ -122,9 +128,11 @@ class StationAccountManager extends React.Component {
     }
 
   }
+
+
   renderSearchBar() {
     return (
-      <div style={{flex: 1}}>
+      <div style={{flex: 1,marginTop:12,marginBottom: 12}}>
         <Row gutter={24}>
           <Col span={4}>
             <Select defalutValue = '' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
@@ -136,11 +144,8 @@ class StationAccountManager extends React.Component {
               }
             </Select>
           </Col>
-          <Col span={4}>
-            <DatePicker key='startDate' defaultValue={undefined} value={this.state.startDate?moment(this.state.startDate):undefined} onChange={(date,dateString)=>{this.selectStartDate(date,dateString)}} placeholder="选择开始日期"/>
-          </Col>
-          <Col span={4}>
-            <DatePicker key='endDate' defaultValue={undefined} value={this.state.endDate?moment(this.state.endDate):undefined} onChange={(date,dateString)=>{this.selectEndDate(date,dateString)}} placeholder="选择结束时间"/>
+          <Col span={8}>
+            <RangePicker key='selectDate' defaultValue={undefined} value={[this.state.startDate?moment(this.state.startDate):undefined,moment(this.state.endDate)]} onChange={(date,dateString)=>{this.selectDate(date,dateString)}} placeholder="选择开始日期"/>
           </Col>
           <Col span={4}>
             <Select defalutValue = 'all' onChange={(value)=>{this.selectType(value)}} style={{width: 120}} placeholder="选择查询方式">
