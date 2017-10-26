@@ -10,6 +10,7 @@ import {selector, PromotionCategoryType} from './redux'
 import RechargePromEditForm from './RechargePromEditForm'
 import RedEnvelopePromEditForm from './RedEnvelopePromEditForm'
 import ScorePromotionEditForm from './ScorePromotionEditForm'
+import ScoreExchangePromEditForm from './ScoreExchangePromEditForm'
 
 class PromotionEditModal extends PureComponent {
   constructor(props) {
@@ -44,7 +45,7 @@ class PromotionEditModal extends PureComponent {
       case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_EXCHANGE_SCORE:
       {
         return(
-          null
+          <ScoreExchangePromEditForm history={history} promotion={promotion} onSubmit={onCancel}/>
         )
       }
       default:

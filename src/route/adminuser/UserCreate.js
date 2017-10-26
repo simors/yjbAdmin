@@ -277,6 +277,8 @@ class UserCreate extends React.Component {
     let {form, sysManager, currentUser} = this.props
     const {getFieldDecorator} = form;
 
+    console.log('sysManager', sysManager)
+
     // if (!sysManager) {
     //   message.error('没有获取到系统管理员手机号')
     // }
@@ -448,6 +450,7 @@ const mapStateToProps = (appState, ownProps) => {
 
   let sysManager = authSelector.selectUsersByRole(appState, ROLE_CODE.SYS_MANAGER)
   let currentUser = authSelector.selectCurAdminUser(appState)
+  console.log('select sysManager', sysManager)
   return {
     allRoles,
     visible,
