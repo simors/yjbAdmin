@@ -147,7 +147,7 @@ class StationManage extends React.Component {
   renderSearchBar() {
     return (
       <div style={{flex: 1}}>
-        <Row style={{marginTop:12}}>
+        <Row style={{marginTop:12,marginBottom:12}}>
           <Col span={5}>
             <Input placeholder='名称' value={this.state.name} onChange={(e)=> {
               this.setState({name: e.target.value})
