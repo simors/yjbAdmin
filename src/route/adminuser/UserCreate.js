@@ -31,6 +31,7 @@ class UserCreate extends React.Component {
       step: 1,
       title: '新增用户 —— 验证手机号',
     };
+    this.addUserId = undefined
   }
 
   onHideModal = () => {
@@ -61,37 +62,70 @@ class UserCreate extends React.Component {
         };
       });
 
-      console.log('values', values)
-
-      const {mobilePhoneNumber} = values;
-      // this.props.createUser({
-      //   params: {
-      //     ...values,
-      //     password: mobilePhoneNumber.slice(-6),
-      //     type: AUTH_USER_TYPE.ADMIN,
-      //   },
-      //   onSuccess: () => {
-      //     this.props.hideUserCreateModal({});
-      //     this.props.form.resetFields();
-      //     this.props.listAdminUsers({limit: 100});
-      //   },
-      //   onFailure: (code) => {
-      //     if (code === errno.EEXIST) {
-      //       message.error('用户已存在');
-      //     } else {
-      //       message.error(`创建用户失败, 错误：${code}`);
-      //     }
-      //   },
-      //   onComplete: () => {
-      //     this.setState((prevState, props) => {
-      //       return {
-      //         ...prevState,
-      //         loading: false,
-      //       };
-      //     });
-      //   },
-      // });
+      this.props.updateUser({
+        params: {
+          ...values,
+          id: this.addUserId,
+          password: validPhone.slice(-6),
+          type: AUTH_USER_TYPE.BOTH,
+        },
+        onSuccess: () => {
+          this.props.hideUserCreateModal({});
+          this.props.form.resetFields();
+          this.props.listAdminUsers({limit: 100});
+        },
+        onFailure: (code) => {
+          message.error(`创建管理员用户失败,请重试, 错误：${code}`);
+        },
+        onComplete: () => {
+          this.setState((prevState, props) => {
+            return {
+              ...prevState,
+              loading: false,
+            };
+          });
+        },
+      });
     });
+  }
+
+  onFetchUserByPhoneSuccess = (user) => {
+    let {form} = this.props
+    let phone = form.getFieldValue('mobilePhoneNumber')
+    validPhone = phone
+    let smsCode = form.getFieldValue('smsCode')
+
+    let updatePayload = undefined
+    if (user) {
+      this.addUserId = user.objectId
+      message.warn('电话号码已被现有用户占用，请确认手机号码输入正确或直接修改相关用户信息', 30)
+      updatePayload = {
+        success: ()=>{
+          message.success('手机号验证成功')
+          this.setState({
+            step: 3,
+            title: '新增用户 —— 完善用户信息',
+          })
+        },
+        smsCode: smsCode,
+        phone: phone,
+        error: (e)=>{message.error('手机号验证失败，请确认手机号或验证码填写正确')}
+      }
+    } else {
+      updatePayload = {
+        success: ()=>{
+          message.success('手机号验证成功')
+          this.setState({
+            step: 2,
+            title: '新增用户 —— 关联公众号',
+          })
+        },
+        smsCode: smsCode,
+        phone: phone,
+        error: (e)=>{message.error('手机号验证失败，请确认手机号或验证码填写正确')}
+      }
+    }
+    this.props.verifySmsCode(updatePayload)
   }
 
   submitValidatePhone() {
@@ -104,20 +138,36 @@ class UserCreate extends React.Component {
       validPhone = phone
       let smsCode = form.getFieldValue('smsCode')
 
-      let payload = {
-        success: ()=>{
-          message.success('手机号验证成功')
-          this.setState({
-            step: 2,
-            title: '新增用户 —— 关联公众号',
-          })
-        },
-        smsCode: smsCode,
+      let phoneParams = {
         phone: phone,
-        error: (e)=>{message.error('手机号验证失败，请确认手机号或验证码填写正确')}
+        onSuccess: this.onFetchUserByPhoneSuccess,
+        onFailure: (errcode) => {
+          message.error('查询电话号码出错')
+        },
       }
-      this.props.verifySmsCode(payload)
+      this.props.fetchUserByPhone(phoneParams)
     })
+  }
+
+  checkUserAuth() {
+    let phoneParams = {
+      phone: validPhone,
+      onSuccess: (user) => {
+        if (user) {
+          this.addUserId = user.objectId
+          this.setState({
+            step: 3,
+            title: '新增用户 —— 完善用户信息',
+          })
+        } else {
+          message.warn('用户还没有在微信端授权，请指导用户完成授权操作')
+        }
+      },
+      onFailure: (errcode) => {
+        message.error('查询电话号码出错')
+      },
+    }
+    this.props.fetchUserByPhone(phoneParams)
   }
 
   onSubmit = (e) => {
@@ -126,10 +176,7 @@ class UserCreate extends React.Component {
     if (step == 1) {
       this.submitValidatePhone()
     } else if (step == 2) {
-      this.setState({
-        step: 3,
-        title: '新增用户 —— 完善用户信息',
-      })
+      this.checkUserAuth()
     } else {
       this.submitPersonalInfo()
     }

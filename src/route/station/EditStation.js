@@ -15,6 +15,7 @@ import DivisionCascader from '../../component/DivisionCascader'
 import {action, selector} from '../../util/auth'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
 import {ROLE_CODE, PERMISSION_CODE} from '../../util/rolePermission'
+import mathjs from 'mathjs'
 
 const Option = Select.Option;
 const FormItem = Form.Item
@@ -54,7 +55,6 @@ class EditStation extends React.Component {
       selectedPartner: undefined,
       modalKey: -1,
       partnerList: [],
-      spinShow: false
     }
   }
 
@@ -64,10 +64,10 @@ class EditStation extends React.Component {
       }
     })
     this.props.listUsersByRole({
-      roleCode: 400,
+      roleCode: ROLE_CODE.STATION_MANAGER,
       onFailure: (e)=>{console.log(e.message)},
       onSuccess: ()=>{this.props.listUsersByRole({
-        roleCode: 200,
+        roleCode: ROLE_CODE.STATION_PROVIDER,
         onFailure: (e)=>{console.log(e.message)}
       })}
     })
@@ -76,6 +76,7 @@ class EditStation extends React.Component {
   refresh() {
     this.props.requestPartners({
       stationId: this.props.match.params.id, success: ()=> {
+        this.props.updateLoadingState({isLoading: false})
       }
     })
   }
@@ -174,7 +175,7 @@ class EditStation extends React.Component {
   adminList() {
     if (this.props.adminList && this.props.adminList.length > 0) {
       let adminList = this.props.adminList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.nickname+'  '+item.mobilePhoneNumber}</Option>
+        return <Option key={key} value={item.id}>{item.idName}</Option>
       })
       return adminList
     } else {
@@ -185,7 +186,7 @@ class EditStation extends React.Component {
   partnerList() {
     if (this.props.partnerList && this.props.partnerList.length > 0) {
       let partnerList = this.props.partnerList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.nickname+'  '+item.mobilePhoneNumber}</Option>
+        return <Option key={key} value={item.id}>{item.idName}</Option>
       })
       return partnerList
     } else {
@@ -204,44 +205,52 @@ class EditStation extends React.Component {
         })
       },
       error: (err)=> {
-        message.error('提交失败')
-        console.log('err===>', err.message)
+        this.setState({spinShow: false, createModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+        message.error('err.message')
+          this.props.updateLoadingState({isLoading: false})
+
+          // this.refresh()
+
+        })
       }
     }
-    this.setState({spinShow: true})
+    this.props.updateLoadingState({isLoading: true})
 
     this.props.createPartner(payload)
   }
 
   updatePartner(data) {
-    this.setState({spinShow: true})
+    this.props.updateLoadingState({isLoading: true})
     let payload = {
       ...data,
       stationId: this.props.match.params.id,
       partnerId: this.state.selectedPartner.id,
       success: ()=> {
-        this.setState({spinShow: false, updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+        this.setState({ updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+          // this.props.updateLoadingState({isLoading: false})
           message.success('提交成功')
           this.refresh()
         })
       },
       error: (err)=> {
-        message.error('提交失败')
-        console.log('err===>', err.message)
+
+        this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
+          this.props.updateLoadingState({isLoading: false})
+          message.error('err.message')
+      })
       }
     }
-    console.log('payload----------111', payload)
     this.props.updatePartner(payload)
   }
 
   submitStation() {
     this.props.form.validateFields((errors) => {
-      this.setState({spinShow: true})
       if (errors) {
         return
       }
-      this.props.updateLoadingState({isLoading: true})
       let data = this.props.form.getFieldsValue()
+      data.platformProp = mathjs.chain(data.platformProp).multiply(1/100).done()
+
       let payload = {
         ...data,
         stationId: this.props.match.params.id,
@@ -253,14 +262,14 @@ class EditStation extends React.Component {
           message.success('提交成功')
           this.props.history.push({pathname: '/site_list/editStation/' + stationId})
           this.props.updateLoadingState({isLoading: false})
-
         },
         error: (err)=> {
-          message.error('提交失败')
+          message.error(err.message)
           this.props.updateLoadingState({isLoading: false})
-          console.log(err.message)
+          // console.log(err.message)
         }
       }
+      this.props.updateLoadingState({isLoading: true})
       console.log('data======>', data)
       this.props.updateStation(payload)
     })
@@ -281,10 +290,8 @@ class EditStation extends React.Component {
         division.push(station.area.value)
       }
     }
-    console.log('station===>', station)
     return (
       <div>
-        <Spin size='large' spinning={this.state.spinShow}>
           <Form >
             <Row>
               <Col span={12}>
@@ -369,7 +376,10 @@ class EditStation extends React.Component {
                         message: '干衣柜单价未填写'
                       }
                     ]
-                  })(<InputNumber />)}
+                  })(<InputNumber
+                    formatter={value => `${value}元`}
+                    parser={value => value.replace('元', '')}
+                  />)}
                 </FormItem>
               </Col>
               <Col span={6}>
@@ -382,7 +392,10 @@ class EditStation extends React.Component {
                         message: '干衣柜押金未填写'
                       }
                     ]
-                  })(<InputNumber />)}
+                  })(<InputNumber
+                    formatter={value => `${value}元`}
+                    parser={value => value.replace('元', '')}
+                  />)}
                 </FormItem>
               </Col>
               <Col span={6}>
@@ -395,20 +408,29 @@ class EditStation extends React.Component {
                         message: '电费单价未填写'
                       }
                     ]
-                  })(<InputNumber />)}
+                  })(<InputNumber
+
+                    formatter={value => `${value}元／度`}
+                    parser={value => value.replace('元／度', '')}
+                  />)}
                 </FormItem>
               </Col>
               <Col span={6}>
                 <FormItem label='平台分成比例：' hasFeedback {...formItemLayout2}>
                   {this.props.form.getFieldDecorator('platformProp', {
-                    initialValue: station ? station.platformProp : 0,
+                    initialValue: station ? station.platformProp*100 : 0,
                     rules: [
                       {
                         required: true,
                         message: '平台分成比例未填写'
                       }
                     ]
-                  })(<InputNumber />)}
+                  })(<InputNumber
+                    max={100}
+                    min={0}
+                    formatter={value => `${value}%`}
+                    parser={value => value.replace('%', '')}
+                  />)}
                 </FormItem>
               </Col>
             </Row>
@@ -421,8 +443,8 @@ class EditStation extends React.Component {
               }}>提交</Button>
             </Col>
           </Row>
-          <Row></Row>
-          <Row>
+          <Row ></Row>
+          <Row style={{height: 20,marginTop: 20, marginBottom: 20}}>
             <Col span={4}>
               <div>服务点分成</div>
             </Col>
@@ -465,7 +487,6 @@ class EditStation extends React.Component {
             stationList={this.props.stations}
             modalVisible={this.state.updateModalVisible}
           />
-        </Spin>
       </div>
     )
 

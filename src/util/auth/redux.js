@@ -202,6 +202,7 @@ const LIST_ADMIN_USERS = 'AUTH/LIST_ADMIN_USERS';
 const LISTED_ADMIN_USERS = 'AUTH/LISTED_ADMIN_USERS';
 const LIST_ADMINS_BY_ROLE = 'AUTH/LIST_ADMINS_BY_ROLE';
 const LISTED_ADMINS_BY_ROLE = 'AUTH/LISTED_ADMINS_BY_ROLE';
+const FETCH_USER_BY_PHONE = 'AUTH/FETCH_USER_BY_PHONE';
 const CREATE_USER = 'AUTH/CREATE_USER';
 const DELETE_USER = 'AUTH/DELETE_USER';
 const UPDATE_USER = 'AUTH/UPDATE_USER';
@@ -224,6 +225,7 @@ export const action = {
   listEndUsers: createAction(LIST_END_USERS),
   listAdminUsers: createAction(LIST_ADMIN_USERS),
   listUsersByRole: createAction(LIST_ADMINS_BY_ROLE),
+  fetchUserByPhone: createAction(FETCH_USER_BY_PHONE),
 
   createUser: createAction(CREATE_USER),
   deleteUser: createAction(DELETE_USER),
@@ -255,6 +257,7 @@ export const saga = [
   takeLatest(LIST_END_USERS, sagaListEndUsers),
   takeLatest(LIST_ADMIN_USERS, sagaListAdminUsers),
   takeLatest(LIST_ADMINS_BY_ROLE, sagaListAdminsByRole),
+  takeLatest(FETCH_USER_BY_PHONE, sagaFetchUserByPhone),
   takeLatest(CREATE_USER, sagaCreateUser),
   takeLatest(DELETE_USER, sagaDeleteUser),
   takeLatest(UPDATE_USER, sagaUpdateUser),
@@ -570,6 +573,20 @@ function* sagaListAdminsByRole(action) {
 
   if (payload.onComplete) {
     payload.onComplete();
+  }
+}
+
+function* sagaFetchUserByPhone(action) {
+  let payload = action.payload
+  try {
+    let user = yield call(api.fetchUserByPhone, payload)
+    if (payload.onSuccess) {
+      payload.onSuccess(user);
+    }
+  } catch (e) {
+    if (payload.onFailure) {
+      payload.onFailure(e.code);
+    }
   }
 }
 

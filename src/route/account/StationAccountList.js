@@ -12,6 +12,9 @@ import mathjs from 'mathjs'
 const columns = [{
   title: "服务点名称",
   dataIndex: "station.name",
+  render: (text,record)=>{return(
+    <div>{record.station&&record.station.name?record.station.name:'全平台'}</div>
+  )}
 }, {
   title: "成本",
   dataIndex: "cost",
@@ -66,6 +69,12 @@ const columns = [{
 }, {
   title: "日期",
   dataIndex: "accountDay",
+},{
+  title:'开始日期',
+  dataIndex: 'startDate',
+},{
+  title:'结束日期',
+  dataIndex: 'endDate',
 }];
 
 
@@ -76,17 +85,12 @@ const rowKey = (record) => {
 
 const StationAccountList = (props) => {
   // console.log('[DEBUG] ---> UserList props: ', props);
-  let {stationAccounts} = props;
+  let {stationAccounts,viewType,startDate,endDate} = props;
   if (stationAccounts === null) {
     stationAccounts = [];
   }
-  // const rowSelection = {
-  //   type: 'radio',
-  //   onChange: (rowKey, rowData)=> {
-  //     selectStation(rowKey, rowData)
-  //   },
-  // };
-  // console.log('[DEBUG] ---> UserList users: ', stations);
+
+
 
   return (
     <div>

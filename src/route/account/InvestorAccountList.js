@@ -13,7 +13,7 @@ const columns = [{
   title: "服务点名称",
   dataIndex: "station.name",
 }, {
-  title: "分成方信息",
+  title: "投资人信息",
   dataIndex: "user.nickname",
 }, {
   title: "利润",
@@ -25,6 +25,12 @@ const columns = [{
 }, {
   title: "日期",
   dataIndex: "accountDay",
+},{
+  title:'开始日期',
+  dataIndex: 'startDate',
+},{
+  title:'结束日期',
+  dataIndex: 'endDate',
 }];
 
 
@@ -35,21 +41,32 @@ const rowKey = (record) => {
 
 const InvestorAccountList = (props) => {
   // console.log('[DEBUG] ---> UserList props: ', props);
-  let {stationAccounts} = props;
-  if (stationAccounts === null) {
-    stationAccounts = [];
+  let {investorAccounts} = props;
+  if (investorAccounts === null) {
+    investorAccounts = [];
   }
-  // const rowSelection = {
-  //   type: 'radio',
-  //   onChange: (rowKey, rowData)=> {
-  //     selectStation(rowKey, rowData)
-  //   },
-  // };
-  // console.log('[DEBUG] ---> UserList users: ', stations);
+  console.log('investorAccounts===========>',investorAccounts)
+  // let startDate = {
+  //   title:'开始日期',
+  //   dataIndex: 'startDate',
+  //   render:(text,record)=>{return(<div>{record.startDate}</div>)}
+  // }
+  // let endDate = {
+  //   title:'结束日期',
+  //   dataIndex: 'endDate',
+  //   render:(text,record)=>{return(<div>{record.endDate}</div>)}
+  // }
+  //
+  // if(investorAccounts&&investorAccounts[0]&&investorAccounts[0].startDate){
+  //   columns.push(startDate)
+  // }
+  // if(investorAccounts&&investorAccounts[0]&&investorAccounts[0].endDate){
+  //   columns.push(endDate)
+  // }
 
   return (
     <div>
-      <Table columns={columns} dataSource={stationAccounts} rowKey={rowKey} />
+      <Table columns={columns} dataSource={investorAccounts} rowKey={rowKey} />
     </div>
   );
 };

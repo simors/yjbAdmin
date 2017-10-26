@@ -36,6 +36,8 @@ export const StationAccountRecord = Record({
   powerUnitPrice: undefined,
   stationId: undefined,
   createdAt: undefined,
+  startDate: undefined,
+  endDate: undefined
 }, 'StationAccountRecord')
 
 export class StationAccount extends StationAccountRecord {
@@ -54,6 +56,9 @@ export class StationAccount extends StationAccountRecord {
       record.set('powerUnitPrice', obj.powerUnitPrice)
       record.set('stationId', obj.stationId)
       record.set('createdAt', obj.createdAt)
+      record.set('startDate', moment(new Date(obj.startDate)).format('YYYY-MM-DD'))
+      record.set('endDate', moment(new Date(obj.endDate)).format('YYYY-MM-DD'))
+
     })
   }
 }
@@ -69,6 +74,8 @@ class AccountProfit extends Record({
   userId: undefined,
   createdAt: undefined,
   updatedAt: undefined,
+  startDate: undefined,
+  endDate: undefined
 }, 'AccountProfit') {
   static fromJson(json) {
     let profit = new AccountProfit()
@@ -83,6 +90,9 @@ class AccountProfit extends Record({
       record.set('userId', json.userId)
       record.set('createdAt', json.createdAt)
       record.set('updatedAt', json.updatedAt)
+      record.set('startDate', moment(new Date(json.startDate)).format('YYYY-MM-DD'))
+      record.set('endDate', moment(new Date(json.endDate)).format('YYYY-MM-DD'))
+
     })
   }
 }
@@ -140,9 +150,18 @@ function* fetchStationAccounts(action) {
   let stations = new Set()
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
+      console.log('data.accounts.length======>',data.accounts.length)
+
       for(let i = 0; i<data.accounts.length; i++){
-        stationAccountList.push(data.accounts[i].id)
-        stationAccounts.push(data.accounts[i])
+        stationAccountList.push(data.accounts[i].stationId)
+        let account = data.accounts[i]
+        if(!account.startDate){
+          account.startDate = data.accounts[0].accountDay
+        }
+        if(!account.endDate){
+          account.endDate = data.accounts[data.accounts.length-1].accountDay
+        }
+        stationAccounts.push(account)
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
         }
@@ -172,7 +191,14 @@ function* fetchStationAccountsDetail(action) {
     if (data.accounts && data.accounts.length > 0) {
       for(let i = 0; i<data.accounts.length; i++){
         stationAccountList.push(data.accounts[i].id)
-        stationAccounts.push(data.accounts[i])
+        let account = data.accounts[i]
+        if(!account.startDate){
+          account.startDate = data.accounts[0].accountDay
+        }
+        if(!account.endDate){
+          account.endDate = data.accounts[data.accounts.length-1].accountDay
+        }
+        stationAccounts.push(account)
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
         }
@@ -201,8 +227,15 @@ function* fetchPartnerAccounts(action) {
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
-        partnerAccountList.push(data.accounts[i].id)
-        partnerAccounts.push(data.accounts[i])
+        partnerAccountList.push(data.accounts[i].userId)
+        let account = data.accounts[i]
+        if(!account.startDate){
+          account.startDate = data.accounts[0].accountDay
+        }
+        if(!account.endDate){
+          account.endDate = data.accounts[data.accounts.length-1].accountDay
+        }
+        partnerAccounts.push(account)
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
         }
@@ -235,7 +268,14 @@ function* fetchPartnerAccountsDetail(action) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
         partnerAccountList.push(data.accounts[i].id)
-        partnerAccounts.push(data.accounts[i])
+        let account = data.accounts[i]
+        if(!account.startDate){
+          account.startDate = data.accounts[0].accountDay
+        }
+        if(!account.endDate){
+          account.endDate = data.accounts[data.accounts.length-1].accountDay
+        }
+        partnerAccounts.push(account)
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
         }
@@ -268,8 +308,15 @@ function* fetchInvestorAccounts(action) {
   if (data.success) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
-        investorAccountList.push(data.accounts[i].id)
-        investorAccounts.push(data.accounts[i])
+        investorAccountList.push(data.accounts[i].userId)
+        let account = data.accounts[i]
+        if(!account.startDate){
+          account.startDate = data.accounts[0].accountDay
+        }
+        if(!account.endDate){
+          account.endDate = data.accounts[data.accounts.length-1].accountDay
+        }
+        investorAccounts.push(account)
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
         }
@@ -303,7 +350,14 @@ function* fetchInvestorAccountsDetail(action) {
     if (data.accounts && data.accounts.length > 0) {
       for (let i=0; i<data.accounts.length; i++){
         investorAccountList.push(data.accounts[i].id)
-        investorAccounts.push(data.accounts[i])
+        let account = data.accounts[i]
+        if(!account.startDate){
+          account.startDate = data.accounts[0].accountDay
+        }
+        if(!account.endDate){
+          account.endDate = data.accounts[data.accounts.length-1].accountDay
+        }
+        investorAccounts.push(account)
         if(data.accounts[i].station){
           stations.add(data.accounts[i].station)
         }
@@ -374,6 +428,13 @@ function handleSetBatchAccountProfit(state, accountProfits) {
   return state
 }
 
+function handleSetBatchAccountProfitSum(state, accountProfits) {
+  accountProfits.forEach((accountProfit) => {
+    state = state.setIn(['allAccountProfits', accountProfit.userId], AccountProfit.fromJson(accountProfit))
+  })
+  return state
+}
+
 function reduceSaveAccountProfit(state, action) {
   let payload = action.payload
   let accountProfit = payload.accountProfit
@@ -387,6 +448,13 @@ function reduceSaveBatchAccountProfit(state, action) {
 }
 
 function handleSetAllStationAccounts(state, stationAccounts) {
+  stationAccounts.forEach((item)=> {
+    state = state.setIn(['allStationAccounts', item.stationId], StationAccount.fromApi(item))
+  })
+  return state
+}
+
+function handleSetAllStationAccountsDetall(state, stationAccounts) {
   stationAccounts.forEach((item)=> {
     state = state.setIn(['allStationAccounts', item.id], StationAccount.fromApi(item))
   })
@@ -414,7 +482,7 @@ function handleSaveStationAccountsDetail(state, action) {
   // console.log('stationAccounts=========>', stationAccounts, stationAccountList)
   if (stationAccountList && stationAccountList.length > 0) {
     state = state.set('stationAccountsDetailList', new List(stationAccountList))
-    state = handleSetAllStationAccounts(state, stationAccounts)
+    state = handleSetAllStationAccountsDetall(state, stationAccounts)
   } else {
     state = state.set('stationAccountsDetailList', new List())
   }
@@ -427,7 +495,7 @@ function handleSavePartnerAccounts(state, action) {
   let partnerAccountList = action.payload.partnerAccountList
   if (partnerAccountList && partnerAccountList.length > 0) {
     state = state.set('partnerAccountList', new List(partnerAccountList))
-    state = handleSetBatchAccountProfit(state, partnerAccounts)
+    state = handleSetBatchAccountProfitSum(state, partnerAccounts)
   } else {
     state = state.set('partnerAccountList', new List())
   }
@@ -453,7 +521,7 @@ function handleSaveInvestorAccounts(state, action) {
   let investorAccountList = action.payload.investorAccountList
   if (investorAccountList && investorAccountList.length > 0) {
     state = state.set('investorAccountList', new List(investorAccountList))
-    state = handleSetBatchAccountProfit(state, investorAccounts)
+    state = handleSetBatchAccountProfitSum(state, investorAccounts)
   } else {
     state = state.set('investorAccountList', new List())
   }

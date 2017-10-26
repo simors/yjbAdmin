@@ -152,7 +152,7 @@ class UpdateInvestorModal extends Component {
                 }
               ]
             })(
-              <Select allowClear={true} style={{width: 140}}>
+              <Select allowClear={true} style={{width: 200}}>
                 {this.userList()}
               </Select>
             )}
@@ -166,7 +166,7 @@ class UpdateInvestorModal extends Component {
                   message: '投资服务点未选择'
                 }
               ]
-            })(<Select allowClear={true} style={{width: 140}}>
+            })(<Select allowClear={true} style={{width: 200}}>
               {this.stationList()}
             </Select>)}
           </FormItem>

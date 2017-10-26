@@ -1,16 +1,10 @@
 /**
  * Created by lilu on 2017/10/16.
  */
-/**
- * Created by lilu on 2017/10/15.
- */
-/**
- * Created by lilu on 2017/9/18.
- */
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {Row, Col, Input, Select, Button} from 'antd';
+import {Row, Col, Input, Select, Button,DatePicker} from 'antd';
 import ContentHead from '../../component/ContentHead'
 import InvestorAccountList from './InvestorAccountList';
 // import StationMenu from './StationMenu'
@@ -20,7 +14,10 @@ import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
 import AccountChart from '../../component/account/AccountChart'
+import {action as authAction, selector as authSelector} from '../../util/auth'
 import * as excelFuncs from '../../util/excel'
+import {PERMISSION_CODE,ROLE_CODE} from '../../util/rolePermission'
+import moment from 'moment'
 
 const history = createBrowserHistory()
 const Option = Select.Option;
@@ -36,13 +33,23 @@ class InvestorAccountManager extends React.Component {
       selectedRowData: undefined,
       status: undefined,
       stationId: undefined,
-      division: []
+      userId: undefined,
+      startDate: undefined,
+      endDate: undefined,
+      selectedType: 'all',
+      viewType: 'all'
     }
   }
 
   selectStation(value) {
     this.setState({
       stationId: value
+    })
+  }
+
+  selectInvestor(value){
+    this.setState({
+      userId: value
     })
   }
 
@@ -56,56 +63,20 @@ class InvestorAccountManager extends React.Component {
     this.props.requestStations({
 
     })
+    this.props.listUsersByRole({roleCode:ROLE_CODE.STATION_INVESTOR})
   }
 
   refresh() {
     // this.props.requestStations({...this.state})
   }
 
-  setStatus() {
-    if (this.state.selectedRowId) {
-      let data = undefined
-      this.props.stations.forEach((item, key)=> {
-        if (item.id == this.state.selectedRowId[0]) {
-          data = item
-        }
-      })
-      let payload = {
-        stationId: this.state.selectedRowId,
-        success: ()=> {
-          this.refresh()
-        },
-        error: ()=> {
-          console.log('i m false')
-        }
-      }
-      if (data.status == 1) {
-        this.props.closeStation(payload)
-      } else {
-        this.props.openStation(payload)
-      }
-    }
-  }
-
-  statusChange(value) {
-    this.setState({status: value})
-  }
-
-
-  areaList() {
-    if (this.state.city && this.state.city.sub.length > 0) {
-      let areaList = this.state.city.sub.map((item, key)=> {
-        return <Option key={key} value={key}>{item.area_name}</Option>
-      })
-      return areaList
-    } else {
-      return null
-    }
-  }
-
   search() {
+
     let payload = {
       stationId: this.state.stationId,
+      userId: this.state.userId,
+      startDate: this.state.startDate,
+      endDate: this.state.endDate,
       success: ()=> {
         console.log('success')
       },
@@ -113,53 +84,92 @@ class InvestorAccountManager extends React.Component {
         console.log('error')
       }
     }
-    this.props.fetchInvestorAccounts(payload)
+    this.setState({viewType:this.state.selectedType},()=>{
+      if(this.state.selectedType=='all'){
+        this.props.fetchInvestorAccounts(payload)
+      }else{
+        this.props.fetchInvestorAccountsDetail(payload)
+      }
+    })
+
   }
 
-  setDivision(value) {
-    if (value && value.length) {
-      this.setState({
-        division: value
-      }, ()=> {
-        console.log('state', this.state.division)
-      })
-    }
+  selectType(value){
+    console.log('value----------------',value)
+    this.setState({selectedType: value})
   }
 
   clearSearch() {
     this.setState({
-      stationId: undefined
-    })
-    this.props.fetchInvestorAccounts({
-      success: ()=> {
-        console.log('hahhahah')
+      stationId: undefined,
+      userId: undefined,
+      startDate: undefined,
+      endDate: undefined,
+    },()=>{
+      if(this.state.selectedType=='all'){
+        this.props.fetchInvestorAccounts()
+      }else{
+        this.props.fetchInvestorAccountsDetail()
+
       }
     })
+
+  }
+
+  selectStartDate(date,dateString){
+    this.setState({startDate: dateString})
+  }
+
+  selectEndDate(date,dateString){
+    this.setState({endDate: dateString})
   }
 
   renderSearchBar() {
     return (
       <div style={{flex: 1}}>
-        <Row >
-          <Col span={12}>
-            <Select defalutValue = '' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
+        <Row gutter={24}>
+          <Col span={4}>
+          <Select defalutValue = '' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
+            <Option value=''>全部</Option>
+            {
+              this.props.stations.map((station, index) => (
+                <Option key={index} value={station.id}>{station.name}</Option>
+              ))
+            }
+          </Select>
+        </Col>
+          <Col span={4}>
+            <Select defalutValue = '' onChange={(value)=>{this.selectInvestor(value)}} style={{width: 120}} placeholder="选择投资人">
               <Option value=''>全部</Option>
               {
-                this.props.stations.map((station, index) => (
-                  <Option key={index} value={station.id}>{station.name}</Option>
+                this.props.userList.map((user, index) => (
+                  <Option key={index} value={user.id}>{user.nickname+'  '+user.mobilePhoneNumber}</Option>
                 ))
               }
             </Select>
           </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
+          <Col span={4}>
+            <DatePicker key='startDate' defaultValue={undefined} value={this.state.startDate?moment(this.state.startDate):undefined} onChange={(date,dateString)=>{this.selectStartDate(date,dateString)}} placeholder="选择开始日期"/>
+          </Col>
+          <Col span={4}>
+            <DatePicker key='endDate' defaultValue={undefined} value={this.state.endDate?moment(this.state.endDate):undefined} onChange={(date,dateString)=>{this.selectEndDate(date,dateString)}} placeholder="选择结束时间"/>
+          </Col>
+          <Col span={4}>
+            <Select defalutValue = 'all' onChange={(value)=>{this.selectType(value)}} style={{width: 120}} placeholder="选择查询方式">
+              <Option value='all'>按周期</Option>
+              <Option value='detail'>按日期</Option>
+            </Select>
+          </Col>
+          <Col span={4}>
+            <ButtonGroup>
+            <Button type='primary' onClick={()=> {
               this.search()
             }}>查询</Button>
-          </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
+
+            <Button type='primary' onClick={()=> {
               this.clearSearch()
             }}>重置</Button>
+              </ButtonGroup>
           </Col>
         </Row>
 
@@ -168,7 +178,7 @@ class InvestorAccountManager extends React.Component {
   }
 
   downloadFile(){
-    let data = [[ "日期",    "利润", "成本" , "收益" , "服务点名称" ],]
+    let data = [[ "服务点名称",    "投资人名称" , "利润" ,"日期"],]
     // let accountArray = []
     if(this.props.investorAccounts&&this.props.investorAccounts.length){
       this.props.investorAccounts.forEach((account)=>{
@@ -176,7 +186,7 @@ class InvestorAccountManager extends React.Component {
         data.push(account2Arr)
       })
     }
-    let params={data: data, sheetName:'服务点日结数据', fileName:'服务点日结数据'}
+    let params={data: data, sheetName:'投资人日结数据', fileName:'投资人日结数据'}
 
     excelFuncs.exportExcel(params)
 
@@ -193,34 +203,13 @@ class InvestorAccountManager extends React.Component {
     return (
       <div>
         <ButtonGroup>
-          <Button onClick={()=>{this.downloadFile()}}>ceshi</Button>
+          <Button onClick={()=>{this.downloadFile()}}>导出Excel</Button>
           <Button onClick={()=>{this.viewChart()}}>查看图表</Button>
-
         </ButtonGroup>
-        {/*<StationMenu*/}
-        {/*showDetail={()=> {*/}
-        {/*this.props.history.push({*/}
-        {/*pathname: '/site/showStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),*/}
-        {/*})*/}
-        {/*}}*/}
-        {/*set={()=> {*/}
-        {/*this.props.history.push({*/}
-        {/*pathname: '/site/editStation/' + (this.state.selectedRowId ? this.state.selectedRowId[0] : ''),*/}
-        {/*})*/}
-        {/*}}*/}
-        {/*add={()=>{this.props.history.push({pathname: '/site/addStation'})}}*/}
-        {/*setStatus={()=> {*/}
-        {/*this.setStatus()*/}
-        {/*}}*/}
-        {/*refresh={()=> {*/}
-        {/*this.refresh()*/}
-        {/*}}*/}
-        {/*/>*/}
         {this.renderSearchBar()}
-
-        <InvestorAccountList selectStation={(rowId, rowData)=> {
+        {<InvestorAccountList selectStation={(rowId, rowData)=> {
           this.selectStation(rowId, rowData)
-        }} stationAccounts={this.props.investorAccounts}/>
+        }} investorAccounts={this.state.viewType=='all'?this.props.investorAccounts:this.props.investorAccountsDetail}/>}
       </div>
     )
   };
@@ -229,18 +218,24 @@ class InvestorAccountManager extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectInvestorAccounts(state)
-  // let areaList = configSelector.selectAreaList(state)
-  console.log('accounts========>', accounts)
+  let accountsDetail = accountSelector.selectInvestorAccountsDetail(state)
+  console.log('accounts====>',accounts)
+
+  console.log('accountsDetail====>',accountsDetail)
+  let userList = authSelector.selectUsersByRole(state,ROLE_CODE.STATION_INVESTOR)
   return {
     investorAccounts: accounts,
-    stations: stations
+    stations: stations,
+    userList: userList,
+    investorAccountsDetail: accountsDetail
     // areaList: areaList,
   };
 };
 
 const mapDispatchToProps = {
   ...stationAction,
-  ...accountAction
+  ...accountAction,
+  ...authAction
 
 };
 

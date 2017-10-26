@@ -113,7 +113,7 @@ class UpdatePartnerModal extends Component {
                 }
               ]
             })(
-              <Select allowClear={true} style={{width: 140}}>
+              <Select allowClear={true} style={{width: 200}}>
                 {this.userList()}
               </Select>
             )}
