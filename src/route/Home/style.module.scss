@@ -27,7 +27,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #FFF;
+    background: #404040; /* 一些不支持背景渐变的浏览器 */
+    background: -moz-linear-gradient(right, #333, #404040);
+    background: -webkit-linear-gradient(left, #333, #404040);
+    background: -o-linear-gradient(right, #333, #404040);
+    background: linear-gradient(to right, #333 , #404040);
 
     .headerTitle {
       font-size: 2em;
