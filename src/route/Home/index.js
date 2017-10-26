@@ -89,11 +89,13 @@ class Home extends Component {
         </Sider>
         <Layout className={style.main}>
           <Header className={style.header}>
-            <div className={style.headerTitle}>衣家宝后台管理系统</div>
+            <div className={style.headerTitle}>
+              <img src={require('../../asset/image/yijiabao.png')} width={350}/>
+            </div>
             <div>
               <Dropdown overlay={this.renderUserLoginMenu()}>
-                <a className="ant-dropdown-link" href="#">
-                  <Icon type="user" />{activeUser.nickname}<Icon type="caret-down" />
+                <a className="ant-dropdown-link" href="#" style={{color: '#fff'}}>
+                  <Icon type="user" style={{color: '#fff', marginRight: 5}} />{activeUser.nickname}<Icon type="caret-down" style={{color: '#fff', marginLeft: 5}} />
                 </a>
               </Dropdown>
             </div>
