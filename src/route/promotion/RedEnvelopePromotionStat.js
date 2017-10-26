@@ -36,11 +36,10 @@ class RedEnvelopePromotionStat extends PureComponent {
   }
 
   render() {
-    const {promotion, rechargeRecordInfolist} = this.props
+    const {promotion, redEnvelopeRecordInfolist} = this.props
     const columns = [
       { title: '参与用户', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
-      { title: '充值金额(¥)', dataIndex: 'recharge', key: 'recharge' },
-      { title: '赠送金额(¥)', dataIndex: 'award', key: 'award' },
+      { title: '红包金额(¥)', dataIndex: 'metadata.amount', key: 'amount' },
       { title: '参与时间', dataIndex: 'createdAt', key: 'createdAt',
         render: (createdAt) => (<span>{moment(new Date(createdAt)).format('LLLL')}</span>) },
     ]
@@ -55,7 +54,7 @@ class RedEnvelopePromotionStat extends PureComponent {
             <div>中奖总金额</div>
             <div>{"¥" + promotion.stat.winAmount + '元'}</div>
           </Col>
-          <Col span={3} offset={9}>
+          <Col span={3}>
             <div>中奖量</div>
             <div>{"¥" + promotion.stat.winCount + '元'}</div>
           </Col>
@@ -68,7 +67,7 @@ class RedEnvelopePromotionStat extends PureComponent {
         <Row>
           <PromotionRecordSearchForm promotion={promotion}/>
         </Row>
-        <Table rowKey="id" columns={columns} dataSource={rechargeRecordInfolist}/>
+        <Table rowKey="id" columns={columns} dataSource={redEnvelopeRecordInfolist}/>
       </div>
     )
   }
@@ -80,7 +79,7 @@ const mapStateToProps = (appState, ownProps) => {
   let redEnvelopeRecordInfolist = []
   if(promotionId) {
     promotion = selector.selectPromotion(appState, promotionId)
-    redEnvelopeRecordInfolist = selector.selectRechargePromRecordList(appState, promotionId)
+    redEnvelopeRecordInfolist = selector.selectRedEnvelopePromRecordList(appState, promotionId)
   }
   return {
     promotion,

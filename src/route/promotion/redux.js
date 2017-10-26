@@ -88,9 +88,7 @@ const PromotionState = Record({
   promotions: Map(),
   promotionList: List(),
   categories: Map(),
-  // rechargeList: List(),         //充值活动记录id列表
-  // recharges: Map(),             //充值活动记录
-  records: Map,                 //活动参与记录
+  records: Map(),               //活动参与记录
   rechargePromList: List(),     //充值活动记录id列表
   scorePromList: List(),        //积分活动记录id列表
   redEnvelopePromList: List(),  //随机红包记录id列表
@@ -116,6 +114,16 @@ export const PromotionCategoryType = {
   PROMOTION_CATEGORY_TYPE_REDENVELOPE : 3,    //随机红包
   PROMOTION_CATEGORY_TYPE_LOTTERY : 4,        //抽奖
   PROMOTION_CATEGORY_TYPE_EXCHANGE_SCORE : 5  //积分兑换
+}
+
+export const ScoreType = {
+  SCORE_OP_TYPE_FOCUS:      'FOCUS_MP',     //关注微信公众号
+  SCORE_OP_TYPE_DEPOSIT:    'DEPOSIT',      //交押金
+  SCORE_OP_TYPE_RECHARGE:   'RECHARGE',     //充值
+  SCORE_OP_TYPE_SERVICE:    'SERVICE',      //使用干衣柜服务
+  SCORE_OP_TYPE_BIND_PHONE: 'BIND_PHONE',   //绑定手机号码
+  SCORE_OP_TYPE_ID_AUTH:    'ID_AUTH',      //实名认证
+  SCORE_OP_TYPE_EXCHANGE:   'EXCHANGE',     //积分兑换
 }
 /**** Action ****/
 const updatePromotionList = createAction(UPDATE_PROMOTION_LIST)
@@ -531,7 +539,6 @@ function selectScorePromRecordList(state, promotionId) {
     let recordInfo = selectRecord(state, id)
     let userInfo = recordInfo? userSelector.selectUserById(state, recordInfo.userId) : undefined
     recordInfo.mobilePhoneNumber = userInfo? userInfo.mobilePhoneNumber : undefined
-
     if(recordInfo && recordInfo.promotionId === promotionId) {
       recordList.push(recordInfo)
     }
