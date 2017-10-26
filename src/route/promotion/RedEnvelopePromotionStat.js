@@ -9,6 +9,7 @@ import {
   Table,
   Row,
   Col,
+  Card,
 } from 'antd'
 import {selector} from './redux'
 import moment from 'moment'
@@ -50,17 +51,21 @@ class RedEnvelopePromotionStat extends PureComponent {
             <div>{promotion.title}</div>
             <div>{this.getPromotionStatus(promotion)}</div>
           </Col>
-          <Col span={3} offset={9}>
-            <div>中奖总金额</div>
-            <div>{"¥" + promotion.stat.winAmount + '元'}</div>
-          </Col>
-          <Col span={3}>
-            <div>中奖量</div>
-            <div>{"¥" + promotion.stat.winCount + '元'}</div>
-          </Col>
-          <Col span={3}>
-            <div>参与人数</div>
-            <div>{promotion.stat.participant}</div>
+          <Col span={12} offset={7}>
+            <Card bordered={false}>
+              <Card.Grid className={style.card}>
+                <div className={style.title}>中奖总金额: </div>
+                <div className={style.amount}>{"¥" + promotion.stat.winAmount + '元'}</div>
+              </Card.Grid>
+              <Card.Grid className={style.card}>
+                <div className={style.title}>中奖量: </div>
+                <div className={style.amount}>{"¥" + promotion.stat.winCount + '元'}</div>
+              </Card.Grid>
+              <Card.Grid className={style.card}>
+                <div className={style.title}>参与人数: </div>
+                <div className={style.amount}>{promotion.stat.participant}</div>
+              </Card.Grid>
+            </Card>
           </Col>
         </Row>
         <hr/>

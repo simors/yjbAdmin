@@ -9,6 +9,7 @@ import {
   Table,
   Row,
   Col,
+  Card,
 } from 'antd'
 import {selector, ScoreType} from './redux'
 import moment from 'moment'
@@ -69,13 +70,17 @@ class ScorePromotionStat extends PureComponent {
             <div>{promotion.title}</div>
             <div>{this.getPromotionStatus(promotion)}</div>
           </Col>
-          <Col span={3} offset={9}>
-            <div>赠送总积分</div>
-            <div>{promotion.stat.scoreAmount}</div>
-          </Col>
-          <Col span={3}>
-            <div>参与人数</div>
-            <div>{promotion.stat.participant}</div>
+          <Col span={8} offset={9}>
+            <Card bordered={false}>
+              <Card.Grid className={style.card}>
+                <div className={style.title}>赠送总积分: </div>
+                <div className={style.amount}>{promotion.stat.scoreAmount}</div>
+              </Card.Grid>
+              <Card.Grid className={style.card}>
+                <div className={style.title}>参与人数: </div>
+                <div className={style.amount}>{promotion.stat.participant}</div>
+              </Card.Grid>
+            </Card>
           </Col>
         </Row>
         <hr/>
