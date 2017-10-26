@@ -13,7 +13,7 @@ import {
   Select,
   DatePicker,
 } from 'antd'
-import {actions, PromotionCategoryType} from './redux'
+import {actions, PromotionCategoryType, selector} from './redux'
 import style from './promotion.module.scss'
 
 const FormItem = Form.Item
@@ -25,8 +25,18 @@ class SearchForm extends PureComponent {
     super(props)
   }
 
+  componentWillMount() {
+    const {promotion, category} = this.props
+    this.props.fetchPromotionRecordAction({
+      type: category.type,
+      promotionId: promotion.id,
+      isRefresh: true,
+      limit: 10,
+    })
+  }
+
   handleSubmit = (e) => {
-    const {promotion} = this.props
+    const {promotion, category} = this.props
     e.preventDefault()
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
@@ -44,7 +54,7 @@ class SearchForm extends PureComponent {
         }
       }
       this.props.fetchPromotionRecordAction({
-        type: PromotionCategoryType.PROMOTION_CATEGORY_TYPE_RECHARGE,
+        type: category.type,
         promotionId: promotion.id,
         isRefresh: true,
         limit: 10,
@@ -89,7 +99,10 @@ class SearchForm extends PureComponent {
 const PromotionRecordSearchForm = Form.create()(SearchForm)
 
 const mapStateToProps = (appState, ownProps) => {
+  const {promotion} = ownProps
+  const category =promotion? selector.selectCategory(appState, promotion.categoryId) : undefined
   return {
+    category: category,
   }
 }
 
