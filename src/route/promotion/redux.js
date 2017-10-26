@@ -92,6 +92,7 @@ const PromotionState = Record({
   rechargePromList: List(),     //充值活动记录id列表
   scorePromList: List(),        //积分活动记录id列表
   redEnvelopePromList: List(),  //随机红包记录id列表
+  scoreExPromList: List(),      //积分兑换记录id列表
 }, 'PromotionState')
 /**** Constant ****/
 const FETCH_PROMOTIONS = 'FETCH_PROMOTIONS'
@@ -402,6 +403,13 @@ function handleUpdatePromotionRecordList(state, action) {
       }
       break
     }
+    case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_EXCHANGE_SCORE:
+    {
+      if(!isRefresh) {
+        promotionRecordList = state.get('scoreExPromList')
+        break
+      }
+    }
     default:
       break
   }
@@ -419,6 +427,9 @@ function handleUpdatePromotionRecordList(state, action) {
       break
     case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_REDENVELOPE:
       state = state.set('redEnvelopePromList', promotionRecordList)
+      break
+    case PromotionCategoryType.PROMOTION_CATEGORY_TYPE_EXCHANGE_SCORE:
+      state = state.set('scoreExPromList', promotionRecordList)
       break
     default:
       break
@@ -561,7 +572,16 @@ function selectRedEnvelopePromRecordList(state, promotionId) {
 }
 
 function selectScoreExchangePromRecordList(state, promotionId) {
-
+  let scoreExPromList = state.PROMOTION.get('scoreExPromList')
+  let recordList = []
+  scoreExPromList.toArray().forEach((id) => {
+    let recordInfo = selectRecord(state, id)
+    let userInfo = recordInfo? userSelector.selectUserById(state, recordInfo.userId) : undefined
+    if(recordInfo && recordInfo.promotionId === promotionId) {
+      recordList.push(recordInfo)
+    }
+  })
+  return recordList
 }
 
 export const selector = {
