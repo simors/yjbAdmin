@@ -71,20 +71,30 @@ class CreateForm extends PureComponent {
           ],
         }
       }
+      let hasError = false
+      values.gifts.forEach((gift) => {
+        if(!gift.title || !gift.stocks ||!gift.scores) {
+          hasError = true
+        }
+      })
+      if(hasError) {
+        message.error("兑换礼品参数错误")
+        return
+      }
       console.log("handleSubmit values:", values)
-      // this.props.publishPromotion({
-      //   title: values.title,
-      //   start: values.rangeTimePicker[0],
-      //   end: values.rangeTimePicker[1],
-      //   description: values.description,
-      //   categoryId: this.props.category.id,
-      //   region: values.region,
-      //   awards: {},
-      //   success: () => {
-      //     this.props.history.push('/promotion_list')
-      //   },
-      //   error: this.onSubmitError
-      // })
+      this.props.publishPromotion({
+        title: values.title,
+        start: values.rangeTimePicker[0],
+        end: values.rangeTimePicker[1],
+        description: values.description,
+        categoryId: this.props.category.id,
+        region: values.region,
+        awards: {gifts: values.gifts},
+        success: () => {
+          this.props.history.push('/promotion_list')
+        },
+        error: this.onSubmitError
+      })
     })
   }
 

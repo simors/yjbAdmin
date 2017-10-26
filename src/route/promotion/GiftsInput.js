@@ -43,6 +43,7 @@ class GiftsInput extends  Component {
         gifts: this.state.gifts.concat({
           title: undefined,
           stocks: undefined,
+          scores: undefined,
           remark: undefined,
           imageList: undefined})
       })
@@ -139,7 +140,7 @@ class GiftsInput extends  Component {
     const inputItems = gifts.map((k, index) => {
       return (
         <Row key={index} gutter={16}>
-          <Col span={10}>
+          <Col span={18}>
             <Input disabled={disabled}
                    value={gifts[index].title}
                    addonBefore='礼品名称:'
@@ -151,6 +152,13 @@ class GiftsInput extends  Component {
                    addonBefore='库存:'
                    type='number'
                    onChange={(e) => this.triggerChange(index, 'stocks', e)}/>
+          </Col>
+          <Col span={10}>
+            <Input disabled={disabled}
+                   value={gifts[index].scores}
+                   addonBefore='消费积分:'
+                   type='number'
+                   onChange={(e) => this.triggerChange(index, 'scores', e)}/>
           </Col>
           <Col span={18}>
             <Input disabled={disabled}
