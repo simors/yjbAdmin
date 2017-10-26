@@ -5,8 +5,20 @@
   .search {
     margin-bottom: 12px;
   }
+  .card {
+    display: flex;
+    flex-direction: row;
+    .title {
+      font-size: 16px;
+    }
+    .amount {
+      font-size: 16px;
+      color: red;
+    }
+  }
 }
 
 .modalItem {
   margin-bottom: 12px;
 }
+
