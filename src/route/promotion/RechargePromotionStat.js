@@ -38,8 +38,8 @@ class RechargePromotionStat extends PureComponent {
     const {promotion, rechargeRecordInfolist} = this.props
     const columns = [
       { title: '参与用户', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
-      { title: '充值金额(¥)', dataIndex: 'recharge', key: 'recharge' },
-      { title: '赠送金额(¥)', dataIndex: 'award', key: 'award' },
+      { title: '充值金额(¥)', dataIndex: 'metadata.recharge', key: 'recharge' },
+      { title: '赠送金额(¥)', dataIndex: 'metadata.award', key: 'award' },
       { title: '参与时间', dataIndex: 'createdAt', key: 'createdAt',
         render: (createdAt) => (<span>{moment(new Date(createdAt)).format('LLLL')}</span>) },
     ]
