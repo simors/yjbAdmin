@@ -5,6 +5,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import createG2 from 'g2-react'
 import {Stat, Frame} from 'g2'
+import { Button, Radio, Icon, Row, Col } from 'antd'
 import {profitAction, profitSelector} from './redux'
 import {ACCOUNT_TYPE, accountSelector} from '../account'
 import {stationSelector} from '../station'
@@ -63,6 +64,10 @@ class InvestProfitChart extends React.PureComponent {
     this.props.stat30DaysAccountProfit({accountType: ACCOUNT_TYPE.INVESTOR_ACCOUNT})
   }
 
+  handleStatChange = (e) => {
+    console.log('select btn:', e.target.value)
+  }
+
   render() {
     let {stationNameList, profitData} = this.props
     if (!stationNameList || !profitData) {
@@ -73,6 +78,16 @@ class InvestProfitChart extends React.PureComponent {
     // frame = Frame.combineColumns(frame, ['中南大学', '中电软件园'], 'profit', 'stationName', ['date'])
     return (
       <div>
+        <Row>
+          <Col span={8} offset={16}>
+            <Radio.Group onChange={this.handleStatChange} defaultValue="30days">
+              <Radio.Button value="30days">最近30天</Radio.Button>
+              <Radio.Button value="3month">最近3个月</Radio.Button>
+              <Radio.Button value="6month">最近半年</Radio.Button>
+              <Radio.Button value="1year">最近一年</Radio.Button>
+            </Radio.Group>
+          </Col>
+        </Row>
         <this.ProfitChart forceFit={true} height={500} width={200} data={frame} plotCfg={{margin: [50, 150, 80, 100]}} />
       </div>
     )

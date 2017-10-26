@@ -115,6 +115,81 @@ function* sagaStat30DaysAccountProfit(action) {
   }
 }
 
+function* sagaStat3MonthsAccountProfit(action) {
+  let payload = action.payload
+  try {
+    let stat = yield call(profitCloud.stat3MonthsAccountProfit, {accountType: payload.accountType})
+    let stations = []
+    stat.forEach((statData) => {
+      stations.push(statData.station)
+    })
+    yield put(stationAction.saveStations({stations}))
+    yield put(accountAction.saveBatchAccountProfit({accoutProfits: stat}))
+    if (ACCOUNT_TYPE.INVESTOR_ACCOUNT == payload.accountType) {
+      yield put(saveInvestProfitStat({stat}))
+    } else if (ACCOUNT_TYPE.PARTNER_ACCOUNT == payload.accountType) {
+      yield put(savePartnerProfitStat({stat}))
+    }
+    if (payload.success) {
+      payload.success()
+    }
+  } catch (e) {
+    if (payload.error) {
+      payload.error(e.message)
+    }
+  }
+}
+
+function* sagaStatHalfYearAccountProfit(action) {
+  let payload = action.payload
+  try {
+    let stat = yield call(profitCloud.statHalfYearAccountProfit, {accountType: payload.accountType})
+    let stations = []
+    stat.forEach((statData) => {
+      stations.push(statData.station)
+    })
+    yield put(stationAction.saveStations({stations}))
+    yield put(accountAction.saveBatchAccountProfit({accoutProfits: stat}))
+    if (ACCOUNT_TYPE.INVESTOR_ACCOUNT == payload.accountType) {
+      yield put(saveInvestProfitStat({stat}))
+    } else if (ACCOUNT_TYPE.PARTNER_ACCOUNT == payload.accountType) {
+      yield put(savePartnerProfitStat({stat}))
+    }
+    if (payload.success) {
+      payload.success()
+    }
+  } catch (e) {
+    if (payload.error) {
+      payload.error(e.message)
+    }
+  }
+}
+
+function* sagaStat1YearAccountProfit(action) {
+  let payload = action.payload
+  try {
+    let stat = yield call(profitCloud.stat1YearAccountProfit, {accountType: payload.accountType})
+    let stations = []
+    stat.forEach((statData) => {
+      stations.push(statData.station)
+    })
+    yield put(stationAction.saveStations({stations}))
+    yield put(accountAction.saveBatchAccountProfit({accoutProfits: stat}))
+    if (ACCOUNT_TYPE.INVESTOR_ACCOUNT == payload.accountType) {
+      yield put(saveInvestProfitStat({stat}))
+    } else if (ACCOUNT_TYPE.PARTNER_ACCOUNT == payload.accountType) {
+      yield put(savePartnerProfitStat({stat}))
+    }
+    if (payload.success) {
+      payload.success()
+    }
+  } catch (e) {
+    if (payload.error) {
+      payload.error(e.message)
+    }
+  }
+}
+
 function* sagaRequestWithdraw(action) {
   let payload = action.payload
 
