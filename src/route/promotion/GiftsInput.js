@@ -14,6 +14,13 @@ import {
 } from 'antd'
 import AV from 'leancloud-storage'
 
+const uploadButton = (
+  <div>
+    <Icon type="plus" />
+    <div className="ant-upload-text">上传详情图片</div>
+  </div>
+)
+
 class GiftsInput extends  Component {
   constructor(props) {
     super(props)
@@ -125,18 +132,33 @@ class GiftsInput extends  Component {
       value.onSuccess(file)
     }, function(error) {
       value.onError(error)
-    });
+    })
+  }
+
+  renderUpload(index) {
+    const {fileList, gifts} = this.state
+    const {disabled} = this.props
+    if(!disabled) {
+      return (
+        <Upload customRequest={this.onCustomRequest}
+                listType="picture-card" fileList={fileList[index] || []}
+                onChange={(value) => {this.handleChange(index, value)}}
+                onPreview={this.handlePreview}>
+          {(fileList[index] && fileList[index].length >= 3 ) ? null : uploadButton}
+        </Upload>
+      )
+    } else {
+      let imageList = gifts[index].imageList
+      const imageItems = imageList.map((url) => {
+        return(<img key={index} src={url} style={{ width: '80px', height: '80px' }} alt=""/>)
+      })
+      return imageItems
+    }
   }
 
   render() {
     const { previewVisible, previewImage, fileList, gifts } = this.state;
     const {disabled} = this.props
-    const uploadButton = (
-      <div>
-        <Icon type="plus" />
-        <div className="ant-upload-text">上传详情图片</div>
-      </div>
-    );
     const inputItems = gifts.map((k, index) => {
       return (
         <Row key={index} gutter={16}>
@@ -167,13 +189,7 @@ class GiftsInput extends  Component {
                    onChange={(e) => this.triggerChange(index, 'remark', e)}/>
           </Col>
           <Col span={24}>
-            <Upload disabled={disabled}
-                    customRequest={this.onCustomRequest}
-                    listType="picture-card" fileList={fileList[index] || []}
-                    onChange={(value) => {this.handleChange(index, value)}}
-                    onPreview={this.handlePreview}>
-              {(fileList[index] && fileList[index].length >= 3) ? null : uploadButton}
-            </Upload>
+            {this.renderUpload(index)}
           </Col>
           <Col>
             {this.renderRemoveIcon(index)}

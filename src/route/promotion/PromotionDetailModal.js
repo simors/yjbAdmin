@@ -19,6 +19,7 @@ import DivisionCascader from '../../component/DivisionCascader'
 import AwardsInput from './AwardsInput'
 import {PromotionCategoryType, selector} from './redux'
 import RedEnvelopeParamsInput from './RedEnvelopeParamsInput'
+import GiftsInput from './GiftsInput'
 
 const RangePicker = DatePicker.RangePicker
 const TextArea = Input.TextArea
@@ -74,8 +75,9 @@ class PromotionDetailModal extends PureComponent {
       {
         return(
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
-            <Col span={4}></Col>
+            <Col span={4}>兑换礼品</Col>
             <Col span={20}>
+              <GiftsInput disabled={true} value={promotion.awards.gifts} />
             </Col>
           </Row>
         )
