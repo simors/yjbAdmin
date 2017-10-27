@@ -292,6 +292,6 @@ const mapDispatchToProps = {
 
 };
 
-export default Form.create()(connect(mapStateToProps, mapDispatchToProps)(ShowStation));
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(ShowStation));
 
 export {saga, reducer} from './redux';

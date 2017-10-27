@@ -103,5 +103,5 @@ const mapDispatchToProps = {
   ...authAction
 };
 
-export default Form.create()(connect(mapStateToProps,mapDispatchToProps)(SmsModal))
+export default connect(mapStateToProps,mapDispatchToProps)(Form.create()(SmsModal))
 
