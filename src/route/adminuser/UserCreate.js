@@ -34,10 +34,6 @@ class UserCreate extends React.Component {
     this.addUserId = undefined
   }
 
-  componentWillMount(){
-    this.props.listSysAdminUsers({status: AUTH_USER_STATUS.ADMIN_NORMAL})
-  }
-
   onHideModal = () => {
     this.props.hideUserCreateModal();
     this.props.form.resetFields();
@@ -82,7 +78,7 @@ class UserCreate extends React.Component {
 
   submitPersonalInfo = (e) => {
     e.preventDefault();
-    let {sysManager} = this.props
+    let {currentUser} = this.props
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (err) {
         return;
@@ -101,8 +97,8 @@ class UserCreate extends React.Component {
           message.success('操作授权成功')
           this.onUpdateUser(values)
         },
-        smsCode: sysSmsCode,
-        phone: sysManager.mobilePhoneNumber,
+        code: sysSmsCode,
+        operator: currentUser.id,
         error: (e)=>{
           message.error('操作授权失败或保存用户失败，请重试')
           this.setState((prevState, props) => {
@@ -113,7 +109,7 @@ class UserCreate extends React.Component {
           });
         }
       }
-      this.props.verifySmsCode(sysValidParams)
+      this.props.verifySysAuthCode(sysValidParams)
     });
   }
 
@@ -271,12 +267,8 @@ class UserCreate extends React.Component {
   }
 
   renderCompletePersonalInfo() {
-    let {form, sysManager, currentUser} = this.props
+    let {form, currentUser} = this.props
     const {getFieldDecorator} = form;
-
-    if (!sysManager) {
-      message.error('没有获取到系统管理员手机号')
-    }
 
     const prefixSelector = getFieldDecorator('prefix', {
       initialValue: '86',
@@ -295,9 +287,7 @@ class UserCreate extends React.Component {
     });
 
     let sysSmsInput = {
-      template:'管理员操作权限确认',
-      mobilePhoneNumber: sysManager.mobilePhoneNumber,
-      adminUser: currentUser.nickname,
+      adminUser: currentUser.id,
       opName: '新增后台用户',
     }
     return (
@@ -443,12 +433,10 @@ const mapStateToProps = (appState, ownProps) => {
   const allRoles = authSelector.selectRoles(appState);
   const visible = selector.selectUserCreateModalVisible(appState);
 
-  let sysManager = authSelector.selectSysAdminUsers(appState)
   let currentUser = authSelector.selectCurAdminUser(appState)
   return {
     allRoles,
     visible,
-    sysManager: sysManager[0],
     currentUser: currentUser,
   }
 };

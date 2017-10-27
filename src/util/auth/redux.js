@@ -217,6 +217,9 @@ const SAVE_USERS = 'AUTH/SAVE_USERS';
 const REQUEST_SMS_CODE = 'AUTH/REQUEST_SMS_CODE'
 const VERIFY_SMS_CODE = 'AUTH/FETCH_SMS_CODE'
 
+const REQUEST_SYS_AUTH_CODE = 'AUTH/REQUEST_SYS_AUTH_CODE'
+const VERIFY_SYS_AUTH_CODE = 'AUTH/VERIFY_SYS_AUTH_CODE'
+
 const GENERATE_ADMIN_QRCODE       = 'GENERATE_ADMIN_QRCODE'
 const SAVE_ADMIN_QRCODE           = 'SAVE_ADMIN_QRCODE'
 
@@ -241,6 +244,9 @@ export const action = {
 
   requestSmsCode: createAction(REQUEST_SMS_CODE),
   verifySmsCode: createAction(VERIFY_SMS_CODE),
+
+  requestSysAuthCode: createAction(REQUEST_SYS_AUTH_CODE),
+  verifySysAuthCode: createAction(VERIFY_SYS_AUTH_CODE),
 
   generateAdminQrcode: createAction(GENERATE_ADMIN_QRCODE),
 };
@@ -270,6 +276,8 @@ export const saga = [
   takeLatest(UPDATE_USER, sagaUpdateUser),
   takeLatest(REQUEST_SMS_CODE, sagaRequestSmsCode),
   takeLatest(VERIFY_SMS_CODE, sagaVerifySmsCode),
+  takeLatest(REQUEST_SYS_AUTH_CODE, sagaReqSysAuthCode),
+  takeLatest(VERIFY_SYS_AUTH_CODE, sagaVerifyAuthCode),
   takeLatest(GENERATE_ADMIN_QRCODE, sagaGenerateUserQrcode),
 ];
 
@@ -762,6 +770,40 @@ function *sagaGenerateUserQrcode(action) {
     yield put(saveAdminQrcode({phone: payload.phone, qrcode: qrcodeUrl}))
     if(payload.success){
       payload.success()
+    }
+  } catch (e) {
+    if(payload.error){
+      payload.error(e)
+    }
+  }
+}
+
+function* sagaReqSysAuthCode(action) {
+  let payload = action.payload
+  try {
+    let result = yield call(api.requestSysAuthCode, payload)
+    if(payload.success){
+      payload.success(result)
+    }
+  } catch (e) {
+    if(payload.error){
+      payload.error(e)
+    }
+  }
+}
+
+function* sagaVerifyAuthCode(action) {
+  let payload = action.payload
+  try {
+    let result = yield call(api.verifySysAuthCode, payload)
+    if (result) {
+      if(payload.success){
+        payload.success(result)
+      }
+    } else {
+      if(payload.error){
+        payload.error()
+      }
     }
   } catch (e) {
     if(payload.error){

@@ -234,7 +234,7 @@ class StationManage extends React.Component {
           onCancel = {()=>{this.setState({modalVisible: false})}}
           onOk={()=> {this.setStatus()}}
           op='开关服务点'
-          error = {(e)=>{console.log(e.message)}}
+          error = {()=>{console.log('授权失败')}}
         /> : null}
       </div>
     )

@@ -175,3 +175,29 @@ export async function requestGenerateUserQrcode(payload) {
   }
   return await AV.Cloud.run('wechatGenerateUserQrcode', params)
 }
+
+/**
+ * 给系统管理员发送授权码
+ * @param payload
+ * @returns {*|Promise}
+ */
+export async function requestSysAuthCode(payload) {
+  let params = {
+    operator: payload.operator,
+    operation: payload.operation,
+  }
+  return await AV.Cloud.run('sysauthSendAuthCode', params)
+}
+
+/**
+ * 校验授权码
+ * @param payload
+ * @returns {*|Promise}
+ */
+export async function verifySysAuthCode(payload) {
+  let params = {
+    operator: payload.operator,
+    code: payload.code,
+  }
+  return await AV.Cloud.run('sysauthVerifyAuthCode', params)
+}
