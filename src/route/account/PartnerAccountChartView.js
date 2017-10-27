@@ -44,11 +44,6 @@ class StationAccountManager extends React.Component {
     }
   }
 
-  selectStation(value) {
-    this.setState({
-      stationId: value
-    })
-  }
 
   selectPartner(value) {
     this.setState({
@@ -160,15 +155,6 @@ class StationAccountManager extends React.Component {
     )
   }
 
-  downloadFile(fileName, content) {
-    // var workbook = new Excel.Workbook();
-    // // var workbook = createAndFillWorkbook();
-    // workbook.xlsx.writeFile('hahahah')
-    //   .then(function(item) {
-    //     console.log('hahahah=>',item)
-    //     // done
-    //   });
-  }
 
   render() {
     // console.log('[DEBUG] ---> SysUser props: ', this.props);
