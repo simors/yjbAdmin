@@ -35,6 +35,7 @@ class Profit extends Record({
   adminProfit: undefined,         // 记录收益，类型为AdminProfit
   statInvestorProfits: List(),
   statPartnerProfits: List(),
+  profitShare: Map(),             // Map(<profitShareType, List()>)
 }, 'Profit') {}
 
 // --- constant
@@ -57,6 +58,8 @@ const GET_1_YEAR_ACCOUNT_PROFIT = 'GET_1_YEAR_ACCOUNT_PROFIT'
 const SAVE_INVEST_PROFIT_STAT = 'SAVE_INVEST_PROFIT_STAT'
 const SAVE_PARTNER_PROFIT_STAT = 'SAVE_PARTNER_PROFIT_STAT'
 const REQUEST_WITHDRAW = 'REQUEST_WITHDRAW'
+const GET_PROFIT_SHARING = 'GET_PROFIT_SHARING'
+const SAVE_PROFIT_SHARING = 'SAVE_PROFIT_SHARING'
 
 // --- action
 
@@ -67,11 +70,13 @@ export const profitAction = {
   statHalfYearAccountProfit: createAction(GET_HALF_YEAR_ACCOUNT_PROFIT),
   stat1YearAccountProfit: createAction(GET_1_YEAR_ACCOUNT_PROFIT),
   requestWithdraw: createAction(REQUEST_WITHDRAW),
+  getProfitSharing: createAction(GET_PROFIT_SHARING),
 }
 
 const saveAdminProfit = createAction(SAVE_ADMIN_PROFIT)
 const saveInvestProfitStat = createAction(SAVE_INVEST_PROFIT_STAT)
 const savePartnerProfitStat = createAction(SAVE_PARTNER_PROFIT_STAT)
+const saveProfitSharing = createAction(SAVE_PROFIT_SHARING)
 
 // --- saga
 
@@ -82,6 +87,7 @@ export const profitSaga = [
   takeLatest(GET_HALF_YEAR_ACCOUNT_PROFIT, sagaStatHalfYearAccountProfit),
   takeLatest(GET_1_YEAR_ACCOUNT_PROFIT, sagaStat1YearAccountProfit),
   takeLatest(REQUEST_WITHDRAW, sagaRequestWithdraw),
+  takeLatest(GET_PROFIT_SHARING, sagaGetProfitSharing),
 ]
 
 function* sagaGetAdminProfit(action) {
@@ -223,6 +229,20 @@ function* sagaRequestWithdraw(action) {
   }
 }
 
+function* sagaGetProfitSharing(action) {
+  let payload = action.payload
+  try {
+    let profits = yield call(profitCloud.getProfitSharing, payload)
+    console.log('profits', profits)
+    yield put(stationAction.saveBatchProfitShare({type: payload.type, profitShares: profits}))
+    yield put(saveProfitSharing({type: payload.type, profitShares: profits}))
+  } catch (e) {
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 // --- reducer
 
 const initialState = new Profit()
@@ -235,6 +255,8 @@ export function profitReducer(state=initialState, action) {
       return reduceSaveInvestProfitStat(state, action)
     case SAVE_PARTNER_PROFIT_STAT:
       return reduceSavePartnerProfitStat(state, action)
+    case SAVE_PROFIT_SHARING:
+      return reduceSaveProfitSharing(state, action)
     case REHYDRATE:
       return onRehydrate(state, action);
     default:
@@ -271,6 +293,18 @@ function reduceSavePartnerProfitStat(state, action) {
   return state
 }
 
+function reduceSaveProfitSharing(state, action) {
+  let payload = action.payload
+  let profitShares = payload.profitShares
+  let type = payload.type
+  let profitShareIds = []
+  profitShares.forEach((profitShare) => {
+    profitShareIds.push(profitShare.id)
+  })
+  state = state.setIn(['profitShare', type], new List(profitShareIds))
+  return state
+}
+
 function onRehydrate(state, action) {
   let incoming = action.payload.PROFIT
   if (!incoming) {
@@ -288,6 +322,7 @@ export const profitSelector = {
   selectAdminProfit,
   selectInvestProfitList,
   selectPartnerProfitList,
+  selectProfitShareIdList,
 }
 
 function selectAdminProfit(state) {
@@ -312,4 +347,12 @@ function selectPartnerProfitList(state) {
     return []
   }
   return partnetProfits.toJS()
+}
+
+function selectProfitShareIdList(state, type) {
+  let shareList = state.PROFIT.getIn(['profitShare', type])
+  if (!shareList) {
+    return []
+  }
+  return shareList.toJS()
 }
