@@ -728,13 +728,13 @@ function* sagaUpdateUser(action) {
 
 function* sagaRequestSmsCode(action) {
   const payload = action.payload
-  console.log('payload', payload)
   try{
     yield call(api.requestSmsAuthCode, payload)
     if(payload.success){
       payload.success()
     }
   }catch(e){
+    console.log(e)
     if(payload.error){
       payload.error(e)
     }
