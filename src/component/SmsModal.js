@@ -47,7 +47,8 @@ class SmsModal extends React.Component {
         success: ()=>{this.props.onOk()},
         code: data.smsCode,
         operator: this.props.currentUser.id,
-        error: ()=>{this.props.error()}
+        error: ()=>{
+          this.props.error()}
       }
       this.props.verifySysAuthCode(payload)
 

@@ -16,6 +16,7 @@ import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction, accountSelector} from '../account/redux'
 import {PERMISSION_CODE} from '../../util/rolePermission'
 import SmsModal from '../../component/SmsModal'
+import LoadActivity, {loadAction} from '../../component/loadActivity'
 
 const history = createBrowserHistory()
 const Option = Select.Option;
@@ -54,15 +55,18 @@ class StationManage extends React.Component {
   }
 
   refresh() {
+    this.props.updateLoadingState({isLoading: false})
     // this.props.requestStations({...this.state})
   }
 
   setStatus(value) {
+    this.props.updateLoadingState({isLoading: true})
 
     let payload = {
       stationId: value.id,
       success: ()=> {
         this.setState({modalVisible: false})
+
         this.refresh()
       },
       error: (err)=> {
@@ -183,7 +187,7 @@ class StationManage extends React.Component {
   }
 
   openModal(value) {
-    console.log('hahahahahahha')
+    console.log('hahahahahahha',value)
 
     this.setState({selectedStation:value,modalVisible: true})
   }
@@ -233,7 +237,7 @@ class StationManage extends React.Component {
             })
           }}
           setStationStatus={(value)=> {
-            this.openModal()
+            this.openModal(value)
           }}
         />
         {this.state.modalVisible ? <SmsModal
@@ -267,7 +271,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = {
   ...stationAction,
-  ...accountAction
+  ...accountAction,
+  ...loadAction
 
 };
 

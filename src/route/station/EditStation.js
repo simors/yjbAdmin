@@ -80,6 +80,8 @@ class EditStation extends React.Component {
   }
 
   refresh() {
+    this.props.updateLoadingState({isLoading: true})
+
     this.props.requestPartners({
       stationId: this.props.match.params.id, success: ()=> {
         this.props.updateLoadingState({isLoading: false})
