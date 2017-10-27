@@ -134,7 +134,6 @@ export const stationAction = {
   updatePartner: createAction(UPDATE_PARTNER),
   openPartner: createAction(OPEN_PARTNER),
   closePartner: createAction(CLOSE_PARTNER),
-  updateStation: createAction(UPDATE_STATION),
   saveStation: createAction(CREATE_STATION_SUCCESS),
   saveStations: createAction(SAVE_STATIONS)
 }

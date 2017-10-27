@@ -37,8 +37,8 @@ class StationAccountManager extends React.Component {
       status: undefined,
       stationId: undefined,
       division: [],
-      startDate: undefined,
-      endDate: undefined,
+      startDate: moment().day(-30).format(),
+      endDate: moment().format(),
       userId: undefined
     }
   }
@@ -57,13 +57,22 @@ class StationAccountManager extends React.Component {
 
   componentWillMount() {
 
-    this.props.fetchPartnerAccountsDetail({
-      success: ()=> {
-        console.log('hahhahah')
-      },
+    this.props.listUsersByRole({
+      roleCode:ROLE_CODE.STATION_PROVIDER,
+      onSuccess: ()=>{
+        console.log('this.props.userList[0].id======>',this.props.userList[0].id)
+        this.props.fetchPartnerAccountsDetail({
+        startDate: this.state.startDate,
+        endDate: this.state.endDate,
+        userId: this.props.userList[0].id,
+        success: ()=> {
+          console.log('hahhahah')
+        },
 
+      })}
     })
-    this.props.listUsersByRole({roleCode:ROLE_CODE.STATION_PROVIDER})
+
+
     this.props.requestStations({})
 
   }
@@ -85,7 +94,8 @@ class StationAccountManager extends React.Component {
         console.log('error')
       }
     }
-    this.props.fetchStationAccountsDetail(payload)
+
+    this.props.fetchPartnerAccountsDetail(payload)
   }
 
 
@@ -183,6 +193,8 @@ const mapStateToProps = (state, ownProps) => {
   let userList = authSelector.selectUsersByRole(state, ROLE_CODE.STATION_PROVIDER)
   let accounts = accountSelector.selectPartnerAccountsDetail(state)
   // let areaList = configSelector.selectAreaList(state)
+  console.log('userList========>', userList)
+
   console.log('accounts========>', accounts)
   return {
     stationAccounts: accounts,

@@ -35,6 +35,9 @@ const columnsDetail = [{
 const columns = [{
   title: "服务点名称",
   dataIndex: "station.name",
+  render: (text,record)=>{
+    return <div>{record.station?record.station.name:'全服务点'}</div>
+  }
 }, {
   title: "投资人信息",
   dataIndex: "user.nickname",
