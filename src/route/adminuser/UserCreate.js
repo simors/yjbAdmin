@@ -376,7 +376,7 @@ class UserCreate extends React.Component {
                 })(<Input />)}
               </Col>
               <Col span={8}>
-                <SmsInput getSmsAuthText="获取授权码" params={sysSmsInput}/>
+                <SmsInput smsType="auth" getSmsAuthText="获取授权码" params={sysSmsInput}/>
               </Col>
             </Row>
           </Form.Item>

@@ -83,7 +83,7 @@ class SmsModal extends React.Component {
           </FormItem>
           </Col>
             <Col span={6}>
-              <SmsInput params={{adminUser:this.props.currentUser.id,opName:this.props.op }}/>
+              <SmsInput smsType="auth" getSmsAuthText="获取授权码" params={{adminUser:this.props.currentUser.id,opName:this.props.op }}/>
             </Col>
           </Row>
         </Form>

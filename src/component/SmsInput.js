@@ -38,7 +38,12 @@ class SmsInput extends React.Component {
   }
 
   requestSmsCodeSuccess(){
-    message.success('授权码已发送，请向系统管理员索取！')
+    let {smsType} = this.props
+    if (smsType === 'sms') {
+      message.success('验证码已经发送，请查收！')
+    } else if (smsType === 'auth') {
+      message.success('授权码已发送，请向系统管理员索取！')
+    }
   }
 
   requestSmsCodeError(){
@@ -46,16 +51,26 @@ class SmsInput extends React.Component {
   }
 
   requestSmsCode = () => {
-    let {adminUser, opName} = this.props.params
-      console.log('adminUser=========>',adminUser,opName)
-    this.props.requestSysAuthCode(
-      {
+    let {smsType, params} = this.props
+
+    if (smsType === 'sms') {
+      let {mobilePhoneNumber, name, op} = params
+      this.props.requestSmsCode({
+        mobilePhoneNumber,
+        name,
+        op,
+        success:()=>{this.requestSmsCodeSuccess()},
+        error:()=>{this.requestSmsCodeError()},
+      })
+    } else if (smsType === 'auth') {
+      let {adminUser, opName} = params
+      this.props.requestSysAuthCode({
         operator: adminUser,
         operation: opName,
         success:()=>{this.requestSmsCodeSuccess()},
         error:()=>{this.requestSmsCodeError()},
-      }
-    )
+      })
+    }
   }
 
   getSmsAuthCode = () => {
@@ -100,6 +115,7 @@ class SmsInput extends React.Component {
 
 SmsInput.defaultProps = {
   getSmsAuthText: '获取验证码',
+  smsType: 'sms',
 
   //text input
   placeholder: '请输入6位验证码',
