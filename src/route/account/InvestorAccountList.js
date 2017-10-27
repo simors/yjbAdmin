@@ -8,8 +8,7 @@ import React from 'react';
 import {Table} from 'antd';
 import mathjs from 'mathjs'
 
-
-const columns = [{
+const columnsDetail = [{
   title: "服务点名称",
   dataIndex: "station.name",
 }, {
@@ -26,6 +25,27 @@ const columns = [{
   title: "日期",
   dataIndex: "accountDay",
 },{
+  title:'开始日期',
+  dataIndex: 'startDate',
+},{
+  title:'结束日期',
+  dataIndex: 'endDate',
+}];
+
+const columns = [{
+  title: "服务点名称",
+  dataIndex: "station.name",
+}, {
+  title: "投资人信息",
+  dataIndex: "user.nickname",
+}, {
+  title: "利润",
+  dataIndex: "profit",
+  render: (text,record)=>{
+    return <div>{record.profit+'元'}</div>
+  }
+
+}, {
   title:'开始日期',
   dataIndex: 'startDate',
 },{

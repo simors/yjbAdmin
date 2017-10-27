@@ -21,19 +21,25 @@ const Option = Select.Option;
 const FormItem = Form.Item
 const formItemLayout = {
   labelCol: {
-    span: 6
+    span: 6,
+    offset: -3,
   },
   wrapperCol: {
-    span: 18
+    span: 18,
+    offset: -3,
   }
 }
 
 const formItemLayout2 = {
   labelCol: {
-    span: 12
+    span: 12,
+    offset: -3,
+
   },
   wrapperCol: {
-    span: 12
+    span: 12,
+    offset: -3,
+
   }
 }
 
@@ -257,10 +263,12 @@ class EditStation extends React.Component {
         province: this.state.province,
         city: this.state.city,
         area: this.state.area,
-        success: (stationId)=> {
+        success: ()=> {
           this.setState({spinShow: false})
           message.success('提交成功')
-          this.props.history.push({pathname: '/site_list/editStation/' + stationId})
+          this.props.history.push({
+            pathname: '/site_list'
+          })
           this.props.updateLoadingState({isLoading: false})
         },
         error: (err)=> {
@@ -436,13 +444,7 @@ class EditStation extends React.Component {
             </Row>
             <LoadActivity tip="正在提交..."/>
           </Form>
-          <Row>
-            <Col>
-              <Button onClick={()=> {
-                this.submitStation()
-              }}>提交</Button>
-            </Col>
-          </Row>
+
           <Row ></Row>
           <Row style={{height: 20,marginTop: 20, marginBottom: 20}}>
             <Col span={4}>
@@ -462,6 +464,21 @@ class EditStation extends React.Component {
                          this.setPartnerStatus(data)
                        }}
           />
+        <Row gutter={24} style={{flexDirection:'row',marginTop:20,marginBottom:20,justifyContent:' center'}}>
+          <Col span={8}></Col>
+          <Col span={4}>
+            <Button onClick={()=> {
+              this.props.history.push({
+                pathname: '/site_list'
+              })
+            }} type="primary">返回</Button>
+          </Col>
+          <Col span={4}>
+            <Button onClick={()=> {
+              this.submitStation()
+            }} type="primary">提交</Button>
+          </Col>
+        </Row>
           <CreatePartnerModal
             modalKey={this.state.modalKey}
             onOk={(data)=> {

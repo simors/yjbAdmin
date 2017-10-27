@@ -25,8 +25,8 @@ class Withdraw extends React.PureComponent {
     let {currentUser} = this.props
     this.props.form.validateFields((err, values) => {
       if (err) {
-        console.log('Received values of form: ', values);
         message.error('数据输入错误，请检查输入金额')
+        return
       }
       this.props.requestWithdraw({
         amount: values.withdraw,
@@ -70,17 +70,9 @@ class Withdraw extends React.PureComponent {
     })
   }
 
-  checkConfirm = (rule, value, callback) => {
-    const form = this.props.form;
-    if (value && this.state.confirmDirty) {
-      form.validateFields(['withdraw'], { force: true });
-    }
-    callback();
-  }
-
   render() {
     const { getFieldDecorator } = this.props.form
-    let {adminProfit} = this.props
+    let {adminProfit, currentUser} = this.props
     if (!adminProfit) {
       return null
     }
@@ -92,8 +84,8 @@ class Withdraw extends React.PureComponent {
           footer={null}
           onCancel={this.closeModel}
         >
-          <Row justify="center">
-            <Col span={10} offset={1}>
+          <Row>
+            <Col span={12}>
               <div style={{fontSize: 16, marginBottom: 10}}>输入提现金额</div>
               <div style={{marginLeft: 20}}>
                 <Form onSubmit={this.handleSubmit}>
@@ -116,16 +108,16 @@ class Withdraw extends React.PureComponent {
                 </Form>
               </div>
               <div style={{marginLeft: 20}}>余额 ¥{Number(adminProfit.balance).toFixed(2)}</div>
-              <div style={{marginTop: 10, marginLeft: 20, color: 'red'}}>若没有关注衣家宝微信公众号，请先关注并绑定个人信息后再提现</div>
+
               <div style={{marginTop: 20, marginLeft: 20}}>
                 <Popconfirm placement="top" title="确认需要取现吗？" onConfirm={this.handleSubmit} okText="是的" cancelText="再想想">
                   <Button type="primary" size="large">取现到微信余额</Button>
                 </Popconfirm>
               </div>
             </Col>
-            <Col span={12} offset={1}>
-              <img src={require('../../asset/image/qrcode_mp_yjb.jpg')} width={250} height={250} />
-              <div style={{textAlign: 'center'}}>使用微信扫一扫关注公众号，并绑定手机号</div>
+            <Col span={11} offset={1} style={{textAlign: 'center'}}>
+              <img src={currentUser.avatar} width={200} height={200} />
+              <div style={{marginTop: 10, color: 'red'}}>每个月的10号到15号为可取现时间，取现金额将以零钱的方式充入您的微信钱包，请注意查收</div>
             </Col>
           </Row>
         </Modal>

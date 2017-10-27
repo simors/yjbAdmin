@@ -39,7 +39,6 @@ class SmsModal extends React.Component {
 
   componentDidMount() {
     this.setState({visible: !!this.props.visible})
-    console.log(...this.props)
   }
 
   handleOk() {
@@ -87,7 +86,7 @@ class SmsModal extends React.Component {
           </FormItem>
           </Col>
             <Col span={6}>
-              <SmsInput params={{template:'管理员操作权限确认',mobilePhoneNumber:this.props.sysManager.mobilePhoneNumber,adminUser:this.props.currentUser.nickname,opName:this.props.op }}/>
+              <SmsInput params={{template:'管理员操作权限确认',mobilePhoneNumber:this.props.sysManager?this.props.sysManager.mobilePhoneNumber:'',adminUser:this.props.currentUser.nickname,opName:this.props.op }}/>
             </Col>
           </Row>
         </Form>

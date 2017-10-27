@@ -625,8 +625,7 @@ function selectInvestors(state) {
       if (investorInfo) {
         let shareholder = selector.selectUserById(state, investorInfo.shareholderId)
         shareholder ? investorInfo.shareholder = shareholder : null
-        let station = stationSelector.selectStationById(state, investorInfo.stationId)
-        station ? investorInfo.station = station: null
+        let station = stationSelector.selectStationById(state,)
       }
       investors.push(investorInfo)
     })

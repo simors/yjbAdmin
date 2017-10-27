@@ -5,24 +5,10 @@ import React from 'react'
 import {connect} from 'react-redux'
 import createG2 from 'g2-react'
 import {Stat, Frame} from 'g2'
+import { Button, Radio, Icon, Row, Col } from 'antd'
 import {profitAction, profitSelector} from './redux'
 import {ACCOUNT_TYPE, accountSelector} from '../account'
 import {stationSelector} from '../station'
-
-const data = [
-  {date: '2017-09-01', '中南大学': 100, '中电软件园': 120},
-  {date: '2017-09-02', '中南大学': 110, '中电软件园': 88},
-  {date: '2017-09-03', '中南大学': 133, '中电软件园': 97},
-  {date: '2017-09-04', '中南大学': 78, '中电软件园': 117},
-  {date: '2017-09-05', '中南大学': 122, '中电软件园': 108},
-  {date: '2017-09-06', '中南大学': 132, '中电软件园': 89},
-  {date: '2017-09-07', '中南大学': 88, '中电软件园': 178},
-  {date: '2017-09-08', '中南大学': 67, '中电软件园': 90},
-  {date: '2017-09-09', '中南大学': 145, '中电软件园': 123},
-  {date: '2017-09-10', '中南大学': 155, '中电软件园': 69},
-  {date: '2017-09-11', '中南大学': 78, '中电软件园': 176},
-  {date: '2017-09-12', '中南大学': 26, '中电软件园': 67},
-]
 
 class InvestProfitChart extends React.PureComponent {
   constructor(props) {
@@ -63,6 +49,24 @@ class InvestProfitChart extends React.PureComponent {
     this.props.stat30DaysAccountProfit({accountType: ACCOUNT_TYPE.INVESTOR_ACCOUNT})
   }
 
+  handleStatChange = (e) => {
+    let selectedValue = e.target.value
+    switch (selectedValue) {
+      case '30days':
+        this.props.stat30DaysAccountProfit({accountType: ACCOUNT_TYPE.INVESTOR_ACCOUNT})
+        break
+      case '3months':
+        this.props.stat3MonthsAccountProfit({accountType: ACCOUNT_TYPE.INVESTOR_ACCOUNT})
+        break
+      case 'halfYear':
+        this.props.statHalfYearAccountProfit({accountType: ACCOUNT_TYPE.INVESTOR_ACCOUNT})
+        break
+      case '1year':
+        this.props.stat1YearAccountProfit({accountType: ACCOUNT_TYPE.INVESTOR_ACCOUNT})
+        break
+    }
+  }
+
   render() {
     let {stationNameList, profitData} = this.props
     if (!stationNameList || !profitData) {
@@ -70,9 +74,18 @@ class InvestProfitChart extends React.PureComponent {
     }
     let frame = new Frame(profitData);
     frame = Frame.combineColumns(frame, stationNameList, 'profit', 'stationName', ['date'])
-    // frame = Frame.combineColumns(frame, ['中南大学', '中电软件园'], 'profit', 'stationName', ['date'])
     return (
       <div>
+        <Row>
+          <Col span={8} offset={16}>
+            <Radio.Group onChange={this.handleStatChange} defaultValue="30days">
+              <Radio.Button value="30days">最近30天</Radio.Button>
+              <Radio.Button value="3months">最近3个月</Radio.Button>
+              <Radio.Button value="halfYear">最近半年</Radio.Button>
+              <Radio.Button value="1year">最近一年</Radio.Button>
+            </Radio.Group>
+          </Col>
+        </Row>
         <this.ProfitChart forceFit={true} height={500} width={200} data={frame} plotCfg={{margin: [50, 150, 80, 100]}} />
       </div>
     )

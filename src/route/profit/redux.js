@@ -51,6 +51,9 @@ export const DEAL_TYPE = {
 const GET_CURRENT_ADMIN_PROFIT = 'GET_CURRENT_ADMIN_PROFIT'
 const SAVE_ADMIN_PROFIT = 'SAVE_ADMIN_PROFIT'
 const GET_30_DAYS_ACCOUNT_PROFIT = 'GET_30_DAYS_ACCOUNT_PROFIT'
+const GET_3_MONTHS_ACCOUNT_PROFIT = 'GET_3_MONTHS_ACCOUNT_PROFIT'
+const GET_HALF_YEAR_ACCOUNT_PROFIT = 'GET_HALF_YEAR_ACCOUNT_PROFIT'
+const GET_1_YEAR_ACCOUNT_PROFIT = 'GET_1_YEAR_ACCOUNT_PROFIT'
 const SAVE_INVEST_PROFIT_STAT = 'SAVE_INVEST_PROFIT_STAT'
 const SAVE_PARTNER_PROFIT_STAT = 'SAVE_PARTNER_PROFIT_STAT'
 const REQUEST_WITHDRAW = 'REQUEST_WITHDRAW'
@@ -60,6 +63,9 @@ const REQUEST_WITHDRAW = 'REQUEST_WITHDRAW'
 export const profitAction = {
   getCurrentAdminProfit: createAction(GET_CURRENT_ADMIN_PROFIT),
   stat30DaysAccountProfit: createAction(GET_30_DAYS_ACCOUNT_PROFIT),
+  stat3MonthsAccountProfit: createAction(GET_3_MONTHS_ACCOUNT_PROFIT),
+  statHalfYearAccountProfit: createAction(GET_HALF_YEAR_ACCOUNT_PROFIT),
+  stat1YearAccountProfit: createAction(GET_1_YEAR_ACCOUNT_PROFIT),
   requestWithdraw: createAction(REQUEST_WITHDRAW),
 }
 
@@ -72,6 +78,9 @@ const savePartnerProfitStat = createAction(SAVE_PARTNER_PROFIT_STAT)
 export const profitSaga = [
   takeLatest(GET_CURRENT_ADMIN_PROFIT, sagaGetAdminProfit),
   takeLatest(GET_30_DAYS_ACCOUNT_PROFIT, sagaStat30DaysAccountProfit),
+  takeLatest(GET_3_MONTHS_ACCOUNT_PROFIT, sagaStat3MonthsAccountProfit),
+  takeLatest(GET_HALF_YEAR_ACCOUNT_PROFIT, sagaStatHalfYearAccountProfit),
+  takeLatest(GET_1_YEAR_ACCOUNT_PROFIT, sagaStat1YearAccountProfit),
   takeLatest(REQUEST_WITHDRAW, sagaRequestWithdraw),
 ]
 
@@ -94,6 +103,81 @@ function* sagaStat30DaysAccountProfit(action) {
   let payload = action.payload
   try {
     let stat = yield call(profitCloud.stat30DaysAccountProfit, {accountType: payload.accountType})
+    let stations = []
+    stat.forEach((statData) => {
+      stations.push(statData.station)
+    })
+    yield put(stationAction.saveStations({stations}))
+    yield put(accountAction.saveBatchAccountProfit({accoutProfits: stat}))
+    if (ACCOUNT_TYPE.INVESTOR_ACCOUNT == payload.accountType) {
+      yield put(saveInvestProfitStat({stat}))
+    } else if (ACCOUNT_TYPE.PARTNER_ACCOUNT == payload.accountType) {
+      yield put(savePartnerProfitStat({stat}))
+    }
+    if (payload.success) {
+      payload.success()
+    }
+  } catch (e) {
+    if (payload.error) {
+      payload.error(e.message)
+    }
+  }
+}
+
+function* sagaStat3MonthsAccountProfit(action) {
+  let payload = action.payload
+  try {
+    let stat = yield call(profitCloud.stat3MonthsAccountProfit, {accountType: payload.accountType})
+    let stations = []
+    stat.forEach((statData) => {
+      stations.push(statData.station)
+    })
+    yield put(stationAction.saveStations({stations}))
+    yield put(accountAction.saveBatchAccountProfit({accoutProfits: stat}))
+    if (ACCOUNT_TYPE.INVESTOR_ACCOUNT == payload.accountType) {
+      yield put(saveInvestProfitStat({stat}))
+    } else if (ACCOUNT_TYPE.PARTNER_ACCOUNT == payload.accountType) {
+      yield put(savePartnerProfitStat({stat}))
+    }
+    if (payload.success) {
+      payload.success()
+    }
+  } catch (e) {
+    if (payload.error) {
+      payload.error(e.message)
+    }
+  }
+}
+
+function* sagaStatHalfYearAccountProfit(action) {
+  let payload = action.payload
+  try {
+    let stat = yield call(profitCloud.statHalfYearAccountProfit, {accountType: payload.accountType})
+    let stations = []
+    stat.forEach((statData) => {
+      stations.push(statData.station)
+    })
+    yield put(stationAction.saveStations({stations}))
+    yield put(accountAction.saveBatchAccountProfit({accoutProfits: stat}))
+    if (ACCOUNT_TYPE.INVESTOR_ACCOUNT == payload.accountType) {
+      yield put(saveInvestProfitStat({stat}))
+    } else if (ACCOUNT_TYPE.PARTNER_ACCOUNT == payload.accountType) {
+      yield put(savePartnerProfitStat({stat}))
+    }
+    if (payload.success) {
+      payload.success()
+    }
+  } catch (e) {
+    if (payload.error) {
+      payload.error(e.message)
+    }
+  }
+}
+
+function* sagaStat1YearAccountProfit(action) {
+  let payload = action.payload
+  try {
+    let stat = yield call(profitCloud.stat1YearAccountProfit, {accountType: payload.accountType})
     let stations = []
     stat.forEach((statData) => {
       stations.push(statData.station)

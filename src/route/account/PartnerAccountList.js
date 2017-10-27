@@ -8,8 +8,7 @@ import React from 'react';
 import {Table} from 'antd';
 import mathjs from 'mathjs'
 
-
-const columns = [{
+const columnsDetail = [{
   title: "服务点名称",
   dataIndex: "station.name",
 }, {
@@ -32,6 +31,26 @@ const columns = [{
   dataIndex: 'endDate',
 }];
 
+const columns = [{
+  title: "服务点名称",
+  dataIndex: "station.name",
+}, {
+  title: "分成方信息",
+  dataIndex: "user.nickname",
+}, {
+  title: "利润",
+  dataIndex: "profit",
+  render: (text,record)=>{
+    return <div>{record.profit+'元'}</div>
+  }
+},{
+  title:'开始日期',
+  dataIndex: 'startDate',
+},{
+  title:'结束日期',
+  dataIndex: 'endDate',
+}];
+
 
 const rowKey = (record) => {
   return record.id;
@@ -40,7 +59,7 @@ const rowKey = (record) => {
 
 const PartnerAccountList = (props) => {
   // console.log('[DEBUG] ---> UserList props: ', props);
-  let {stationAccounts} = props;
+  let {stationAccounts,viewType} = props;
   if (stationAccounts === null) {
     stationAccounts = [];
   }
@@ -54,7 +73,7 @@ const PartnerAccountList = (props) => {
 
   return (
     <div>
-      <Table columns={columns} dataSource={stationAccounts} rowKey={rowKey} />
+      <Table columns={viewType=='all'?columns:columnsDetail} dataSource={stationAccounts} rowKey={rowKey} />
     </div>
   );
 };
