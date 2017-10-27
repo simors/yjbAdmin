@@ -13,6 +13,7 @@ import {
   Modal,
 } from 'antd'
 import AV from 'leancloud-storage'
+import uuidv4 from 'uuid/v4'
 
 const uploadButton = (
   <div>
@@ -48,6 +49,7 @@ class GiftsInput extends  Component {
     if(this.state.gifts.length < 10) {
       this.setState({
         gifts: this.state.gifts.concat({
+          id: uuidv4().replace(/-/g, '').substr(0, 8),
           title: undefined,
           stocks: undefined,
           scores: undefined,

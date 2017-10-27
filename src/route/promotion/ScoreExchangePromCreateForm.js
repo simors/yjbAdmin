@@ -73,7 +73,7 @@ class CreateForm extends PureComponent {
       }
       let hasError = false
       values.gifts.forEach((gift) => {
-        if(!gift.title || !gift.stocks ||!gift.scores) {
+        if(!gift.id || !gift.title || !gift.stocks ||!gift.scores) {
           hasError = true
         }
       })
