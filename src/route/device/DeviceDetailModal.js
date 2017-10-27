@@ -94,7 +94,7 @@ class DeviceDetailModal extends React.PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} >
             <Col span={4}>二维码</Col>
             <Col span={6}>
-              <QRCode ref="qrcode" value={appConfig.MP_CLIENT_DOMAIN + '/openDeivce/' + device.deviceNo} />
+              <QRCode ref="qrcode" value={appConfig.MP_CLIENT_DOMAIN + '/openDevice/' + device.deviceNo} />
             </Col>
             <Col>
               <a href="" id="download" download={device.deviceNo} onClick={this.downloadQRCode}>下载二维码</a>
