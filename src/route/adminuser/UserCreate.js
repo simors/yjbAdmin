@@ -60,6 +60,16 @@ class UserCreate extends React.Component {
       onSuccess: () => {
         this.props.hideUserCreateModal({});
         this.props.form.resetFields();
+        setTimeout(() => {
+          this.setState((prevState, props) => {
+            return {
+              ...prevState,
+              loading: false,
+              step: 1,
+              title: '新增用户 —— 验证手机号',
+            };
+          });
+        }, 1000)
         this.props.listAdminUsers({limit: 100});
       },
       onFailure: (code) => {
