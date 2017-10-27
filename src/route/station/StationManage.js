@@ -35,7 +35,8 @@ class StationManage extends React.Component {
       addr: undefined,
       name: undefined,
       division: [],
-      modalVisible: false
+      modalVisible: false,
+      selectedStation: undefined
     }
   }
 
@@ -181,9 +182,10 @@ class StationManage extends React.Component {
     )
   }
 
-  openModal() {
+  openModal(value) {
     console.log('hahahahahahha')
-    this.setState({modalVisible: true})
+
+    this.setState({selectedStation:value,modalVisible: true})
   }
 
 
@@ -231,7 +233,7 @@ class StationManage extends React.Component {
             })
           }}
           setStationStatus={(value)=> {
-            this.setStatus(value)
+            this.openModal()
           }}
         />
         {this.state.modalVisible ? <SmsModal
@@ -239,7 +241,7 @@ class StationManage extends React.Component {
             this.setState({modalVisible: false})
           }}
           onOk={()=> {
-            this.setStatus()
+            this.setStatus(this.state.selectedStation)
           }}
           op='开关服务点'
           error={(e)=> {

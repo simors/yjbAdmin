@@ -96,6 +96,7 @@ class SmsModal extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   let sysManager = authSelector.selectSysAdminUsers(state)
+  console.log('sysManager======>',sysManager)
   let currentUser = authSelector.selectCurAdminUser(state)
   return {
     sysManager: sysManager[0],
