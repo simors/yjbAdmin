@@ -2,14 +2,13 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Modal, Button, Form, Input, Select, Checkbox, message, Row, Col} from 'antd';
 import {action, selector} from './redux';
-import {action as authAction, selector as authSelector, AUTH_USER_TYPE} from '../../util/auth/';
+import {action as authAction, selector as authSelector, AUTH_USER_TYPE, AUTH_USER_STATUS} from '../../util/auth/';
 import * as errno from '../../errno';
 import style from './UserCreate.module.scss';
 import SmsInput from '../../component/SmsInput'
 import {getAuthorizeURL} from '../../util/wxUtil'
 import appConfig from '../../util/appConfig'
 import QRCode from 'qrcode.react'
-import {ROLE_CODE} from '../../util/rolePermission'
 
 const formItemLayout = {
   labelCol: {
@@ -36,7 +35,7 @@ class UserCreate extends React.Component {
   }
 
   componentWillMount(){
-    this.props.listUsersByRole({roleCode: ROLE_CODE.SYS_MANAGER})
+    this.props.listSysAdminUsers({status: AUTH_USER_STATUS.ADMIN_NORMAL})
   }
 
   onHideModal = () => {
@@ -82,9 +81,8 @@ class UserCreate extends React.Component {
   }
 
   submitPersonalInfo = (e) => {
-    console.log('submitPersonalInfo')
     e.preventDefault();
-    let {sysManager, currentUser} = this.props
+    let {sysManager} = this.props
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (err) {
         return;
@@ -104,7 +102,7 @@ class UserCreate extends React.Component {
           this.onUpdateUser(values)
         },
         smsCode: sysSmsCode,
-        phone: currentUser.mobilePhoneNumber,
+        phone: sysManager.mobilePhoneNumber,
         error: (e)=>{
           message.error('操作授权失败或保存用户失败，请重试')
           this.setState((prevState, props) => {
@@ -159,7 +157,6 @@ class UserCreate extends React.Component {
   }
 
   submitValidatePhone = (e) => {
-    console.log('submitValidatePhone')
     e.preventDefault();
     let {form} = this.props
     form.validateFields((errors) => {
@@ -277,11 +274,9 @@ class UserCreate extends React.Component {
     let {form, sysManager, currentUser} = this.props
     const {getFieldDecorator} = form;
 
-    console.log('sysManager', sysManager)
-
-    // if (!sysManager) {
-    //   message.error('没有获取到系统管理员手机号')
-    // }
+    if (!sysManager) {
+      message.error('没有获取到系统管理员手机号')
+    }
 
     const prefixSelector = getFieldDecorator('prefix', {
       initialValue: '86',
@@ -301,7 +296,7 @@ class UserCreate extends React.Component {
 
     let sysSmsInput = {
       template:'管理员操作权限确认',
-      mobilePhoneNumber: currentUser.mobilePhoneNumber,
+      mobilePhoneNumber: sysManager.mobilePhoneNumber,
       adminUser: currentUser.nickname,
       opName: '新增后台用户',
     }
@@ -448,9 +443,8 @@ const mapStateToProps = (appState, ownProps) => {
   const allRoles = authSelector.selectRoles(appState);
   const visible = selector.selectUserCreateModalVisible(appState);
 
-  let sysManager = authSelector.selectUsersByRole(appState, ROLE_CODE.SYS_MANAGER)
+  let sysManager = authSelector.selectSysAdminUsers(appState)
   let currentUser = authSelector.selectCurAdminUser(appState)
-  console.log('select sysManager', sysManager)
   return {
     allRoles,
     visible,
