@@ -38,7 +38,7 @@ class SmsInput extends React.Component {
   }
 
   requestSmsCodeSuccess(){
-    message.success('验证码已经发送，请查收！')
+    message.success('授权码已发送，请向系统管理员索取！')
   }
 
   requestSmsCodeError(){
@@ -46,12 +46,14 @@ class SmsInput extends React.Component {
   }
 
   requestSmsCode = () => {
-
-    this.props.requestSmsCode(
+    let {adminUser, opName} = this.props.params
+      console.log('adminUser=========>',adminUser,opName)
+    this.props.requestSysAuthCode(
       {
+        operator: adminUser,
+        operation: opName,
         success:()=>{this.requestSmsCodeSuccess()},
         error:()=>{this.requestSmsCodeError()},
-        ...this.props.params
       }
     )
   }
