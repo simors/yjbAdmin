@@ -23,6 +23,7 @@ import moment from 'moment'
 import {action as authAction, selector as authSelector} from '../../util/auth'
 
 const history = createBrowserHistory()
+const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
 const ButtonGroup = Button.Group
 // var Excel = require('exceljs');
@@ -58,22 +59,21 @@ class StationAccountManager extends React.Component {
   componentWillMount() {
 
     this.props.listUsersByRole({
-      roleCode:ROLE_CODE.STATION_PROVIDER,
-      onSuccess: ()=>{
-        console.log('this.props.userList[0].id======>',this.props.userList[0].id)
+      roleCode: ROLE_CODE.STATION_PROVIDER,
+      onSuccess: ()=> {
+        console.log('this.props.userList[0].id======>', this.props.userList[0].id)
         this.props.fetchPartnerAccountsDetail({
-        startDate: this.state.startDate,
-        endDate: this.state.endDate,
-        userId: this.props.userList[0].id,
-        success: ()=> {
-          console.log('hahhahah')
-        },
+          startDate: this.state.startDate,
+          endDate: this.state.endDate,
+          userId: this.props.userList[0].id,
+          success: ()=> {
+            console.log('hahhahah')
+          },
 
-      })}
+        })
+      }
     })
 
-
-    this.props.requestStations({})
 
   }
 
@@ -102,24 +102,23 @@ class StationAccountManager extends React.Component {
   clearSearch() {
     this.setState({
       status: undefined,
-      startDate: undefined,
-      endDate: undefined,
+      startDate: moment().day(-30).format(),
+      endDate: moment().format(),
       userId: undefined,
       division: []
     })
-    this.props.requestStations({
-      success: ()=> {
-        console.log('hahhahah')
-      }
-    })
   }
 
-  selectStartDate(date, dateString) {
-    this.setState({startDate: dateString})
-  }
+  selectDate(date, dateString) {
+    console.log('date=====>', mathjs.chain(date[1] - date[0]).multiply(1 / 31536000000).done())
+    let dateRange = mathjs.chain(date[1] - date[0]).multiply(1 / 31536000000).done()
 
-  selectEndDate(date, dateString) {
-    this.setState({endDate: dateString})
+    if (dateRange > 2) {
+      message.error('时间范围请不要超过2年')
+    } else {
+      this.setState({startDate: dateString[0], endDate: dateString[1]})
+
+    }
   }
 
 
@@ -139,19 +138,12 @@ class StationAccountManager extends React.Component {
               }
             </Select>
           </Col>
-          <Col span={4}>
-            <DatePicker key='startDate' defaultValue={undefined}
-                        value={this.state.startDate ? moment(this.state.startDate) : undefined}
-                        onChange={(date, dateString)=> {
-                          this.selectStartDate(date, dateString)
-                        }} placeholder="选择开始日期"/>
-          </Col>
-          <Col span={4}>
-            <DatePicker key='endDate' defaultValue={undefined}
-                        value={this.state.endDate ? moment(this.state.endDate) : undefined}
-                        onChange={(date, dateString)=> {
-                          this.selectEndDate(date, dateString)
-                        }} placeholder="选择结束时间"/>
+          <Col span={8}>
+            <RangePicker key='selectDate' defaultValue={undefined}
+                         value={[this.state.startDate ? moment(this.state.startDate) : undefined, moment(this.state.endDate)]}
+                         onChange={(date, dateString)=> {
+                           this.selectDate(date, dateString)
+                         }} placeholder="选择日期"/>
           </Col>
           <Col span={2}>
             <Button onClick={()=> {
@@ -183,7 +175,7 @@ class StationAccountManager extends React.Component {
     return (
       <div>
         {this.renderSearchBar()}
-        <AccountChart data={this.props.stationAccounts} yline='profit' xline='accountDay'/>
+        <AccountChart stationNameList={this.props.stationNameList} profitData={this.props.profitData} yline='profit' xline='accountDay'/>
       </div>
     )
   };
@@ -192,13 +184,41 @@ class StationAccountManager extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let userList = authSelector.selectUsersByRole(state, ROLE_CODE.STATION_PROVIDER)
   let accounts = accountSelector.selectPartnerAccountsDetail(state)
+  let stationNameSet = new Set()
+  let investProfitMap = new Map()
+  let profitData = []
+  accounts.forEach((partnerAccount) => {
+    stationNameSet.add(partnerAccount.station.name)
+    let stationProfit = {stationName: partnerAccount.station.name, profit: partnerAccount.profit}
+    let profitMapValue = investProfitMap.get(partnerAccount.accountDay)
+    if (!profitMapValue) {
+      investProfitMap.set(partnerAccount.accountDay, [stationProfit])
+    } else {
+      profitMapValue.push(stationProfit)
+      investProfitMap.set(partnerAccount.accountDay, profitMapValue)
+    }
+  })
+  for (let dateKey of investProfitMap.keys()) {
+    let profitObj = {}
+    profitObj.date = dateKey
+    for (let stationName of stationNameSet) {
+      profitObj[stationName] = 0
+    }
+    let profitValue = investProfitMap.get(dateKey)
+    for (let value of profitValue) {
+      profitObj[value.stationName] = value.profit
+    }
+    profitData.push(profitObj)
+  }
   // let areaList = configSelector.selectAreaList(state)
-  console.log('userList========>', userList)
-
-  console.log('accounts========>', accounts)
+  // console.log('stationNameSet========>', stationNameSet)
+  //
+  // console.log('profitData========>', profitData)
   return {
     stationAccounts: accounts,
-    userList: userList
+    userList: userList,
+    stationNameList: Array.from(stationNameSet),
+    profitData,
     // areaList: areaList,
   };
 };
