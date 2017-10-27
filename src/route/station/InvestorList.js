@@ -62,9 +62,11 @@ const InvestorList = (props) => {
           <Button onClick={()=> {
             editInvestor(record)
           }}>编辑</Button>
-          <Button onClick={()=> {
+          {record.status?<Button onClick={()=> {
             setInvestorStatus(record)
-          }}>启用／停用</Button>
+          }}>停用</Button>:<Button onClick={()=> {
+            setInvestorStatus(record)
+          }}>启用</Button>}
         </div>
       )
     }
@@ -73,7 +75,7 @@ const InvestorList = (props) => {
 
   return (
     <div>
-      <Table columns={columns} dataSource={investors} rowKey={rowKey} rowSelection={rowSelection}/>
+      <Table columns={columns} dataSource={investors} rowKey={rowKey} />
     </div>
   );
 };

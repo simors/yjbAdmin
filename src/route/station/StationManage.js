@@ -4,7 +4,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {Row, Col, Input, Select, Button} from 'antd';
+import {Row, Col, Input, Select, Button, message} from 'antd';
 import ContentHead from '../../component/ContentHead'
 import StationList from './StationList';
 import StationMenu from './StationMenu'
@@ -56,32 +56,26 @@ class StationManage extends React.Component {
     // this.props.requestStations({...this.state})
   }
 
-  setStatus() {
-    if (this.state.selectedRowId) {
-      let data = undefined
-      this.props.stations.forEach((item, key)=> {
-        if (item.id == this.state.selectedRowId[0]) {
-          data = item
-        }
-      })
-      let payload = {
-        stationId: this.state.selectedRowId,
-        success: ()=> {
-          this.setState({modalVisible: false})
-          this.refresh()
-        },
-        error: ()=> {
-          this.setState({modalVisible: false})
-          console.log('i m false')
-        }
-      }
-      if (data.status == 1) {
-        this.props.closeStation(payload)
-      } else {
-        this.props.openStation(payload)
+  setStatus(value) {
+
+    let payload = {
+      stationId: value.id,
+      success: ()=> {
+        this.setState({modalVisible: false})
+        this.refresh()
+      },
+      error: (err)=> {
+        this.setState({modalVisible: false})
+        message.error(err.message)
       }
     }
+    if (value.status == 1) {
+      this.props.closeStation(payload)
+    } else {
+      this.props.openStation(payload)
+    }
   }
+
 
   statusChange(value) {
     this.setState({status: value})
@@ -147,7 +141,7 @@ class StationManage extends React.Component {
   renderSearchBar() {
     return (
       <div style={{flex: 1}}>
-        <Row style={{marginTop:12,marginBottom:12}}>
+        <Row style={{marginTop: 12, marginBottom: 12}}>
           <Col span={5}>
             <Input placeholder='名称' value={this.state.name} onChange={(e)=> {
               this.setState({name: e.target.value})
@@ -177,8 +171,8 @@ class StationManage extends React.Component {
                 this.search()
               }}>查询</Button>
               <Button type="primary" onClick={()=> {
-              this.clearSearch()
-            }}>重置</Button>
+                this.clearSearch()
+              }}>重置</Button>
             </ButtonGroup>
           </Col>
         </Row>
@@ -227,14 +221,30 @@ class StationManage extends React.Component {
         />
         {this.renderSearchBar()}
 
-        <StationList selectStation={(rowId, rowData)=> {
-          this.selectStation(rowId, rowData)
-        }} stations={this.props.stations}/>
+        <StationList
+          selectStation={(rowId, rowData)=> {
+            this.selectStation(rowId, rowData)
+          }} stations={this.props.stations}
+          editStation={(value)=> {
+            this.props.history.push({
+              pathname: '/site_list/editStation/' + value.id,
+            })
+          }}
+          setStationStatus={(value)=> {
+            this.setStatus(value)
+          }}
+        />
         {this.state.modalVisible ? <SmsModal
-          onCancel = {()=>{this.setState({modalVisible: false})}}
-          onOk={()=> {this.setStatus()}}
+          onCancel={()=> {
+            this.setState({modalVisible: false})
+          }}
+          onOk={()=> {
+            this.setStatus()
+          }}
           op='开关服务点'
-          error = {(e)=>{console.log(e.message)}}
+          error={(e)=> {
+            console.log(e.message)
+          }}
         /> : null}
       </div>
     )

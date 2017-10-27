@@ -221,9 +221,9 @@ const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectInvestorAccounts(state)
   let accountsDetail = accountSelector.selectInvestorAccountsDetail(state)
-  console.log('accounts====>',accounts)
+  // console.log('accounts====>',accounts)
 
-  console.log('accountsDetail====>',accountsDetail)
+  // console.log('accountsDetail====>',accountsDetail)
   let userList = authSelector.selectUsersByRole(state,ROLE_CODE.STATION_INVESTOR)
   return {
     investorAccounts: accounts,

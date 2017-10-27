@@ -61,11 +61,11 @@ const rowKey = (record) => {
 
 const InvestorAccountList = (props) => {
   // console.log('[DEBUG] ---> UserList props: ', props);
-  let {investorAccounts} = props;
+  let {investorAccounts, viewType} = props;
   if (investorAccounts === null) {
     investorAccounts = [];
   }
-  console.log('investorAccounts===========>',investorAccounts)
+  // console.log('investorAccounts===========>',investorAccounts)
   // let startDate = {
   //   title:'开始日期',
   //   dataIndex: 'startDate',
@@ -86,7 +86,7 @@ const InvestorAccountList = (props) => {
 
   return (
     <div>
-      <Table columns={columns} dataSource={investorAccounts} rowKey={rowKey} />
+      <Table columns={viewType=='all'?columns:columnsDetail} dataSource={investorAccounts} rowKey={rowKey} />
     </div>
   );
 };
