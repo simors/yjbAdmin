@@ -294,7 +294,7 @@ const mapStateToProps = (state, ownProps) => {
   let showVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_INVESTOR_QUERY_WHOLE,PERMISSION_CODE.STATION_QUERY_PART])
   let addVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_ADD_WHOLE,PERMISSION_CODE.STATION_ADD_PART])
   let editVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_EDIT_WHOLE,PERMISSION_CODE.STATION_EDIT_PART])
-
+  console.log('investors=====>',investors)
   return {
     investors: investors,
     stations: stations,
