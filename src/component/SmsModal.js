@@ -3,11 +3,10 @@
  */
 
 import React from 'react'
-import {Form, Input, InputNumber, Radio, Modal, Checkbox,Row,Col} from 'antd'
+import {Form, Input, Modal, Row, Col} from 'antd'
 import SmsInput from './SmsInput'
-import {action as authAction,selector as authSelector} from '../util/auth'
+import {action as authAction,selector as authSelector, AUTH_USER_STATUS} from '../util/auth'
 import {connect} from 'react-redux'
-import {ROLE_CODE} from '../util/rolePermission'
 
 const FormItem = Form.Item
 
@@ -34,7 +33,7 @@ class SmsModal extends React.Component {
     }
   }
   componentWillMount(){
-    this.props.listUsersByRole({roleCode: ROLE_CODE.SYS_MANAGER})
+    this.props.listSysAdminUsers({status: AUTH_USER_STATUS.ADMIN_NORMAL})
   }
 
   componentDidMount() {
@@ -96,7 +95,7 @@ class SmsModal extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let sysManager = authSelector.selectUsersByRole(state,ROLE_CODE.SYS_MANAGER)
+  let sysManager = authSelector.selectSysAdminUsers(state)
   let currentUser = authSelector.selectCurAdminUser(state)
   return {
     sysManager: sysManager[0],
