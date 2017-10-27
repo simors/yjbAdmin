@@ -577,6 +577,7 @@ function selectScoreExchangePromRecordList(state, promotionId) {
   scoreExPromList.toArray().forEach((id) => {
     let recordInfo = selectRecord(state, id)
     let userInfo = recordInfo? userSelector.selectUserById(state, recordInfo.userId) : undefined
+    recordInfo.mobilePhoneNumber = userInfo? userInfo.mobilePhoneNumber : undefined
     if(recordInfo && recordInfo.promotionId === promotionId) {
       recordList.push(recordInfo)
     }
