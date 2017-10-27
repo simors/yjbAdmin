@@ -2,8 +2,8 @@
  * Created by yangyang on 2017/9/11.
  */
 import React from 'react'
+import {connect} from 'react-redux'
 import {Route, Switch} from 'react-router-dom'
-
 import Dashboard from '../../component/Dashboard'
 import {EndUser} from '../enduser/'
 import {AdminUser} from '../adminuser/'
@@ -24,15 +24,28 @@ import InvestorAccountManager from '../account/InvestorAccountManager'
 import InvestorAccountChartView from '../account/InvestorAccountChartView'
 import Profit from '../profit'
 import OperationLogManager from '../operationLog'
+import {selector as authSelector} from '../../util/auth/'
+import {PERMISSION_CODE} from '../../util/rolePermission/'
 
-const ContentRouter = ({match}) => {
+const ContentRouter = (props) => {
+  const {match} = props;
   return (
     <Switch>
       <Route exact path={match.url} component={Dashboard}/>
       <Route exact path="/device_list" component={Device}/>
       <Route exact path="/user_list" component={EndUser}/>
-      <Route exact path="/system_user" component={AdminUser}/>
-      <Route exact path="/system_log" component={OperationLogManager}/>
+      {(() => { // 系统管理
+        const items = [];
+        if (props.sysUserVisible) {
+          items.push(<Route exact path="/system_user" key='/system_user' component={AdminUser}/>);
+        }
+        if (props.sysLogVisible) {
+          items.push(<Route exact path="/system_log" key='system_log' component={OperationLogManager}/>);
+        }
+        return (
+          items
+        );
+      })()}
       <Route exact path="/site_list" component={StationManager}/>
       <Route exact path="/site_list/showStation/:id" component={ShowStation}/>
       <Route exact path="/site_list/editStation/:id" component={EditStation}/>
@@ -90,4 +103,14 @@ export const breadcrumbNameMap = {
   '/profit_list': '投资收益管理',
 };
 
-export default ContentRouter
+const mapStateToProps = (appState, ownProps) => {
+  const sysUserVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_USER_ROLE]);
+  const sysLogVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_OPER_LOG]);
+
+  return {
+    sysUserVisible,
+    sysLogVisible,
+  };
+};
+
+export default connect(mapStateToProps, null)(ContentRouter)
