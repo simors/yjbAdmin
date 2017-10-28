@@ -1,6 +1,4 @@
-/**
- * Created by lilu on 2017/10/15.
- */
+
 
 import React, {Component, PropTypes} from 'react'
 import createG2 from 'g2-react';
@@ -80,57 +78,53 @@ export default class AccountChart extends Component {
 // }
 
   renderStatisticsLocal() {
-    if(this.props.data&&this.props.data.length>0){
 
-      const LineEarning = createG2(chart => {
-        chart.forceFit();
 
-        chart.axis(this.props.yline, {
-          title: {
-            fontSize: '16',
-            textAlign: 'center',
-          },
-        });
-        chart.tooltip({
-          title: null,
-          map: {
-            value: this.props.yline
-          }
-        })
-        chart.axis(this.props.xline, {
-          title: {
-            fontSize: '16',
-            textAlign: 'center',
-          },
-        });
-        chart.col(this.props.xline, {
-          alias: '日期',
-          type: 'time',
-          mask: 'mm-dd',
-          range: [0, 1],
-        })
-        chart.legend({
-          title: null,
-          position: 'right',
-          itemWrap: true,
-        });
-        chart.col(this.props.yline,{
-          alias: '收益（元）',
-        })
-        // chart.source(this.props.lastMonthsPerformance,defs)
-        chart.line().position(this.props.xline+'*'+this.props.yline).label(this.props.yline).shape('spline').size(3);
-        chart.render();
+    const LineEarning = createG2(chart => {
+      chart.forceFit();
+      chart.axis('date', {
+        title: {
+          fontSize: '16',
+          textAlign: 'center',
+        },
       });
-      return (
-        <div>
-          <div>
-            <LineEarning data={this.props.data} width={600} height={300}/>
-          </div>
-        </div>
-      )
-    }else{
-      return <div>没有统计数据</div>
+      chart.col('date', {
+        alias: '日期',
+        type: 'time',
+        mask: 'mm-dd',
+        range: [0, 1],
+      })
+      chart.axis('profit', {
+        title: {
+          fontSize: '16',
+          textAlign: 'center',
+        },
+      });
+      chart.col('profit', {
+        alias: '收益（元）',
+      })
+      chart.legend('stationName', {
+        title: null, // 不展示图例 title
+      });
+      chart.line().position('date*profit').color('stationName').shape('stationName', () => 'smooth').size(3);
+      chart.render();
+    });
+
+    let {stationNameList, profitData} = this.props
+    if (!stationNameList || !profitData) {
+      return null
     }
+    let frame = new Frame(profitData);
+    frame = Frame.combineColumns(frame, stationNameList, 'profit', 'stationName', ['date'])
+    console.log('frame========>',frame)
+    return (
+      <div>
+        <div>
+          <LineEarning forceFit={true} height={500} width={200} data={frame} plotCfg={{margin: [50, 150, 80, 100]}} />
+        </div>
+      </div>
+    )
+
 
   }
 
@@ -138,14 +132,11 @@ export default class AccountChart extends Component {
 
     return (
 
-          <div>
-            {this.renderStatisticsLocal()}
-          </div>
+      <div>
+        {this.renderStatisticsLocal()}
+      </div>
 
     )
   }
 }
-
-
-
 

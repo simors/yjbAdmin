@@ -208,8 +208,8 @@ class ShowStation extends React.Component {
                     }
                   ]
                 })(<InputNumber disabled={true}
-                                formatter={value => `${value}元`}
-                                parser={value => value.replace('元', '')}
+                                formatter={value => `${value}元／小时`}
+                                parser={value => value.replace('元／小时', '')}
                 />)}
               </FormItem>
             </Col>

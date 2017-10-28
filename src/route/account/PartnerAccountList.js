@@ -11,6 +11,7 @@ import mathjs from 'mathjs'
 const columnsDetail = [{
   title: "服务点名称",
   dataIndex: "station.name",
+
 }, {
   title: "分成方信息",
   dataIndex: "user.nickname",
@@ -34,6 +35,9 @@ const columnsDetail = [{
 const columns = [{
   title: "服务点名称",
   dataIndex: "station.name",
+  render: (text,record)=>{
+    return <div>{record.station?record.station.name:'全服务点'}</div>
+  }
 }, {
   title: "分成方信息",
   dataIndex: "user.nickname",
