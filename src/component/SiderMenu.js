@@ -51,6 +51,37 @@ class SiderMenu extends React.Component {
     return map[key] || [];
   };
 
+  renderQueryDeviceMenu() {
+    let {queryDeviceVisible} = this.props
+    if (queryDeviceVisible) {
+      return (
+        <Menu.SubMenu key="/device" title={<span><Icon type="laptop" />干衣柜综合管理</span>}>
+          <Menu.Item key="/device_list"><Link to="/device_list">干衣柜信息管理</Link></Menu.Item>
+        </Menu.SubMenu>
+      )
+    }
+    return null
+  }
+
+  renderStationMenu() {
+    let {stationQueryVisible, stationInvestorVisible} = this.props
+    if (stationQueryVisible) {
+      let items = []
+      if (stationQueryVisible) {
+        items.push(<Menu.Item key="/site_list"><Link to="/site_list">服务点信息管理</Link></Menu.Item>)
+      }
+      if (stationInvestorVisible) {
+        items.push(<Menu.Item key="/site_investor"><Link to="/site_investor">投资人信息管理</Link></Menu.Item>)
+      }
+      return (
+        <Menu.SubMenu key="/site" title={<span><Icon type="laptop" />服务点综合管理</span>}>
+          {items}
+        </Menu.SubMenu>
+      )
+    }
+    return null
+  }
+
   renderSysManMenu() {
     if (this.props.sysUserVisible || this.props.sysLogVisible) {
       const items = [];
@@ -78,6 +109,7 @@ class SiderMenu extends React.Component {
         </Menu.SubMenu>
       )
     }
+    return null
   }
 
   render() {
@@ -91,14 +123,8 @@ class SiderMenu extends React.Component {
         onClick={this.handleClick}
         className="app-sider-menu"
       >
-        <Menu.SubMenu key="/device" title={<span><Icon type="laptop" />干衣柜综合管理</span>}>
-          <Menu.Item key="/device_list"><Link to="/device_list">干衣柜信息管理</Link></Menu.Item>
-        </Menu.SubMenu>
-
-        <Menu.SubMenu key="/site" title={<span><Icon type="laptop" />服务点综合管理</span>}>
-          <Menu.Item key="/site_list"><Link to="/site_list">服务点信息管理</Link></Menu.Item>
-          <Menu.Item key="/site_investor"><Link to="/site_investor">投资人信息管理</Link></Menu.Item>
-        </Menu.SubMenu>
+        {this.renderQueryDeviceMenu()}
+        {this.renderStationMenu()}
         <Menu.SubMenu key="/order" title={<span><Icon type="notification" />充值与订单管理</span>}>
           <Menu.Item key="/order_list"><Link to="/order_list">订单信息管理</Link></Menu.Item>
           <Menu.Item key="/order_recharge"><Link to="/order_recharge">用户充值管理</Link></Menu.Item>
@@ -130,12 +156,20 @@ class SiderMenu extends React.Component {
 }
 
 const mapStateToProps = (appState, ownProps) => {
+  const queryDeviceVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.DEVICE_QUERY_INFO])
+
+  const stationQueryVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.STATION_QUERY_WHOLE, PERMISSION_CODE.STATION_QUERY_PART])
+  const stationInvestorVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.STATION_INVESTOR_QUERY_WHOLE, PERMISSION_CODE.STATION_INVESTOR_QUERY_PART])
+
   const sysUserVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_USER_ROLE]);
   const sysLogVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_OPER_LOG]);
 
   const profitVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.INVEST_PROFIT_MANAGER])
 
   return {
+    queryDeviceVisible,
+    stationQueryVisible,
+    stationInvestorVisible,
     sysUserVisible,
     sysLogVisible,
     profitVisible,
