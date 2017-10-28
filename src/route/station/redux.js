@@ -578,11 +578,13 @@ function handleSaveProfitShare(state, action) {
   let payload = action.payload
   let type = payload.type
   let profitShare = payload.profitShare
+  let station = profitShare.station
   if (type === PROFIT_SHARE_TYPE.INVESTOR_SHARE_TYPE) {
     state = state.setIn(['allInvestors', profitShare.id], ProfitSharing.fromApi(profitShare))
   } else if (type === PROFIT_SHARE_TYPE.PARTNER_SHARE_TYPE) {
     state = state.setIn(['allPartners', profitShare.id], ProfitSharing.fromApi(profitShare))
   }
+  state = state.setIn(['allStations', station.id], StationDetail.fromApi(station))
   return state
 }
 
@@ -590,11 +592,16 @@ function handleSaveBatchProfitShare(state, action) {
   let payload = action.payload
   let type = payload.type
   let profitShares = payload.profitShares
+  let stations = []
+  profitShares.forEach((share) => {
+    stations.push(share.station)
+  })
   if (type === PROFIT_SHARE_TYPE.INVESTOR_SHARE_TYPE) {
     state = handleSetAllInvestors(state, profitShares)
   } else if (type === PROFIT_SHARE_TYPE.PARTNER_SHARE_TYPE) {
     state = handleSetAllPartners(state, profitShares)
   }
+  state = handleSetAllStations(state, stations)
   return state
 }
 
@@ -707,7 +714,10 @@ function selectInvestorById(state, id) {
   if (!investor) {
     return undefined
   }
-  return investor.toJS()
+  let retInvestor = investor.toJS()
+  retInvestor.station = selectStationById(state, retInvestor.stationId)
+  retInvestor.stationName = retInvestor.station.name
+  return retInvestor
 }
 
 function selectPartnerById(state, id) {
@@ -715,7 +725,10 @@ function selectPartnerById(state, id) {
   if (!partner) {
     return undefined
   }
-  return partner.toJS()
+  let retPartner = partner.toJS()
+  retPartner.station = selectStationById(state, retPartner.stationId)
+  retPartner.stationName = retPartner.station.name
+  return retPartner
 }
 
 export const stationSelector = {
