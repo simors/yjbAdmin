@@ -301,8 +301,8 @@ const mapStateToProps = (state, ownProps) => {
   let investors = stationSelector.selectInvestors(state)
   let investorList = selector.selectUsersByRole(state, ROLE_CODE.STATION_INVESTOR)
   let showVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_INVESTOR_QUERY_WHOLE,PERMISSION_CODE.STATION_QUERY_PART])
-  let addVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_ADD_WHOLE,PERMISSION_CODE.STATION_ADD_PART])
-  let editVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_EDIT_WHOLE,PERMISSION_CODE.STATION_EDIT_PART])
+  let addVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_ADD])
+  let editVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_EDIT])
   console.log('investors=====>',investors)
   return {
     investors: investors,

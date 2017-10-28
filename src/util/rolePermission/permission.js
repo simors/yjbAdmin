@@ -8,6 +8,8 @@ export const PERMISSION_CODE = {
   /* 服务点综合管理 */
   STATION_QUERY_WHOLE:                        2000,         // 服务点综合管理/服务点信息管理/全局查看
   STATION_QUERY_PART:                         2001,         // 服务点综合管理/服务点信息管理/局部查看
+  STATION_EDIT:                               2002,         // 服务点综合管理/服务点信息管理/编辑
+  STATION_ADD:                                2003,         // 服务点综合管理/服务点信息管理/添加
 
   STATION_INVESTOR_QUERY_WHOLE:               2100,         // 服务点综合管理/投资人信息管理/全局查看
   STATION_INVESTOR_QUERY_PART:                2101,         // 服务点综合管理/投资人信息管理/局部查看

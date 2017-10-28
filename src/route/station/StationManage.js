@@ -261,8 +261,8 @@ class StationManage extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let showVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_QUERY_WHOLE, PERMISSION_CODE.STATION_QUERY_PART])
-  let addVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_ADD_WHOLE, PERMISSION_CODE.STATION_ADD_PART])
-  let editVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_EDIT_WHOLE, PERMISSION_CODE.STATION_EDIT_PART])
+  let addVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_ADD])
+  let editVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_EDIT])
 
   return {
     stations: stations,
