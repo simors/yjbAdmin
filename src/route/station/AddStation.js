@@ -218,8 +218,8 @@ class AddStation extends React.Component {
                     }
                   ]
                 })(<InputNumber
-                  formatter={value => `${value}元`}
-                  parser={value => value.replace('元', '')}
+                  formatter={value => `${value}元/小时`}
+                  parser={value => value.replace('元／小时', '')}
 
                 />)}
               </FormItem>
@@ -275,11 +275,19 @@ class AddStation extends React.Component {
           </Row>
           <LoadActivity tip = '正在提交...'/>
         </Form>
-        <Row>
-          <Col>
+        <Row gutter={24} style={{flexDirection:'row',marginTop:20,marginBottom:20,justifyContent:' center'}}>
+          <Col span={8}></Col>
+          <Col span={4}>
+            <Button onClick={()=> {
+              this.props.history.push({
+                pathname: '/site_list'
+              })
+            }} type="primary">返回</Button>
+          </Col>
+          <Col span={4}>
             <Button onClick={()=> {
               this.submitStation()
-            }}>提交</Button>
+            }} type="primary">提交</Button>
           </Col>
         </Row>
       </div>

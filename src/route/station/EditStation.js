@@ -387,8 +387,8 @@ class EditStation extends React.Component {
                       }
                     ]
                   })(<InputNumber
-                    formatter={value => `${value}元`}
-                    parser={value => value.replace('元', '')}
+                    formatter={value => `${value}元／小时`}
+                    parser={value => value.replace('元／小时', '')}
                   />)}
                 </FormItem>
               </Col>
