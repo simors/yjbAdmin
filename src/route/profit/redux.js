@@ -233,7 +233,6 @@ function* sagaGetProfitSharing(action) {
   let payload = action.payload
   try {
     let profits = yield call(profitCloud.getProfitSharing, payload)
-    console.log('profits', profits)
     yield put(stationAction.saveBatchProfitShare({type: payload.type, profitShares: profits}))
     yield put(saveProfitSharing({type: payload.type, profitShares: profits}))
   } catch (e) {

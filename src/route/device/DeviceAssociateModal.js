@@ -68,13 +68,13 @@ class DeviceAssociateModal extends PureComponent {
 
   onSubmit = (e) => {
     const {selectedStaionId} = this.state
-    const {device, associateWithStationAction, onCancel} = this.state
+    const {device, associateWithStationAction, onCancel} = this.props
     if(!selectedStaionId) {
       message.error("请设置服务网点")
       return
     }
     associateWithStationAction({
-      stationId: this.state.selectedStaionId,
+      stationId: selectedStaionId,
       deviceNo: device.deviceNo,
       success: () => {
         message.success("服务点关联成功")

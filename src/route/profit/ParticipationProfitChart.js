@@ -9,6 +9,7 @@ import { Button, Radio, Icon, Row, Col } from 'antd'
 import {profitAction, profitSelector} from './redux'
 import {ACCOUNT_TYPE, accountSelector} from '../account'
 import {stationSelector} from '../station'
+import ParticipationProfitShare from './ParticipationProfitShare'
 
 class ParticipationProfitChart extends React.PureComponent {
   constructor(props) {
@@ -77,7 +78,7 @@ class ParticipationProfitChart extends React.PureComponent {
     return (
       <div>
         <Row>
-          <Col span={8} offset={16}>
+          <Col span={10} offset={14}>
             <Radio.Group onChange={this.handleStatChange} defaultValue="30days">
               <Radio.Button value="30days">最近30天</Radio.Button>
               <Radio.Button value="3months">最近3个月</Radio.Button>
@@ -87,6 +88,7 @@ class ParticipationProfitChart extends React.PureComponent {
           </Col>
         </Row>
         <this.ProfitChart forceFit={true} height={500} width={200} data={frame} plotCfg={{margin: [50, 150, 80, 100]}} />
+        <ParticipationProfitShare/>
       </div>
     )
   }

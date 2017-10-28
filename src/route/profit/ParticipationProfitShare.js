@@ -1,5 +1,5 @@
 /**
- * Created by yangyang on 2017/10/27.
+ * Created by yangyang on 2017/10/28.
  */
 import React from 'react'
 import {connect} from 'react-redux'
@@ -7,13 +7,13 @@ import { Card, Row, Col } from 'antd'
 import {profitAction, profitSelector} from './redux'
 import {PROFIT_SHARE_TYPE, stationSelector} from '../station'
 
-class InvestorProfitShare extends React.PureComponent {
+class ParticipationProfitShare extends React.PureComponent {
   constructor(props) {
     super(props)
   }
 
   componentDidMount() {
-    this.props.getProfitSharing({type: PROFIT_SHARE_TYPE.INVESTOR_SHARE_TYPE})
+    this.props.getProfitSharing({type: PROFIT_SHARE_TYPE.PARTNER_SHARE_TYPE})
   }
 
   render() {
@@ -37,10 +37,6 @@ class InvestorProfitShare extends React.PureComponent {
                     <Col span={16}>{share.stationName}</Col>
                   </Row>
                   <Row>
-                    <Col span={8}>投资金额</Col>
-                    <Col span={16}>¥{share.investment}元</Col>
-                  </Row>
-                  <Row>
                     <Col span={8}>分红比例</Col>
                     <Col span={16}>{share.royalty}%</Col>
                   </Row>
@@ -55,10 +51,10 @@ class InvestorProfitShare extends React.PureComponent {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let profitIds = profitSelector.selectProfitShareIdList(state, PROFIT_SHARE_TYPE.INVESTOR_SHARE_TYPE)
+  let profitIds = profitSelector.selectProfitShareIdList(state, PROFIT_SHARE_TYPE.PARTNER_SHARE_TYPE)
   let profitShares = []
   profitIds.forEach((profitId) => {
-    profitShares.push(stationSelector.selectInvestorById(state, profitId))
+    profitShares.push(stationSelector.selectPartnerById(state, profitId))
   })
   return {
     profitShares,
@@ -69,4 +65,4 @@ const mapDispatchToProps = {
   ...profitAction,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(InvestorProfitShare)
+export default connect(mapStateToProps, mapDispatchToProps)(ParticipationProfitShare)
