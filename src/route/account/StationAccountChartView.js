@@ -5,7 +5,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {Row, Col, Input, Select, Button} from 'antd';
+import {Row, Col, Input, Select, Button,message,DatePicker} from 'antd';
 import ContentHead from '../../component/ContentHead'
 import StationAccountList from './StationAccountList';
 // import StationMenu from './StationMenu'
@@ -15,7 +15,10 @@ import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
 import AccountChart from '../../component/account/StationAccountChart'
+import moment from 'moment'
+import mathjs from 'mathjs'
 
+const RangePicker = DatePicker.RangePicker;
 const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
@@ -30,7 +33,9 @@ class StationAccountManager extends React.Component {
       selectedRowData: undefined,
       status: undefined,
       stationId: undefined,
-      division: []
+      division: [],
+      startDate: moment().day(-30).format(),
+      endDate: moment().format(),
     }
   }
 
@@ -43,6 +48,8 @@ class StationAccountManager extends React.Component {
   componentWillMount() {
 
     this.props.fetchStationAccountsDetail({
+      startDate: this.state.startDate,
+      endDate: this.state.endDate,
       success: ()=> {
         console.log('hahhahah')
       },
@@ -62,6 +69,8 @@ class StationAccountManager extends React.Component {
   search() {
     let payload = {
       stationId: this.state.stationId,
+      startDate: this.state.startDate,
+      endDate: this.state.endDate,
       success: ()=> {
         console.log('success')
       },
@@ -85,26 +94,20 @@ class StationAccountManager extends React.Component {
   clearSearch() {
     this.setState({
       status: undefined,
-      province: undefined,
-      city: undefined,
-      area: undefined,
-      addr: undefined,
-      name: undefined,
+      startDate: moment().day(-30).format(),
+      endDate: moment().format(),
+      stationId:undefined,
       division: []
     })
-    this.props.requestStations({
-      success: ()=> {
-        console.log('hahhahah')
-      }
-    })
+    this.props.fetchStationAccountsDetail({...this.state})
   }
 
   renderSearchBar() {
     return (
       <div style={{flex: 1}}>
         <Row >
-          <Col span={12}>
-            <Select defalutValue = 'all' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
+          <Col span={4}>
+            <Select defalutValue = 'all' onChange={(value)=>{this.selectStation(value)}} style={{width: 180}} placeholder="选择服务网点">
               <Option value="all">全部</Option>
               {
                 this.props.stations.map((station, index) => (
@@ -112,6 +115,13 @@ class StationAccountManager extends React.Component {
                 ))
               }
             </Select>
+          </Col>
+          <Col span={8}>
+            <RangePicker key='selectDate' defaultValue={undefined}
+                         value={[this.state.startDate ? moment(this.state.startDate) : undefined, moment(this.state.endDate)]}
+                         onChange={(date, dateString)=> {
+                           this.selectDate(date, dateString)
+                         }} placeholder="选择日期"/>
           </Col>
           <Col span={2}>
             <Button onClick={()=> {
@@ -128,14 +138,15 @@ class StationAccountManager extends React.Component {
     )
   }
 
-  downloadFile(fileName, content){
-    // var workbook = new Excel.Workbook();
-    // // var workbook = createAndFillWorkbook();
-    // workbook.xlsx.writeFile('hahahah')
-    //   .then(function(item) {
-    //     console.log('hahahah=>',item)
-    //     // done
-    //   });
+  selectDate(date, dateString) {
+    let dateRange = mathjs.chain(date[1] - date[0]).multiply(1 / 31536000000).done()
+
+    if (dateRange > 2) {
+      message.error('时间范围请不要超过2年')
+    } else {
+      this.setState({startDate: dateString[0], endDate: dateString[1]})
+
+    }
   }
 
   render() {

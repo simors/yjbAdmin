@@ -58,16 +58,17 @@ const InvestorList = (props) => {
     title: '操作',
     render: (text, record)=> {
       return (
-        <div>
-          <Button onClick={()=> {
+        <span>
+          <a style={{color: `blue`}} onClick={()=> {
             editInvestor(record)
-          }}>编辑</Button>
-          {record.status?<Button onClick={()=> {
+          }}>编辑</a>
+                    <span className="ant-divider" />
+          {record.status?<a style={{color: `blue`}} onClick={()=> {
             setInvestorStatus(record)
-          }}>停用</Button>:<Button onClick={()=> {
+          }}>停用</a>:<a style={{color: `blue`}} onClick={()=> {
             setInvestorStatus(record)
-          }}>启用</Button>}
-        </div>
+          }}>启用</a>}
+        </span>
       )
     }
   }];

@@ -38,21 +38,23 @@ const PartnerList = (props) => {
     title: '状态',
     render: (text, record)=> {
       return (
-        <p>{record.status == 1 ? '正常' : '停用'}</p>
+        <div>{record.status == 1 ? '正常' : '停用'}</div>
       )
     }
   }, {
     title: '操作',
     render: (text, record)=> {
       return (
-        <div>
-          <Button onClick={()=> {
+        <span>
+          <a style={{color: `blue`}} onClick={()=> {
             editPartner(record)
-          }}>编辑</Button>
-          <Button onClick={()=> {
+          }}>编辑</a>
+                              <span className="ant-divider" />
+
+          <a style={{color: `blue`}} onClick={()=> {
             setPartnerStatus(record)
-          }}>启用／停用</Button>
-        </div>
+          }}>启用／停用</a>
+        </span>
       )
     }
   }

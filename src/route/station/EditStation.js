@@ -214,11 +214,9 @@ class EditStation extends React.Component {
       },
       error: (err)=> {
         this.setState({spinShow: false, createModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
-        message.error('err.message')
+        message.error(err.message)
           this.props.updateLoadingState({isLoading: false})
-
           // this.refresh()
-
         })
       }
     }
@@ -244,7 +242,7 @@ class EditStation extends React.Component {
 
         this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
           this.props.updateLoadingState({isLoading: false})
-          message.error('err.message')
+          message.error(err.message)
       })
       }
     }
@@ -387,9 +385,8 @@ class EditStation extends React.Component {
                       }
                     ]
                   })(<InputNumber
-                    formatter={value => `${value}元／小时`}
-                    parser={value => value.replace('元／小时', '')}
                   />)}
+                  <span className="ant-form-text">元／分</span>
                 </FormItem>
               </Col>
               <Col span={6}>
@@ -403,9 +400,9 @@ class EditStation extends React.Component {
                       }
                     ]
                   })(<InputNumber
-                    formatter={value => `${value}元`}
-                    parser={value => value.replace('元', '')}
                   />)}
+                  <span className="ant-form-text">元</span>
+
                 </FormItem>
               </Col>
               <Col span={6}>
@@ -419,10 +416,8 @@ class EditStation extends React.Component {
                       }
                     ]
                   })(<InputNumber
-
-                    formatter={value => `${value}元／度`}
-                    parser={value => value.replace('元／度', '')}
                   />)}
+                  <span className="ant-form-text">元</span>
                 </FormItem>
               </Col>
               <Col span={6}>
@@ -438,9 +433,8 @@ class EditStation extends React.Component {
                   })(<InputNumber
                     max={100}
                     min={0}
-                    formatter={value => `${value}%`}
-                    parser={value => value.replace('%', '')}
                   />)}
+                  <span className="ant-form-text">%</span>
                 </FormItem>
               </Col>
             </Row>
