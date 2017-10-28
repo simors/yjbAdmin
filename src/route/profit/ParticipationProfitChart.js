@@ -78,7 +78,7 @@ class ParticipationProfitChart extends React.PureComponent {
     return (
       <div>
         <Row>
-          <Col span={8} offset={16}>
+          <Col span={10} offset={14}>
             <Radio.Group onChange={this.handleStatChange} defaultValue="30days">
               <Radio.Button value="30days">最近30天</Radio.Button>
               <Radio.Button value="3months">最近3个月</Radio.Button>
