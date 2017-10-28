@@ -51,6 +51,18 @@ class SiderMenu extends React.Component {
     return map[key] || [];
   };
 
+  renderQueryDeviceMenu() {
+    let {queryDeviceVisible} = this.props
+    if (queryDeviceVisible) {
+      return (
+        <Menu.SubMenu key="/device" title={<span><Icon type="laptop" />干衣柜综合管理</span>}>
+          <Menu.Item key="/device_list"><Link to="/device_list">干衣柜信息管理</Link></Menu.Item>
+        </Menu.SubMenu>
+      )
+    }
+    return null
+  }
+
   renderSysManMenu() {
     if (this.props.sysUserVisible || this.props.sysLogVisible) {
       const items = [];
@@ -78,6 +90,7 @@ class SiderMenu extends React.Component {
         </Menu.SubMenu>
       )
     }
+    return null
   }
 
   render() {
@@ -91,9 +104,7 @@ class SiderMenu extends React.Component {
         onClick={this.handleClick}
         className="app-sider-menu"
       >
-        <Menu.SubMenu key="/device" title={<span><Icon type="laptop" />干衣柜综合管理</span>}>
-          <Menu.Item key="/device_list"><Link to="/device_list">干衣柜信息管理</Link></Menu.Item>
-        </Menu.SubMenu>
+        {this.renderQueryDeviceMenu()}
 
         <Menu.SubMenu key="/site" title={<span><Icon type="laptop" />服务点综合管理</span>}>
           <Menu.Item key="/site_list"><Link to="/site_list">服务点信息管理</Link></Menu.Item>
@@ -130,12 +141,15 @@ class SiderMenu extends React.Component {
 }
 
 const mapStateToProps = (appState, ownProps) => {
+  const queryDeviceVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.DEVICE_QUERY_INFO])
+
   const sysUserVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_USER_ROLE]);
   const sysLogVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_OPER_LOG]);
 
   const profitVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.INVEST_PROFIT_MANAGER])
 
   return {
+    queryDeviceVisible,
     sysUserVisible,
     sysLogVisible,
     profitVisible,
