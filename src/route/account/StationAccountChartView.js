@@ -14,7 +14,7 @@ import {configSelector} from '../../util/config'
 import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
-import AccountChart from '../../component/account/AccountChart'
+import AccountChart from '../../component/account/StationAccountChart'
 
 const history = createBrowserHistory()
 const Option = Select.Option;
