@@ -80,6 +80,8 @@ class EditStation extends React.Component {
   }
 
   refresh() {
+    this.props.updateLoadingState({isLoading: true})
+
     this.props.requestPartners({
       stationId: this.props.match.params.id, success: ()=> {
         this.props.updateLoadingState({isLoading: false})
@@ -531,6 +533,6 @@ const mapDispatchToProps = {
 
 };
 
-export default Form.create()(connect(mapStateToProps, mapDispatchToProps)(EditStation));
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(EditStation));
 
 export {saga, reducer} from './redux';

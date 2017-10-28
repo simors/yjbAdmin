@@ -53,6 +53,8 @@ export async function fetchStationAccountDetail(payload) {
 
 export async function fetchPartnerAccountsDetail(payload) {
   try {
+    console.log('payload=====>',payload)
+
     let accounts = await AV.Cloud.run('accountGetPartnerAccountsDetail', payload)
     console.log('accounts===~~~~~~~~~~~~~~~~~===>',accounts)
 
@@ -65,7 +67,6 @@ export async function fetchPartnerAccountsDetail(payload) {
 }
 
 export async function fetchInvestorAccountsDetail(payload) {
-  console.log('payload=====>',payload)
 
   try {
     let accounts = await AV.Cloud.run('accountGetInvestorAccountsDetail', payload)

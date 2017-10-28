@@ -9,6 +9,7 @@ import { Button, Radio, Icon, Row, Col } from 'antd'
 import {profitAction, profitSelector} from './redux'
 import {ACCOUNT_TYPE, accountSelector} from '../account'
 import {stationSelector} from '../station'
+import InvestorProfitShare from './InvestorProfitShare'
 
 class InvestProfitChart extends React.PureComponent {
   constructor(props) {
@@ -87,6 +88,7 @@ class InvestProfitChart extends React.PureComponent {
           </Col>
         </Row>
         <this.ProfitChart forceFit={true} height={500} width={200} data={frame} plotCfg={{margin: [50, 150, 80, 100]}} />
+        <InvestorProfitShare/>
       </div>
     )
   }

@@ -38,3 +38,10 @@ export async function stat1YearAccountProfit(payload) {
 export async function createTransfer(payload) {
   return await AV.Cloud.run('pingppCreateTransfer', payload)
 }
+
+export async function getProfitSharing(payload) {
+  let params = {
+    type: payload.type,
+  }
+  return await AV.Cloud.run('stationFetchProfitSharebyUser', params)
+}

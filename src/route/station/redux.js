@@ -92,6 +92,11 @@ export class ProfitSharing extends ProfitSharingRecord {
 
 /**** Constant ****/
 
+export const PROFIT_SHARE_TYPE = {
+  INVESTOR_SHARE_TYPE: 'investor',
+  PARTNER_SHARE_TYPE: 'partner',
+}
+
 const FETCH_STATIONS = 'FETCH_STATIONS'
 const FETCH_STATIONS_SUCCESS = 'FETCH_STATIONS_SUCCESS'
 const OPEN_STATION = 'OPEN_STATION'
@@ -115,6 +120,8 @@ const UPDATE_PARTNER = 'UPDATE_PARTNER'
 const OPEN_PARTNER = 'OPEN_PARTNER'
 const CLOSE_PARTNER = 'CLOSE_PARTNER'
 const SAVE_STATIONS = 'SAVE_STATIONS'
+const SAVE_PROFIT_SHARE = 'SAVE_PROFIT_SHARE'
+const SAVE_BATCH_PROFIT_SHARE = 'SAVE_BATCH_PROFIT_SHARE'
 
 /**** Action ****/
 
@@ -134,9 +141,10 @@ export const stationAction = {
   updatePartner: createAction(UPDATE_PARTNER),
   openPartner: createAction(OPEN_PARTNER),
   closePartner: createAction(CLOSE_PARTNER),
-  updateStation: createAction(UPDATE_STATION),
   saveStation: createAction(CREATE_STATION_SUCCESS),
-  saveStations: createAction(SAVE_STATIONS)
+  saveStations: createAction(SAVE_STATIONS),
+  saveProfitShare: createAction(SAVE_PROFIT_SHARE),
+  saveBatchProfitShare: createAction(SAVE_BATCH_PROFIT_SHARE),
 }
 
 const requestStationsSuccess = createAction(FETCH_STATIONS_SUCCESS)
@@ -483,6 +491,10 @@ export function stationReducer(state = initialState, action) {
       return handleSavePartners(state, action)
     case SAVE_STATIONS:
       return handleSaveAllStations(state, action)
+    case SAVE_PROFIT_SHARE:
+      return handleSaveProfitShare(state, action)
+    case SAVE_BATCH_PROFIT_SHARE:
+      return handleSaveBatchProfitShare(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -558,6 +570,30 @@ function handleSavePartners(state, action) {
     state = handleSetAllPartners(state, partners)
   } else {
     state = state.set('partnerList', new List())
+  }
+  return state
+}
+
+function handleSaveProfitShare(state, action) {
+  let payload = action.payload
+  let type = payload.type
+  let profitShare = payload.profitShare
+  if (type === PROFIT_SHARE_TYPE.INVESTOR_SHARE_TYPE) {
+    state = state.setIn(['allInvestors', profitShare.id], ProfitSharing.fromApi(profitShare))
+  } else if (type === PROFIT_SHARE_TYPE.PARTNER_SHARE_TYPE) {
+    state = state.setIn(['allPartners', profitShare.id], ProfitSharing.fromApi(profitShare))
+  }
+  return state
+}
+
+function handleSaveBatchProfitShare(state, action) {
+  let payload = action.payload
+  let type = payload.type
+  let profitShares = payload.profitShares
+  if (type === PROFIT_SHARE_TYPE.INVESTOR_SHARE_TYPE) {
+    state = handleSetAllInvestors(state, profitShares)
+  } else if (type === PROFIT_SHARE_TYPE.PARTNER_SHARE_TYPE) {
+    state = handleSetAllPartners(state, profitShares)
   }
   return state
 }
@@ -666,6 +702,21 @@ function selectStationById(state, stationId) {
   return stationInfo
 }
 
+function selectInvestorById(state, id) {
+  let investor = state.STATION.getIn(['allInvestors', id])
+  if (!investor) {
+    return undefined
+  }
+  return investor.toJS()
+}
+
+function selectPartnerById(state, id) {
+  let partner = state.STATION.getIn(['allPartners', id])
+  if (!partner) {
+    return undefined
+  }
+  return partner.toJS()
+}
 
 export const stationSelector = {
   selectStations,
@@ -673,5 +724,6 @@ export const stationSelector = {
   selectStation,
   selectPartners,
   selectStationById,
-
+  selectInvestorById,
+  selectPartnerById,
 }

@@ -5,7 +5,7 @@
 import React from 'react'
 import {Form, Input, Modal, Row, Col} from 'antd'
 import SmsInput from './SmsInput'
-import {action as authAction,selector as authSelector, AUTH_USER_STATUS} from '../util/auth'
+import {action as authAction,selector as authSelector} from '../util/auth'
 import {connect} from 'react-redux'
 
 const FormItem = Form.Item
@@ -32,9 +32,6 @@ class SmsModal extends React.Component {
       this.setState({visible: newProps.visible})
     }
   }
-  componentWillMount(){
-    this.props.listSysAdminUsers({status: AUTH_USER_STATUS.ADMIN_NORMAL})
-  }
 
   componentDidMount() {
     this.setState({visible: !!this.props.visible})
@@ -48,11 +45,12 @@ class SmsModal extends React.Component {
       const data = this.props.form.getFieldsValue()
       let payload = {
         success: ()=>{this.props.onOk()},
-        smsCode: data.smsCode,
-        phone: this.props.currentUser.mobilePhoneNumber,
-        error: (e)=>{this.props.error(e)}
+        code: data.smsCode,
+        operator: this.props.currentUser.id,
+        error: ()=>{
+          this.props.error()}
       }
-      this.props.verifySmsCode(payload)
+      this.props.verifySysAuthCode(payload)
 
     })
   }
@@ -85,7 +83,7 @@ class SmsModal extends React.Component {
           </FormItem>
           </Col>
             <Col span={6}>
-              <SmsInput params={{template:'管理员操作权限确认',mobilePhoneNumber:this.props.sysManager?this.props.sysManager.mobilePhoneNumber:'',adminUser:this.props.currentUser.nickname,opName:this.props.op }}/>
+              <SmsInput smsType="auth" getSmsAuthText="获取授权码" params={{adminUser:this.props.currentUser.id,opName:this.props.op }}/>
             </Col>
           </Row>
         </Form>
@@ -95,10 +93,8 @@ class SmsModal extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let sysManager = authSelector.selectSysAdminUsers(state)
   let currentUser = authSelector.selectCurAdminUser(state)
   return {
-    sysManager: sysManager[0],
     currentUser: currentUser
   }
 };
@@ -107,5 +103,5 @@ const mapDispatchToProps = {
   ...authAction
 };
 
-export default Form.create()(connect(mapStateToProps,mapDispatchToProps)(SmsModal))
+export default connect(mapStateToProps,mapDispatchToProps)(Form.create()(SmsModal))
 

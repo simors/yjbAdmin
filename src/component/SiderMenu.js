@@ -9,6 +9,8 @@ import {
   Button,
 } from 'antd'
 import {withRouter, Link} from 'react-router-dom'
+import {selector as authSelector} from '../util/auth/'
+import {PERMISSION_CODE} from '../util/rolePermission/'
 
 const SubMenu = Menu.SubMenu
 
@@ -50,6 +52,8 @@ class SiderMenu extends React.Component {
   };
 
   render() {
+
+
     return (
       <Menu
         theme="dark"
@@ -91,10 +95,22 @@ class SiderMenu extends React.Component {
           <Menu.Item key="/message_system"><Link to="/message_system">系统消息</Link></Menu.Item>
           <Menu.Item key="/message_promotion"><Link to="/message_promotion">营销类消息</Link></Menu.Item>
         </Menu.SubMenu>
-        <Menu.SubMenu key="/system" title={<span><Icon type="notification" />系统管理</span>}>
-          <Menu.Item key="/system_user"><Link to="/system_user">用户与角色管理</Link></Menu.Item>
-          <Menu.Item key="/system_log"><Link to="/system_log">操作日志管理</Link></Menu.Item>
-        </Menu.SubMenu>
+        {(() => { // 系统管理子菜单
+          if (this.props.sysUserVisible || this.props.sysLogVisible) {
+            const items = [];
+            if (this.props.sysUserVisible) {
+              items.push(<Menu.Item key='/system_user'><Link to='/system_user'>用户与角色管理</Link></Menu.Item>);
+            }
+            if (this.props.sysLogVisible) {
+              items.push(<Menu.Item key='/system_log'><Link to='/system_log'>操作日志管理</Link></Menu.Item>);
+            }
+            return (
+              <Menu.SubMenu key="/system" title={<span><Icon type="notification"/>系统管理</span>}>
+                {items}
+              </Menu.SubMenu>
+            );
+          }
+        })()}
         <Menu.SubMenu key="/profit" title={<span><Icon type="notification" />投资收益</span>}>
           <Menu.Item key="/profit_list"><Link to="/profit_list">投资收益管理</Link></Menu.Item>
         </Menu.SubMenu>
@@ -103,4 +119,14 @@ class SiderMenu extends React.Component {
   }
 }
 
-export default withRouter(connect()(SiderMenu))
+const mapStateToProps = (appState, ownProps) => {
+  const sysUserVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_USER_ROLE]);
+  const sysLogVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_OPER_LOG]);
+
+  return {
+    sysUserVisible,
+    sysLogVisible,
+  };
+};
+
+export default withRouter(connect(mapStateToProps, null)(SiderMenu))
