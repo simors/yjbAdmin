@@ -65,7 +65,7 @@ class SiderMenu extends React.Component {
 
   renderStationMenu() {
     let {stationQueryVisible, stationInvestorVisible} = this.props
-    if (stationQueryVisible) {
+    if (stationQueryVisible || stationInvestorVisible) {
       let items = []
       if (stationQueryVisible) {
         items.push(<Menu.Item key="/site_list"><Link to="/site_list">服务点信息管理</Link></Menu.Item>)
@@ -75,6 +75,25 @@ class SiderMenu extends React.Component {
       }
       return (
         <Menu.SubMenu key="/site" title={<span><Icon type="laptop" />服务点综合管理</span>}>
+          {items}
+        </Menu.SubMenu>
+      )
+    }
+    return null
+  }
+
+  renderRechargeOrderMenu() {
+    let {orderVisible, rechargeVisible} = this.props
+    if (orderVisible || rechargeVisible) {
+      let items = []
+      if (orderVisible) {
+        items.push(<Menu.Item key="/order_list"><Link to="/order_list">订单信息管理</Link></Menu.Item>)
+      }
+      if (rechargeVisible) {
+        items.push(<Menu.Item key="/order_recharge"><Link to="/order_recharge">用户充值管理</Link></Menu.Item>)
+      }
+      return (
+        <Menu.SubMenu key="/order" title={<span><Icon type="notification" />充值与订单管理</span>}>
           {items}
         </Menu.SubMenu>
       )
@@ -125,10 +144,7 @@ class SiderMenu extends React.Component {
       >
         {this.renderQueryDeviceMenu()}
         {this.renderStationMenu()}
-        <Menu.SubMenu key="/order" title={<span><Icon type="notification" />充值与订单管理</span>}>
-          <Menu.Item key="/order_list"><Link to="/order_list">订单信息管理</Link></Menu.Item>
-          <Menu.Item key="/order_recharge"><Link to="/order_recharge">用户充值管理</Link></Menu.Item>
-        </Menu.SubMenu>
+        {this.renderRechargeOrderMenu()}
         <Menu.SubMenu key="/settlement" title={<span><Icon type="notification" />结算报表</span>}>
           <Menu.Item key="/settlement_list"><Link to="/settlement_list">服务点分成统计</Link></Menu.Item>
           <Menu.Item key="/settlement_site"><Link to="/settlement_site">服务单位分成结算</Link></Menu.Item>
@@ -161,6 +177,9 @@ const mapStateToProps = (appState, ownProps) => {
   const stationQueryVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.STATION_QUERY_WHOLE, PERMISSION_CODE.STATION_QUERY_PART])
   const stationInvestorVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.STATION_INVESTOR_QUERY_WHOLE, PERMISSION_CODE.STATION_INVESTOR_QUERY_PART])
 
+  const orderVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_ORDER_QUERY])
+  const rechargeVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_MAN_USER_PAID])
+
   const sysUserVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_USER_ROLE]);
   const sysLogVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_OPER_LOG]);
 
@@ -170,6 +189,8 @@ const mapStateToProps = (appState, ownProps) => {
     queryDeviceVisible,
     stationQueryVisible,
     stationInvestorVisible,
+    orderVisible,
+    rechargeVisible,
     sysUserVisible,
     sysLogVisible,
     profitVisible,
