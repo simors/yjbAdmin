@@ -161,3 +161,7 @@ export const ERROR_UNSUPPORT_CHANNEL        = (ERROR_BASE_DEAL - 1)         /* �
 export const ERROR_CREATE_TRANSFER          = (ERROR_BASE_DEAL - 2)         /* 创建交易请求失败 */
 export const ERROR_NOT_MATCH_DEPOSIT        = (ERROR_BASE_DEAL - 3)         /* 提取押金的金额不匹配 */
 export const ERROR_IN_REFUND_PROCESS        = (ERROR_BASE_DEAL - 4)         /* 已经处于提取押金的申请状态 */
+
+/* Station */
+export const ERROR_STATION_NOMAN = (ERROR_BASE_STATION - 1)       /* 查无此人 */
+export const ERROR_STATION_HAVESTATION = (ERROR_BASE_STATION - 2)       /* 该用户仍和服务点有关联 */
