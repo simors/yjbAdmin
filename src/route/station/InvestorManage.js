@@ -38,7 +38,8 @@ class InvestorManage extends React.Component {
       createModalVisible: false,
       updateModalVisible: false,
       selectedInvestor: undefined,
-      modalKey: -1
+      modalKey: -1,
+      mobilePhoneNumber: undefined,
     }
   }
 
@@ -91,9 +92,11 @@ class InvestorManage extends React.Component {
 
   search() {
     this.props.updateLoadingState({isLoading: true})
+    console.log('payload===>',payload)
     let payload = {
       status: this.state.status != undefined ? this.state.status : undefined,
       stationId: this.state.stationId,
+      mobilePhoneNumber: this.state.mobilePhoneNumber,
       success: ()=> {
         this.props.updateLoadingState({isLoading: false})
         console.log('success')
@@ -103,6 +106,8 @@ class InvestorManage extends React.Component {
         console.log('error')
       }
     }
+    console.log('payload===>',payload)
+
     this.props.requestInvestors(payload)
   }
 
@@ -117,6 +122,7 @@ class InvestorManage extends React.Component {
     this.setState({
       status: undefined,
       stationId: undefined,
+      mobilePhoneNumber: undefined,
     })
     this.props.updateLoadingState({isLoading: true})
 
@@ -154,6 +160,9 @@ class InvestorManage extends React.Component {
               }
             </Select>
             </Col>
+          <Col span={4}>
+           <Input placeholder = '电话号码' onChange={(e)=>{this.setState({mobilePhoneNumber: e.target.value})}} />
+          </Col>
           <Col span={4}>
             <ButtonGroup>
             <Button type="primary" onClick={()=> {
@@ -214,7 +223,7 @@ class InvestorManage extends React.Component {
         })
       },
       error: (err)=> {
-        console.log('err===>', err.message)
+        message.error(err.message)
       }
     }
     this.props.updateInvestor(payload)

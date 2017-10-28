@@ -263,7 +263,18 @@ class ShowStation extends React.Component {
             </Col>
           </Row>
         </Form>
+
         <PartnerList type='show' partners={this.props.partners}/>
+        <Row gutter={24} style={{flexDirection:'row',marginTop:20,marginBottom:20,justifyContent:' center'}}>
+          <Col span={10}></Col>
+          <Col span={4}>
+            <Button onClick={()=> {
+              this.props.history.push({
+                pathname: '/site_list'
+              })
+            }} type="primary">返回</Button>
+          </Col>
+        </Row>
       </div>
     )
 

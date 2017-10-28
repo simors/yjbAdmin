@@ -13,7 +13,7 @@ const CheckboxGroup = Checkbox.Group
 const Option = Select.Option
 const formItemLayout = {
   labelCol: {
-    span: 6
+    span: 10
   },
   wrapperCol: {
     span: 14

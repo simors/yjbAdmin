@@ -147,7 +147,7 @@ class StationManage extends React.Component {
     return (
       <div style={{flex: 1}}>
         <Row style={{marginTop: 12, marginBottom: 12}}>
-          <Col span={5}>
+          <Col span={3}>
             <Input placeholder='名称' value={this.state.name} onChange={(e)=> {
               this.setState({name: e.target.value})
             }}></Input>
@@ -172,10 +172,10 @@ class StationManage extends React.Component {
           </Col>
           <Col span={4}>
             <ButtonGroup>
-              <Button type="primary" onClick={()=> {
+              <Button size='large' type="primary" onClick={()=> {
                 this.search()
               }}>查询</Button>
-              <Button type="primary" onClick={()=> {
+              <Button size='large' type="primary" onClick={()=> {
                 this.clearSearch()
               }}>重置</Button>
             </ButtonGroup>
@@ -205,8 +205,6 @@ class StationManage extends React.Component {
               })
             }
           }}
-          showVisible={this.props.showVisible}
-          editVisible={this.props.editVisible}
           addVisible={this.props.addVisible}
           set={()=> {
             if (this.state.selectedRowId && this.state.selectedRowId.length) {
@@ -228,6 +226,11 @@ class StationManage extends React.Component {
         {this.renderSearchBar()}
 
         <StationList
+          showStation={(value)=>{
+            this.props.history.push({
+              pathname: '/site_list/showStation/' + value.id,
+            })
+          }}
           selectStation={(rowId, rowData)=> {
             this.selectStation(rowId, rowData)
           }} stations={this.props.stations}

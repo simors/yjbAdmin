@@ -54,7 +54,7 @@ const rowKey = (record) => {
 
 const StationList = (props) => {
   // console.log('[DEBUG] ---> UserList props: ', props);
-  let {stations, selectStation,setStationStatus,editStation} = props;
+  let {stations, selectStation,setStationStatus,editStation,showStation} = props;
   if (stations === null) {
     stations = [];
   }
@@ -109,23 +109,30 @@ const StationList = (props) => {
     title: '操作',
     render: (text, record)=> {
       return (
-        <div>
-          <Button onClick={()=> {
+        <span>
+          <a style={{color: `blue`}} onClick={()=> {
+            showStation(record)
+          }}>查看</a>
+                    <span className="ant-divider" />
+
+          <a style={{color: `blue`}} onClick={()=> {
             editStation(record)
-          }}>编辑</Button>
-          {record.status?<Button onClick={()=> {
+          }}>编辑</a>
+                    <span className="ant-divider" />
+
+          {record.status?<a style={{color: `blue`}} onClick={()=> {
             setStationStatus(record)
-          }}>停用</Button>:<Button onClick={()=> {
+          }}>停用</a>:<a style={{color: `blue`}} onClick={()=> {
             setStationStatus(record)
-          }}>启用</Button>}
-        </div>
+          }}>启用</a>}
+        </span>
       )
     }
   }];
 
   return (
     <div>
-      <Table columns={columns} dataSource={stations} rowKey={rowKey} rowSelection={rowSelection}/>
+      <Table columns={columns} dataSource={stations} rowKey={rowKey} />
     </div>
   );
 };
