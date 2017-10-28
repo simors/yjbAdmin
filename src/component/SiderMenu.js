@@ -101,6 +101,28 @@ class SiderMenu extends React.Component {
     return null
   }
 
+  renderAccountMenu() {
+    let {accountStationVisible, accountDepartmentVisible, accountInvestorVisible} = this.props
+    if (accountStationVisible || accountDepartmentVisible || accountInvestorVisible) {
+      let items = []
+      if (accountStationVisible) {
+        items.push(<Menu.Item key="/settlement_list"><Link to="/settlement_list">服务点分成统计</Link></Menu.Item>)
+      }
+      if (accountDepartmentVisible) {
+        items.push(<Menu.Item key="/settlement_site"><Link to="/settlement_site">服务单位分成结算</Link></Menu.Item>)
+      }
+      if (accountInvestorVisible) {
+        items.push(<Menu.Item key="/settlement_investor"><Link to="/settlement_investor">投资人分成结算</Link></Menu.Item>)
+      }
+      return (
+        <Menu.SubMenu key="/settlement" title={<span><Icon type="notification" />结算报表</span>}>
+          {items}
+        </Menu.SubMenu>
+      )
+    }
+    return null
+  }
+
   renderSysManMenu() {
     if (this.props.sysUserVisible || this.props.sysLogVisible) {
       const items = [];
@@ -145,11 +167,7 @@ class SiderMenu extends React.Component {
         {this.renderQueryDeviceMenu()}
         {this.renderStationMenu()}
         {this.renderRechargeOrderMenu()}
-        <Menu.SubMenu key="/settlement" title={<span><Icon type="notification" />结算报表</span>}>
-          <Menu.Item key="/settlement_list"><Link to="/settlement_list">服务点分成统计</Link></Menu.Item>
-          <Menu.Item key="/settlement_site"><Link to="/settlement_site">服务单位分成结算</Link></Menu.Item>
-          <Menu.Item key="/settlement_investor"><Link to="/settlement_investor">投资人分成结算</Link></Menu.Item>
-        </Menu.SubMenu>
+        {this.renderAccountMenu()}
         <Menu.SubMenu key="/promotion" title={<span><Icon type="notification" />营销活动</span>}>
           <Menu.Item key="/promotion_list"><Link to="/promotion_list">活动管理</Link></Menu.Item>
           <Menu.Item key="/promotion_recharge"><Link to="/promotion_recharge">发布充值活动</Link></Menu.Item>
@@ -180,6 +198,10 @@ const mapStateToProps = (appState, ownProps) => {
   const orderVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_ORDER_QUERY])
   const rechargeVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_MAN_USER_PAID])
 
+  const accountStationVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.ACCOUNT_STAT_STATION_DIVIDEND])
+  const accountDepartmentVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.ACCOUNT_STATION_DEPARTMENT_DIVIDEND])
+  const accountInvestorVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.ACCOUNT_INVESTOR_DIVIDEND])
+
   const sysUserVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_USER_ROLE]);
   const sysLogVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_OPER_LOG]);
 
@@ -191,6 +213,9 @@ const mapStateToProps = (appState, ownProps) => {
     stationInvestorVisible,
     orderVisible,
     rechargeVisible,
+    accountStationVisible,
+    accountDepartmentVisible,
+    accountInvestorVisible,
     sysUserVisible,
     sysLogVisible,
     profitVisible,
