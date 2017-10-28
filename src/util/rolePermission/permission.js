@@ -9,6 +9,9 @@ export const PERMISSION_CODE = {
   STATION_QUERY_WHOLE:                        2000,         // 服务点综合管理/服务点信息管理/全局查看
   STATION_QUERY_PART:                         2001,         // 服务点综合管理/服务点信息管理/局部查看
 
+  STATION_INVESTOR_QUERY_WHOLE:               2100,         // 服务点综合管理/投资人信息管理/全局查看
+  STATION_INVESTOR_QUERY_PART:                2101,         // 服务点综合管理/投资人信息管理/局部查看
+
   /* 充值与订单管理 */
   RECHARGE_ORDER_QUERY:                       3000,         // 充值与订单管理/订单信息管理/查看
   RECHARGE_MAN_USER_PAID:                     3100,         // 充值与订单管理/用户充值管理/
