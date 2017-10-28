@@ -151,6 +151,18 @@ class SiderMenu extends React.Component {
     return null
   }
 
+  renderManUserMenu() {
+    let {manUserVisible} = this.props
+    if (manUserVisible) {
+      return (
+        <Menu.SubMenu key="/user" title={<span><Icon type="notification" />用户管理</span>}>
+          <Menu.Item key="/user_list"><Link to="/user_list">用户信息管理</Link></Menu.Item>
+        </Menu.SubMenu>
+      )
+    }
+    return null
+  }
+
   renderSysManMenu() {
     if (this.props.sysUserVisible || this.props.sysLogVisible) {
       const items = [];
@@ -197,9 +209,7 @@ class SiderMenu extends React.Component {
         {this.renderRechargeOrderMenu()}
         {this.renderAccountMenu()}
         {this.renderMarkingMenu()}
-        <Menu.SubMenu key="/user" title={<span><Icon type="notification" />用户管理</span>}>
-          <Menu.Item key="/user_list"><Link to="/user_list">用户信息管理</Link></Menu.Item>
-        </Menu.SubMenu>
+        {this.renderManUserMenu()}
         <Menu.SubMenu key="/message" title={<span><Icon type="notification" />消息推送</span>}>
           <Menu.Item key="/message_system"><Link to="/message_system">系统消息</Link></Menu.Item>
           <Menu.Item key="/message_promotion"><Link to="/message_promotion">营销类消息</Link></Menu.Item>
@@ -230,6 +240,8 @@ const mapStateToProps = (appState, ownProps) => {
   const marketRedPacketsVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.MARKETING_PUBLISH_RED_PACKETS])
   const marketCreditExchangeVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.MARKETING_PUBLISH_CREDIT_EXCHANGE])
 
+  const manUserVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.USER_MAN_USER_PROFILE])
+
   const sysUserVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_USER_ROLE]);
   const sysLogVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_OPER_LOG]);
 
@@ -249,6 +261,7 @@ const mapStateToProps = (appState, ownProps) => {
     marketCreditVisible,
     marketRedPacketsVisible,
     marketCreditExchangeVisible,
+    manUserVisible,
     sysUserVisible,
     sysLogVisible,
     profitVisible,
