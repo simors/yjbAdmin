@@ -151,3 +151,15 @@ export async function closePartner(payload) {
     return {success: false, error: err}
   }
 }
+
+export async function adminHaveStation(payload) {
+  return await AV.Cloud.run('stationAdminHaveStation',payload)
+}
+
+export async function partnerHaveStation(payload) {
+  return await AV.Cloud.run('stationPartnerHaveStation',payload)
+}
+
+export async function investorHaveStation(payload) {
+  return await AV.Cloud.run('stationInvestorHaveStation',payload)
+}

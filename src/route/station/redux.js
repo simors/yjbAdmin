@@ -122,6 +122,9 @@ const CLOSE_PARTNER = 'CLOSE_PARTNER'
 const SAVE_STATIONS = 'SAVE_STATIONS'
 const SAVE_PROFIT_SHARE = 'SAVE_PROFIT_SHARE'
 const SAVE_BATCH_PROFIT_SHARE = 'SAVE_BATCH_PROFIT_SHARE'
+const VALID_ADMIN_HAVE_STATION = 'VALID_ADMIN_HAVE_STATION'
+const VALID_INVESTOR_HAVE_STATION = 'VALID_INVESTOR_HAVE_STATION'
+const VALID_PARTNER_HAVE_STATION = 'VALID_PARTNER_HAVE_STATION'
 
 /**** Action ****/
 
@@ -145,6 +148,10 @@ export const stationAction = {
   saveStations: createAction(SAVE_STATIONS),
   saveProfitShare: createAction(SAVE_PROFIT_SHARE),
   saveBatchProfitShare: createAction(SAVE_BATCH_PROFIT_SHARE),
+  validAdminHaveStation: createAction(VALID_ADMIN_HAVE_STATION),
+  validPartnerHaveStation: createAction(VALID_PARTNER_HAVE_STATION),
+  validInvestorHaveStation: createAction(VALID_INVESTOR_HAVE_STATION)
+
 }
 
 const requestStationsSuccess = createAction(FETCH_STATIONS_SUCCESS)
@@ -449,6 +456,76 @@ function* updateStationAction(action) {
   }
 }
 
+/**
+ * 查询服务点管理员是否还拥有服务点
+ * @param action
+ * payload = {
+ * userId,
+ * success(),
+ * error()
+ *
+ */
+function* sagaValidAdminHaveStation(action) {
+  let payload = action.payload
+  try{
+    yield call(stationFuncs.adminHaveStation, payload)
+    if(payload.success){
+      payload.success()
+    }
+  }catch (err){
+    if(payload.error){
+      payload.error(err)
+    }
+  }
+}
+
+/**
+ * 查询分成方是否还拥有服务点
+ * @param action
+ * payload = {
+ * userId,
+ * success(),
+ * error()
+ *
+ */
+function* sagaValidPartnerHaveStation(action) {
+  let payload = action.payload
+  try{
+    yield call(stationFuncs.partnerHaveStation, payload)
+    if(payload.success){
+      payload.success()
+    }
+  }catch (err){
+    if(payload.error){
+      payload.error(err)
+    }
+  }
+}
+
+/**
+ * 查询投资人是否还拥有服务点
+ * @param action
+ * payload = {
+ * userId,
+ * success(),
+ * error()
+ *
+ */
+function* sagaValidInvestorHaveStation(action) {
+  let payload = action.payload
+  try{
+    yield call(stationFuncs.investorHaveStation, payload)
+    if(payload.success){
+      payload.success()
+    }
+  }catch (err){
+    if(payload.error){
+      payload.error(err)
+    }
+  }
+}
+
+
 export const stationSaga = [
   takeLatest(FETCH_STATIONS, fetchStationsAction),
   takeLatest(OPEN_STATION, openStationAction),
@@ -465,6 +542,10 @@ export const stationSaga = [
   takeLatest(CLOSE_PARTNER, closePartnerAction),
   takeLatest(CREATE_STATION, createStationAction),
   takeLatest(UPDATE_STATION, updateStationAction),
+  takeLatest(VALID_ADMIN_HAVE_STATION, sagaValidAdminHaveStation),
+  takeLatest(VALID_PARTNER_HAVE_STATION, sagaValidPartnerHaveStation),
+  takeLatest(VALID_INVESTOR_HAVE_STATION, sagaValidInvestorHaveStation),
+
 
 
 ]
