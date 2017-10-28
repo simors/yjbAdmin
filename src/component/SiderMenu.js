@@ -163,6 +163,25 @@ class SiderMenu extends React.Component {
     return null
   }
 
+  renderSysMessageMenu() {
+    let {sendSysMsgVisible, sendMarketingMsgVisible} = this.props
+    if (sendSysMsgVisible || sendMarketingMsgVisible) {
+      let items = []
+      if (sendSysMsgVisible) {
+        items.push(<Menu.Item key="/message_system"><Link to="/message_system">系统消息</Link></Menu.Item>)
+      }
+      if (sendMarketingMsgVisible) {
+        items.push(<Menu.Item key="/message_promotion"><Link to="/message_promotion">营销类消息</Link></Menu.Item>)
+      }
+      return (
+        <Menu.SubMenu key="/message" title={<span><Icon type="notification" />消息推送</span>}>
+          {items}
+        </Menu.SubMenu>
+      )
+    }
+    return null
+  }
+
   renderSysManMenu() {
     if (this.props.sysUserVisible || this.props.sysLogVisible) {
       const items = [];
@@ -210,10 +229,7 @@ class SiderMenu extends React.Component {
         {this.renderAccountMenu()}
         {this.renderMarkingMenu()}
         {this.renderManUserMenu()}
-        <Menu.SubMenu key="/message" title={<span><Icon type="notification" />消息推送</span>}>
-          <Menu.Item key="/message_system"><Link to="/message_system">系统消息</Link></Menu.Item>
-          <Menu.Item key="/message_promotion"><Link to="/message_promotion">营销类消息</Link></Menu.Item>
-        </Menu.SubMenu>
+        {this.renderSysMessageMenu()}
         {this.renderSysManMenu()}
         {this.renderProfitMenu()}
       </Menu>
@@ -242,6 +258,9 @@ const mapStateToProps = (appState, ownProps) => {
 
   const manUserVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.USER_MAN_USER_PROFILE])
 
+  const sendSysMsgVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.PUSH_SYSTEM_MSG])
+  const sendMarketingMsgVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.PUSH_MARKETING_MSG])
+
   const sysUserVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_USER_ROLE]);
   const sysLogVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_OPER_LOG]);
 
@@ -262,6 +281,8 @@ const mapStateToProps = (appState, ownProps) => {
     marketRedPacketsVisible,
     marketCreditExchangeVisible,
     manUserVisible,
+    sendSysMsgVisible,
+    sendMarketingMsgVisible,
     sysUserVisible,
     sysLogVisible,
     profitVisible,
