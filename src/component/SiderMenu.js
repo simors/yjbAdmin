@@ -123,6 +123,34 @@ class SiderMenu extends React.Component {
     return null
   }
 
+  renderMarkingMenu() {
+    let {marketManVisible, marketRechargeVisible, marketCreditVisible, marketRedPacketsVisible, marketCreditExchangeVisible} = this.props
+    if (marketManVisible || marketRechargeVisible || marketCreditVisible || marketRedPacketsVisible || marketCreditExchangeVisible) {
+      let items = []
+      if (marketManVisible) {
+        items.push(<Menu.Item key="/promotion_list"><Link to="/promotion_list">活动管理</Link></Menu.Item>)
+      }
+      if (marketRechargeVisible) {
+        items.push(<Menu.Item key="/promotion_recharge"><Link to="/promotion_recharge">发布充值活动</Link></Menu.Item>)
+      }
+      if (marketCreditVisible) {
+        items.push(<Menu.Item key="/promotion_score"><Link to="/promotion_score">发布积分倍率活动</Link></Menu.Item>)
+      }
+      if (marketCreditExchangeVisible) {
+        items.push(<Menu.Item key="/promotion_scoreExchange"><Link to="/promotion_scoreExchange">发布积分兑换活动</Link></Menu.Item>)
+      }
+      if (marketRedPacketsVisible) {
+        items.push(<Menu.Item key="/promotion_redEnvelope"><Link to="/promotion_redEnvelope">发布红包活动</Link></Menu.Item>)
+      }
+      return (
+        <Menu.SubMenu key="/promotion" title={<span><Icon type="notification" />营销活动</span>}>
+          {items}
+        </Menu.SubMenu>
+      )
+    }
+    return null
+  }
+
   renderSysManMenu() {
     if (this.props.sysUserVisible || this.props.sysLogVisible) {
       const items = [];
@@ -168,13 +196,7 @@ class SiderMenu extends React.Component {
         {this.renderStationMenu()}
         {this.renderRechargeOrderMenu()}
         {this.renderAccountMenu()}
-        <Menu.SubMenu key="/promotion" title={<span><Icon type="notification" />营销活动</span>}>
-          <Menu.Item key="/promotion_list"><Link to="/promotion_list">活动管理</Link></Menu.Item>
-          <Menu.Item key="/promotion_recharge"><Link to="/promotion_recharge">发布充值活动</Link></Menu.Item>
-          <Menu.Item key="/promotion_score"><Link to="/promotion_score">发布积分倍率活动</Link></Menu.Item>
-          <Menu.Item key="/promotion_scoreExchange"><Link to="/promotion_scoreExchange">发布积分兑换活动</Link></Menu.Item>
-          <Menu.Item key="/promotion_redEnvelope"><Link to="/promotion_redEnvelope">发布红包活动</Link></Menu.Item>
-        </Menu.SubMenu>
+        {this.renderMarkingMenu()}
         <Menu.SubMenu key="/user" title={<span><Icon type="notification" />用户管理</span>}>
           <Menu.Item key="/user_list"><Link to="/user_list">用户信息管理</Link></Menu.Item>
         </Menu.SubMenu>
@@ -202,6 +224,12 @@ const mapStateToProps = (appState, ownProps) => {
   const accountDepartmentVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.ACCOUNT_STATION_DEPARTMENT_DIVIDEND])
   const accountInvestorVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.ACCOUNT_INVESTOR_DIVIDEND])
 
+  const marketManVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.MARKETING_MAN_ACTIVITY])
+  const marketRechargeVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.MARKETING_PUBLISH_RECHARGE])
+  const marketCreditVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.MARKETING_PUBLISH_CREDIT])
+  const marketRedPacketsVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.MARKETING_PUBLISH_RED_PACKETS])
+  const marketCreditExchangeVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.MARKETING_PUBLISH_CREDIT_EXCHANGE])
+
   const sysUserVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_USER_ROLE]);
   const sysLogVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_OPER_LOG]);
 
@@ -216,6 +244,11 @@ const mapStateToProps = (appState, ownProps) => {
     accountStationVisible,
     accountDepartmentVisible,
     accountInvestorVisible,
+    marketManVisible,
+    marketRechargeVisible,
+    marketCreditVisible,
+    marketRedPacketsVisible,
+    marketCreditExchangeVisible,
     sysUserVisible,
     sysLogVisible,
     profitVisible,

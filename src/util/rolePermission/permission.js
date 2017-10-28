@@ -24,8 +24,9 @@ export const PERMISSION_CODE = {
   /* 营销活动 */
   MARKETING_MAN_ACTIVITY:                     5000,         // 营销活动/活动管理/
   MARKETING_PUBLISH_RECHARGE:                 5100,         // 营销活动/发布充值活动/
-  MARKETING_PUBLISH_CREDIT:                   5200,         // 营销活动/发布积分活动/
+  MARKETING_PUBLISH_CREDIT:                   5200,         // 营销活动/发布积分倍率活动/
   MARKETING_PUBLISH_RED_PACKETS:              5300,         // 营销活动/发布红包活动/
+  MARKETING_PUBLISH_CREDIT_EXCHANGE:          5400,         // 营销活动/发布积分兑换活动/
 
   /* 用户管理 */
   USER_MAN_USER_PROFILE:                      6000,         // 用户管理/用户信息管理/
