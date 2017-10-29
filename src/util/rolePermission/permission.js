@@ -5,9 +5,14 @@
 export const PERMISSION_CODE = {
   /* 干衣柜综合管理 */
   DEVICE_QUERY_INFO:                          1000,         // 干衣柜综合管理/干衣柜信息管理/查看
+  DEVICE_ASSOCIATE:                           1001,         // 干衣柜综合管理/干衣柜信息管理/关联
+  DEVICE_EDIT:                                1002,         // 干衣柜综合管理/干衣柜信息管理/编辑
+
   /* 服务点综合管理 */
   STATION_QUERY_WHOLE:                        2000,         // 服务点综合管理/服务点信息管理/全局查看
   STATION_QUERY_PART:                         2001,         // 服务点综合管理/服务点信息管理/局部查看
+  STATION_EDIT:                               2002,         // 服务点综合管理/服务点信息管理/编辑
+  STATION_ADD:                                2003,         // 服务点综合管理/服务点信息管理/添加
 
   STATION_INVESTOR_QUERY_WHOLE:               2100,         // 服务点综合管理/投资人信息管理/全局查看
   STATION_INVESTOR_QUERY_PART:                2101,         // 服务点综合管理/投资人信息管理/局部查看
@@ -24,8 +29,9 @@ export const PERMISSION_CODE = {
   /* 营销活动 */
   MARKETING_MAN_ACTIVITY:                     5000,         // 营销活动/活动管理/
   MARKETING_PUBLISH_RECHARGE:                 5100,         // 营销活动/发布充值活动/
-  MARKETING_PUBLISH_CREDIT:                   5200,         // 营销活动/发布积分活动/
+  MARKETING_PUBLISH_CREDIT:                   5200,         // 营销活动/发布积分倍率活动/
   MARKETING_PUBLISH_RED_PACKETS:              5300,         // 营销活动/发布红包活动/
+  MARKETING_PUBLISH_CREDIT_EXCHANGE:          5400,         // 营销活动/发布积分兑换活动/
 
   /* 用户管理 */
   USER_MAN_USER_PROFILE:                      6000,         // 用户管理/用户信息管理/
