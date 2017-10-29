@@ -148,9 +148,9 @@ export const stationAction = {
   saveStations: createAction(SAVE_STATIONS),
   saveProfitShare: createAction(SAVE_PROFIT_SHARE),
   saveBatchProfitShare: createAction(SAVE_BATCH_PROFIT_SHARE),
-  validAdminHaveStation: createAction(VALID_ADMIN_HAVE_STATION),
-  validPartnerHaveStation: createAction(VALID_PARTNER_HAVE_STATION),
-  validInvestorHaveStation: createAction(VALID_INVESTOR_HAVE_STATION)
+  validAdminHaveNoStation: createAction(VALID_ADMIN_HAVE_NO_STATION),// payload:{userId: Str,success: Func, error: Func}
+  validPartnerHaveNoStation: createAction(VALID_PARTNER_HAVE_NO_STATION),// payload:{userId: Str,success: Func, error: Func}
+  validInvestorHaveNoStation: createAction(VALID_INVESTOR_HAVE_NO_STATION)// payload:{userId: Str,success: Func, error: Func}
 
 }
 
@@ -465,7 +465,7 @@ function* updateStationAction(action) {
  * error()
  * * return 有返回error，没有返回true
  */
-function* sagaValidAdminHaveStation(action) {
+function* sagaValidAdminHaveNoStation(action) {
   let payload = action.payload
   try{
     yield call(stationFuncs.adminHaveStation, payload)
@@ -489,7 +489,7 @@ function* sagaValidAdminHaveStation(action) {
  * return 有返回error，没有返回true
  *
  */
-function* sagaValidPartnerHaveStation(action) {
+function* sagaValidPartnerHaveNoStation(action) {
   let payload = action.payload
   try{
     yield call(stationFuncs.partnerHaveStation, payload)
@@ -512,7 +512,7 @@ function* sagaValidPartnerHaveStation(action) {
  * error()
  * * return 有返回error，没有返回true
  */
-function* sagaValidInvestorHaveStation(action) {
+function* sagaValidInvestorHaveNoStation(action) {
   let payload = action.payload
   try{
     yield call(stationFuncs.investorHaveStation, payload)
@@ -543,9 +543,9 @@ export const stationSaga = [
   takeLatest(CLOSE_PARTNER, closePartnerAction),
   takeLatest(CREATE_STATION, createStationAction),
   takeLatest(UPDATE_STATION, updateStationAction),
-  takeLatest(VALID_ADMIN_HAVE_STATION, sagaValidAdminHaveStation),
-  takeLatest(VALID_PARTNER_HAVE_STATION, sagaValidPartnerHaveStation),
-  takeLatest(VALID_INVESTOR_HAVE_STATION, sagaValidInvestorHaveStation),
+  takeLatest(VALID_ADMIN_HAVE_NO_STATION, sagaValidAdminHaveNoStation),
+  takeLatest(VALID_PARTNER_HAVE_NO_STATION, sagaValidPartnerHaveNoStation),
+  takeLatest(VALID_INVESTOR_HAVE_NO_STATION, sagaValidInvestorHaveNoStation),
 
 
 
