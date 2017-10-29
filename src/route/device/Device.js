@@ -15,6 +15,8 @@ import DeviceSearchForm from './DeviceSearchForm'
 import DeviceDetailModal from './DeviceDetailModal'
 import DeviceAssociateModal from './DeviceAssociateModal'
 import DeviceEditModal from './DeviceEditModal'
+import {selector as authSelector} from '../../util/auth/'
+import {PERMISSION_CODE} from '../../util/rolePermission/'
 
 const ButtonGroup = Button.Group
 
@@ -65,6 +67,42 @@ class Device extends PureComponent {
     })
   }
 
+  renderOperateCol = (record) => {
+    let {hasAssociatePermission, hasEditPermission} = this.props
+    if(record.status === deviceStatus.DEVICE_STATUS_UNREGISTER) {
+      if (hasAssociatePermission) {
+        return (
+          <span>
+            <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
+            <span className="ant-divider" />
+            <a style={{color: `red`}} onClick={() => {this.showEditModal(record)}}>关联</a>
+          </span>
+        )
+      } else {
+        return (
+          <span>
+            <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
+          </span>
+        )
+      }
+    }
+    if (hasEditPermission) {
+      return (
+        <span>
+          <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
+          <span className="ant-divider" />
+          <a style={{color: `blue`}} onClick={() => {this.showRowEditModal(record)}}>编辑</a>
+        </span>
+      )
+    } else {
+      return (
+        <span>
+          <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
+        </span>
+      )
+    }
+  }
+
   render() {
     const rowSelection = {
       type: 'radio',
@@ -101,25 +139,7 @@ class Device extends PureComponent {
             break
         }
       }},
-      // TODO: 通过权限生成操作按钮
-      { title: '操作', key: 'action', render: (record) => {
-        if(record.status === deviceStatus.DEVICE_STATUS_UNREGISTER) {
-          return (
-            <span>
-              <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
-              <span className="ant-divider" />
-              <a style={{color: `red`}} onClick={() => {this.showEditModal(record)}}>关联</a>
-            </span>
-          )
-        }
-        return (
-          <span>
-            <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
-            <span className="ant-divider" />
-            <a style={{color: `blue`}} onClick={() => {this.showRowEditModal(record)}}>编辑</a>
-          </span>
-        )
-      }}
+      { title: '操作', key: 'action', render: this.renderOperateCol}
     ];
     return (
       <div className={style.content}>
@@ -159,8 +179,12 @@ class Device extends PureComponent {
 }
 
 const mapStateToProps = (appState, ownProps) => {
+  const hasEditPermission = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.DEVICE_EDIT])
+  const hasAssociatePermission = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.DEVICE_ASSOCIATE])
   let deviceInfoList = selector.selectDeviceList(appState)
   return {
+    hasEditPermission,
+    hasAssociatePermission,
     deviceInfoList: deviceInfoList,
   }
 }
