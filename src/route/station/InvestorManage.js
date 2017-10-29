@@ -234,11 +234,8 @@ class InvestorManage extends React.Component {
     return (
       <div>
         <StationMenu
-          showVisible = {this.props.showVisible}
-          editVisible = {this.props.editVisible}
           addVisible = {this.props.addVisible}
           showDetail={()=> {
-            console.log('hahahahahhaha')
           }}
           add={()=> {
             this.openCreateModal()
@@ -300,17 +297,12 @@ const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let investors = stationSelector.selectInvestors(state)
   let investorList = selector.selectUsersByRole(state, ROLE_CODE.STATION_INVESTOR)
-  let showVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_INVESTOR_QUERY_WHOLE,PERMISSION_CODE.STATION_QUERY_PART])
   let addVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_ADD])
-  let editVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_EDIT])
-  console.log('investors=====>',investors)
   return {
     investors: investors,
     stations: stations,
     investorList: investorList,
-    editVisible: editVisible,
     addVisible: addVisible,
-    showVisible: showVisible
   };
 };
 

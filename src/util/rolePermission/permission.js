@@ -11,10 +11,11 @@ export const PERMISSION_CODE = {
   DEVICE_CHANGE_STATION:                      1004,         // 干衣柜综合管理/干衣柜信息管理/改变所属服务点
 
   /* 服务点综合管理 */
-  STATION_QUERY_WHOLE:                        2000,         // 服务点综合管理/服务点信息管理/全局查看
-  STATION_QUERY_PART:                         2001,         // 服务点综合管理/服务点信息管理/局部查看
+  STATION_BASE_QUERY:                         2000,         // 服务点综合管理/服务点信息管理/查看基本信息
+  STATION_QUERY_PARTNER:                      2001,         // 服务点综合管理/服务点信息管理/查看分成方
   STATION_EDIT:                               2002,         // 服务点综合管理/服务点信息管理/编辑
   STATION_ADD:                                2003,         // 服务点综合管理/服务点信息管理/添加
+  STATION_CHANGE_STATUS:                      2004,         // 服务点综合管理/服务点信息管理/修改服务点状态
 
   STATION_INVESTOR_QUERY_WHOLE:               2100,         // 服务点综合管理/投资人信息管理/全局查看
   STATION_INVESTOR_QUERY_PART:                2101,         // 服务点综合管理/投资人信息管理/局部查看
