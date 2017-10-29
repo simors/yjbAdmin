@@ -33,6 +33,16 @@ const updateSmsModalSuccess = createAction(UPDATE_SMSMODAL_SUCCESS)
 
 // --- saga
 
+/**控制微信验证窗口打开和关闭
+ *
+ * @param action
+ * payload{
+ * modalVisible: bool
+ * op: string
+ * verifySuccess: func()
+ * verifyError: func()
+ * }
+ */
 function* sagaUpdateSmsModal(action) {
   let {modalVisible,op,verifySuccess,verifyError} = action.payload
   let closeModal = put(updateSmsModalSuccess({modalVisible:false,op: undefined}))

@@ -65,12 +65,15 @@ class StationManage extends React.Component {
     let payload = {
       stationId: value.id,
       success: ()=> {
-        this.setState({modalVisible: false})
+        // this.setState({modalVisible: false})
+        this.props.updateLoadingState({isLoading: false})
 
-        this.refresh()
+        // this.refresh()
       },
       error: (err)=> {
-        this.setState({modalVisible: false})
+        // this.setState({modalVisible: false})
+        this.props.updateLoadingState({isLoading: false})
+
         message.error(err.message)
       }
     }
