@@ -104,14 +104,20 @@ class Device extends PureComponent {
       // TODO: 通过权限生成操作按钮
       { title: '操作', key: 'action', render: (record) => {
         if(record.status === deviceStatus.DEVICE_STATUS_UNREGISTER) {
-          return (<a style={{color: `red`}} onClick={() => {this.showEditModal(record)}}>关联</a>)
+          return (
+            <span>
+              <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
+              <span className="ant-divider" />
+              <a style={{color: `red`}} onClick={() => {this.showEditModal(record)}}>关联</a>
+            </span>
+          )
         }
         return (
           <span>
-          <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
-          <span className="ant-divider" />
-          <a style={{color: `blue`}} onClick={() => {this.showRowEditModal(record)}}>编辑</a>
-        </span>
+            <a style={{color: `blue`}} onClick={() => {this.showRowDetail(record)}}>详情</a>
+            <span className="ant-divider" />
+            <a style={{color: `blue`}} onClick={() => {this.showRowEditModal(record)}}>编辑</a>
+          </span>
         )
       }}
     ];
@@ -131,10 +137,14 @@ class Device extends PureComponent {
                rowSelection={rowSelection}
                columns={columns}
                dataSource={this.props.deviceInfoList}/>
-        <DeviceDetailModal visible={this.state.showDeviceDetailModal}
-                           device={this.state.selectDevice}
-                           onOk={() => {this.setState({showDeviceDetailModal: false})}}
-                           onCancel={() => {this.setState({showDeviceDetailModal: false})}}/>
+        {
+          this.state.showDeviceDetailModal ?
+            <DeviceDetailModal device={this.state.selectDevice}
+                               onOk={() => {this.setState({showDeviceDetailModal: false})}}
+                               onCancel={() => {this.setState({showDeviceDetailModal: false})}}/>
+            : null
+        }
+
         <DeviceAssociateModal visible={this.state.showDeviceAssociateModal}
                               device={this.state.selectDevice}
                               onCancel={() => {this.setState({showDeviceAssociateModal: false})}}/>

@@ -37,11 +37,11 @@ class DeviceDetailModal extends React.PureComponent {
 
   render() {
     const {device, station, stationUser} = this.props
-    if(device && station && stationUser) {
+    if(device) {
       return (
         <Modal title="干衣柜详情"
                width={720}
-               visible={this.props.visible}
+               visible={true}
                onOk={this.props.onOk}
                onCancel={this.props.onCancel}>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
@@ -53,22 +53,39 @@ class DeviceDetailModal extends React.PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>服务点</Col>
             <Col span={10}>
-              <DivisionCascader disabled={true}
-                                value={[station.province.value, station.city.value, station.area.value]} />
+              {
+                station ? <DivisionCascader disabled={true}
+                                            value={[station.province.value, station.city.value, station.area.value]} />
+                  : <DivisionCascader disabled={true}/>
+              }
             </Col>
             <Col span={6}>
-              <Select disabled={true} value={station.id} style={{width: 120}}>
-                <Option value={station.id}>{station.name}</Option>
-              </Select>
+              {
+                station ? (
+                  <Select disabled={true} value={station.id} style={{width: 120}}>
+                    <Option value={station.id}>{station.name}</Option>
+                  </Select>
+                ) : (
+                  <Select disabled={true} defaultValue="0" style={{width: 120}}>
+                    <Option value="0">未指定</Option>
+                  </Select>
+                )
+              }
             </Col>
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}></Col>
             <Col span={10}>
-              <span>{"服务网点地址：" + station.addr}</span>
+              {
+                station ? <span>{"服务网点地址：" + station.addr}</span>
+                  : <span>服务网点地址：未指定</span>
+              }
             </Col>
             <Col>
-              <span>{"管理员：" + stationUser.nickname + "  " + stationUser.mobilePhoneNumber}</span>
+              {
+                stationUser ? <span>{"管理员：" + stationUser.nickname + "  " + stationUser.mobilePhoneNumber}</span>
+                  : <span>管理员：未指定</span>
+              }
             </Col>
           </Row>
 
