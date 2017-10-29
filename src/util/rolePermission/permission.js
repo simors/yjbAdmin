@@ -17,8 +17,10 @@ export const PERMISSION_CODE = {
   STATION_ADD:                                2003,         // 服务点综合管理/服务点信息管理/添加
   STATION_CHANGE_STATUS:                      2004,         // 服务点综合管理/服务点信息管理/修改服务点状态
 
-  STATION_INVESTOR_QUERY_WHOLE:               2100,         // 服务点综合管理/投资人信息管理/全局查看
-  STATION_INVESTOR_QUERY_PART:                2101,         // 服务点综合管理/投资人信息管理/局部查看
+  STATION_INVESTOR_BASE_QUERY:                2100,         // 服务点综合管理/投资人信息管理/查看基本信息
+  STATION_INVESTOR_ADD:                       2101,         // 服务点综合管理/投资人信息管理/添加投资人
+  STATION_INVESTOR_EDIT:                      2102,         // 服务点综合管理/投资人信息管理/编辑投资人
+  STATION_INVESTOR_CHANGE_STATUS:             2103,         // 服务点综合管理/投资人信息管理/修改投资人可用状态
 
   /* 充值与订单管理 */
   RECHARGE_ORDER_QUERY:                       3000,         // 充值与订单管理/订单信息管理/查看
