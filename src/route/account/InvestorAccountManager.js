@@ -240,6 +240,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(InvestorAccountManager));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(InvestorAccountManager));
 
 export {saga, reducer} from './redux';
