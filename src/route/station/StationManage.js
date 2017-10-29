@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import {connect} from 'react-redux';
+import {withRouter} from 'react-router'
 import {Link} from 'react-router-dom';
 import {Row, Col, Input, Select, Button, message} from 'antd';
 import ContentHead from '../../component/ContentHead'
@@ -11,14 +12,14 @@ import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from './redux';
 import {action, selector} from '../../util/auth'
 import {configSelector} from '../../util/config'
-import createBrowserHistory from 'history/createBrowserHistory'
+// import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction, accountSelector} from '../account/redux'
 import {PERMISSION_CODE} from '../../util/rolePermission'
 import {smsAction,smsSelector} from '../../component/smsModal'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
 
-const history = createBrowserHistory()
+// const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
 
@@ -279,6 +280,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(StationManage);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(StationManage));
 
 export {saga, reducer} from './redux';
