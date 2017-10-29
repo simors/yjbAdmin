@@ -42,19 +42,19 @@ class StationSelect extends React.Component {
   }
 
   inDivision(station) {
-    let provinceCode = station.province.value
-    let cityCode = station.city.value
-    let areaCode = station.area.value
+    let provinceCode = station.province? station.province.value : undefined
+    let cityCode = station.city? station.city.value : undefined
+    let areaCode = station.area? station.area.value : undefined
     if (this.state.division == undefined) {
       return true
     }
-    if (this.state.division[0] && this.state.division[0] != provinceCode) {
+    if (this.state.division[0] && provinceCode && this.state.division[0] != provinceCode) {
       return false
     }
-    if (this.state.division[1] && this.state.division[1] != cityCode) {
+    if (this.state.division[1] && cityCode && this.state.division[1] != cityCode) {
       return false
     }
-    if (this.state.division[2] && this.state.division[2] != areaCode) {
+    if (this.state.division[2] && areaCode && this.state.division[2] != areaCode) {
       return false
     }
     return true
