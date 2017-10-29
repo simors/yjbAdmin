@@ -12,6 +12,8 @@ import {
 } from 'antd'
 import {deviceStatus, actions} from './redux'
 import StationSelect from '../station/StationSelect'
+import {selector as authSelector} from '../../util/auth/'
+import {PERMISSION_CODE} from '../../util/rolePermission/'
 
 const FormItem = Form.Item
 const RadioGroup = Radio.Group
@@ -61,7 +63,8 @@ class EditForm extends PureComponent {
   }
 
   render() {
-    const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched, getFieldsValue } = this.props.form
+    const {editStationAddrPer, changeDeviceStatusPer, changeStationPer} = this.props
+    const { getFieldDecorator, getFieldsError, getFieldsValue } = this.props.form
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -87,7 +90,7 @@ class EditForm extends PureComponent {
             rules: [{ required: true, message: '请指定服务网点！' }],
             initialValue: this.props.device.stationId,
           })(
-            <StationSelect />
+            <StationSelect disabled={!changeStationPer} />
           )}
         </FormItem>
         <FormItem hasFeedback {...formItemLayout} label="干衣柜位置">
@@ -95,7 +98,7 @@ class EditForm extends PureComponent {
             rules: [{ required: true, message: '请输入干衣柜位置!' }],
             initialValue: this.props.device.deviceAddr,
           })(
-            <Input />
+            <Input disabled={!editStationAddrPer}/>
           )}
         </FormItem>
         <FormItem hasFeedback {...formItemLayout} label="状态">
@@ -103,7 +106,7 @@ class EditForm extends PureComponent {
             rules: [{ required: true, message: '请选择干衣柜状态！' }],
             initialValue: this.props.device.status,
           })(
-            <RadioGroup>
+            <RadioGroup disabled={!changeDeviceStatusPer}>
               <Radio value={deviceStatus.DEVICE_STATUS_IDLE}>空闲</Radio>
               <Radio disabled={true} value={deviceStatus.DEVICE_STATUS_OCCUPIED}>使用中</Radio>
               <Radio value={deviceStatus.DEVICE_STATUS_OFFLINE}>下线</Radio>
@@ -126,7 +129,13 @@ class EditForm extends PureComponent {
 const DeviceEditForm = Form.create()(EditForm)
 
 const mapStateToProps = (appState, ownProps) => {
+  const editStationAddrPer = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.DEVICE_EDIT_STATION_ADDR])
+  const changeDeviceStatusPer = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.DEVICE_CHANGE_STATUS])
+  const changeStationPer = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.DEVICE_CHANGE_STATION])
   return {
+    editStationAddrPer,
+    changeDeviceStatusPer,
+    changeStationPer,
   }
 }
 

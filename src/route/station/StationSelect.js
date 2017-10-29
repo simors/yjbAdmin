@@ -88,10 +88,10 @@ class StationSelect extends React.Component {
   render() {
     return (
       <div style={{display: 'flex'}}>
-        <DivisionCascader disabled={false}
+        <DivisionCascader disabled={this.props.disabled}
                           value={this.state.division}
                           onChange={this.onDivisionChange}/>
-        <Select style={{width: 120}} notFoundContent="无服务点" value={this.state.stationId} onChange={this.onSelectChange}>
+        <Select style={{width: 120}} notFoundContent="无服务点" value={this.state.stationId} disabled={this.props.disabled} onChange={this.onSelectChange}>
           {
             this.props.stationList.map((station, index) => {
               if (this.inDivision(station)) {
@@ -103,6 +103,10 @@ class StationSelect extends React.Component {
       </div>
     )
   }
+}
+
+StationSelect.defaultProps = {
+  disabled: false,
 }
 
 const mapStateToProps = (appState, ownProps) => {
