@@ -5,7 +5,7 @@ import {action, selector} from './redux';
 import {action as authAction, selector as authSelector, AUTH_USER_TYPE, AUTH_USER_STATUS} from '../../util/auth/';
 import * as errno from '../../errno';
 import style from './UserCreate.module.scss';
-import SmsInput from '../../component/SmsInput'
+import SmsInput from '../../component/smsModal/SmsInput'
 import {getAuthorizeURL} from '../../util/wxUtil'
 import appConfig from '../../util/appConfig'
 import QRCode from 'qrcode.react'

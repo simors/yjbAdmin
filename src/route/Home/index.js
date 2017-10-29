@@ -18,6 +18,7 @@ import {configAction} from '../../util/config'
 import {action as authAction, selector as authSelector} from '../../util/auth/'
 import LoadActivity from '../../component/loadActivity'
 import Profile from '../../component/Profile'
+import SmsModal from '../../component/smsModal'
 
 const {Header, Footer, Sider, Content} = Layout
 
@@ -87,6 +88,7 @@ class Home extends Component {
               {breadcrumbItems}
             </Breadcrumb>
             <LoadActivity/>
+            <SmsModal/>
             <div className={style.container}>
               <div className={style.content}>
                 <ContentRouter match={match}/>

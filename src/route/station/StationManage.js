@@ -15,7 +15,7 @@ import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction, accountSelector} from '../account/redux'
 import {PERMISSION_CODE} from '../../util/rolePermission'
-import SmsModal from '../../component/SmsModal'
+import {smsAction,smsSelector} from '../../component/smsModal'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
 
 const history = createBrowserHistory()
@@ -65,12 +65,15 @@ class StationManage extends React.Component {
     let payload = {
       stationId: value.id,
       success: ()=> {
-        this.setState({modalVisible: false})
+        // this.setState({modalVisible: false})
+        this.props.updateLoadingState({isLoading: false})
 
-        this.refresh()
+        // this.refresh()
       },
       error: (err)=> {
-        this.setState({modalVisible: false})
+        // this.setState({modalVisible: false})
+        this.props.updateLoadingState({isLoading: false})
+
         message.error(err.message)
       }
     }
@@ -187,9 +190,15 @@ class StationManage extends React.Component {
   }
 
   openModal(value) {
-    console.log('hahahahahahha',value)
 
-    this.setState({selectedStation:value,modalVisible: true})
+    let payload = {
+      modalVisible: true,
+      op: '开关服务点',
+      verifySuccess: ()=>{this.setStatus(value)},
+      verifyError: ()=>{message.error('验证错误')}
+
+    }
+    this.props.updateSmsModal(payload)
   }
 
 
@@ -243,16 +252,6 @@ class StationManage extends React.Component {
             this.openModal(value)
           }}
         />
-        {this.state.modalVisible ? <SmsModal
-          onCancel={()=> {
-            this.setState({modalVisible: false})
-          }}
-          onOk={()=> {
-            this.setStatus(this.state.selectedStation)
-          }}
-          op='开关服务点'
-          error = {()=>{console.log('授权失败')}}
-        /> : null}
       </div>
     )
   };
@@ -275,7 +274,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = {
   ...stationAction,
   ...accountAction,
-  ...loadAction
+  ...loadAction,
+  ...smsAction
 
 };
 

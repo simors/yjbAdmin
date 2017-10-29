@@ -463,7 +463,7 @@ function* updateStationAction(action) {
  * userId,
  * success(),
  * error()
- *
+ * * return 有返回error，没有返回true
  */
 function* sagaValidAdminHaveStation(action) {
   let payload = action.payload
@@ -486,6 +486,7 @@ function* sagaValidAdminHaveStation(action) {
  * userId,
  * success(),
  * error()
+ * return 有返回error，没有返回true
  *
  */
 function* sagaValidPartnerHaveStation(action) {
@@ -509,7 +510,7 @@ function* sagaValidPartnerHaveStation(action) {
  * userId,
  * success(),
  * error()
- *
+ * * return 有返回error，没有返回true
  */
 function* sagaValidInvestorHaveStation(action) {
   let payload = action.payload

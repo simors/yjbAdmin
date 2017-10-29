@@ -5,7 +5,7 @@
 import React from 'react'
 import {Table, Popconfirm, Input,Button,message} from 'antd'
 import {connect} from 'react-redux';
-import {action as authAction,selector} from '../util/auth'
+import {action as authAction,selector} from '../../util/auth'
 
 class SmsInput extends React.Component {
   constructor(props) {
