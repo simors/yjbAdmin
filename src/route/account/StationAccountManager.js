@@ -13,7 +13,6 @@ import StationAccountList from './StationAccountList';
 // import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from '../station/redux';
 import {configSelector} from '../../util/config'
-import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction, accountSelector} from './redux'
 import AccountChart from '../../component/account/AccountChart'
@@ -22,9 +21,9 @@ import FileSaver from 'file-saver'
 import * as excelFuncs from '../../util/excel'
 import moment from 'moment'
 import mathjs from 'mathjs'
+import {withRouter} from 'react-router'
 
 const RangePicker = DatePicker.RangePicker;
-const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
 // var Excel = require('exceljs');
@@ -264,6 +263,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(StationAccountManager);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(StationAccountManager));
 
 export {saga, reducer} from './redux';

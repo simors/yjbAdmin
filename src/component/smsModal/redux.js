@@ -26,7 +26,7 @@ const UPDATE_SMSMODAL_SUCCESS = 'UPDATE_SMSMODAL_SUCCESS'
 // --- action
 
 export const smsAction = {
-  updateSmsModal: createAction(UPDATE_SMSMODAL)
+  updateSmsModal: createAction(UPDATE_SMSMODAL)//payload:{modalVisible: bool, op: Str,verifySuccess: Func,verifyError: Func}
 }
 
 const updateSmsModalSuccess = createAction(UPDATE_SMSMODAL_SUCCESS)
