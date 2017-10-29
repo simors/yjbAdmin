@@ -74,7 +74,7 @@ class SiderMenu extends React.Component {
         items.push(<Menu.Item key="/site_investor"><Link to="/site_investor">投资人信息管理</Link></Menu.Item>)
       }
       return (
-        <Menu.SubMenu key="/site" title={<span><Icon type="laptop" />服务点综合管理</span>}>
+        <Menu.SubMenu key="/site" title={<span><Icon type="shop" />服务点综合管理</span>}>
           {items}
         </Menu.SubMenu>
       )
@@ -93,7 +93,7 @@ class SiderMenu extends React.Component {
         items.push(<Menu.Item key="/order_recharge"><Link to="/order_recharge">用户充值管理</Link></Menu.Item>)
       }
       return (
-        <Menu.SubMenu key="/order" title={<span><Icon type="notification" />充值与订单管理</span>}>
+        <Menu.SubMenu key="/order" title={<span><Icon type="solution" />充值与订单管理</span>}>
           {items}
         </Menu.SubMenu>
       )
@@ -115,7 +115,7 @@ class SiderMenu extends React.Component {
         items.push(<Menu.Item key="/settlement_investor"><Link to="/settlement_investor">投资人分成结算</Link></Menu.Item>)
       }
       return (
-        <Menu.SubMenu key="/settlement" title={<span><Icon type="notification" />结算报表</span>}>
+        <Menu.SubMenu key="/settlement" title={<span><Icon type="pie-chart" />结算报表</span>}>
           {items}
         </Menu.SubMenu>
       )
@@ -143,7 +143,7 @@ class SiderMenu extends React.Component {
         items.push(<Menu.Item key="/promotion_redEnvelope"><Link to="/promotion_redEnvelope">发布红包活动</Link></Menu.Item>)
       }
       return (
-        <Menu.SubMenu key="/promotion" title={<span><Icon type="notification" />营销活动</span>}>
+        <Menu.SubMenu key="/promotion" title={<span><Icon type="gift" />营销活动</span>}>
           {items}
         </Menu.SubMenu>
       )
@@ -155,7 +155,7 @@ class SiderMenu extends React.Component {
     let {manUserVisible} = this.props
     if (manUserVisible) {
       return (
-        <Menu.SubMenu key="/user" title={<span><Icon type="notification" />用户管理</span>}>
+        <Menu.SubMenu key="/user" title={<span><Icon type="team" />用户管理</span>}>
           <Menu.Item key="/user_list"><Link to="/user_list">用户信息管理</Link></Menu.Item>
         </Menu.SubMenu>
       )
@@ -192,7 +192,7 @@ class SiderMenu extends React.Component {
         items.push(<Menu.Item key='/system_log'><Link to='/system_log'>操作日志管理</Link></Menu.Item>);
       }
       return (
-        <Menu.SubMenu key="/system" title={<span><Icon type="notification"/>系统管理</span>}>
+        <Menu.SubMenu key="/system" title={<span><Icon type="setting"/>系统管理</span>}>
           {items}
         </Menu.SubMenu>
       );
@@ -204,7 +204,7 @@ class SiderMenu extends React.Component {
     let {profitVisible} = this.props
     if (profitVisible) {
       return (
-        <Menu.SubMenu key="/profit" title={<span><Icon type="notification" />投资收益</span>}>
+        <Menu.SubMenu key="/profit" title={<span><Icon type="bank" />投资收益</span>}>
           <Menu.Item key="/profit_list"><Link to="/profit_list">投资收益管理</Link></Menu.Item>
         </Menu.SubMenu>
       )
