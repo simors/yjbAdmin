@@ -179,12 +179,12 @@ class Device extends PureComponent {
 }
 
 const mapStateToProps = (appState, ownProps) => {
-  const hasEditPermission = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.DEVICE_EDIT])
   const hasAssociatePermission = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.DEVICE_ASSOCIATE])
+  const hasEditPermission = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.DEVICE_EDIT_STATION_ADDR, PERMISSION_CODE.DEVICE_CHANGE_STATION, PERMISSION_CODE.DEVICE_CHANGE_STATUS])
   let deviceInfoList = selector.selectDeviceList(appState)
   return {
-    hasEditPermission,
     hasAssociatePermission,
+    hasEditPermission,
     deviceInfoList: deviceInfoList,
   }
 }

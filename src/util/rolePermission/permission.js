@@ -6,7 +6,9 @@ export const PERMISSION_CODE = {
   /* 干衣柜综合管理 */
   DEVICE_QUERY_INFO:                          1000,         // 干衣柜综合管理/干衣柜信息管理/查看
   DEVICE_ASSOCIATE:                           1001,         // 干衣柜综合管理/干衣柜信息管理/关联
-  DEVICE_EDIT:                                1002,         // 干衣柜综合管理/干衣柜信息管理/编辑
+  DEVICE_EDIT_STATION_ADDR:                   1002,         // 干衣柜综合管理/干衣柜信息管理/编辑干衣柜位置
+  DEVICE_CHANGE_STATUS:                       1003,         // 干衣柜综合管理/干衣柜信息管理/修改干衣柜状态
+  DEVICE_CHANGE_STATION:                      1004,         // 干衣柜综合管理/干衣柜信息管理/改变所属服务点
 
   /* 服务点综合管理 */
   STATION_QUERY_WHOLE:                        2000,         // 服务点综合管理/服务点信息管理/全局查看
