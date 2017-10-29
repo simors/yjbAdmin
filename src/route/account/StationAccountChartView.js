@@ -19,7 +19,6 @@ import moment from 'moment'
 import mathjs from 'mathjs'
 
 const RangePicker = DatePicker.RangePicker;
-const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
 // var Excel = require('exceljs');

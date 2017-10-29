@@ -7,12 +7,10 @@ import {connect} from 'react-redux';
 import {Row, Col, Input, Select, Button} from 'antd';
 import OperationLogList from './OperationLogList';
 // import StationMenu from './StationMenu'
-import createBrowserHistory from 'history/createBrowserHistory'
 import {selector as operationLogSelector, actions as operationLogActions} from './redux'
 import mathjs from 'mathjs'
 import {action as authActions, selector as authSelector} from '../../util/auth'
 
-const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
 // var Excel = require('exceljs');

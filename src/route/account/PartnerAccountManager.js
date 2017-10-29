@@ -13,7 +13,6 @@ import PartnerAccountList from './PartnerAccountList';
 // import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from '../station/redux';
 import {configSelector} from '../../util/config'
-import createBrowserHistory from 'history/createBrowserHistory'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
 import AccountChart from '../../component/account/AccountChart'
@@ -22,9 +21,9 @@ import {PERMISSION_CODE,ROLE_CODE} from '../../util/rolePermission'
 import moment from 'moment'
 import {action as authAction, selector as authSelector} from '../../util/auth'
 import mathjs from 'mathjs'
+import {withRouter} from 'react-router'
 
 const RangePicker = DatePicker.RangePicker;
-const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
 // var Excel = require('exceljs');
@@ -248,6 +247,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PartnerAccountManager);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(PartnerAccountManager));
 
 export {saga, reducer} from './redux';
