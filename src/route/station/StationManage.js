@@ -199,7 +199,6 @@ class StationManage extends React.Component {
 
 
   render() {
-    // console.log('[DEBUG] ---> SysUser props: ', this.props);
     return (
       <div>
         <StationMenu

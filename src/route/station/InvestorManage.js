@@ -7,15 +7,12 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Row, Col, Input, Select, Button, message} from 'antd';
-import ContentHead from '../../component/ContentHead'
 import InvestorList from './InvestorList';
 import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from './redux';
-import {configSelector} from '../../util/config'
 import CreateInvestorModal from '../../component/station/CreateInvestorModal'
 import UpdateInvestorModal from '../../component/station/UpdateInvestorModal'
 import {selector, action} from '../../util/auth'
-import StationSelect from './StationSelect'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
 import {ROLE_CODE,PERMISSION_CODE} from '../../util/rolePermission'
 
@@ -92,7 +89,6 @@ class InvestorManage extends React.Component {
 
   search() {
     this.props.updateLoadingState({isLoading: true})
-    console.log('payload===>',payload)
     let payload = {
       status: this.state.status != undefined ? this.state.status : undefined,
       stationId: this.state.stationId,
@@ -106,7 +102,6 @@ class InvestorManage extends React.Component {
         console.log('error')
       }
     }
-    console.log('payload===>',payload)
 
     this.props.requestInvestors(payload)
   }
@@ -230,7 +225,6 @@ class InvestorManage extends React.Component {
   }
 
   render() {
-    // console.log('[DEBUG] ---> SysUser props: ', this.props);
     return (
       <div>
         <StationMenu
@@ -297,7 +291,7 @@ const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let investors = stationSelector.selectInvestors(state)
   let investorList = selector.selectUsersByRole(state, ROLE_CODE.STATION_INVESTOR)
-  let addVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_ADD])
+  let addVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_INVESTOR_ADD])
   return {
     investors: investors,
     stations: stations,
