@@ -8,6 +8,7 @@ import {Row, Col, Card} from 'antd';
 import {selector as authSelector} from '../../util/auth'
 import MpUserStat from './MpUserStat'
 import DeviceStat from './DeviceStat'
+import StationStat from './StationStat'
 import {dashboardSelector} from './redux'
 
 class Dashboard extends React.Component {
@@ -16,8 +17,8 @@ class Dashboard extends React.Component {
   }
 
   renderHeader() {
-    let {currentAdminUser, roleNames, mpUserStat, deviceStat} = this.props
-    if (!currentAdminUser || !roleNames || !mpUserStat || !deviceStat) {
+    let {currentAdminUser, roleNames, mpUserStat, deviceStat, stationStat} = this.props
+    if (!currentAdminUser || !roleNames || !mpUserStat || !deviceStat || !stationStat) {
       return null
     }
     return (
@@ -56,7 +57,7 @@ class Dashboard extends React.Component {
           <Col span={4}>
             <div style={{fontSize: 20, textAlign: 'right'}}>服务点</div>
             <div style={{textAlign: 'right'}}>
-              <span style={{fontSize: 22}}>{Number('215').toLocaleString()}</span>
+              <span style={{fontSize: 22}}>{Number(stationStat.stationCount).toLocaleString()}</span>
               <span style={{fontSize: 12, marginLeft: 5}}>个</span>
             </div>
           </Col>
@@ -79,11 +80,7 @@ class Dashboard extends React.Component {
               <DeviceStat/>
             </Col>
             <Col span={8}>
-              <Card title="服务点" style={{ width: '100%' }}>
-                <p>Card content</p>
-                <p>Card content</p>
-                <p>Card content</p>
-              </Card>
+              <StationStat/>
             </Col>
           </Row>
         </div>
@@ -98,12 +95,14 @@ const mapStateToProps = (state, ownProps) => {
 
   let mpUserStat = dashboardSelector.selectMpUserStat(state)
   let deviceStat = dashboardSelector.selectDeviceStat(state)
+  let stationStat = dashboardSelector.selectStationStat(state)
 
   return {
     currentAdminUser,
     roleNames,
     mpUserStat,
     deviceStat,
+    stationStat,
   }
 }
 

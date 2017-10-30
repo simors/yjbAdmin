@@ -43,9 +43,27 @@ class DeviceStat extends Record({
   }
 }
 
+class StationStat extends Record({
+  stationCount: undefined,
+  lastDayStationCount: undefined,
+  lastMonthStationCount: undefined,
+  lastYearStationCount: undefined,
+}, 'StationStat') {
+  static fromJson(json) {
+    let stationStat = new StationStat()
+    return stationStat.withMutations((record) => {
+      record.set('stationCount', json.stationCount)
+      record.set('lastDayStationCount', json.lastDayStationCount)
+      record.set('lastMonthStationCount', json.lastMonthStationCount)
+      record.set('lastYearStationCount', json.lastYearStationCount)
+    })
+  }
+}
+
 class Dashboard extends Record({
   mpUserStat: undefined,
   deviceStat: undefined,
+  stationStat: undefined,
 }, 'Dashboard') {}
 
 /******* Constants *******/
@@ -54,22 +72,27 @@ const REQUEST_MP_USER_STAT = 'REQUEST_MP_USER_STAT'
 const SAVE_MP_USER_STAT = 'SAVE_MP_USER_STAT'
 const REQUEST_DEVICE_STAT = 'REQUEST_DEVICE_STAT'
 const SAVE_DEVICE_STAT = 'SAVE_DEVICE_STAT'
+const REQUEST_STATION_STAT = 'REQUEST_STATION_STAT'
+const SAVE_STATION_STAT = 'SAVE_STATION_STAT'
 
 /******* Action *******/
 
 export const dashboardAction = {
   requestMpUserStat: createAction(REQUEST_MP_USER_STAT),
   requestDeviceStat: createAction(REQUEST_DEVICE_STAT),
+  requestStationStat: createAction(REQUEST_STATION_STAT),
 }
 
 const saveMpUserStat = createAction(SAVE_MP_USER_STAT)
 const saveDeviceStat = createAction(SAVE_DEVICE_STAT)
+const saveStationStat = createAction(SAVE_STATION_STAT)
 
 /******* Saga *******/
 
 export const dashboardSaga = [
   takeLatest(REQUEST_MP_USER_STAT, sagaFetchMpUserStat),
   takeLatest(REQUEST_DEVICE_STAT, sagaFetchDeviceStat),
+  takeLatest(REQUEST_STATION_STAT, sagaFetchStationStat),
 ]
 
 function* sagaFetchMpUserStat(action) {
@@ -102,6 +125,21 @@ function* sagaFetchDeviceStat(action) {
   }
 }
 
+function* sagaFetchStationStat(action) {
+  let payload = action.payload
+  try {
+    let result = yield call(dashboardCloud.fetchStationStat)
+    yield put(saveStationStat({stationStat: result}))
+    if (payload.success) {
+      payload.success();
+    }
+  } catch (e) {
+    if (payload.error) {
+      payload.error(e.code);
+    }
+  }
+}
+
 /******* Reducer *******/
 
 const initialState = new Dashboard();
@@ -112,6 +150,8 @@ export function dashboardReducer(state=initialState, action) {
       return reduceSaveMpUserStat(state, action)
     case SAVE_DEVICE_STAT:
       return reduceSaveDeviceStat(state, action)
+    case SAVE_STATION_STAT:
+      return reduceSaveStationStat(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -133,6 +173,13 @@ function reduceSaveDeviceStat(state, action) {
   return state
 }
 
+function reduceSaveStationStat(state, action) {
+  let payload = action.payload
+  let stationStat = payload.stationStat
+  state = state.set('stationStat', StationStat.fromJson(stationStat))
+  return state
+}
+
 function onRehydrate(state, action) {
   const incoming = action.payload.DASHBOARD;
   if (!incoming) {
@@ -147,6 +194,11 @@ function onRehydrate(state, action) {
   if (deviceStat) {
     state = state.set('deviceStat', DeviceStat.fromJson(deviceStat))
   }
+
+  let stationStat = incoming.stationStat
+  if (stationStat) {
+    state = state.set('stationStat', StationStat.fromJson(stationStat))
+  }
   return state
 }
 
@@ -155,6 +207,7 @@ function onRehydrate(state, action) {
 export const dashboardSelector = {
   selectMpUserStat,
   selectDeviceStat,
+  selectStationStat,
 }
 
 function selectMpUserStat(state) {
@@ -171,4 +224,12 @@ function selectDeviceStat(state) {
     return undefined
   }
   return deviceStat.toJS()
+}
+
+function selectStationStat(state) {
+  let stationStat = state.DASHBOARD.stationStat
+  if (!stationStat) {
+    return undefined
+  }
+  return stationStat.toJS()
 }

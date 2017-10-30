@@ -10,3 +10,7 @@ export async function fetchMpUserStat() {
 export async function fetchDeviceStat() {
   return await AV.Cloud.run('deviceStatDevice', {})
 }
+
+export async function fetchStationStat() {
+  return await AV.Cloud.run('stationFetchStationStat', {})
+}
