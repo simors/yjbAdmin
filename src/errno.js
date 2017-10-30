@@ -146,15 +146,35 @@ export const ERROR_BASE_PROMOTION     =   -(ERROR_BASE + 5000);
 export const ERROR_BASE_PROFIT        =   -(ERROR_BASE + 6000);
 export const ERROR_BASE_DEAL          =   -(ERROR_BASE + 7000);
 
-/* Promotion */
-export const ERROR_PROM_REPEAT  = (ERROR_BASE_PROMOTION - 1)       /* 活动重复 */
-export const ERROR_PROM_NOIP    = (ERROR_BASE_PROMOTION - 2)       /* 无法获取用户ip信息 */
+/* Auth */
+export const ERROR_NO_WALLET                = (ERROR_BASE_AUTH - 1)         /* 用户钱包信息有误 */
+export const ERROR_NO_DEPOSIT               = (ERROR_BASE_AUTH - 2)         /* 用户未交押金 */
+export const ERROR_NO_ENOUGH_BALANCE        = (ERROR_BASE_AUTH - 3)         /* 用户钱包余额不足 */
 
+/* Device */
+export const ERROR_INVALID_STATUS           = (ERROR_BASE_DEVICE - 1)       /* 设备状态有误 */
+export const ERROR_TURNON_FAILED            = (ERROR_BASE_DEVICE - 2)       /* 设备开机请求失败*/
+export const ERROR_STATION                  = (ERROR_BASE_DEVICE - 3)       /* 服务点信息有误 */
+
+/* Order */
+export const ERROR_UNPAID_ORDER             = (ERROR_BASE_ORDER - 1)        /* 未支付订单 */
+export const ERROR_OCCUPIED_ORDER           = (ERROR_BASE_ORDER - 2)        /* 有正在使用中订单 */
 
 /* Profit */
 export const ERROR_IN_WITHDRAW_PROCESS      = (ERROR_BASE_PROFIT - 1)       /* 已经处于提现申请的状态中 */
 export const ERROR_NOT_ENOUGH_MONEY         = (ERROR_BASE_PROFIT - 2)       /* 余额不足 */
 export const ERROR_NOT_WITHDRAW_DATE        = (ERROR_BASE_PROFIT - 3)       /* 非取现日期 */
+
+/* Promotion */
+export const ERROR_PROM_REPEAT  = (ERROR_BASE_PROMOTION - 1)       /* 活动重复 */
+export const ERROR_PROM_NOIP    = (ERROR_BASE_PROMOTION - 2)       /* 无法获取用户ip信息 */
+export const ERROR_PROM_DISABLED= (ERROR_BASE_PROMOTION - 3)       /* 活动处于禁用状态 */
+export const ERROR_PROM_TIME    = (ERROR_BASE_PROMOTION - 4)       /* 活动时间有误 */
+export const ERROR_PROM_REGION  = (ERROR_BASE_PROMOTION - 5)       /* 活动范围有误 */
+export const ERROR_PROM_INVALID = (ERROR_BASE_PROMOTION - 6)       /* 活动已失效 */
+export const ERROR_PROM_LIMIT   = (ERROR_BASE_PROMOTION - 6)       /* 活动参与次数超限 */
+export const ERROR_PROM_NOSCORE = (ERROR_BASE_PROMOTION - 7)       /* 积分不足 */
+export const ERROT_PROM_LIMIT   = (ERROR_BASE_PROMOTION - 8)       /* 用户参数次数限制 */
 
 /* Deal */
 export const ERROR_UNSUPPORT_CHANNEL        = (ERROR_BASE_DEAL - 1)         /* 不支持的支付渠道 */
