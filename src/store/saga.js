@@ -14,6 +14,7 @@ import {profitSaga} from '../route/profit'
 import {accountSaga} from '../route/account'
 import {operationLogSaga} from '../route/operationLog'
 import {smsSaga} from '../component/smsModal'
+import {dashboardSaga} from '../route/dashboard'
 
 export default function* rootSaga() {
   yield all([
@@ -28,6 +29,7 @@ export default function* rootSaga() {
     ...accountSaga,
     ...profitSaga,
     ...operationLogSaga,
-    ...smsSaga
+    ...smsSaga,
+    ...dashboardSaga,
   ])
 }
