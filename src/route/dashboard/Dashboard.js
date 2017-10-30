@@ -39,24 +39,24 @@ class Dashboard extends React.Component {
             </div>
           </Col>
           <Col span={4}>
-            <div style={{fontSize: 20}}>用户数</div>
-            <div>
+            <div style={{fontSize: 20, textAlign: 'right'}}>用户数</div>
+            <div style={{textAlign: 'right'}}>
               <span style={{fontSize: 22}}>{Number(mpUserStat.mpUserCount).toLocaleString()}</span>
-              <span style={{fontSize: 12, marginLeft: 8}}>人</span>
+              <span style={{fontSize: 12, marginLeft: 5}}>人</span>
             </div>
           </Col>
           <Col span={4}>
-            <div style={{fontSize: 20}}>干衣柜</div>
-            <div>
+            <div style={{fontSize: 20, textAlign: 'right'}}>干衣柜</div>
+            <div style={{textAlign: 'right'}}>
               <span style={{fontSize: 22}}>{Number('1233').toLocaleString()}</span>
-              <span style={{fontSize: 12, marginLeft: 8}}>台</span>
+              <span style={{fontSize: 12, marginLeft: 5}}>台</span>
             </div>
           </Col>
           <Col span={4}>
-            <div style={{fontSize: 20}}>服务点</div>
-            <div>
+            <div style={{fontSize: 20, textAlign: 'right'}}>服务点</div>
+            <div style={{textAlign: 'right'}}>
               <span style={{fontSize: 22}}>{Number('215').toLocaleString()}</span>
-              <span style={{fontSize: 12, marginLeft: 8}}>个</span>
+              <span style={{fontSize: 12, marginLeft: 5}}>个</span>
             </div>
           </Col>
         </Row>

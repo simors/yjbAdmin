@@ -92,6 +92,10 @@ function onRehydrate(state, action) {
   if (!incoming) {
     return state
   }
+  let mpUserStat = incoming.mpUserStat
+  if (mpUserStat) {
+    state = state.set('mpUserStat', MpUserStat.fromJson(mpUserStat))
+  }
   return state
 }
 
