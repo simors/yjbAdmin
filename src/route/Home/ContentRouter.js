@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import {Route, Switch} from 'react-router-dom'
-import Dashboard from '../../component/Dashboard'
+import Dashboard from '../../route/dashboard'
 import {EndUser} from '../enduser/'
 import {AdminUser} from '../adminuser/'
 import StationManager from '../station/StationManage'

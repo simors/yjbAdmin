@@ -1082,6 +1082,7 @@ export const selector = {
   selectToken,
   selectRoles,
   selectEndUsers,
+  selectUserRoleName,
   selectAdminUsers,
   selectSysAdminUsers,
   selectUserById,
@@ -1166,6 +1167,24 @@ function selectUserById(appState, userId) {
     return undefined;
 
   return User.toJson(immUser);
+}
+
+/**
+ *
+ * @param appState
+ * @param roleCodes
+ */
+function selectUserRoleName(appState, roleCodes) {
+  let roleNames = []
+  for (let roleCode of roleCodes) {
+    let role = appState.AUTH.getIn(['roles', roleCode])
+    if (!role) {
+      continue
+    }
+    let roleJs = role.toJS()
+    roleNames.push(roleJs.displayName)
+  }
+  return roleNames
 }
 
 /**
