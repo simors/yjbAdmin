@@ -14,7 +14,6 @@ import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import ContentRouter, {breadcrumbNameMap} from './ContentRouter'
 import SiderMenu from '../../component/SiderMenu'
 import style from './style.module.scss'
-import {configAction} from '../../util/config'
 import {action as authAction, selector as authSelector} from '../../util/auth/'
 import LoadActivity from '../../component/loadActivity'
 import Profile from '../../component/Profile'
@@ -65,9 +64,11 @@ class Home extends Component {
     return (
       <Layout style={{height: "100%"}}>
         <Sider width={224} className={style.siderMenu}>
-          <div className={style.logo}>
-            <img src={require('../../asset/image/logo.png')} />
-          </div>
+          <Link to="/">
+            <div className={style.logo}>
+              <img src={require('../../asset/image/logo.png')} />
+            </div>
+          </Link>
           <SiderMenu />
         </Sider>
         <Layout className={style.main}>
@@ -111,7 +112,6 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = {
-  ...configAction,
   ...authAction,
 }
 

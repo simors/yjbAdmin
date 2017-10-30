@@ -10,11 +10,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Row, Col, Input, Select, Button, Form, InputNumber} from 'antd';
-import ContentHead from '../../component/ContentHead'
 import {stationAction, stationSelector} from './redux';
-import {configSelector} from '../../util/config'
 import PartnerList from './PartnerList'
-import CreatePartnerModal from '../../component/station/CreatePartnerModal'
 import DivisionCascader from '../../component/DivisionCascader'
 import {action,selector} from '../../util/auth'
 import {ROLE_CODE, PERMISSION_CODE} from '../../util/rolePermission'
@@ -112,6 +109,7 @@ class ShowStation extends React.Component {
         division.push(station.area.value)
       }
     }
+    let {showPartnerVisible} = this.props
     return (
       <div>
         <Form >
@@ -263,8 +261,9 @@ class ShowStation extends React.Component {
             </Col>
           </Row>
         </Form>
-
-        <PartnerList type='show' partners={this.props.partners}/>
+        {
+          showPartnerVisible ? <PartnerList type='show' partners={this.props.partners}/> : null
+        }
         <Row gutter={24} style={{flexDirection:'row',marginTop:20,marginBottom:20,justifyContent:' center'}}>
           <Col span={10}></Col>
           <Col span={4}>
@@ -285,15 +284,13 @@ const mapStateToProps = (state, ownProps) => {
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   let partners = stationSelector.selectPartners(state)
   let adminList = selector.selectUsersByRole(state,ROLE_CODE.STATION_MANAGER)
-
-  // let station={name:'123',adminName:'321'}
-  // console.log('areaList========>', areaList)
-  // console.log('partners========>', partners)
+  let showPartnerVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_QUERY_PARTNER])
 
   return {
     station: station,
     partners: partners,
     adminList: adminList,
+    showPartnerVisible,
   };
 };
 

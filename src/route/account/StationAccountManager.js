@@ -6,18 +6,10 @@
  */
 import React from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
 import {Row, Col, Input, Select, Button, DatePicker, message} from 'antd';
-import ContentHead from '../../component/ContentHead'
 import StationAccountList from './StationAccountList';
-// import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from '../station/redux';
-import {configSelector} from '../../util/config'
-import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction, accountSelector} from './redux'
-import AccountChart from '../../component/account/AccountChart'
-import XLSX from 'xlsx'
-import FileSaver from 'file-saver'
 import * as excelFuncs from '../../util/excel'
 import moment from 'moment'
 import mathjs from 'mathjs'
@@ -247,13 +239,10 @@ const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectStationAccounts(state)
   let accountsDetail = accountSelector.selectStationAccountsDetail(state)
-  // let areaList = configSelector.selectAreaList(state)
-  console.log('accountsDetail========>', accountsDetail)
   return {
     stationAccounts: accounts,
     stations: stations,
     stationAccountsDetail: accountsDetail
-    // areaList: areaList,
   };
 };
 

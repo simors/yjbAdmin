@@ -4,22 +4,17 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router'
-import {Link} from 'react-router-dom';
 import {Row, Col, Input, Select, Button, message} from 'antd';
-import ContentHead from '../../component/ContentHead'
 import StationList from './StationList';
 import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from './redux';
-import {action, selector} from '../../util/auth'
-import {configSelector} from '../../util/config'
-// import createBrowserHistory from 'history/createBrowserHistory'
+import {selector} from '../../util/auth'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction, accountSelector} from '../account/redux'
 import {PERMISSION_CODE} from '../../util/rolePermission'
 import {smsAction,smsSelector} from '../../component/smsModal'
-import LoadActivity, {loadAction} from '../../component/loadActivity'
+import {loadAction} from '../../component/loadActivity'
 
-// const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
 
@@ -204,7 +199,6 @@ class StationManage extends React.Component {
 
 
   render() {
-    // console.log('[DEBUG] ---> SysUser props: ', this.props);
     return (
       <div>
         <StationMenu
@@ -260,7 +254,7 @@ class StationManage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
-  let showVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_QUERY_WHOLE, PERMISSION_CODE.STATION_QUERY_PART])
+  let showVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_BASE_QUERY, PERMISSION_CODE.STATION_QUERY_PARTNER])
   let addVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_ADD])
   let editVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_EDIT])
 

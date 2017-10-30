@@ -4,7 +4,9 @@
 
 import React from 'react';
 import {Table,Button} from 'antd';
-
+import {connect} from 'react-redux';
+import {selector} from '../../util/auth'
+import {PERMISSION_CODE} from '../../util/rolePermission'
 
 const rowKey = (record) => {
   return record.id;
@@ -12,8 +14,7 @@ const rowKey = (record) => {
 
 
 const InvestorList = (props) => {
-  // console.log('[DEBUG] ---> UserList props: ', props);
-  let {investors, selectStation,editInvestor,setInvestorStatus} = props;
+  let {investors, selectStation,editInvestor,setInvestorStatus, editVisible, changeStatusVisible} = props;
   if (investors === null) {
     investors = [];
   }
@@ -24,11 +25,37 @@ const InvestorList = (props) => {
     },
   };
 
+  const renderOperateBtn = (text, record) => {
+    let items = []
+    if (editVisible) {
+      items.push(<a style={{color: `blue`}} onClick={()=> {editInvestor(record)}}>编辑</a>)
+      items.push(<span className="ant-divider" />)
+    }
+    if (changeStatusVisible) {
+      let changeBtn = (
+        record.status ?
+          <a style={{color: `blue`}} onClick={()=> {setInvestorStatus(record)}}>停用</a>
+          :
+          <a style={{color: `blue`}} onClick={()=> {setInvestorStatus(record)}}>启用</a>
+      )
+      items.push(changeBtn)
+      items.push(<span className="ant-divider" />)
+    }
+    if (items.length >= 2) {
+      items.pop()
+    }
+    return (
+      <span>
+        {items}
+      </span>
+    )
+  }
+
   const columns = [{
     title: "创建时间",
     dataIndex: "createdAt",
     render: (createdAt)=> {
-      return <div>{createdAt.slice(0,10) }</div>
+      return <div>{createdAt.slice(0, 10) }</div>
     }
   }, {
     title: "姓名",
@@ -54,25 +81,14 @@ const InvestorList = (props) => {
     render: (text, record)=> {
       return <div>{record.status ? '正常' : '已停用'}</div>
     }
-  }, {
-    title: '操作',
-    render: (text, record)=> {
-      return (
-        <span>
-          <a style={{color: `blue`}} onClick={()=> {
-            editInvestor(record)
-          }}>编辑</a>
-                    <span className="ant-divider" />
-          {record.status?<a style={{color: `blue`}} onClick={()=> {
-            setInvestorStatus(record)
-          }}>停用</a>:<a style={{color: `blue`}} onClick={()=> {
-            setInvestorStatus(record)
-          }}>启用</a>}
-        </span>
-      )
-    }
   }];
-  // console.log('[DEBUG] ---> UserList users: ', stations);
+
+  if (editVisible || changeStatusVisible) {
+    columns.push({
+      title: '操作',
+      render: renderOperateBtn,
+    })
+  }
 
   return (
     <div>
@@ -81,4 +97,18 @@ const InvestorList = (props) => {
   );
 };
 
-export default InvestorList;
+const mapStateToProps = (state, ownProps) => {
+  let editVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_INVESTOR_EDIT])
+  let changeStatusVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_INVESTOR_CHANGE_STATUS])
+
+  return {
+    editVisible,
+    changeStatusVisible,
+  };
+};
+
+const mapDispatchToProps = {
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(InvestorList);
+

@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Menu, Icon, Avatar} from 'antd';
-import {action as authAction} from '../util/auth/';
+import {action as authAction, selector as authSelector} from '../util/auth/';
 import style from './Profile.module.scss';
 
 class Profile extends React.Component {
@@ -25,12 +25,36 @@ class Profile extends React.Component {
     }
   };
 
+  renderUser = () => {
+    const {curUser} = this.props;
+
+    let avatar = <Avatar size='large' icon='user' style={{margin: 'auto'}}/>;
+    let mobilePhoneNumber = null;
+
+    if (curUser && curUser.avatar) {
+      avatar = <Avatar size='large' src={curUser.avatar} style={{margin: 'auto'}}/>;
+    }
+
+    if (curUser && curUser.mobilePhoneNumber) {
+      mobilePhoneNumber = <span style={{lineHeight: '42px', margin: 'auto'}}>{curUser.mobilePhoneNumber}</span>;
+    }
+
+    return (
+      <div>
+        <div style={{display: 'flex', padding: '8px 0 0'}}>
+          {avatar}
+        </div>
+        <div style={{display: 'flex', height: '42px'}}>
+          {mobilePhoneNumber}
+        </div>
+      </div>
+    );
+  };
+
   render() {
     return (
       <div className={style.profile}>
-        <div style={{display: 'flex', padding: '5px 0'}}>
-          <Avatar size='large' icon='user' style={{margin: 'auto'}}/>
-        </div>
+        {this.renderUser()}
         <div>
           <Menu onClick={this.userMenuOnClick}>
             <Menu.Divider/>
@@ -48,8 +72,16 @@ class Profile extends React.Component {
   }
 }
 
+const mapStateToProps = (appState, ownProps) => {
+  const curUser = authSelector.selectCurUser(appState);
+
+  return {
+    curUser,
+  };
+};
+
 const mapDispatchToProps = {
   ...authAction,
 };
 
-export default withRouter(connect(null, mapDispatchToProps)(Profile));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Profile));

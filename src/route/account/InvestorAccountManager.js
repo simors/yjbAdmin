@@ -3,16 +3,10 @@
  */
 import React from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
 import {Row, Col, Input, Select, Button,DatePicker} from 'antd';
-import ContentHead from '../../component/ContentHead'
 import InvestorAccountList from './InvestorAccountList';
-// import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from '../station/redux';
-import {configSelector} from '../../util/config'
-import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
-import AccountChart from '../../component/account/AccountChart'
 import {action as authAction, selector as authSelector} from '../../util/auth'
 import * as excelFuncs from '../../util/excel'
 import {PERMISSION_CODE,ROLE_CODE} from '../../util/rolePermission'
@@ -200,7 +194,6 @@ class InvestorAccountManager extends React.Component {
   }
 
   render() {
-    // console.log('[DEBUG] ---> SysUser props: ', this.props);
     return (
       <div>
         <ButtonGroup>
@@ -220,16 +213,13 @@ const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectInvestorAccounts(state)
   let accountsDetail = accountSelector.selectInvestorAccountsDetail(state)
-  // console.log('accounts====>',accounts)
 
-  // console.log('accountsDetail====>',accountsDetail)
   let userList = authSelector.selectUsersByRole(state,ROLE_CODE.STATION_INVESTOR)
   return {
     investorAccounts: accounts,
     stations: stations,
     userList: userList,
     investorAccountsDetail: accountsDetail
-    // areaList: areaList,
   };
 };
 

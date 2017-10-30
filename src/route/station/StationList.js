@@ -3,7 +3,9 @@
  */
 import React from 'react';
 import {Table, Button} from 'antd';
-import moment from 'moment'
+import {connect} from 'react-redux';
+import {selector} from '../../util/auth'
+import {PERMISSION_CODE} from '../../util/rolePermission'
 
 const columns = [{
   title: "服务点名称",
@@ -53,8 +55,7 @@ const rowKey = (record) => {
 
 
 const StationList = (props) => {
-  // console.log('[DEBUG] ---> UserList props: ', props);
-  let {stations, selectStation,setStationStatus,editStation,showStation} = props;
+  let {stations, selectStation,setStationStatus,editStation,showStation, showVisible, editVisible, changeStatusVisible} = props;
   if (stations === null) {
     stations = [];
   }
@@ -64,7 +65,36 @@ const StationList = (props) => {
       selectStation(rowKey, rowData)
     },
   };
-  // console.log('[DEBUG] ---> UserList users: ', stations);
+
+  const renderOperationBtn = (text, record) => {
+    let items = []
+    if (showVisible) {
+      items.push(<a style={{color: `blue`}} onClick={()=> {showStation(record)}}>查看</a>)
+      items.push(<span className="ant-divider" />)
+    }
+    if (editVisible) {
+      items.push(<a style={{color: `blue`}} onClick={()=> {editStation(record)}}>编辑</a>)
+      items.push(<span className="ant-divider" />)
+    }
+    if (changeStatusVisible) {
+      let changeBtn = (
+        record.status ?
+          <a style={{color: `blue`}} onClick={()=> {setStationStatus(record)}}>停用</a>
+          :
+          <a style={{color: `blue`}} onClick={()=> {setStationStatus(record)}}>启用</a>
+      )
+      items.push(changeBtn)
+      items.push(<span className="ant-divider" />)
+    }
+    if (items.length >= 2) {
+      items.pop()
+    }
+    return (
+      <span>
+        {items}
+      </span>
+    )
+  }
 
   const columns = [{
     title: "服务点名称",
@@ -107,27 +137,7 @@ const StationList = (props) => {
     }
   }, {
     title: '操作',
-    render: (text, record)=> {
-      return (
-        <span>
-          <a style={{color: `blue`}} onClick={()=> {
-            showStation(record)
-          }}>查看</a>
-                    <span className="ant-divider" />
-
-          <a style={{color: `blue`}} onClick={()=> {
-            editStation(record)
-          }}>编辑</a>
-                    <span className="ant-divider" />
-
-          {record.status?<a style={{color: `blue`}} onClick={()=> {
-            setStationStatus(record)
-          }}>停用</a>:<a style={{color: `blue`}} onClick={()=> {
-            setStationStatus(record)
-          }}>启用</a>}
-        </span>
-      )
-    }
+    render: renderOperationBtn,
   }];
 
   return (
@@ -137,4 +147,19 @@ const StationList = (props) => {
   );
 };
 
-export default StationList;
+const mapStateToProps = (state, ownProps) => {
+  let showVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_BASE_QUERY, PERMISSION_CODE.STATION_QUERY_PARTNER])
+  let editVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_EDIT])
+  let changeStatusVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_CHANGE_STATUS])
+
+  return {
+    editVisible,
+    showVisible,
+    changeStatusVisible,
+  };
+};
+
+const mapDispatchToProps = {
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(StationList);

@@ -240,8 +240,8 @@ class SiderMenu extends React.Component {
 const mapStateToProps = (appState, ownProps) => {
   const queryDeviceVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.DEVICE_QUERY_INFO])
 
-  const stationQueryVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.STATION_QUERY_WHOLE, PERMISSION_CODE.STATION_QUERY_PART])
-  const stationInvestorVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.STATION_INVESTOR_QUERY_WHOLE, PERMISSION_CODE.STATION_INVESTOR_QUERY_PART])
+  const stationQueryVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.STATION_BASE_QUERY, PERMISSION_CODE.STATION_QUERY_PARTNER])
+  const stationInvestorVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.STATION_INVESTOR_BASE_QUERY])
 
   const orderVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_ORDER_QUERY])
   const rechargeVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_MAN_USER_PAID])

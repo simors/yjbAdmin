@@ -6,7 +6,6 @@ import {reducer as authReducer} from '../util/auth/'
 import {reducer as endUserReducer} from '../route/enduser/'
 import {reducer as adminUserReducer} from '../route/adminuser/'
 import {stationReducer} from '../route/station/redux'
-import {configReducer} from '../util/config'
 import {deviceReducer} from '../route/device'
 import {orderReducer} from '../route/order'
 import {promotionReducer} from '../route/promotion'
@@ -19,7 +18,6 @@ export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
     LOADING: loadReducer,
     APPSTATE: appStateReducer,
-    CONFIG: configReducer,
     router: routerReducer,
     AUTH: authReducer,
     ENDUSER: endUserReducer,
