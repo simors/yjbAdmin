@@ -7,6 +7,7 @@ import {withRouter} from 'react-router-dom'
 import {Row, Col, Card} from 'antd';
 import {selector as authSelector} from '../../util/auth'
 import MpUserStat from './MpUserStat'
+import DeviceStat from './DeviceStat'
 import {dashboardSelector} from './redux'
 
 class Dashboard extends React.Component {
@@ -15,8 +16,8 @@ class Dashboard extends React.Component {
   }
 
   renderHeader() {
-    let {currentAdminUser, roleNames, mpUserStat} = this.props
-    if (!currentAdminUser || !roleNames || !mpUserStat) {
+    let {currentAdminUser, roleNames, mpUserStat, deviceStat} = this.props
+    if (!currentAdminUser || !roleNames || !mpUserStat || !deviceStat) {
       return null
     }
     return (
@@ -48,7 +49,7 @@ class Dashboard extends React.Component {
           <Col span={4}>
             <div style={{fontSize: 20, textAlign: 'right'}}>干衣柜</div>
             <div style={{textAlign: 'right'}}>
-              <span style={{fontSize: 22}}>{Number('1233').toLocaleString()}</span>
+              <span style={{fontSize: 22}}>{Number(deviceStat.deviceCount).toLocaleString()}</span>
               <span style={{fontSize: 12, marginLeft: 5}}>台</span>
             </div>
           </Col>
@@ -75,11 +76,7 @@ class Dashboard extends React.Component {
               <MpUserStat/>
             </Col>
             <Col span={8}>
-              <Card title="干衣柜" style={{ width: '100%' }}>
-                <p>Card content</p>
-                <p>Card content</p>
-                <p>Card content</p>
-              </Card>
+              <DeviceStat/>
             </Col>
             <Col span={8}>
               <Card title="服务点" style={{ width: '100%' }}>
@@ -100,11 +97,13 @@ const mapStateToProps = (state, ownProps) => {
   let roleNames = authSelector.selectUserRoleName(state, currentAdminUser.roles)
 
   let mpUserStat = dashboardSelector.selectMpUserStat(state)
+  let deviceStat = dashboardSelector.selectDeviceStat(state)
 
   return {
     currentAdminUser,
     roleNames,
     mpUserStat,
+    deviceStat,
   }
 }
 
