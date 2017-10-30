@@ -749,6 +749,13 @@ function* sagaRequestSmsCode(action) {
   }
 }
 
+/**
+ *
+ * @param action
+ * {
+ *  smsCode, phone
+ * }
+ */
 function* sagaVerifySmsCode(action) {
   const payload = action.payload
   try{
