@@ -16,8 +16,9 @@ import SiderMenu from '../../component/SiderMenu'
 import style from './style.module.scss'
 import {action as authAction, selector as authSelector} from '../../util/auth/'
 import LoadActivity from '../../component/loadActivity'
-import Profile from '../../component/Profile'
+import {Menu as ProfileMenu} from '../../component/Profile/'
 import SmsModal from '../../component/smsModal'
+import {Password} from '../../component/Profile/'
 
 const {Header, Footer, Sider, Content} = Layout
 
@@ -28,7 +29,7 @@ class Home extends Component {
 
   renderUserLoginMenu = () =>  {
     return (
-      <Profile />
+      <ProfileMenu />
     )
   };
 
@@ -98,6 +99,7 @@ class Home extends Component {
           </Content>
           <Footer className={style.footer}>版权所有 © 长沙欧力电器有限公司 2017    由长沙绿蚁网络科技有限公司提供技术支持</Footer>
         </Layout>
+        <Password />
       </Layout>
     )
   }
