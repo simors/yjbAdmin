@@ -174,7 +174,7 @@ class Password extends React.Component {
           </Form.Item>
           <Form.Item
             {...formItemLayout}
-            label='密码'
+            label='新密码'
             hasFeedback
           > {
             getFieldDecorator('password', {
