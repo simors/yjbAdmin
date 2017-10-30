@@ -10,6 +10,7 @@ import {connect} from 'react-redux'
 import {smsSelector, smsAction} from './redux'
 
 const FormItem = Form.Item
+const confirm = Modal.confirm
 
 const formItemLayout = {
   labelCol: {
@@ -59,7 +60,18 @@ class SmsModal extends React.Component {
     })
   }
 
-  closeModal=()=>{
+  showConfirm(){
+    confirm({
+      title:'确认框',
+      content: '确定'+this.props.op+'?',
+      onOk:()=>{
+        this.handleOk()
+      },
+      width: 300
+    })
+  }
+
+  closeModal(){
     let payload = {
       modalVisible: false,
       op: undefined
@@ -74,10 +86,12 @@ class SmsModal extends React.Component {
         title='请联系系统管理员并输入短信验证码'
         visible={true}
         onOk={()=> {
-          this.handleOk()
+          this.showConfirm()
         }}
-        onCancel={
-          this.closeModal
+        onCancel={()=>{
+          this.closeModal()
+        }
+
         }
         wrapClassName='vertical-center-modal'
         key={this.props.key}
