@@ -6,16 +6,10 @@
  */
 import React from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
 import {Row, Col, Input, Select, Button,DatePicker} from 'antd';
-import ContentHead from '../../component/ContentHead'
 import PartnerAccountList from './PartnerAccountList';
-// import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from '../station/redux';
-import {configSelector} from '../../util/config'
-import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
-import AccountChart from '../../component/account/AccountChart'
 import * as excelFuncs from '../../util/excel'
 import {PERMISSION_CODE,ROLE_CODE} from '../../util/rolePermission'
 import moment from 'moment'
@@ -26,7 +20,6 @@ import {withRouter} from 'react-router'
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
 const ButtonGroup = Button.Group
-// var Excel = require('exceljs');
 
 class PartnerAccountManager extends React.Component {
   constructor(props) {
@@ -205,7 +198,6 @@ class PartnerAccountManager extends React.Component {
   }
 
   render() {
-    // console.log('[DEBUG] ---> SysUser props: ', this.props);
     return (
       <div>
         <ButtonGroup>
@@ -229,14 +221,11 @@ const mapStateToProps = (state, ownProps) => {
   let accountsDetail = accountSelector.selectPartnerAccountsDetail(state)
   let userList = authSelector.selectUsersByRole(state,ROLE_CODE.STATION_PROVIDER)
 
-  // let areaList = configSelector.selectAreaList(state)
-  console.log('userList========>', userList)
   return {
     partnerAccounts: accounts,
     stations: stations,
     partnerAccountsDetail: accountsDetail,
     userList: userList
-    // areaList: areaList,
   };
 };
 

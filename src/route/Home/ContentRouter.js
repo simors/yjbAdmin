@@ -2,7 +2,6 @@
  * Created by yangyang on 2017/9/11.
  */
 import React from 'react'
-import {connect} from 'react-redux'
 import {Route, Switch} from 'react-router-dom'
 import Dashboard from '../../component/Dashboard'
 import {EndUser} from '../enduser/'
@@ -14,8 +13,16 @@ import InvestorManager from '../station/InvestorManage'
 import ShowStation from '../station/ShowStation'
 import EditStation from '../station/EditStation'
 import AddStation from '../station/AddStation'
-import Promotion, {RechargePromotion, RechargePromotionStat, RedEnvelopePromotion, ScorePromotion,
-  RedEnvelopePromotionStat, ScorePromotionStat, ScoreExchangePromotion, ScoreExchangePromStat} from '../promotion'
+import Promotion, {
+  RechargePromotion,
+  RechargePromotionStat,
+  RedEnvelopePromotion,
+  ScorePromotion,
+  RedEnvelopePromotionStat,
+  ScorePromotionStat,
+  ScoreExchangePromotion,
+  ScoreExchangePromStat
+} from '../promotion'
 import StationAccountManager from '../account/StationAccountManager'
 import StationAccountChartView from '../account/StationAccountChartView'
 import PartnerAccountManager from '../account/PartnerAccountManager'
@@ -24,8 +31,6 @@ import InvestorAccountManager from '../account/InvestorAccountManager'
 import InvestorAccountChartView from '../account/InvestorAccountChartView'
 import Profit from '../profit'
 import OperationLogManager from '../operationLog'
-import {selector as authSelector} from '../../util/auth/'
-import {PERMISSION_CODE} from '../../util/rolePermission/'
 
 const ContentRouter = (props) => {
   const {match} = props;
@@ -34,18 +39,8 @@ const ContentRouter = (props) => {
       <Route exact path={match.url} component={Dashboard}/>
       <Route exact path="/device_list" component={Device}/>
       <Route exact path="/user_list" component={EndUser}/>
-      {(() => { // 系统管理
-        const items = [];
-        if (props.sysUserVisible) {
-          items.push(<Route exact path="/system_user" key='/system_user' component={AdminUser}/>);
-        }
-        if (props.sysLogVisible) {
-          items.push(<Route exact path="/system_log" key='system_log' component={OperationLogManager}/>);
-        }
-        return (
-          items
-        );
-      })()}
+      <Route exact path="/system_user" key='/system_user' component={AdminUser}/>
+      <Route exact path="/system_log" key='system_log' component={OperationLogManager}/>
       <Route exact path="/site_list" component={StationManager}/>
       <Route exact path="/site_list/showStation/:id" component={ShowStation}/>
       <Route exact path="/site_list/editStation/:id" component={EditStation}/>
@@ -103,14 +98,4 @@ export const breadcrumbNameMap = {
   '/profit_list': '投资收益管理',
 };
 
-const mapStateToProps = (appState, ownProps) => {
-  const sysUserVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_USER_ROLE]);
-  const sysLogVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.SYSMAN_MAN_OPER_LOG]);
-
-  return {
-    sysUserVisible,
-    sysLogVisible,
-  };
-};
-
-export default connect(mapStateToProps, null)(ContentRouter)
+export default ContentRouter

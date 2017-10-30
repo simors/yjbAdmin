@@ -5,11 +5,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Row, Col, Input, Select, Button, Form, InputNumber, message} from 'antd';
-import ContentHead from '../../component/ContentHead'
 import {stationAction, stationSelector} from './redux';
-import {configSelector} from '../../util/config'
-import PartnerList from './PartnerList'
-import CreatePartnerModal from '../../component/station/CreatePartnerModal'
 import DivisionCascader from '../../component/DivisionCascader'
 import {action , selector} from '../../util/auth'
 import LoadActivity, {loadAction} from '../../component/loadActivity'

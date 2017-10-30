@@ -7,27 +7,17 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
 import {Row, Col, Input, Select, Button,DatePicker} from 'antd';
-import ContentHead from '../../component/ContentHead'
-import StationAccountList from './StationAccountList';
-// import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from '../station/redux';
-import {configSelector} from '../../util/config'
-import createBrowserHistory from 'history/createBrowserHistory'
-import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
 import AccountChart from '../../component/account/AccountChart'
 import {PERMISSION_CODE, ROLE_CODE} from '../../util/rolePermission'
 import moment from 'moment'
 import {action as authAction, selector as authSelector} from '../../util/auth'
 
-const history = createBrowserHistory()
 const Option = Select.Option;
 const ButtonGroup = Button.Group
 const RangePicker = DatePicker.RangePicker;
-
-// var Excel = require('exceljs');
 
 class InvestorAccountChartView extends React.Component {
   constructor(props) {
@@ -201,14 +191,11 @@ const mapStateToProps = (state, ownProps) => {
     }
     profitData.push(profitObj)
   }
-  // let areaList = configSelector.selectAreaList(state)
-  console.log('accounts========>', accounts)
   return {
     stationAccounts: accounts,
     stationNameList: Array.from(stationNameSet),
     profitData,
     userList: userList,
-    // areaList: areaList,
   };
 };
 

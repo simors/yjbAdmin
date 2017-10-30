@@ -7,15 +7,9 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
 import {Row, Col, Input, Select, Button, DatePicker} from 'antd';
-import ContentHead from '../../component/ContentHead'
-import StationAccountList from './StationAccountList';
-// import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from '../station/redux';
-import {configSelector} from '../../util/config'
 import createBrowserHistory from 'history/createBrowserHistory'
-import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction, accountSelector} from './redux'
 import AccountChart from '../../component/account/AccountChart'
 import {PERMISSION_CODE, ROLE_CODE} from '../../util/rolePermission'
@@ -196,16 +190,11 @@ const mapStateToProps = (state, ownProps) => {
     }
     profitData.push(profitObj)
   }
-  // let areaList = configSelector.selectAreaList(state)
-  // console.log('stationNameSet========>', stationNameSet)
-  //
-  // console.log('profitData========>', profitData)
   return {
     stationAccounts: accounts,
     userList: userList,
     stationNameList: Array.from(stationNameSet),
     profitData,
-    // areaList: areaList,
   };
 };
 

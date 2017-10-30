@@ -5,9 +5,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Row, Col, Input, Select, Button, Form, InputNumber, message, Spin} from 'antd';
-import ContentHead from '../../component/ContentHead'
 import {stationAction, stationSelector} from './redux';
-import {configSelector} from '../../util/config'
 import PartnerList from './PartnerList'
 import CreatePartnerModal from '../../component/station/CreatePartnerModal'
 import UpdatePartnerModal from '../../component/station/UpdatePartnerModal'

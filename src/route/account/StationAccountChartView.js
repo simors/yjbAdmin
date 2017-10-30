@@ -4,15 +4,8 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
 import {Row, Col, Input, Select, Button,message,DatePicker} from 'antd';
-import ContentHead from '../../component/ContentHead'
-import StationAccountList from './StationAccountList';
-// import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from '../station/redux';
-import {configSelector} from '../../util/config'
-import createBrowserHistory from 'history/createBrowserHistory'
-import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction,accountSelector} from './redux'
 import AccountChart from '../../component/account/StationAccountChart'
 import moment from 'moment'
@@ -21,7 +14,6 @@ import mathjs from 'mathjs'
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
 const ButtonGroup = Button.Group
-// var Excel = require('exceljs');
 
 class StationAccountManager extends React.Component {
   constructor(props) {
@@ -162,12 +154,9 @@ class StationAccountManager extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectStationAccountsDetail(state)
-  // let areaList = configSelector.selectAreaList(state)
-  console.log('accounts========>', accounts)
   return {
     stationAccounts: accounts,
     stations: stations
-    // areaList: areaList,
   };
 };
 
