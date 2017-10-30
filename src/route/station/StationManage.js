@@ -280,6 +280,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(StationManage));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(StationManage));
 
 export {saga, reducer} from './redux';
