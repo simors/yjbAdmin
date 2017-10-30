@@ -13,6 +13,7 @@ import {profitReducer} from '../route/profit'
 import {accountReducer} from '../route/account'
 import {operationLogReducer} from '../route/operationLog'
 import {smsReducer} from '../component/smsModal'
+import {reducer as profileReducer} from '../component/Profile'
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
@@ -30,6 +31,7 @@ export const makeRootReducer = (asyncReducers) => {
     PROFIT: profitReducer,
     OPERATIONLOG: operationLogReducer,
     SMSMODAL: smsReducer,
+    PROFILE: profileReducer,
     ...asyncReducers
   })
 }
