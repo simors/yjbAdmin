@@ -4,7 +4,7 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Input, Select, Button,message,DatePicker} from 'antd';
+import {Row, Col, Input, Select, Button,message,DatePicker,Form} from 'antd';
 import {stationAction, stationSelector} from '../station/redux';
 import {accountAction,accountSelector} from './redux'
 import AccountChart from '../../component/account/StationAccountChart'
@@ -14,6 +14,7 @@ import mathjs from 'mathjs'
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
 const ButtonGroup = Button.Group
+const FormItem = Form.Item
 
 class StationAccountManager extends React.Component {
   constructor(props) {
@@ -57,19 +58,39 @@ class StationAccountManager extends React.Component {
   }
 
 
-  search() {
-    let payload = {
-      stationId: this.state.stationId,
-      startDate: this.state.startDate,
-      endDate: this.state.endDate,
-      success: ()=> {
-        console.log('success')
-      },
-      error: ()=> {
-        console.log('error')
+  search(e) {
+    e.preventDefault()
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        return
       }
-    }
-    this.props.fetchStationAccountsDetail(payload)
+      const rangeTimeValue = fieldsValue['rangeTimePicker']
+      let values = fieldsValue
+      console.log('==============value------->', values)
+      if (rangeTimeValue && rangeTimeValue.length === 2) {
+        values = {
+          ...fieldsValue,
+          'rangeTimePicker': [
+            rangeTimeValue[0].format('YYYY-MM-DD'),
+            rangeTimeValue[1].format('YYYY-MM-DD'),
+          ],
+        }
+      }
+
+      let payload = {
+        stationId: values.stationId,
+        startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
+        endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
+        success: ()=> {
+          console.log('success')
+        },
+        error: ()=> {
+          console.log('error')
+        }
+      }
+      this.props.fetchStationAccountsDetail(payload)
+    })
+
   }
 
   setDivision(value) {
@@ -94,38 +115,42 @@ class StationAccountManager extends React.Component {
   }
 
   renderSearchBar() {
+    const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form
     return (
-      <div style={{flex: 1}}>
-        <Row >
-          <Col span={4}>
-            <Select defalutValue = 'all' onChange={(value)=>{this.selectStation(value)}} style={{width: 180}} placeholder="选择服务网点">
-              <Option value="all">全部</Option>
+      <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=> {
+        this.search(e)
+      }}>
+        <FormItem>
+          {getFieldDecorator("rangeTimePicker", {
+            initialValue: [moment().day(-30), moment()],
+            rules: [{type: 'array'}],
+          })(
+            <RangePicker format="YYYY-MM-DD"/>
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("stationId", {
+            initialValue: '',
+          })(
+            <Select style={{width: 120}} placeholder="选择服务网点">
+              <Option value=''>全部</Option>
               {
                 this.props.stations.map((station, index) => (
                   <Option key={index} value={station.id}>{station.name}</Option>
                 ))
               }
             </Select>
-          </Col>
-          <Col span={8}>
-            <RangePicker key='selectDate' defaultValue={undefined}
-                         value={[this.state.startDate ? moment(this.state.startDate) : undefined, moment(this.state.endDate)]}
-                         onChange={(date, dateString)=> {
-                           this.selectDate(date, dateString)
-                         }} placeholder="选择日期"/>
-          </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
-              this.search()
-            }}>查询</Button>
-          </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
-              this.clearSearch()
+          )}
+        </FormItem>
+        <FormItem>
+          <Button.Group>
+            <Button onClick={() => {
+              this.props.form.resetFields()
             }}>重置</Button>
-          </Col>
-        </Row>
-      </div>
+            <Button type="primary" htmlType="submit">查询</Button>
+          </Button.Group> </FormItem>
+      </Form>
+
     )
   }
 
@@ -166,6 +191,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(StationAccountManager);
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(StationAccountManager));
 
 export {saga, reducer} from './redux';
