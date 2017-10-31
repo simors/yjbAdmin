@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Input, Select, Button,DatePicker} from 'antd';
+import {Row, Col, Input, Select, Button,DatePicker, Form} from 'antd';
 import InvestorAccountList from './InvestorAccountList';
 import {stationAction, stationSelector} from '../station/redux';
 import {accountAction,accountSelector} from './redux'
@@ -17,6 +17,7 @@ import {withRouter} from 'react-router'
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
 const ButtonGroup = Button.Group
+const FormItem = Form.Item
 // var Excel = require('exceljs');
 
 class InvestorAccountManager extends React.Component {
@@ -66,27 +67,48 @@ class InvestorAccountManager extends React.Component {
     // this.props.requestStations({...this.state})
   }
 
-  search() {
+  search(e) {
+    e.preventDefault()
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        return
+      }
+      const rangeTimeValue = fieldsValue['rangeTimePicker']
+      let values = fieldsValue
+      console.log('==============value------->',values)
+      if(rangeTimeValue && rangeTimeValue.length === 2) {
+        values = {
+          ...fieldsValue,
+          'rangeTimePicker': [
+            rangeTimeValue[0].format('YYYY-MM-DD'),
+            rangeTimeValue[1].format('YYYY-MM-DD'),
+          ],
+        }
+      }
 
-    let payload = {
-      stationId: this.state.stationId,
-      userId: this.state.userId,
-      startDate: this.state.startDate,
-      endDate: this.state.endDate,
-      success: ()=> {
-        console.log('success')
-      },
-      error: ()=> {
-        console.log('error')
+      let payload = {
+        stationId: values.stationId,
+        userId: values.userId,
+        startDate: values.rangeTimePicker? values.rangeTimePicker[0] : moment().day(-30).formate(),
+        endDate: values.rangeTimePicker? values.rangeTimePicker[1] : moment().formate(),
+        success: ()=> {
+          console.log('success')
+        },
+        error: ()=> {
+          console.log('error')
+        }
       }
-    }
-    this.setState({viewType:this.state.selectedType},()=>{
-      if(this.state.selectedType=='all'){
-        this.props.fetchInvestorAccounts(payload)
-      }else{
-        this.props.fetchInvestorAccountsDetail(payload)
-      }
+      console.log('payload========>',payload)
+      this.setState({viewType:values.selectedType},()=>{
+        if(values.selectedType=='all'){
+          this.props.fetchInvestorAccounts(payload)
+        }else{
+          this.props.fetchInvestorAccountsDetail(payload)
+        }
+      })
+
     })
+
 
   }
 
@@ -123,11 +145,22 @@ class InvestorAccountManager extends React.Component {
   }
 
   renderSearchBar() {
+    const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form
     return (
-      <div style={{flex: 1}}>
-        <Row gutter={24}>
-          <Col span={4}>
-          <Select defalutValue = '' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
+    <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=>{this.search(e)}}>
+      <FormItem>
+        {getFieldDecorator("rangeTimePicker", {
+          initialValue: [moment().day(-30),moment()],
+          rules: [{ type: 'array'}],
+        })(
+          <RangePicker  format="YYYY-MM-DD" />
+        )}
+      </FormItem>
+      <FormItem>
+        {getFieldDecorator("stationId", {
+          initialValue: '',
+        })(
+          <Select   style={{width: 120}} placeholder="选择服务网点">
             <Option value=''>全部</Option>
             {
               this.props.stations.map((station, index) => (
@@ -135,40 +168,25 @@ class InvestorAccountManager extends React.Component {
               ))
             }
           </Select>
-        </Col>
-          <Col span={4}>
-            <Select defalutValue = '' onChange={(value)=>{this.selectInvestor(value)}} style={{width: 120}} placeholder="选择投资人">
-              <Option value=''>全部</Option>
-              {
-                this.props.userList.map((user, index) => (
-                  <Option key={index} value={user.id}>{user.nickname+'  '+user.mobilePhoneNumber}</Option>
-                ))
-              }
-            </Select>
-          </Col>
-          <Col span={8}>
-            <RangePicker key='selectDate' defaultValue={undefined} value={[this.state.startDate?moment(this.state.startDate):undefined,moment(this.state.endDate)]} onChange={(date,dateString)=>{this.selectDate(date,dateString)}} placeholder="选择日期"/>
-          </Col>
-          <Col span={4}>
-            <Select defalutValue = 'all' onChange={(value)=>{this.selectType(value)}} style={{width: 120}} placeholder="选择查询方式">
-              <Option value='all'>按周期</Option>
-              <Option value='detail'>按日期</Option>
-            </Select>
-          </Col>
-          <Col span={4}>
-            <ButtonGroup>
-            <Button type='primary' onClick={()=> {
-              this.search()
-            }}>查询</Button>
+        )}
+      </FormItem>
+      <FormItem>
+        {getFieldDecorator("selectedType", {
+          initialValue : 'all',
+        })(
+          <Select  style={{width: 120}} placeholder="选择查询方式">
+            <Option value='all'>按周期</Option>
+            <Option value='detail'>按日期</Option>
+          </Select>
+        )}
+      </FormItem>
+      <FormItem>
+        <Button.Group>
+          <Button onClick={() => {this.props.form.resetFields()}}>重置</Button>
+          <Button type="primary" htmlType="submit">查询</Button>
+        </Button.Group>       </FormItem>
+    </Form>
 
-            <Button type='primary' onClick={()=> {
-              this.clearSearch()
-            }}>重置</Button>
-              </ButtonGroup>
-          </Col>
-        </Row>
-
-      </div>
     )
   }
 
@@ -230,6 +248,6 @@ const mapDispatchToProps = {
 
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(InvestorAccountManager));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Form.create()(InvestorAccountManager)));
 
 export {saga, reducer} from './redux';
