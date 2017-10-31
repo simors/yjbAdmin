@@ -121,12 +121,13 @@ class DivisionCascader extends PureComponent {
   }
 
   render() {
-    const {disabled, level} = this.props
+    const {disabled, level, cascaderSize} = this.props
     return (
       <Cascader style={{width: `200px`}}
                 options={getOptionData(level)}
                 value={this.state.value}
                 placeholder={getPlaceholder(level)}
+                size={cascaderSize}
                 changeOnSelect
                 disabled={disabled}
                 onChange={this.onSelectChange} />
@@ -138,6 +139,7 @@ DivisionCascader.defaultProps = {
   level: 3,   //3：省市区 2：省市 1：省／
   disabled: false,
   onChange: () => {},
+  cascaderSize: 'default'
 }
 
 export default DivisionCascader

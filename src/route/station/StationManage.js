@@ -4,7 +4,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router'
-import {Row, Col, Input, Select, Button, message} from 'antd';
+import {Row, Col, Input, Select, Button, message, Form,Cascader} from 'antd';
 import StationList from './StationList';
 import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from './redux';
@@ -17,6 +17,7 @@ import {loadAction} from '../../component/loadActivity'
 
 const Option = Select.Option;
 const ButtonGroup = Button.Group
+const FormItem = Form.Item
 
 class StationManage extends React.Component {
   constructor(props) {
@@ -85,34 +86,33 @@ class StationManage extends React.Component {
     this.setState({status: value})
   }
 
-
-  areaList() {
-    if (this.state.city && this.state.city.sub.length > 0) {
-      let areaList = this.state.city.sub.map((item, key)=> {
-        return <Option key={key} value={key}>{item.area_name}</Option>
-      })
-      return areaList
-    } else {
-      return null
-    }
-  }
-
-  search() {
-    let payload = {
-      province: this.state.division[0],
-      city: this.state.division[1],
-      area: this.state.division[2],
-      status: this.state.status && this.state.status.key ? parseInt(this.state.status.key) : undefined,
-      addr: this.state.addr,
-      name: this.state.name,
-      success: ()=> {
-        console.log('success')
-      },
-      error: ()=> {
-        console.log('error')
+  search(e) {
+    e.preventDefault()
+    this.props.form.validateFields((errors) => {
+      if (errors) {
+        return
       }
-    }
-    this.props.requestStations(payload)
+      // console.log('=======>',{...this.props.form.getFieldsValue()})
+      let data = this.props.form.getFieldsValue()
+      console.log('data=======>',data)
+      let payload = {
+        province: data.division[0],
+        city: data.division[1],
+        area: data.division[2],
+        status: data.status && data.status.key ? parseInt(data.status.key): undefined,
+        addr: data.addr,
+        name: data.name,
+        success: ()=> {
+          console.log('success')
+        },
+        error: ()=> {
+          console.log('error')
+        }
+      }
+      this.props.requestStations(payload)
+      // console.log('data======>',data)
+      // let count = this.state.count - 1
+    })
   }
 
   setDivision(value) {
@@ -143,45 +143,42 @@ class StationManage extends React.Component {
   }
 
   renderSearchBar() {
+    const { getFieldDecorator } = this.props.form
+    let divisionStyle = {height: '300px'}
     return (
-      <div style={{flex: 1}}>
-        <Row style={{marginTop: 12, marginBottom: 12}}>
-          <Col span={3}>
-            <Input placeholder='名称' value={this.state.name} onChange={(e)=> {
-              this.setState({name: e.target.value})
-            }}></Input>
-          </Col>
-          <Col span={3}>
-            <Select labelInValue={true} placeholder="状态" value={this.state.status} allowClear={true}
-                    style={{width: 120}} onChange={(value)=> {
-              this.statusChange(value)
-            }}>
-              <Option value='1'>正常</Option>
-              <Option value='0'>已停用</Option>
-            </Select>
-          </Col>
-          <Col span={5}>
-            <DivisionCascader
-              value={this.state.division}
-              defaultValue={this.state.division}
-              onChange={(key, value)=> {
-                this.setDivision(key)
-              }}
-            />
-          </Col>
-          <Col span={4}>
-            <ButtonGroup>
-              <Button size='large' type="primary" onClick={()=> {
-                this.search()
-              }}>查询</Button>
-              <Button size='large' type="primary" onClick={()=> {
-                this.clearSearch()
-              }}>重置</Button>
-            </ButtonGroup>
-          </Col>
-        </Row>
+    <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=>{this.search(e)}}>
+      <FormItem>
+        {getFieldDecorator("name", {
+          initialValue: '',
+        })(
+          <Input placeholder='名称' />        )}
+      </FormItem>
+      <FormItem>
+        {getFieldDecorator("status", {
 
-      </div>
+        })(
+          <Select labelInValue={true} placeholder="状态" allowClear={true}
+                  style={{width: 120}} >
+            <Option value='1'>正常</Option>
+            <Option value='0'>已停用</Option>
+          </Select>      )}
+      </FormItem>
+      <FormItem>
+        {getFieldDecorator("division", {
+          initialValue: [],
+
+        })(
+          <DivisionCascader cascaderSize='large'
+          />     )}
+      </FormItem>
+      <FormItem>
+        <Button.Group>
+          <Button onClick={() => {this.props.form.resetFields()}}>重置</Button>
+          <Button type="primary" htmlType="submit">查询</Button>
+        </Button.Group>
+      </FormItem>
+      </Form>
+
     )
   }
 
@@ -279,6 +276,6 @@ const mapDispatchToProps = {
 
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(StationManage));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Form.create()(StationManage)));
 
 export {saga, reducer} from './redux';
