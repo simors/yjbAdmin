@@ -6,7 +6,7 @@
 import AV from 'leancloud-storage'
 import React, {PropTypes, Component} from 'react'
 import {Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
-
+import mathjs from 'mathjs'
 //import {checkBox} from '../../common/checkBox'
 const FormItem = Form.Item
 const CheckboxGroup = Checkbox.Group
@@ -78,6 +78,7 @@ class UpdatePartnerModal extends Component {
       let data = this.props.form.getFieldsValue()
       // console.log('data======>',data)
       // let count = this.state.count - 1
+      data.royalty = mathjs.chain(data.royalty).multiply(1/100).done()
       this.props.onOk(data)
     })
   }
@@ -120,7 +121,7 @@ class UpdatePartnerModal extends Component {
           </FormItem>
           <FormItem label='分成比例：' hasFeedback {...formItemLayout}>
             {this.props.form.getFieldDecorator('royalty', {
-              initialValue: this.props.partner ? this.props.partner.royalty : 0,
+              initialValue: this.props.partner ? this.props.partner.royalty*100 : 0,
               rules: [
                 {
                   required: true,
@@ -128,6 +129,7 @@ class UpdatePartnerModal extends Component {
                 }
               ]
             })(<InputNumber max={1} />)}
+            <span className="ant-form-text">%</span>
           </FormItem>
         </Form>
       </Modal>

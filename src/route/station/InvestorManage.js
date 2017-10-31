@@ -135,8 +135,8 @@ class InvestorManage extends React.Component {
 
   renderSearchBar() {
     return (
-      <div style={{flex: 1}}>
-        <Row gutter={24}>
+      <div className="ant-form"  style={{flex: 1,fontSize: 12,marginTop: 12, marginBottom: 12}}>
+        <Row gutter={24} className="ant-form">
           <Col span={4}>
             <Select allowClear={true} style={{width: 120}} placeholder='状态' onChange={(value)=> {
               this.statusChange(value)

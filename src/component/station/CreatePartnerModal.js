@@ -5,6 +5,7 @@
 import AV from 'leancloud-storage'
 import React, {PropTypes, Component} from 'react'
 import {Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
+import mathjs from 'mathjs'
 
 //import {checkBox} from '../../common/checkBox'
 const FormItem = Form.Item
@@ -75,6 +76,7 @@ class CreatePartnerModal extends Component {
       }
       // console.log('=======>',{...this.props.form.getFieldsValue()})
       let data = this.props.form.getFieldsValue()
+      data.royalty = mathjs.chain(data.royalty).multiply(1/100).done()
       // console.log('data======>',data)
       // let count = this.state.count - 1
       this.props.onOk(data)
@@ -126,6 +128,7 @@ class CreatePartnerModal extends Component {
                 }
               ]
             })(<InputNumber max={1}/>)}
+            <span className="ant-form-text">%</span>
           </FormItem>
         </Form>
       </Modal>

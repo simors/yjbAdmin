@@ -5,6 +5,7 @@
 
 import React from 'react';
 import {Table, Button} from 'antd';
+import mathjs from 'mathjs'
 
 const showColumns = [{
   title: "分成方",
@@ -34,6 +35,11 @@ const PartnerList = (props) => {
   }, {
     title: "分成比例",
     dataIndex: "royalty",
+    render: (text,record)=>{
+      return(
+        <div>{mathjs.chain(record.royalty).multiply(100).done()+'%'}</div>
+      )
+    }
   }, {
     title: '状态',
     render: (text, record)=> {
@@ -51,9 +57,11 @@ const PartnerList = (props) => {
           }}>编辑</a>
                               <span className="ant-divider" />
 
-          <a style={{color: `blue`}} onClick={()=> {
+          {record.status?<a style={{color: `blue`}} onClick={()=> {
             setPartnerStatus(record)
-          }}>启用／停用</a>
+          }}>停用</a>:<a style={{color: `blue`}} onClick={()=> {
+            setPartnerStatus(record)
+          }}>启用</a>}
         </span>
       )
     }
