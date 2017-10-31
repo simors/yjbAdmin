@@ -2,13 +2,17 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Menu, Icon, Avatar} from 'antd';
-import {action as authAction, selector as authSelector} from '../util/auth/';
-import style from './Profile.module.scss';
+import {action} from './redux';
+import {action as authAction, selector as authSelector} from '../../util/auth/';
+import style from './Menu.module.scss';
 
 class Profile extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
   onPassword = () => {
-    console.log('TODO: change password');
+    this.props.showPasswordModal({});
   };
 
   userMenuOnClick = ({key}) => {
@@ -53,7 +57,7 @@ class Profile extends React.Component {
 
   render() {
     return (
-      <div className={style.profile}>
+      <div className={style.menu}>
         {this.renderUser()}
         <div>
           <Menu onClick={this.userMenuOnClick}>
@@ -81,6 +85,7 @@ const mapStateToProps = (appState, ownProps) => {
 };
 
 const mapDispatchToProps = {
+  ...action,
   ...authAction,
 };
 
