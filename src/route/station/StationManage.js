@@ -237,7 +237,8 @@ class StationManage extends React.Component {
           }}
           selectStation={(rowId, rowData)=> {
             this.selectStation(rowId, rowData)
-          }} stations={this.props.stations}
+          }}
+          stations={this.props.stations}
           editStation={(value)=> {
             this.props.history.push({
               pathname: '/site_list/editStation/' + value.id,
@@ -257,7 +258,11 @@ const mapStateToProps = (state, ownProps) => {
   let showVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_BASE_QUERY, PERMISSION_CODE.STATION_QUERY_PARTNER])
   let addVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_ADD])
   let editVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_EDIT])
-
+  let stationList = []
+  stations.forEach((item)=>{
+    stationList.push(item.id)
+  })
+  console.log('stationList=======>',stationList)
   return {
     stations: stations,
     addVisible: addVisible,
