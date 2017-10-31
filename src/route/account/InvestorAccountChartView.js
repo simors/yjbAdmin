@@ -7,17 +7,18 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Input, Select, Button,DatePicker} from 'antd';
+import {Row, Col, Input, Select, Button,DatePicker, Form, message} from 'antd';
 import {stationAction, stationSelector} from '../station/redux';
 import {accountAction,accountSelector} from './redux'
 import AccountChart from '../../component/account/AccountChart'
 import {PERMISSION_CODE, ROLE_CODE} from '../../util/rolePermission'
 import moment from 'moment'
 import {action as authAction, selector as authSelector} from '../../util/auth'
-
+import mathjs from 'mathjs'
 const Option = Select.Option;
 const ButtonGroup = Button.Group
 const RangePicker = DatePicker.RangePicker;
+const FormItem = Form.Item
 
 class InvestorAccountChartView extends React.Component {
   constructor(props) {
@@ -66,19 +67,40 @@ class InvestorAccountChartView extends React.Component {
   }
 
 
-  search() {
-    let payload = {
-      userId: this.state.userId,
-      startDate: this.state.startDate,
-      endDate: this.state.endDate,
-      success: ()=> {
-        console.log('success')
-      },
-      error: ()=> {
-        console.log('error')
+  search(e) {
+    e.preventDefault()
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        return
       }
-    }
-    this.props.fetchInvestorAccountsDetail(payload)
+      const rangeTimeValue = fieldsValue['rangeTimePicker']
+      let values = fieldsValue
+      if (rangeTimeValue && rangeTimeValue.length === 2) {
+        values = {
+          ...fieldsValue,
+          'rangeTimePicker': [
+            rangeTimeValue[0].format('YYYY-MM-DD'),
+            rangeTimeValue[1].format('YYYY-MM-DD'),
+          ],
+        }
+      }
+      let dateRange = mathjs.chain(moment(values.rangeTimePicker[1]) - moment(values.rangeTimePicker[0])).multiply(1 / 31536000000).done()
+      console.log('dateRange======>',dateRange)
+      if(dateRange>2){
+        message.error('时间范围请不要超过2年')
+      }else{
+        let payload = {
+          userId: values.userId,
+          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
+          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
+          success: ()=> {
+          },
+          error: ()=> {
+          }
+        }
+        this.props.fetchInvestorAccountsDetail(payload)
+      }
+    })
   }
 
   setDivision(value) {
@@ -91,15 +113,6 @@ class InvestorAccountChartView extends React.Component {
     }
   }
 
-  clearSearch() {
-    this.setState({
-      status: undefined,
-      startDate: moment().day(-30).format(),
-      endDate: moment().format(),
-      userId: undefined,
-      division: []
-    })
-  }
 
   selectDate(date, dateString) {
     console.log('date=====>', mathjs.chain(date[1] - date[0]).multiply(1 / 31536000000).done())
@@ -109,44 +122,44 @@ class InvestorAccountChartView extends React.Component {
       message.error('时间范围请不要超过2年')
     } else {
       this.setState({startDate: dateString[0], endDate: dateString[1]})
-
     }
   }
   renderSearchBar() {
+    const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form
     return (
-      <div style={{flex: 1}}>
-        <Row >
-          <Col span={4}>
-            <Select defalutValue='' onChange={(value)=> {
-              this.selectInvestor(value)
-            }} style={{width: 120}} placeholder="选择分成方">
-              <Option value=''>全部</Option>
+      <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=> {
+        this.search(e)
+      }}>
+        <FormItem>
+          {getFieldDecorator("rangeTimePicker", {
+            initialValue: [moment().day(-30), moment()],
+            rules: [{type: 'array'}],
+          })(
+            <RangePicker format="YYYY-MM-DD"/>
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("userId", {
+            initialValue: this.props.userList&&this.props.userList.length?this.props.userList[0].id:undefined,
+          })(
+            <Select style={{width: 120}} placeholder="选择分成方">
               {
                 this.props.userList.map((user, index) => (
                   <Option key={index} value={user.id}>{user.nickname + '  ' + user.mobilePhoneNumber}</Option>
                 ))
               }
             </Select>
-          </Col>
-          <Col span={8}>
-            <RangePicker key='selectDate' defaultValue={undefined}
-                         value={[this.state.startDate ? moment(this.state.startDate) : undefined, moment(this.state.endDate)]}
-                         onChange={(date, dateString)=> {
-                           this.selectDate(date, dateString)
-                         }} placeholder="选择日期"/>
-          </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
-              this.search()
-            }}>查询</Button>
-          </Col>
-          <Col span={2}>
-            <Button onClick={()=> {
-              this.clearSearch()
+          )}
+        </FormItem>
+        <FormItem>
+          <Button.Group>
+            <Button onClick={() => {
+              this.props.form.resetFields()
             }}>重置</Button>
-          </Col>
-        </Row>
-      </div>
+            <Button type="primary" htmlType="submit">查询</Button>
+          </Button.Group> </FormItem>
+      </Form>
+
     )
   }
 
@@ -207,6 +220,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(InvestorAccountChartView);
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(InvestorAccountChartView));
 
 export {saga, reducer} from './redux';

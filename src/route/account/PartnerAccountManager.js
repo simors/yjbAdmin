@@ -108,29 +108,30 @@ class PartnerAccountManager extends React.Component {
           ],
         }
       }
-
-      let payload = {
-        stationId: values.stationId,
-        userId: values.userId,
-        startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
-        endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
-        success: ()=> {
-
-
-          console.log('success')
-        },
-        error: ()=> {
-          console.log('error')
+      let dateRange = mathjs.chain(moment(values.rangeTimePicker[1]) - moment(values.rangeTimePicker[0])).multiply(1 / 31536000000).done()
+      if(dateRange>2){
+        message.error('时间范围请不要超过2年')
+      }else{
+        let payload = {
+          stationId: values.stationId,
+          userId: values.userId,
+          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
+          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
+          success: ()=> {
+            console.log('success')
+          },
+          error: ()=> {
+            console.log('error')
+          }
         }
+        this.setState({viewType: values.selectedType},()=>{
+          if (values.selectedType == 'all') {
+            this.props.fetchPartnerAccounts(payload)
+          } else {
+            this.props.fetchPartnerAccountsDetail(payload)
+          }
+        })
       }
-      this.setState({viewType: values.selectedType},()=>{
-        if (values.selectedType == 'all') {
-          this.props.fetchPartnerAccounts(payload)
-        } else {
-          this.props.fetchPartnerAccountsDetail(payload)
-        }
-      })
-
     })
   }
 

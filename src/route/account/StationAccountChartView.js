@@ -76,42 +76,24 @@ class StationAccountManager extends React.Component {
           ],
         }
       }
-
-      let payload = {
-        stationId: values.stationId,
-        startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
-        endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
-        success: ()=> {
-          console.log('success')
-        },
-        error: ()=> {
-          console.log('error')
+      let dateRange = mathjs.chain(moment(values.rangeTimePicker[1]) - moment(values.rangeTimePicker[0])).multiply(1 / 31536000000).done()
+      if(dateRange>2){
+        message.error('时间范围请不要超过2年')
+      }else{
+        let payload = {
+          stationId: values.stationId,
+          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
+          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
+          success: ()=> {
+            console.log('success')
+          },
+          error: ()=> {
+            console.log('error')
+          }
         }
+        this.props.fetchStationAccountsDetail(payload)
       }
-      this.props.fetchStationAccountsDetail(payload)
     })
-
-  }
-
-  setDivision(value) {
-    if (value && value.length) {
-      this.setState({
-        division: value
-      }, ()=> {
-        console.log('state', this.state.division)
-      })
-    }
-  }
-
-  clearSearch() {
-    this.setState({
-      status: undefined,
-      startDate: moment().day(-30).format(),
-      endDate: moment().format(),
-      stationId:undefined,
-      division: []
-    })
-    this.props.fetchStationAccountsDetail({...this.state})
   }
 
   renderSearchBar() {
@@ -152,17 +134,6 @@ class StationAccountManager extends React.Component {
       </Form>
 
     )
-  }
-
-  selectDate(date, dateString) {
-    let dateRange = mathjs.chain(date[1] - date[0]).multiply(1 / 31536000000).done()
-
-    if (dateRange > 2) {
-      message.error('时间范围请不要超过2年')
-    } else {
-      this.setState({startDate: dateString[0], endDate: dateString[1]})
-
-    }
   }
 
   render() {
