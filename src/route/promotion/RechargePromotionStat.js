@@ -55,15 +55,15 @@ class RechargePromotionStat extends PureComponent {
             <Card bordered={false}>
               <Card.Grid className={style.card}>
                 <div className={style.title}>充值总额:</div>
-                <div className={style.amount}>{"¥" + promotion.stat.rechargeAmount + '元'}</div>
+                <div className={style.amount}>{"¥" + Number(promotion.stat.rechargeAmount).toLocaleString() + '元'}</div>
               </Card.Grid>
               <Card.Grid className={style.card}>
                 <div className={style.title}>赠送总额:</div>
-                <div className={style.amount}>{"¥" + promotion.stat.awardAmount + '元'}</div>
+                <div className={style.amount}>{"¥" + Number(promotion.stat.awardAmount).toLocaleString() + '元'}</div>
               </Card.Grid>
               <Card.Grid className={style.card}>
                 <div className={style.title}>参与人数:</div>
-                <div className={style.amount}>{promotion.stat.participant}</div>
+                <div className={style.amount}>{Number(promotion.stat.participant).toLocaleString()}</div>
               </Card.Grid>
             </Card>
           </Col>

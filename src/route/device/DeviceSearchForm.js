@@ -79,7 +79,10 @@ class SearchForm extends PureComponent {
           )}
         </FormItem>
         <FormItem>
-          <Button type="primary" htmlType="submit">查询</Button>
+          <Button.Group>
+            <Button onClick={() => {this.props.form.resetFields()}}>重置</Button>
+            <Button type="primary" htmlType="submit">查询</Button>
+          </Button.Group>
         </FormItem>
       </Form>
     )
