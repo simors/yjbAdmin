@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Input, Select, Button, DatePicker, message} from 'antd';
+import {Row, Col, Input, Select, Button, DatePicker, message, Form} from 'antd';
 import StationAccountList from './StationAccountList';
 import {stationAction, stationSelector} from '../station/redux';
 import {accountAction, accountSelector} from './redux'
@@ -18,6 +18,7 @@ import {withRouter} from 'react-router'
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
 const ButtonGroup = Button.Group
+const FormItem = Form.Item
 // var Excel = require('exceljs');
 
 class StationAccountManager extends React.Component {
@@ -66,8 +67,9 @@ class StationAccountManager extends React.Component {
     this.props.fetchStationAccounts({
       ...this.state,
       success: ()=> {
-      console.log('hahhahah')
-    },})
+        console.log('hahhahah')
+      },
+    })
     this.props.requestStations({})
   }
 
@@ -75,24 +77,44 @@ class StationAccountManager extends React.Component {
     // this.props.requestStations({...this.state})
   }
 
-  search() {
-    let payload = {
-      stationId: this.state.stationId,
-      startDate: this.state.startDate,
-      endDate: this.state.endDate,
-      success: ()=> {
-        this.setState({viewType: this.state.selectedType})
-        console.log('success')
-      },
-      error: ()=> {
-        console.log('error')
+  search(e) {
+    e.preventDefault()
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        return
       }
-    }
-    if (this.state.selectedType == 'all') {
-      this.props.fetchStationAccounts(payload)
-    } else {
-      this.props.fetchStationAccountsDetail(payload)
-    }
+      const rangeTimeValue = fieldsValue['rangeTimePicker']
+      let values = fieldsValue
+      console.log('==============value------->', values)
+      if (rangeTimeValue && rangeTimeValue.length === 2) {
+        values = {
+          ...fieldsValue,
+          'rangeTimePicker': [
+            rangeTimeValue[0].format('YYYY-MM-DD'),
+            rangeTimeValue[1].format('YYYY-MM-DD'),
+          ],
+        }
+      }
+
+      let payload = {
+        stationId: values.stationId,
+        startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
+        endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
+        success: ()=> {
+          console.log('success')
+        },
+        error: ()=> {
+          console.log('error')
+        }
+      }
+      this.setState({viewType: values.selectedType}, ()=> {
+        if (values.selectedType == 'all') {
+          this.props.fetchStationAccounts(payload)
+        } else {
+          this.props.fetchStationAccountsDetail(payload)
+        }
+      })
+    })
   }
 
   clearSearch() {
@@ -121,13 +143,24 @@ class StationAccountManager extends React.Component {
 
 
   renderSearchBar() {
+    const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form
     return (
-      <div style={{flex: 1, marginTop: 12, marginBottom: 12}}>
-        <Row gutter={24}>
-          <Col span={4}>
-            <Select defalutValue='' onChange={(value)=> {
-              this.selectStation(value)
-            }} style={{width: 120}} placeholder="选择服务网点">
+      <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=> {
+        this.search(e)
+      }}>
+        <FormItem>
+          {getFieldDecorator("rangeTimePicker", {
+            initialValue: [moment().day(-30), moment()],
+            rules: [{type: 'array'}],
+          })(
+            <RangePicker format="YYYY-MM-DD"/>
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("stationId", {
+            initialValue: '',
+          })(
+            <Select style={{width: 120}} placeholder="选择服务网点">
               <Option value=''>全部</Option>
               {
                 this.props.stations.map((station, index) => (
@@ -135,36 +168,27 @@ class StationAccountManager extends React.Component {
                 ))
               }
             </Select>
-          </Col>
-          <Col span={8}>
-            <RangePicker key='selectDate' defaultValue={undefined}
-                         value={[this.state.startDate ? moment(this.state.startDate) : undefined, moment(this.state.endDate)]}
-                         onChange={(date, dateString)=> {
-                           this.selectDate(date, dateString)
-                         }} placeholder="选择日期"/>
-          </Col>
-          <Col span={4}>
-            <Select defalutValue='all' onChange={(value)=> {
-              this.selectType(value)
-            }} style={{width: 120}} placeholder="选择查询方式">
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("selectedType", {
+            initialValue: 'all',
+          })(
+            <Select style={{width: 120}} placeholder="选择查询方式">
               <Option value='all'>按周期</Option>
               <Option value='detail'>按日期</Option>
             </Select>
-          </Col>
-          <Col span={4}>
-            <ButtonGroup>
-              <Button type='primary' onClick={()=> {
-                this.search()
-              }}>查询</Button>
+          )}
+        </FormItem>
+        <FormItem>
+          <Button.Group>
+            <Button onClick={() => {
+              this.props.form.resetFields()
+            }}>重置</Button>
+            <Button type="primary" htmlType="submit">查询</Button>
+          </Button.Group> </FormItem>
+      </Form>
 
-              <Button type='primary' onClick={()=> {
-                this.clearSearch()
-              }}>重置</Button>
-            </ButtonGroup>
-          </Col>
-        </Row>
-
-      </div>
     )
   }
 
@@ -252,6 +276,6 @@ const mapDispatchToProps = {
 
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(StationAccountManager));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Form.create()(StationAccountManager)));
 
 export {saga, reducer} from './redux';
