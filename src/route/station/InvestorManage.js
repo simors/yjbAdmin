@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Input, Select, Button, message} from 'antd';
+import {Row, Col, Input, Select, Button, message, Form} from 'antd';
 import InvestorList from './InvestorList';
 import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from './redux';
@@ -18,6 +18,7 @@ import {ROLE_CODE,PERMISSION_CODE} from '../../util/rolePermission'
 
 const Option = Select.Option;
 const ButtonGroup = Button.Group
+const FormItem = Form.Item
 
 class InvestorManage extends React.Component {
   constructor(props) {
@@ -87,23 +88,35 @@ class InvestorManage extends React.Component {
     this.setState({status: parseInt(value)})
   }
 
-  search() {
+  search(e) {
+    e.preventDefault()
     this.props.updateLoadingState({isLoading: true})
-    let payload = {
-      status: this.state.status != undefined ? this.state.status : undefined,
-      stationId: this.state.stationId,
-      mobilePhoneNumber: this.state.mobilePhoneNumber,
-      success: ()=> {
-        this.props.updateLoadingState({isLoading: false})
-        console.log('success')
-      },
-      error: ()=> {
-        this.props.updateLoadingState({isLoading: false})
-        console.log('error')
+    this.props.form.validateFields((errors) => {
+      if (errors) {
+        return
       }
-    }
+      // console.log('=======>',{...this.props.form.getFieldsValue()})
+      let data = this.props.form.getFieldsValue()
+      console.log('data=======>',data)
+      let payload = {
+        mobilePhoneNumber: data.mobilePhoneNumber,
+        stationId: data.stationId,
+        status: data.status && data.status.key ? parseInt(data.status.key): undefined,
+        success: ()=> {
+          this.props.updateLoadingState({isLoading: false})
 
-    this.props.requestInvestors(payload)
+          console.log('success')
+        },
+        error: (err)=> {
+          this.props.updateLoadingState({isLoading: false})
+
+          message.error(err.message)
+        }
+      }
+      this.props.requestInvestors(payload)
+      // console.log('data======>',data)
+      // let count = this.state.count - 1
+    })
   }
 
 
@@ -134,45 +147,91 @@ class InvestorManage extends React.Component {
   }
 
   renderSearchBar() {
+    const { getFieldDecorator } = this.props.form
     return (
-      <div className="ant-form"  style={{flex: 1,fontSize: 12,marginTop: 12, marginBottom: 12}}>
-        <Row gutter={24} className="ant-form">
-          <Col span={4}>
-            <Select allowClear={true} style={{width: 120}} placeholder='状态' onChange={(value)=> {
-              this.statusChange(value)
-            }}>
-              <Option value='1'>正常</Option>
-              <Option value='0'>已停用</Option>
-            </Select>
-          </Col>
-          <Col span={4}>
-            <Select style={{width: 120}} placeholder="选择服务网点" onChange={(value)=>{this.selectStation(value)}}>
+      <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=>{this.search(e)}}>
+        <FormItem>
+          {getFieldDecorator("stationId", {
+            initialValue: '',
+          })(
+            <Select style={{width: 120}} placeholder="选择服务网点" >
               <Option value="">全部</Option>
               {
                 this.props.stations.map((station, index) => (
                   <Option key={index} value={station.id}>{station.name}</Option>
                 ))
               }
-            </Select>
-            </Col>
-          <Col span={4}>
-           <Input placeholder = '电话号码' onChange={(e)=>{this.setState({mobilePhoneNumber: e.target.value})}} />
-          </Col>
-          <Col span={4}>
-            <ButtonGroup>
-            <Button type="primary" onClick={()=> {
-              this.search()
-            }}>查询</Button>
-            <Button type="primary" onClick={()=> {
-              this.clearSearch()
-            }}>重置</Button>
-                        </ButtonGroup>
-          </Col>
-        </Row>
+            </Select>        )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("status", {
 
-      </div>
+          })(
+            <Select labelInValue={true} placeholder="状态" allowClear={true}
+                    style={{width: 120}} >
+              <Option value='1'>正常</Option>
+              <Option value='0'>已停用</Option>
+            </Select>      )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("mobilePhoneNumber", {
+          })(
+            <Input placeholder = '电话号码' />
+          )}
+        </FormItem>
+        <FormItem>
+          <Button.Group>
+            <Button onClick={() => {this.props.form.resetFields()}}>重置</Button>
+            <Button type="primary" htmlType="submit">查询</Button>
+          </Button.Group>
+        </FormItem>
+      </Form>
+
     )
   }
+  //
+  // renderSearchBar() {
+  //   const { getFieldDecorator } = this.props.form
+  //
+  //   return (
+  //     <div className="ant-form"  style={{flex: 1,fontSize: 12,marginTop: 12, marginBottom: 12}}>
+  //       <Row gutter={24} className="ant-form">
+  //         <Col span={4}>
+  //           <Select allowClear={true} style={{width: 120}} placeholder='状态' onChange={(value)=> {
+  //             this.statusChange(value)
+  //           }}>
+  //             <Option value='1'>正常</Option>
+  //             <Option value='0'>已停用</Option>
+  //           </Select>
+  //         </Col>
+  //         <Col span={4}>
+  //           <Select style={{width: 120}} placeholder="选择服务网点" onChange={(value)=>{this.selectStation(value)}}>
+  //             <Option value="">全部</Option>
+  //             {
+  //               this.props.stations.map((station, index) => (
+  //                 <Option key={index} value={station.id}>{station.name}</Option>
+  //               ))
+  //             }
+  //           </Select>
+  //           </Col>
+  //         <Col span={4}>
+  //          <Input placeholder = '电话号码' onChange={(e)=>{this.setState({mobilePhoneNumber: e.target.value})}} />
+  //         </Col>
+  //         <Col span={4}>
+  //           <ButtonGroup>
+  //           <Button type="primary" onClick={()=> {
+  //             this.search()
+  //           }}>查询</Button>
+  //           <Button type="primary" onClick={()=> {
+  //             this.clearSearch()
+  //           }}>重置</Button>
+  //                       </ButtonGroup>
+  //         </Col>
+  //       </Row>
+  //
+  //     </div>
+  //   )
+  // }
 
   openCreateModal() {
     this.props.requestStations({
@@ -307,6 +366,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(InvestorManage);
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(InvestorManage));
 
 export {saga, reducer} from './redux';

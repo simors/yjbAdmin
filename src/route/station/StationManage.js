@@ -144,7 +144,6 @@ class StationManage extends React.Component {
 
   renderSearchBar() {
     const { getFieldDecorator } = this.props.form
-    let divisionStyle = {height: '300px'}
     return (
     <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=>{this.search(e)}}>
       <FormItem>
