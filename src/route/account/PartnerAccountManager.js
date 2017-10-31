@@ -6,12 +6,12 @@
  */
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Input, Select, Button,DatePicker} from 'antd';
+import {Row, Col, Input, Select, Button, DatePicker , Form} from 'antd';
 import PartnerAccountList from './PartnerAccountList';
 import {stationAction, stationSelector} from '../station/redux';
-import {accountAction,accountSelector} from './redux'
+import {accountAction, accountSelector} from './redux'
 import * as excelFuncs from '../../util/excel'
-import {PERMISSION_CODE,ROLE_CODE} from '../../util/rolePermission'
+import {PERMISSION_CODE, ROLE_CODE} from '../../util/rolePermission'
 import moment from 'moment'
 import {action as authAction, selector as authSelector} from '../../util/auth'
 import mathjs from 'mathjs'
@@ -20,6 +20,7 @@ import {withRouter} from 'react-router'
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
 const ButtonGroup = Button.Group
+const FormItem = Form.Item
 
 class PartnerAccountManager extends React.Component {
   constructor(props) {
@@ -46,7 +47,7 @@ class PartnerAccountManager extends React.Component {
     })
   }
 
-  selectPartner(value){
+  selectPartner(value) {
     this.setState({
       userId: value
     })
@@ -60,8 +61,7 @@ class PartnerAccountManager extends React.Component {
         console.log('hahhahah')
       },
     })
-    this.props.requestStations({
-    })
+    this.props.requestStations({})
     this.props.listUsersByRole({
       roleCode: ROLE_CODE.STATION_PROVIDER
     })
@@ -71,44 +71,67 @@ class PartnerAccountManager extends React.Component {
     // this.props.requestStations({...this.state})
   }
 
-  selectType(value){
+  selectType(value) {
     this.setState({selectedType: value})
   }
 
-  downloadFile(){
-    let data = [[ "日期",    "利润", "成本" , "收益" , "服务点名称" ],]
+  downloadFile() {
+    let data = [["日期", "利润", "成本", "收益", "服务点名称"],]
     // let accountArray = []
-    if(this.props.partnerAccounts&&this.props.partnerAccounts.length){
-      this.props.partnerAccounts.forEach((account)=>{
-        let account2Arr = [account.accountDay,account.profit, account.cost,account.incoming,account.station.name]
+    if (this.props.partnerAccounts && this.props.partnerAccounts.length) {
+      this.props.partnerAccounts.forEach((account)=> {
+        let account2Arr = [account.accountDay, account.profit, account.cost, account.incoming, account.station.name]
         data.push(account2Arr)
       })
     }
-    let params={data: data, sheetName:'服务点日结数据', fileName:'服务点日结数据'}
+    let params = {data: data, sheetName: '服务点日结数据', fileName: '服务点日结数据'}
 
     excelFuncs.exportExcel(params)
 
   }
 
-  search() {
-    let payload = {
-      stationId: this.state.stationId,
-      userId: this.state.userId,
-      startDate: this.state.startDate,
-      endDate: this.state.endDate,
-      success: ()=> {
-        this.setState({viewType: this.state.selectedType})
-        console.log('success')
-      },
-      error: ()=> {
-        console.log('error')
+  search(e) {
+    e.preventDefault()
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        return
       }
-    }
-    if(this.state.selectedType=='all'){
-      this.props.fetchPartnerAccounts(payload)
-    }else{
-      this.props.fetchPartnerAccountsDetail(payload)
-    }
+      const rangeTimeValue = fieldsValue['rangeTimePicker']
+      let values = fieldsValue
+      console.log('==============value------->', values)
+      if (rangeTimeValue && rangeTimeValue.length === 2) {
+        values = {
+          ...fieldsValue,
+          'rangeTimePicker': [
+            rangeTimeValue[0].format('YYYY-MM-DD'),
+            rangeTimeValue[1].format('YYYY-MM-DD'),
+          ],
+        }
+      }
+
+      let payload = {
+        stationId: values.stationId,
+        userId: values.userId,
+        startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
+        endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
+        success: ()=> {
+
+
+          console.log('success')
+        },
+        error: ()=> {
+          console.log('error')
+        }
+      }
+      this.setState({viewType: values.selectedType},()=>{
+        if (values.selectedType == 'all') {
+          this.props.fetchPartnerAccounts(payload)
+        } else {
+          this.props.fetchPartnerAccountsDetail(payload)
+        }
+      })
+
+    })
   }
 
   clearSearch() {
@@ -117,10 +140,10 @@ class PartnerAccountManager extends React.Component {
       userId: undefined,
       startDate: moment().day(-30).format(),
       endDate: moment().format(),
-    },()=>{
-      if(this.state.selectedType=='all'){
+    }, ()=> {
+      if (this.state.selectedType == 'all') {
         this.props.fetchPartnerAccounts({...this.state})
-      }else{
+      } else {
         this.props.fetchPartnerAccountsDetail({...this.state})
       }
     })
@@ -128,24 +151,38 @@ class PartnerAccountManager extends React.Component {
 
   }
 
-  selectDate(date,dateString){
-    console.log('date=====>',mathjs.chain(date[1]- date[0]).multiply(1/31536000000).done())
-    let dateRange = mathjs.chain(date[1]- date[0]).multiply(1/31536000000).done()
+  selectDate(date, dateString) {
+    console.log('date=====>', mathjs.chain(date[1] - date[0]).multiply(1 / 31536000000).done())
+    let dateRange = mathjs.chain(date[1] - date[0]).multiply(1 / 31536000000).done()
 
-    if(dateRange>2){
+    if (dateRange > 2) {
       message.error('时间范围请不要超过2年')
-    }else{
-      this.setState({startDate: dateString[0],endDate: dateString[1]})
+    } else {
+      this.setState({startDate: dateString[0], endDate: dateString[1]})
 
     }
   }
 
+
   renderSearchBar() {
+    const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form
     return (
-      <div style={{flex: 1}}>
-        <Row gutter={24}>
-          <Col span={4}>
-            <Select defalutValue = '' onChange={(value)=>{this.selectStation(value)}} style={{width: 120}} placeholder="选择服务网点">
+      <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=> {
+        this.search(e)
+      }}>
+        <FormItem>
+          {getFieldDecorator("rangeTimePicker", {
+            initialValue: [moment().day(-30), moment()],
+            rules: [{type: 'array'}],
+          })(
+            <RangePicker format="YYYY-MM-DD"/>
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("stationId", {
+            initialValue: '',
+          })(
+            <Select style={{width: 120}} placeholder="选择服务网点">
               <Option value=''>全部</Option>
               {
                 this.props.stations.map((station, index) => (
@@ -153,45 +190,46 @@ class PartnerAccountManager extends React.Component {
                 ))
               }
             </Select>
-          </Col>
-          <Col span={4}>
-            <Select defalutValue = '' onChange={(value)=>{this.selectPartner(value)}} style={{width: 120}} placeholder="选择投资人">
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("userId", {
+            initialValue: '',
+          })(
+            <Select defalutValue='' style={{width: 120}} placeholder="选择分成方">
               <Option value=''>全部</Option>
               {
                 this.props.userList.map((user, index) => (
-                  <Option key={index} value={user.id}>{user.nickname+'  '+user.mobilePhoneNumber}</Option>
+                  <Option key={index} value={user.id}>{user.nickname + '  ' + user.mobilePhoneNumber}</Option>
                 ))
               }
             </Select>
-          </Col>
-          <Col span={8}>
-            <RangePicker key='selectDate' defaultValue={undefined} value={[this.state.startDate?moment(this.state.startDate):undefined,moment(this.state.endDate)]} onChange={(date,dateString)=>{this.selectDate(date,dateString)}} placeholder="选择日期"/>
-          </Col>
-          <Col span={4}>
-            <Select defalutValue = 'all' onChange={(value)=>{this.selectType(value)}} style={{width: 120}} placeholder="选择查询方式">
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("selectedType", {
+            initialValue: 'all',
+          })(
+            <Select style={{width: 120}} placeholder="选择查询方式">
               <Option value='all'>按周期</Option>
               <Option value='detail'>按日期</Option>
             </Select>
-          </Col>
-          <Col span={4}>
-            <ButtonGroup>
-              <Button type='primary' onClick={()=> {
-                this.search()
-              }}>查询</Button>
+          )}
+        </FormItem>
+        <FormItem>
+          <Button.Group>
+            <Button onClick={() => {
+              this.props.form.resetFields()
+            }}>重置</Button>
+            <Button type="primary" htmlType="submit">查询</Button>
+          </Button.Group> </FormItem>
+      </Form>
 
-              <Button type='primary' onClick={()=> {
-                this.clearSearch()
-              }}>重置</Button>
-            </ButtonGroup>
-          </Col>
-        </Row>
-
-      </div>
     )
   }
 
 
-  viewChart(){
+  viewChart() {
     this.props.history.push({
       pathname: '/settlement_site/partnerChart',
     })
@@ -201,15 +239,19 @@ class PartnerAccountManager extends React.Component {
     return (
       <div>
         <ButtonGroup>
-          <Button onClick={()=>{this.downloadFile()}}>导出EXCEL</Button>
-          <Button onClick={()=>{this.viewChart()}}>查看图表</Button>
+          <Button onClick={()=> {
+            this.downloadFile()
+          }}>导出EXCEL</Button>
+          <Button onClick={()=> {
+            this.viewChart()
+          }}>查看图表</Button>
 
         </ButtonGroup>
         {this.renderSearchBar()}
 
         <PartnerAccountList
           viewType={this.state.viewType}
-         stationAccounts={this.state.viewType=='all'?this.props.partnerAccounts:this.props.partnerAccountsDetail}/>
+          stationAccounts={this.state.viewType == 'all' ? this.props.partnerAccounts : this.props.partnerAccountsDetail}/>
       </div>
     )
   };
@@ -219,7 +261,7 @@ const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectPartnerAccounts(state)
   let accountsDetail = accountSelector.selectPartnerAccountsDetail(state)
-  let userList = authSelector.selectUsersByRole(state,ROLE_CODE.STATION_PROVIDER)
+  let userList = authSelector.selectUsersByRole(state, ROLE_CODE.STATION_PROVIDER)
 
   return {
     partnerAccounts: accounts,
@@ -236,6 +278,6 @@ const mapDispatchToProps = {
 
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(PartnerAccountManager));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Form.create()(PartnerAccountManager)));
 
 export {saga, reducer} from './redux';
