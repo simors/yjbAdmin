@@ -74,11 +74,11 @@ class ScorePromotionStat extends PureComponent {
             <Card bordered={false}>
               <Card.Grid className={style.card}>
                 <div className={style.title}>赠送总积分: </div>
-                <div className={style.amount}>{promotion.stat.scoreAmount}</div>
+                <div className={style.amount}>{Number(promotion.stat.scoreAmount).toLocaleString()}</div>
               </Card.Grid>
               <Card.Grid className={style.card}>
                 <div className={style.title}>参与人数: </div>
-                <div className={style.amount}>{promotion.stat.participant}</div>
+                <div className={style.amount}>{Number(promotion.stat.participant).toLocaleString()}</div>
               </Card.Grid>
             </Card>
           </Col>
@@ -100,7 +100,6 @@ const mapStateToProps = (appState, ownProps) => {
   if(promotionId) {
     promotion = selector.selectPromotion(appState, promotionId)
     scoreRecordInfolist = selector.selectScorePromRecordList(appState, promotionId)
-    console.log("scoreRecordInfolist", scoreRecordInfolist)
   }
   return {
     promotion,

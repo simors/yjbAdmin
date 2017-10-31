@@ -15,6 +15,7 @@ import {selector} from './redux'
 import moment from 'moment'
 import style from './promotion.module.scss'
 import PromotionRecordSearchForm from './PromotionRecordSearchForm'
+import mathjs from 'mathjs'
 
 
 class RedEnvelopePromotionStat extends PureComponent {
@@ -44,6 +45,7 @@ class RedEnvelopePromotionStat extends PureComponent {
       { title: '参与时间', dataIndex: 'createdAt', key: 'createdAt',
         render: (createdAt) => (<span>{moment(new Date(createdAt)).format('LLLL')}</span>) },
     ]
+    let surplusAmount = mathjs.chain(promotion.awards.awardAmount).subtract(promotion.stat.winAmount).done()
     return (
       <div className={style.content}>
         <Row type="flex" gutter={24}>
@@ -55,15 +57,15 @@ class RedEnvelopePromotionStat extends PureComponent {
             <Card bordered={false}>
               <Card.Grid className={style.card}>
                 <div className={style.title}>中奖总金额: </div>
-                <div className={style.amount}>{"¥" + promotion.stat.winAmount + '元'}</div>
+                <div className={style.amount}>{"¥" + Number(promotion.stat.winAmount).toLocaleString() + '元'}</div>
               </Card.Grid>
               <Card.Grid className={style.card}>
-                <div className={style.title}>中奖量: </div>
-                <div className={style.amount}>{"¥" + promotion.stat.winCount + '元'}</div>
+                <div className={style.title}>剩余奖金: </div>
+                <div className={style.amount}>{"¥" + surplusAmount.toLocaleString() + '元'}</div>
               </Card.Grid>
               <Card.Grid className={style.card}>
                 <div className={style.title}>参与人数: </div>
-                <div className={style.amount}>{promotion.stat.participant}</div>
+                <div className={style.amount}>{Number(promotion.stat.participant).toLocaleString()}</div>
               </Card.Grid>
             </Card>
           </Col>

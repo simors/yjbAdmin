@@ -57,11 +57,11 @@ class ScoreExchangePromStat extends PureComponent {
             <Card bordered={false}>
               <Card.Grid className={style.card}>
                 <div className={style.title}>总兑换积分: </div>
-                <div className={style.amount}>{promotion.stat.scoreAmount}</div>
+                <div className={style.amount}>{Number(promotion.stat.scoreAmount).toLocaleString()}</div>
               </Card.Grid>
               <Card.Grid className={style.card}>
                 <div className={style.title}>参与人数: </div>
-                <div className={style.amount}>{promotion.stat.participant}</div>
+                <div className={style.amount}>{Number(promotion.stat.participant).toLocaleString()}</div>
               </Card.Grid>
             </Card>
           </Col>
