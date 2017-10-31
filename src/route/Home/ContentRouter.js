@@ -4,6 +4,7 @@
 import React from 'react'
 import {Route, Switch} from 'react-router-dom'
 import Dashboard from '../../route/dashboard'
+import {SystemMessage, PromotionMessage} from '../../route/notification/';
 import {EndUser} from '../enduser/'
 import {AdminUser} from '../adminuser/'
 import StationManager from '../station/StationManage'
@@ -38,6 +39,8 @@ const ContentRouter = (props) => {
     <Switch>
       <Route exact path={match.url} component={Dashboard}/>
       <Route exact path="/device_list" component={Device}/>
+      <Route exact path="/message_system" component={SystemMessage}/>
+      <Route exact path="/message_promotion" component={PromotionMessage}/>
       <Route exact path="/user_list" component={EndUser}/>
       <Route exact path="/system_user" key='/system_user' component={AdminUser}/>
       <Route exact path="/system_log" key='system_log' component={OperationLogManager}/>
