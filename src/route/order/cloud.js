@@ -5,8 +5,8 @@ import AV from 'leancloud-storage'
 
 export async function fetchOrdersApi(payload) {
   try {
-    let orders = await AV.Cloud.run('orderFetchOrders', payload)
-    return orders
+    let result = await AV.Cloud.run('orderFetchOrders', payload)
+    return result
   } catch (error) {
     console.error(error)
     throw error

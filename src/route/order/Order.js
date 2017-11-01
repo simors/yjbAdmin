@@ -21,13 +21,16 @@ const ButtonGroup = Button.Group
 class Order extends PureComponent {
   constructor(props) {
     super(props)
+    this.state = {
+      loading: true,
+      pagination: {
+        defaultPageSize: 3,
+        showTotal: (total) => `总共 ${total} 条`},
+      searchParams: {},
+    }
   }
 
   componentWillMount() {
-    this.props.fetchOrdersAction({
-      limit: 10,
-      isRefresh: true,
-    })
   }
 
   renderDevicePopover = (text, record, index) => {
@@ -46,14 +49,47 @@ class Order extends PureComponent {
 
   renderDuration = (text, record, index) => {
     if(record.start && record.end) {
-      // let duration = (new Date(record.end) - new Date(record.start)) * 0.001 / 60
       let duration = mathjs.chain(new Date(record.end) - new Date(record.start)).divide(1000).divide(60).done()
       return (<span>{Math.round(duration)}</span>)
     }
     return (<span>--</span>)
   }
 
+  handleTableChange = (pagination, filters, sorter) => {
+    const {searchParams} = this.state
+    const {orderList} = this.props
+
+    const pager = { ...this.state.pagination }
+    pager.current = pagination.current
+    this.setState({pagination: pager})
+    if(orderList.length < pagination.total
+      && pagination.current * (pagination.pageSize + 1) > orderList.length) {
+      this.props.fetchOrdersAction({
+        ...searchParams,
+        lastCreatedAt: orderList.length > 0? orderList[orderList.length - 1].createdAt : undefined,
+        limit: 3,
+        isRefresh: false,
+      })
+    }
+  }
+
+  updateSearchParams = (params, total) => {
+    const pager = { ...this.state.pagination }
+    pager.total = total
+    this.setState({searchParams: params, pagination: pager})
+  }
+
+  onSearchStart = () => {
+    this.setState({loading: true})
+  }
+
+  onSearchEnd = () => {
+    this.setState({loading: false})
+  }
+
   render() {
+    const {pagination, loading} = this.state
+    const {orderList} = this.props
     const columns = [
       { title: '订单编号', dataIndex: 'orderNo', key: 'orderNo' },
       { title: '下单时间', dataIndex: 'start', key: 'start', render: (start) => (<span>{moment(new Date(start)).format('LLLL')}</span>)},
@@ -88,11 +124,17 @@ class Order extends PureComponent {
           </ButtonGroup>
         </div>
         <Row>
-          <OrderSearchForm />
+          <OrderSearchForm updateSearchParams={this.updateSearchParams}
+                           onSearchStart={this.onSearchStart}
+                           onSearchEnd={this.onSearchEnd} />
         </Row>
         <Table rowKey="orderNo"
                columns={columns}
-               dataSource={this.props.orderList}/>
+               pagination={pagination}
+               dataSource={orderList}
+               loading={loading}
+               onChange={this.handleTableChange}
+        />
       </div>
     )
   }

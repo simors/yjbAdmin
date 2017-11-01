@@ -12,9 +12,11 @@ import {
   Form,
   Select,
   DatePicker,
+  message,
 } from 'antd'
 import {actions, PromotionCategoryType, selector} from './redux'
 import style from './promotion.module.scss'
+import * as errno from '../../errno'
 
 const FormItem = Form.Item
 const RangePicker = DatePicker.RangePicker
@@ -26,17 +28,50 @@ class SearchForm extends PureComponent {
   }
 
   componentWillMount() {
-    const {promotion, category} = this.props
+    const {promotion} = this.props
     this.props.fetchPromotionRecordAction({
-      type: category.type,
       promotionId: promotion.id,
       isRefresh: true,
       limit: 10,
+      success: (total) => this.onFetchOrdersSuccess(total, {}),
+      error: this.onFetchOrdersError,
     })
   }
 
+  onFetchOrdersSuccess(total, values) {
+    const {updateSearchParams, onSearchEnd} = this.props
+    if (updateSearchParams) {
+      updateSearchParams({
+        mobilePhoneNumber: values.phone,
+        start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
+        end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
+      }, total)
+    }
+    if(onSearchEnd) {
+      onSearchEnd()
+    }
+  }
+
+  onFetchOrdersError = (error) => {
+    const {onSearchEnd} = this.props
+    if(onSearchEnd) {
+      onSearchEnd()
+    }
+    switch (error.code)
+    {
+      case errno.EPERM:
+        message.error("用户未登录")
+        break
+      case errno.EINVAL:
+        message.error("参数错误")
+      default:
+        message.error(`查询活动记录失败, 错误：${code}`)
+        break
+    }
+  }
+
   handleSubmit = (e) => {
-    const {promotion, category} = this.props
+    const {promotion, onSearchStart} = this.props
     e.preventDefault()
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
@@ -54,14 +89,18 @@ class SearchForm extends PureComponent {
         }
       }
       this.props.fetchPromotionRecordAction({
-        type: category.type,
         promotionId: promotion.id,
         isRefresh: true,
         limit: 10,
         mobilePhoneNumber: values.phone,
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
+        success: (total) => this.onFetchOrdersSuccess(total, values),
+        error: this.onFetchOrdersError,
       })
+      if(onSearchStart) {
+        onSearchStart()
+      }
     })
   }
 
@@ -102,10 +141,8 @@ class SearchForm extends PureComponent {
 const PromotionRecordSearchForm = Form.create()(SearchForm)
 
 const mapStateToProps = (appState, ownProps) => {
-  const {promotion} = ownProps
-  const category =promotion? selector.selectCategory(appState, promotion.categoryId) : undefined
   return {
-    category: category,
+
   }
 }
 

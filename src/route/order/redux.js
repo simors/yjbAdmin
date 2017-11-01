@@ -21,6 +21,7 @@ const OrderRecord = Record({
   amount: undefined,            //订单金额
   deviceId: undefined,          //干衣柜id
   userId: undefined,            //用户id
+  createdAt: undefined,
 }, 'OrderRecord')
 
 class Order extends OrderRecord {
@@ -35,6 +36,7 @@ class Order extends OrderRecord {
       record.set('amount', obj.amount)
       record.set('deviceId', obj.device.id)
       record.set('userId', obj.user.id)
+      record.set('createdAt', obj.createdAt)
     })
   }
 }
@@ -108,7 +110,10 @@ function* fetchOrders(action) {
       isRefresh: payload.isRefresh,
       lastCreatedAt: payload.lastCreatedAt || undefined
     }
-    let orders = yield call(fetchOrdersApi, apiPayload)
+    let result = yield call(fetchOrdersApi, apiPayload)
+    console.log("fetchOrdersApi result", result)
+    let orders = result.orderList
+    let total = result.total
     yield put(updateOrderList({orders: orders, isRefresh: apiPayload.isRefresh}))
     let devices = new Set()
     let stations = new Set()
@@ -130,7 +135,7 @@ function* fetchOrders(action) {
     }
 
     if(payload.success) {
-      payload.success()
+      payload.success(total)
     }
   } catch (error) {
     if(payload.error) {

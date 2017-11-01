@@ -268,7 +268,9 @@ function* fetchPromotionRecord(action) {
   }
 
   try {
-    let promotionRecords = yield call(fetchPromotionRecordApi, apiPayload)
+    let result = yield call(fetchPromotionRecordApi, apiPayload)
+    let total = result.total
+    let promotionRecords = result.promotionRecordList
     yield put(updatePromotionRecordList({
       promotionRecords: promotionRecords,
       isRefresh: apiPayload.isRefresh,
@@ -294,7 +296,7 @@ function* fetchPromotionRecord(action) {
       yield put(actions.savePromotions({ promotions }))
     }
     if(payload.success) {
-      payload.success()
+      payload.success(total)
     }
   } catch (error) {
     console.error(error)
