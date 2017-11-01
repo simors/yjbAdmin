@@ -157,7 +157,9 @@ function* fetchRecharges(action) {
   }
 
   try {
-    let recharges = yield call(fetchRechargesApi, apiPayload)
+    let result = yield call(fetchRechargesApi, apiPayload)
+    let recharges = result.rechargeList
+    let total = result.total
     yield put(updateRechargeList({recharges: recharges, isRefresh: apiPayload.isRefresh}))
     let users = new Set()
     recharges.forEach((deal) => {
@@ -170,7 +172,7 @@ function* fetchRecharges(action) {
       yield put(userActions.saveUsers({ users }))
     }
     if(payload.success) {
-      payload.success()
+      payload.success(total)
     }
   } catch (error) {
     if(payload.error) {

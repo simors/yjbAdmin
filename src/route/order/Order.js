@@ -54,14 +54,14 @@ class Order extends PureComponent {
 
   handleTableChange = (pagination, filters, sorter) => {
     const {searchParams} = this.state
-    const {orderList} = this.props
+    const {orderList, fetchOrdersAction} = this.props
 
     const pager = { ...this.state.pagination }
     pager.current = pagination.current
     this.setState({pagination: pager})
     if(orderList.length < pagination.total
       && pagination.current * (pagination.pageSize + 1) > orderList.length) {
-      this.props.fetchOrdersAction({
+      fetchOrdersAction({
         ...searchParams,
         lastCreatedAt: orderList.length > 0? orderList[orderList.length - 1].createdAt : undefined,
         limit: 3,
