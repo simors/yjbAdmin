@@ -29,3 +29,35 @@ export function exportExcel(params) {
   } catch(e) { if(typeof console != 'undefined') console.log(e); }
   return wbout;
 }
+
+/**
+ *
+ * @param params
+ * 新增
+ * @returns {*}
+ */
+export function addExcel(params) {
+  let {wb,data,sheetName} = params
+  if(!wb){
+    wb = XLSX.utils.book_new();
+  }
+  let worksheet = xlsx.utils.aoa_to_sheet(data)
+  wb.SheetNames.push(sheetName)
+  wb.Sheets[sheetName] = worksheet
+  return wb
+}
+
+/**
+ *
+ * @param params
+ * @returns {*}
+ */
+export function exportExcelNew(params){
+  let {wb,fileName} = params
+  let wopts = { bookType:'xlsx', bookSST:false, type:'binary' };
+  let wbout = XLSX.write(wb,wopts);
+  try {
+    FileSaver.saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), fileName+'.xlsx');
+  } catch(e) { if(typeof console != 'undefined') console.log(e); }
+  return wbout;
+}
