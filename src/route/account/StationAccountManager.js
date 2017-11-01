@@ -224,7 +224,6 @@ class StationAccountManager extends React.Component {
           endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().format(),
           lastCreatedAt: lastCreatedAt,
           success: (data)=> {
-            console.log('data=====>',data)
             if(data&&data.length>0){
               let excelData = [["日期", "利润", "成本", "收益", "服务点名称"],]
               // let accountArray = []
