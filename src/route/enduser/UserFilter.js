@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Form, Input, Button, Select} from 'antd';
-import Division from '../../component/DivisionCascader'
+import Division from '../../component/DivisionCascader';
 import {action, selector} from './redux';
 import {action as authAction, AUTH_USER_STATUS} from '../../util/auth/';
 import style from './UserFilter.module.scss';
