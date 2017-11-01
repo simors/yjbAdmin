@@ -5,8 +5,8 @@ import AV from 'leancloud-storage'
 
 export async function fetchDevicesApi(payload) {
   try {
-    let devices = await AV.Cloud.run('deviceFetchDevices', payload)
-    return devices
+    let result = await AV.Cloud.run('deviceFetchDevices', payload)
+    return result
   } catch (error) {
     console.error(error)
     throw error

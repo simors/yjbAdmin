@@ -30,9 +30,6 @@ class Order extends PureComponent {
     }
   }
 
-  componentWillMount() {
-  }
-
   renderDevicePopover = (text, record, index) => {
     const content = (
       <div>

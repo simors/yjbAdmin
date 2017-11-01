@@ -16,6 +16,8 @@ const DeviceRecord = Record({
   deviceAddr: undefined,            //设备地址
   stationId: undefined,             //服务网点Id
   onlineTime: undefined,            //上线日期
+  createdAt: undefined,
+  updatedAt: undefined,
 }, 'DeviceRecord')
 
 class Device extends DeviceRecord {
@@ -30,6 +32,8 @@ class Device extends DeviceRecord {
         record.set('stationId', obj.stationId)
       }
       record.set('onlineTime', obj.onlineTime)
+      record.set('createdAt', obj.createdAt)
+      record.set('updatedAt', obj.updatedAt)
     })
   }
 }
@@ -77,14 +81,13 @@ function* fetchDevices(action) {
     stationId: payload.stationId,
     limit: payload.limit,
     isRefresh: payload.isRefresh,
-    lastUpdateTime: payload.lastUpdateTime,
+    lastUpdatedAt: payload.lastUpdatedAt,
   }
 
   try {
-    let devices = yield call(fetchDevicesApi, apiPayload)
-    if(payload.success) {
-      payload.success()
-    }
+    let results = yield call(fetchDevicesApi, apiPayload)
+    let devices = results.deviceList
+    let total = results.total
     yield put(updateDeviceList({ devices: devices, isRefresh: apiPayload.isRefresh }))
     let stations = new Set()
     devices.forEach((device) => {
@@ -95,6 +98,9 @@ function* fetchDevices(action) {
     })
     if(stations.size > 0) {
       yield put(stationAction.saveStations({ stations }))
+    }
+    if(payload.success) {
+      payload.success(total)
     }
   } catch (error) {
     console.error(error)
