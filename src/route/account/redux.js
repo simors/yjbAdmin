@@ -118,7 +118,8 @@ const FETCH_INVESTOR_ACCOUNT_DETAIL = 'FETCH_INVESTOR_ACCOUNT_DETAIL'
 const FETCH_INVESTOR_ACCOUNT_DETAIL_SUCCESS = 'FETCH_INVESTOR_ACCOUNT_DETAIL_SUCCESS'
 const SAVE_ACCOUNT_PROFIT = 'SAVE_ACCOUNT_PROFIT'
 const SAVE_BATCH_ACCOUNT_PORFIT = 'SAVE_BATCH_ACCOUNT_PORFIT'
-const EXPORT_STATIOIN_EXCEL = 'EXPORT_STATIOIN_EXCEL'
+const EXPORT_STATION_EXCEL = 'EXPORT_STATION_EXCEL'
+const EXPORT_STATION_DETAIL_EXCEL = 'EXPORT_STATION_DETAIL_EXCEL'
 
 /**** Action ****/
 
@@ -131,7 +132,9 @@ export const accountAction = {
   fetchInvestorAccountsDetail: createAction(FETCH_INVESTOR_ACCOUNT_DETAIL),
   saveAccountProfit: createAction(SAVE_ACCOUNT_PROFIT),
   saveBatchAccountProfit: createAction(SAVE_BATCH_ACCOUNT_PORFIT),
-  exportStationExcel: createAction(EXPORT_STATIOIN_EXCEL)
+  exportStationExcel: createAction(EXPORT_STATION_EXCEL),
+  exportStationDetailExcel: createAction(EXPORT_STATION_DETAIL_EXCEL)
+
 }
 
 const fetchStationAccountsSuccess = createAction(FETCH_STATION_ACCOUNT_SUCCESS)
@@ -352,12 +355,37 @@ function* exportStationExcel(action) {
       data.accounts.forEach( (item)=>{
         let station = item.station
         let accountInfo = StationAccount.fromApi(item).toJS()
-        console.log('accountInfo.........>createdAt',accountInfo.createdAt)
         accountInfo.station = station
         stationAccounts.push(accountInfo)
       })
     }
      if (payload.success) {
+      payload.success(stationAccounts)
+    }
+
+  } else {
+    if (payload.error) {
+      payload.error(data.error)
+    }
+  }
+}
+
+
+function* exportStationDetailExcel(action) {
+  let payload = action.payload
+  let data = yield call(accountFunc.fetchStationAccountDetail, payload)
+  let stationAccounts = []
+  if (data.success) {
+    if (data.accounts && data.accounts.length > 0) {
+      data.accounts.forEach( (item)=>{
+        let station = item.station
+        let accountInfo = StationAccount.fromApi(item).toJS()
+        accountInfo.station = station
+        console.log('accountInfo.date========>',accountInfo.createdAt)
+        stationAccounts.push(accountInfo)
+      })
+    }
+    if (payload.success) {
       payload.success(stationAccounts)
     }
 
@@ -375,7 +403,9 @@ export const accountSaga = [
   takeLatest(FETCH_PARTNER_ACCOUNT_DETAIL, fetchPartnerAccountsDetail),
   takeLatest(FETCH_INVESTOR_ACCOUNT, fetchInvestorAccounts),
   takeLatest(FETCH_INVESTOR_ACCOUNT_DETAIL, fetchInvestorAccountsDetail),
-  takeLatest(EXPORT_STATIOIN_EXCEL, exportStationExcel),
+  takeLatest(EXPORT_STATION_EXCEL, exportStationExcel),
+  takeLatest(EXPORT_STATION_DETAIL_EXCEL, exportStationDetailExcel),
+
 
 
 ]

@@ -59,12 +59,7 @@ const StationList = (props) => {
   if (stations === null) {
     stations = [];
   }
-  const rowSelection = {
-    type: 'radio',
-    onChange: (rowKey, rowData)=> {
-      selectStation(rowKey, rowData)
-    },
-  };
+
   const renderOperationBtn = (text, record) => {
     let items = []
     if (showVisible) {
@@ -141,7 +136,6 @@ const StationList = (props) => {
     dataIndex: "status",
     key: 'status',
     render: (text, record)=> {
-      console.log('record====>',record)
       return <div>{record.status ? '正常' : '已停用'}</div>
     }
   }, {
