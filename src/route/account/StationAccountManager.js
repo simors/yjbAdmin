@@ -14,7 +14,7 @@ import * as excelFuncs from '../../util/excel'
 import moment from 'moment'
 import mathjs from 'mathjs'
 import {withRouter} from 'react-router'
-
+import XLSX from 'xlsx'
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
 const ButtonGroup = Button.Group
@@ -102,8 +102,8 @@ class StationAccountManager extends React.Component {
       }else{
         let payload = {
           stationId: values.stationId,
-          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
-          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
+          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).format(),
+          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().format(),
           success: ()=> {
             console.log('success')
           },
@@ -197,6 +197,64 @@ class StationAccountManager extends React.Component {
     )
   }
 
+  testDownloadFile(wb,lastCreatedAt){
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        return
+      }
+      const rangeTimeValue = fieldsValue['rangeTimePicker']
+      let values = fieldsValue
+      if (rangeTimeValue && rangeTimeValue.length === 2) {
+        values = {
+          ...fieldsValue,
+          'rangeTimePicker': [
+            rangeTimeValue[0].format('YYYY-MM-DD'),
+            rangeTimeValue[1].format('YYYY-MM-DD'),
+          ],
+        }
+      }
+      let dateRange = mathjs.chain(moment(values.rangeTimePicker[1]) - moment(values.rangeTimePicker[0])).multiply(1 / 31536000000).done()
+      if(dateRange>2){
+        message.error('时间范围请不要超过2年')
+      }else{
+        let payload = {
+          limit: 6,
+          stationId: values.stationId,
+          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).format(),
+          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().format(),
+          lastCreatedAt: lastCreatedAt,
+          success: (data)=> {
+            console.log('data=====>',data)
+            if(data&&data.length>0){
+              let excelData = [["日期", "利润", "成本", "收益", "服务点名称"],]
+              // let accountArray = []
+                data.forEach((account)=> {
+                  let account2Arr = [account.accountDay, account.profit, account.cost, account.incoming, account.station.name]
+                  excelData.push(account2Arr)
+                })
+
+              let lastCreatedAt = data[data.length-1].station.createdAt
+              let params = {
+                wb:wb,
+                data: excelData,
+                sheetName:  moment(lastCreatedAt).format('YYYY-MM-DD')
+              }
+              excelFuncs.addExcel(params)
+              this.testDownloadFile(wb,lastCreatedAt)
+            }else{
+              excelFuncs.exportExcelNew({wb:wb,fileName:'服务点日结数据'})
+            }
+          },
+          error: ()=> {
+            console.log('error')
+          }
+        }
+         this.props.exportStationExcel(payload)
+      }
+    })
+  }
+
+
 
   downloadFile() {
     let data = [["日期", "利润", "成本", "收益", "服务点名称"],]
@@ -225,7 +283,8 @@ class StationAccountManager extends React.Component {
       <div>
         <ButtonGroup>
           <Button onClick={()=> {
-            this.downloadFile()
+            let wb = XLSX.utils.book_new();
+            this.testDownloadFile(wb)
           }}>导出EXCEL</Button>
           <Button onClick={()=> {
             this.viewChart()

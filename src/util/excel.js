@@ -41,7 +41,7 @@ export function addExcel(params) {
   if(!wb){
     wb = XLSX.utils.book_new();
   }
-  let worksheet = xlsx.utils.aoa_to_sheet(data)
+  let worksheet = XLSX.utils.aoa_to_sheet(data)
   wb.SheetNames.push(sheetName)
   wb.Sheets[sheetName] = worksheet
   return wb
