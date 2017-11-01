@@ -21,6 +21,13 @@ import mathjs from 'mathjs'
 class RedEnvelopePromotionStat extends PureComponent {
   constructor(props) {
     super(props)
+    this.state = {
+      loading: true,
+      pagination: {
+        defaultPageSize: 10,
+        showTotal: (total) => `总共 ${total} 条`},
+      searchParams: {},
+    }
   }
 
   getPromotionStatus(promotion) {
@@ -37,7 +44,40 @@ class RedEnvelopePromotionStat extends PureComponent {
     }
   }
 
+  updateSearchParams = (params, total) => {
+    const pager = { ...this.state.pagination }
+    pager.total = total
+    this.setState({searchParams: params, pagination: pager})
+  }
+
+  onSearchStart = () => {
+    this.setState({loading: true})
+  }
+
+  onSearchEnd = () => {
+    this.setState({loading: false})
+  }
+
+  handleTableChange = (pagination, filters, sorter) => {
+    const {searchParams} = this.state
+    const {redEnvelopeRecordInfolist} = this.props
+
+    const pager = { ...this.state.pagination }
+    pager.current = pagination.current
+    this.setState({pagination: pager})
+    if(redEnvelopeRecordInfolist.length < pagination.total
+      && pagination.current * (pagination.pageSize + 1) > redEnvelopeRecordInfolist.length) {
+      this.props.fetchOrdersAction({
+        ...searchParams,
+        lastCreatedAt: redEnvelopeRecordInfolist.length > 0? redEnvelopeRecordInfolist[redEnvelopeRecordInfolist.length - 1].createdAt : undefined,
+        limit: 3,
+        isRefresh: false,
+      })
+    }
+  }
+
   render() {
+    const {pagination, loading} = this.state
     const {promotion, redEnvelopeRecordInfolist} = this.props
     const columns = [
       { title: '参与用户', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
@@ -72,9 +112,18 @@ class RedEnvelopePromotionStat extends PureComponent {
         </Row>
         <hr/>
         <Row>
-          <PromotionRecordSearchForm promotion={promotion}/>
+          <PromotionRecordSearchForm promotion={promotion}
+                                     updateSearchParams={this.updateSearchParams}
+                                     onSearchStart={this.onSearchStart}
+                                     onSearchEnd={this.onSearchEnd}/>
         </Row>
-        <Table rowKey="id" columns={columns} dataSource={redEnvelopeRecordInfolist}/>
+        <Table rowKey="id"
+               columns={columns}
+               dataSource={redEnvelopeRecordInfolist}
+               pagination={pagination}
+               loading={loading}
+               onChange={this.handleTableChange}
+        />
       </div>
     )
   }
@@ -94,7 +143,4 @@ const mapStateToProps = (appState, ownProps) => {
   }
 }
 
-const mapDispatchToProps = {
-}
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(RedEnvelopePromotionStat))
+export default withRouter(connect(mapStateToProps)(RedEnvelopePromotionStat))

@@ -20,6 +20,13 @@ import PromotionRecordSearchForm from './PromotionRecordSearchForm'
 class ScorePromotionStat extends PureComponent {
   constructor(props) {
     super(props)
+    this.state = {
+      loading: true,
+      pagination: {
+        defaultPageSize: 10,
+        showTotal: (total) => `总共 ${total} 条`},
+      searchParams: {},
+    }
   }
 
   getPromotionStatus(promotion) {
@@ -36,7 +43,40 @@ class ScorePromotionStat extends PureComponent {
     }
   }
 
+  updateSearchParams = (params, total) => {
+    const pager = { ...this.state.pagination }
+    pager.total = total
+    this.setState({searchParams: params, pagination: pager})
+  }
+
+  onSearchStart = () => {
+    this.setState({loading: true})
+  }
+
+  onSearchEnd = () => {
+    this.setState({loading: false})
+  }
+
+  handleTableChange = (pagination, filters, sorter) => {
+    const {searchParams} = this.state
+    const {scoreRecordInfolist} = this.props
+
+    const pager = { ...this.state.pagination }
+    pager.current = pagination.current
+    this.setState({pagination: pager})
+    if(scoreRecordInfolist.length < pagination.total
+      && pagination.current * (pagination.pageSize + 1) > scoreRecordInfolist.length) {
+      this.props.fetchOrdersAction({
+        ...searchParams,
+        lastCreatedAt: scoreRecordInfolist.length > 0? scoreRecordInfolist[scoreRecordInfolist.length - 1].createdAt : undefined,
+        limit: 3,
+        isRefresh: false,
+      })
+    }
+  }
+
   render() {
+    const {pagination, loading} = this.state
     const {promotion, scoreRecordInfolist} = this.props
     const columns = [
       { title: '参与用户', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
@@ -85,9 +125,19 @@ class ScorePromotionStat extends PureComponent {
         </Row>
         <hr/>
         <Row>
-          <PromotionRecordSearchForm promotion={promotion}/>
+          <PromotionRecordSearchForm promotion={promotion}
+                                     updateSearchParams={this.updateSearchParams}
+                                     onSearchStart={this.onSearchStart}
+                                     onSearchEnd={this.onSearchEnd}/>
         </Row>
-        <Table rowKey="id" columns={columns} dataSource={scoreRecordInfolist}/>
+        <Table rowKey="id"
+               columns={columns}
+               dataSource={scoreRecordInfolist}
+               pagination={pagination}
+               loading={loading}
+               onChange={this.handleTableChange}
+
+        />
       </div>
     )
   }
@@ -107,7 +157,5 @@ const mapStateToProps = (appState, ownProps) => {
   }
 }
 
-const mapDispatchToProps = {
-}
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ScorePromotionStat))
+export default withRouter(connect(mapStateToProps)(ScorePromotionStat))
