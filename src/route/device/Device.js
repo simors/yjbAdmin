@@ -28,14 +28,12 @@ class Device extends PureComponent {
       selectDevice: undefined,
       showDeviceAssociateModal: false,
       showDeviceEditModal: false,
+      loading: true,
+      pagination: {
+        defaultPageSize: 3,
+        showTotal: (total) => `总共 ${total} 条`},
+      searchParams: {},
     }
-  }
-
-  componentWillMount() {
-    this.props.fetchDevicesAction({
-      limit: 10,
-      isRefresh: true,
-    })
   }
 
   showDetail = () => {
@@ -103,7 +101,40 @@ class Device extends PureComponent {
     }
   }
 
+  handleTableChange = (pagination, filters, sorter) => {
+    const {searchParams} = this.state
+    const {deviceInfoList, fetchDevicesAction} = this.props
+
+    const pager = { ...this.state.pagination }
+    pager.current = pagination.current
+    this.setState({pagination: pager})
+    if(deviceInfoList.length < pagination.total
+      && pagination.current * (pagination.pageSize + 1) > deviceInfoList.length) {
+      fetchDevicesAction({
+        ...searchParams,
+        lastUpdatedAt: deviceInfoList.length > 0? deviceInfoList[deviceInfoList.length - 1].updatedAt : undefined,
+        limit: 3,
+        isRefresh: false,
+      })
+    }
+  }
+
+  updateSearchParams = (params, total) => {
+    const pager = { ...this.state.pagination }
+    pager.total = total
+    this.setState({searchParams: params, pagination: pager})
+  }
+
+  onSearchStart = () => {
+    this.setState({loading: true})
+  }
+
+  onSearchEnd = () => {
+    this.setState({loading: false})
+  }
+
   render() {
+    const {pagination, loading} = this.state
     const rowSelection = {
       type: 'radio',
       onChange: (selectedRowKeys, selectedRows) => {
@@ -151,12 +182,18 @@ class Device extends PureComponent {
           </ButtonGroup>
         </div>
         <Row>
-          <DeviceSearchForm />
+          <DeviceSearchForm updateSearchParams={this.updateSearchParams}
+                            onSearchStart={this.onSearchStart}
+                            onSearchEnd={this.onSearchEnd} />
         </Row>
         <Table rowKey="deviceNo"
                rowSelection={rowSelection}
                columns={columns}
-               dataSource={this.props.deviceInfoList}/>
+               dataSource={this.props.deviceInfoList}
+               pagination={pagination}
+               loading={loading}
+               onChange={this.handleTableChange}
+        />
         {
           this.state.showDeviceDetailModal ?
             <DeviceDetailModal device={this.state.selectDevice}

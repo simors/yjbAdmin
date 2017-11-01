@@ -11,10 +11,12 @@ import {
   Input,
   Form,
   Select,
+  message,
 } from 'antd'
 import style from './device.module.scss'
 import {deviceStatus, actions} from './redux'
 import {stationSelector, stationAction} from '../station/redux'
+import * as errno from '../../errno'
 
 const FormItem = Form.Item
 const Option = Select.Option
@@ -25,27 +27,69 @@ class SearchForm extends PureComponent {
   }
 
   componentWillMount() {
-    this.props.requestStations({})
+    const {requestStations, fetchDevicesAction} = this.props
+    requestStations({})
+    fetchDevicesAction({
+      limit: 3,
+      isRefresh: true,
+      success: (total) => this.onFetchDeviceSuccess(total, {}),
+      error: this.onFetchDeviceError,
+    })
+  }
+
+  onFetchDeviceSuccess(total, values) {
+    const {updateSearchParams, onSearchEnd} = this.props
+    if (updateSearchParams) {
+      updateSearchParams({
+        deviceNo: values.deviceNo || undefined,
+        stationId: values.stationId == 'all' ? undefined : values.stationId,
+        status: !values.status || values.status == 'all' ? undefined : Number(values.status),
+      }, total)
+    }
+    if (onSearchEnd) {
+      onSearchEnd()
+    }
+  }
+
+  onFetchDeviceError = (error) => {
+    const {onSearchEnd} = this.props
+    if (onSearchEnd) {
+      onSearchEnd()
+    }
+    switch (error.code) {
+      case errno.EPERM:
+        message.error("用户未登录")
+        break
+      default:
+        message.error(`查询订单信息失败, 错误：${code}`)
+        break
+    }
   }
 
   handleSubmit = (e) => {
-  e.preventDefault()
-  this.props.form.validateFields((err, values) => {
-    if (err) {
-      return
-    }
-    this.props.fetchDevicesAction({
-      deviceNo: values.deviceNo || undefined,
-      stationId: values.stationId == 'all'? undefined : values.stationId,
-      status: !values.status || values.status == 'all'? undefined : Number(values.status),
-      limit: 10,
-      isRefresh: true,
+    const {fetchDevicesAction, onSearchStart} = this.props
+    e.preventDefault()
+    this.props.form.validateFields((err, values) => {
+      if (err) {
+        return
+      }
+      fetchDevicesAction({
+        deviceNo: values.deviceNo || undefined,
+        stationId: values.stationId == 'all' ? undefined : values.stationId,
+        status: !values.status || values.status == 'all' ? undefined : Number(values.status),
+        limit: 3,
+        isRefresh: true,
+        success: (total) => this.onFetchDeviceSuccess(total, {}),
+        error: this.onFetchDeviceError,
+      })
+      if (onSearchStart) {
+        onSearchStart()
+      }
     })
-  })
-}
+  }
 
   render() {
-    const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form
+    const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form
     return (
       <Form className={style.search} layout="inline" onSubmit={this.handleSubmit}>
         <FormItem>
@@ -80,7 +124,9 @@ class SearchForm extends PureComponent {
         </FormItem>
         <FormItem>
           <Button.Group>
-            <Button onClick={() => {this.props.form.resetFields()}}>重置</Button>
+            <Button onClick={() => {
+              this.props.form.resetFields()
+            }}>重置</Button>
             <Button type="primary" htmlType="submit">查询</Button>
           </Button.Group>
         </FormItem>
