@@ -30,7 +30,7 @@ class SearchForm extends PureComponent {
   componentWillMount() {
     const {fetchRechargesAction} = this.props
     fetchRechargesAction({
-      limit: 3,
+      limit: 10,
       isRefresh: true,
       success: (total) => this.onFetchRechargeSuccess(total, {}),
       error: this.onFetchRechargeError,

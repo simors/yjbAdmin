@@ -70,7 +70,7 @@ class RedEnvelopePromotionStat extends PureComponent {
       this.props.fetchOrdersAction({
         ...searchParams,
         lastCreatedAt: redEnvelopeRecordInfolist.length > 0? redEnvelopeRecordInfolist[redEnvelopeRecordInfolist.length - 1].createdAt : undefined,
-        limit: 3,
+        limit: 10,
         isRefresh: false,
       })
     }

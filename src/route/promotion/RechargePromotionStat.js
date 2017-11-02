@@ -68,7 +68,7 @@ class RechargePromotionStat extends PureComponent {
       this.props.fetchOrdersAction({
         ...searchParams,
         lastCreatedAt: rechargeRecordInfolist.length > 0? rechargeRecordInfolist[rechargeRecordInfolist.length - 1].createdAt : undefined,
-        limit: 3,
+        limit: 10,
         isRefresh: false,
       })
     }

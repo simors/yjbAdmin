@@ -41,7 +41,7 @@ class Recharge extends PureComponent {
       fetchRechargesAction({
         ...searchParams,
         lastDealTime: rechargeList.length > 0? rechargeList[rechargeList.length - 1].dealTime : undefined,
-        limit: 3,
+        limit: 10,
         isRefresh: false,
       })
     }
