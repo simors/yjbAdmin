@@ -33,7 +33,7 @@ class SearchForm extends PureComponent {
     const {requestStations, fetchOrdersAction} = this.props
     requestStations({})
     fetchOrdersAction({
-      limit: 3,
+      limit: 10,
       isRefresh: true,
       success: (total) => this.onFetchOrdersSuccess(total, {}),
       error: this.onFetchOrdersError,
@@ -67,7 +67,7 @@ class SearchForm extends PureComponent {
         message.error("用户未登录")
         break
       default:
-        message.error(`查询订单信息失败, 错误：${code}`)
+        message.error(`查询订单信息失败, 错误：${error.code}`)
         break
     }
   }
@@ -96,7 +96,7 @@ class SearchForm extends PureComponent {
         status: !values.status || values.status == 'all' ? undefined : Number(values.status),
         mobilePhoneNumber: values.phone,
         stationId: values.stationId == 'all' ? undefined : values.stationId,
-        limit: 3,
+        limit: 10,
         isRefresh: true,
         success: (total) => this.onFetchOrdersSuccess(total, values),
         error: this.onFetchOrdersError,

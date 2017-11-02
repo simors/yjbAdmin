@@ -113,7 +113,7 @@ class Device extends PureComponent {
       fetchDevicesAction({
         ...searchParams,
         lastUpdatedAt: deviceInfoList.length > 0? deviceInfoList[deviceInfoList.length - 1].updatedAt : undefined,
-        limit: 3,
+        limit: 10,
         isRefresh: false,
       })
     }

@@ -27,7 +27,7 @@ class OperationLogManager extends React.Component {
   componentWillMount() {
     this.props.fetchOperationList({
       isRefresh: true,
-      limit: 3
+      limit: 10
     })
     this.props.listAdminUsers({
       onFailure: (e)=>{console.log('falus=====>',e.message)}
@@ -52,7 +52,7 @@ class OperationLogManager extends React.Component {
           error: ()=> {
           },
           isRefresh: false,
-          limit: 3
+          limit: 10
         }
         this.props.fetchOperationList(payload)
       }
@@ -70,7 +70,7 @@ class OperationLogManager extends React.Component {
       error: ()=> {
         console.log('error')
       },
-      limit: 3
+      limit: 10
     }
     this.props.fetchOperationList(payload)
   }

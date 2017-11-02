@@ -12,10 +12,11 @@ import {
   Form,
   Select,
   DatePicker,
+  message,
 } from 'antd'
 import style from './order.module.scss'
 import {actions} from './redux'
-
+import * as errno from '../../errno'
 
 const FormItem = Form.Item
 const RangePicker = DatePicker.RangePicker
@@ -26,7 +27,51 @@ class SearchForm extends PureComponent {
     super(props)
   }
 
+  componentWillMount() {
+    const {fetchRechargesAction} = this.props
+    fetchRechargesAction({
+      limit: 10,
+      isRefresh: true,
+      success: (total) => this.onFetchRechargeSuccess(total, {}),
+      error: this.onFetchRechargeError,
+    })
+  }
+
+  onFetchRechargeSuccess(total, values) {
+    const {updateSearchParams, onSearchEnd} = this.props
+    if (updateSearchParams) {
+      updateSearchParams({
+        start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
+        end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
+        mobilePhoneNumber: values.phone,
+      }, total)
+    }
+    if(onSearchEnd) {
+      onSearchEnd()
+    }
+  }
+
+  onFetchRechargeError = (error) => {
+    const {onSearchEnd} = this.props
+    if(onSearchEnd) {
+      onSearchEnd()
+    }
+    switch (error.code)
+    {
+      case errno.EPERM:
+        message.error("用户未登录")
+        break
+      case errno.ERROR_NO_USER:
+        message.error("用户不存在")
+        break
+      default:
+        message.error(`查询充值订单记录, 错误：${error.code}`)
+        break
+    }
+  }
+
   handleSubmit = (e) => {
+    const {fetchRechargesAction, onSearchStart} = this.props
     e.preventDefault()
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
@@ -44,13 +89,18 @@ class SearchForm extends PureComponent {
         }
       }
       console.log("handleSubmit values:", values)
-      this.props.fetchRechargesAction({
+      fetchRechargesAction({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
         mobilePhoneNumber: values.phone,
         limit: 10,
         isRefresh: true,
+        success: (total) => this.onFetchRechargeSuccess(total, {}),
+        error: this.onFetchRechargeError,
       })
+      if(onSearchStart) {
+        onSearchStart()
+      }
     })
   }
 

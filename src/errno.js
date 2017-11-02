@@ -150,11 +150,12 @@ export const ERROR_BASE_DEAL          =   -(ERROR_BASE + 7000);
 export const ERROR_NO_WALLET                = (ERROR_BASE_AUTH - 1)         /* 用户钱包信息有误 */
 export const ERROR_NO_DEPOSIT               = (ERROR_BASE_AUTH - 2)         /* 用户未交押金 */
 export const ERROR_NO_ENOUGH_BALANCE        = (ERROR_BASE_AUTH - 3)         /* 用户钱包余额不足 */
+export const ERROR_NO_USER                  = (ERROR_BASE_AUTH - 4)         /* 用户不存在 */
 
 /* Device */
 export const ERROR_INVALID_STATUS           = (ERROR_BASE_DEVICE - 1)       /* 设备状态有误 */
 export const ERROR_TURNON_FAILED            = (ERROR_BASE_DEVICE - 2)       /* 设备开机请求失败*/
-export const ERROR_STATION                  = (ERROR_BASE_DEVICE - 3)       /* 服务点信息有误 */
+export const ERROR_NO_STATION                  = (ERROR_BASE_DEVICE - 3)       /* 无服务点信息 */
 
 /* Order */
 export const ERROR_UNPAID_ORDER             = (ERROR_BASE_ORDER - 1)        /* 未支付订单 */

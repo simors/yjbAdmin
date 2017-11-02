@@ -138,10 +138,10 @@ function* modifyDevice(action) {
   }
   try {
     let device = yield call(modifyDeviceApi, modifyPayload)
+    yield put(actions.saveDevice({ device }))
     if(payload.success) {
       payload.success()
     }
-    yield put(actions.saveDevice({ device }))
   } catch (error) {
     if(payload.error) {
       payload.error(error)

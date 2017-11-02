@@ -107,7 +107,7 @@ class Withdraw extends React.PureComponent {
                   </FormItem>
                 </Form>
               </div>
-              <div style={{marginLeft: 20}}>余额 ¥{Number(adminProfit.balance).toFixed(2)}</div>
+              <div style={{marginLeft: 20}}>余额 ¥{Number(adminProfit.balance).toFixed(2).toLocaleString()}</div>
 
               <div style={{marginTop: 20, marginLeft: 20}}>
                 <Popconfirm placement="top" title="确认需要取现吗？" onConfirm={this.handleSubmit} okText="是的" cancelText="再想想">

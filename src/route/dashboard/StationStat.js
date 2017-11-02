@@ -53,7 +53,7 @@ class StationStat extends React.PureComponent {
 
   render() {
     return (
-      <Card title="干衣柜" extra={this.renderTitleExtra()} style={{ width: '100%' }}>
+      <Card title="服务点" extra={this.renderTitleExtra()} style={{ width: '100%' }}>
         {this.renderCardContent()}
       </Card>
     )

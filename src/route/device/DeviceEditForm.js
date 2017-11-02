@@ -14,6 +14,7 @@ import {deviceStatus, actions} from './redux'
 import StationSelect from '../station/StationSelect'
 import {selector as authSelector} from '../../util/auth/'
 import {PERMISSION_CODE} from '../../util/rolePermission/'
+import * as errno from '../../errno'
 
 const FormItem = Form.Item
 const RadioGroup = Radio.Group
@@ -55,8 +56,20 @@ class EditForm extends PureComponent {
           this.props.onSubmit()
         },
         error: (error) => {
-          message.error("修改失败")
-          console.log(error)
+          switch (error.code) {
+            case errno.EPERM:
+              message.error("用户未登录")
+              break
+            case errno.EINVAL:
+              message.error("参数错误")
+              break
+            case errno.ERROR_NO_STATION:
+              message.error("无服务点信息")
+              break
+            default:
+              message.error("修改失败:" + error.code)
+              break
+          }
         }
       })
     })
