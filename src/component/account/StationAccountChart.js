@@ -33,7 +33,7 @@ const orderShowTab = {
 
 }
 
-export default class AccountChart extends Component {
+export default class StationAccountChart extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -55,16 +55,9 @@ export default class AccountChart extends Component {
 
       const LineEarning = createG2(chart => {
         chart.axis(this.props.yline, {
-          position:'left',
-          title: null,
-          labels: {
-            label: {
-              'textAlign': 'start'
-            }
-          },
-
-          formatter:function (value) {
-            return value+'元'
+          title: {
+            fontSize: '16',
+            textAlign: 'center',
           }
         });
         chart.tooltip({
@@ -74,23 +67,24 @@ export default class AccountChart extends Component {
           }
         })
         chart.axis(this.props.xline, {
-          formatter:function (value) {
-            return value
+          title: {
+            fontSize: '16',
+            textAlign: 'center',
           },
-          title: null,
-          tickLine:{
-            value:30,
-            lineWidth:1,
-          }
         });
+        chart.col(this.props.xline, {
+          alias: '日期',
+          type: 'time',
+          mask: 'mm-dd',
+          range: [0, 1],
+        })
         chart.legend({
           title: null,
           position: 'right',
           itemWrap: true,
         });
         chart.col(this.props.yline,{
-          range:[0,1],
-          min:0
+          alias: '收益（元）',
         })
         // chart.source(this.props.lastMonthsPerformance,defs)
         chart.line().position(this.props.xline+'*'+this.props.yline).label(this.props.yline).shape('smooth').size(3);
@@ -99,7 +93,7 @@ export default class AccountChart extends Component {
       return (
         <div>
           <div>
-            <LineEarning data={this.props.data} width={600} height={300}/>
+            <LineEarning forceFit={true} data={this.props.data} height={500} width={200} plotCfg={{margin: [50, 150, 80, 100]}} />
           </div>
         </div>
       )
