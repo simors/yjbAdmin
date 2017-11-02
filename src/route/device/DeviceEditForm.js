@@ -67,7 +67,7 @@ class EditForm extends PureComponent {
               message.error("无服务点信息")
               break
             default:
-              message.error("修改失败:" + errno.code)
+              message.error("修改失败:" + error.code)
               break
           }
         }
