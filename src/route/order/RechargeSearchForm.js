@@ -65,7 +65,7 @@ class SearchForm extends PureComponent {
         message.error("用户不存在")
         break
       default:
-        message.error(`查询充值订单记录, 错误：${code}`)
+        message.error(`查询充值订单记录, 错误：${error.code}`)
         break
     }
   }
