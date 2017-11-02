@@ -36,12 +36,12 @@ class WalletBar extends React.PureComponent {
         <Row>
           <Col span={22}>
             <span style={{marginRight: 10}}>账户余额</span>
-            <span style={{color: 'red', marginRight: 30}}>¥ {Number(adminProfit.balance).toFixed(2)}</span>
+            <span style={{color: 'red', marginRight: 30}}>¥ {Number(adminProfit.balance).toFixed(2).toLocaleString()}</span>
             {
               isInvestor ? (
                 <span>
                   <span style={{marginRight: 10}}>投资总收益</span>
-                  <span style={{color: 'red', marginRight: 30}}>¥ {Number(adminProfit.investEarn).toFixed(2)}</span>
+                  <span style={{color: 'red', marginRight: 30}}>¥ {Number(adminProfit.investEarn).toFixed(2).toLocaleString()}</span>
                 </span>
               ) : null
             }
@@ -49,7 +49,7 @@ class WalletBar extends React.PureComponent {
               isProvider ? (
                 <span>
                   <span style={{marginRight: 10}}>分红总收益</span>
-                  <span style={{color: 'red', marginRight: 30}}>¥ {Number(adminProfit.providerEarn).toFixed(2)}</span>
+                  <span style={{color: 'red', marginRight: 30}}>¥ {Number(adminProfit.providerEarn).toFixed(2).toLocaleString()}</span>
                 </span>
               ) : null
             }
