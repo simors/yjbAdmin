@@ -14,10 +14,10 @@ const confirm = Modal.confirm
 
 const formItemLayout = {
   labelCol: {
-    span: 6
+    span: 12
   },
   wrapperCol: {
-    span: 18
+    span: 12
   }
 }
 class SmsModal extends React.Component {

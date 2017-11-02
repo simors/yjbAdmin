@@ -53,6 +53,7 @@ class InvestorManage extends React.Component {
     });
     this.props.requestStations({
       success: ()=> {
+        status: 1
       }
     });
     this.props.listUsersByRole({
@@ -235,6 +236,7 @@ class InvestorManage extends React.Component {
 
   openCreateModal() {
     this.props.requestStations({
+      status: 1,
       success: ()=> {
       }
     })
@@ -243,6 +245,7 @@ class InvestorManage extends React.Component {
 
   openUpdateModal(value) {
     this.props.requestStations({
+      status: 1,
       success: ()=> {
       }
     })

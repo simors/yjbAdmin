@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import {withRouter} from 'react-router'
 import {connect} from 'react-redux';
 import {Row, Col, Input, Select, Button, Form, InputNumber, message} from 'antd';
 import {stationAction, stationSelector} from './redux';
@@ -83,7 +84,7 @@ class AddStation extends React.Component {
     if (this.props.userList && this.props.userList.length > 0) {
       // console.log('this.props.userList',this.props.userList)
       let userList = this.props.userList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.nickname}</Option>
+        return <Option key={key} value={item.id}>{item.nickname+ ' '+item.mobilePhoneNumber}</Option>
       })
       return userList
     } else {
@@ -153,7 +154,7 @@ class AddStation extends React.Component {
                 {this.props.form.getFieldDecorator('adminId', {
 
                 })(
-                  <Select allowClear={true} style={{width: 140}}>
+                  <Select allowClear={true} style={{width: 200}}>
                     {this.userList()}
                   </Select>
                 )}
@@ -213,7 +214,7 @@ class AddStation extends React.Component {
                       message: '干衣柜单价未填写'
                     }
                   ]
-                })(<InputNumber
+                })(<InputNumber style={{width:70}}
                 />)}
                 <span className="ant-form-text">元／分</span>
 
@@ -269,11 +270,19 @@ class AddStation extends React.Component {
           </Row>
           <LoadActivity tip = '正在提交...'/>
         </Form>
-        <Row>
-          <Col>
+        <Row gutter={24} style={{flexDirection:'row',marginTop:20,marginBottom:20,justifyContent:' center'}}>
+          <Col span={8}></Col>
+          <Col span={4}>
+            <Button onClick={()=> {
+              this.props.history.push({
+                pathname: '/site_list'
+              })
+            }} type="primary">返回</Button>
+          </Col>
+          <Col span={4}>
             <Button onClick={()=> {
               this.submitStation()
-            }}>提交</Button>
+            }} type="primary">提交</Button>
           </Col>
         </Row>
       </div>
@@ -301,6 +310,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(AddStation));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Form.create()(AddStation)));
 
 export {saga, reducer} from './redux';
