@@ -4,6 +4,7 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
+import {withRouter} from 'react-router'
 import {Row, Col, Input, Select, Button, Form, InputNumber, message, Spin} from 'antd';
 import {stationAction, stationSelector} from './redux';
 import PartnerList from './PartnerList'
@@ -181,7 +182,7 @@ class EditStation extends React.Component {
   adminList() {
     if (this.props.adminList && this.props.adminList.length > 0) {
       let adminList = this.props.adminList.map((item, key)=> {
-        return <Option key={key} value={item.id}>{item.idName}</Option>
+        return <Option key={key} value={item.id}>{item.nickname+' '+item.mobilePhoneNumber}</Option>
       })
       return adminList
     } else {
@@ -330,7 +331,7 @@ class EditStation extends React.Component {
                       }
                     ]
                   })(
-                    <Select allowClear={true} style={{width: 140}}>
+                    <Select allowClear={true} style={{width: 200}}>
                       {this.adminList()}
                     </Select>
                   )}
@@ -382,9 +383,9 @@ class EditStation extends React.Component {
                         message: '干衣柜单价未填写'
                       }
                     ]
-                  })(<InputNumber
+                  })(<InputNumber style={{width:70}}
                   />)}
-                  <span className="ant-form-text">元／分</span>
+                  <span className="ant-form-text">元/分</span>
                 </FormItem>
               </Col>
               <Col span={6}>
@@ -525,6 +526,6 @@ const mapDispatchToProps = {
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(EditStation));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Form.create()(EditStation)));
 
 export {saga, reducer} from './redux';

@@ -28,24 +28,24 @@ const InvestorList = (props) => {
   const renderOperateBtn = (text, record) => {
     let items = []
     if (editVisible) {
-      items.push(<a style={{color: `blue`}} onClick={()=> {editInvestor(record)}}>编辑</a>)
-      items.push(<span className="ant-divider" />)
+      items.push(<a key='a' style={{color: `blue`}} onClick={()=> {editInvestor(record)}}>编辑</a>)
+      items.push(<span key='b' className="ant-divider" />)
     }
     if (changeStatusVisible) {
       let changeBtn = (
         record.status ?
-          <a style={{color: `blue`}} onClick={()=> {setInvestorStatus(record)}}>停用</a>
+          <a key='c' style={{color: `blue`}} onClick={()=> {setInvestorStatus(record)}}>停用</a>
           :
-          <a style={{color: `blue`}} onClick={()=> {setInvestorStatus(record)}}>启用</a>
+          <a key='d' style={{color: `blue`}} onClick={()=> {setInvestorStatus(record)}}>启用</a>
       )
       items.push(changeBtn)
-      items.push(<span className="ant-divider" />)
+      items.push(<span key='e' className="ant-divider" />)
     }
     if (items.length >= 2) {
       items.pop()
     }
     return (
-      <span>
+      <span key='g'>
         {items}
       </span>
     )
