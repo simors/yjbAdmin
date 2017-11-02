@@ -61,7 +61,7 @@ class SearchForm extends PureComponent {
         message.error("用户未登录")
         break
       default:
-        message.error(`查询订单信息失败, 错误：${code}`)
+        message.error(`查询订单信息失败, 错误：${error.code}`)
         break
     }
   }
