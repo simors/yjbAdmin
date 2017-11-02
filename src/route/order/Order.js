@@ -24,7 +24,7 @@ class Order extends PureComponent {
     this.state = {
       loading: true,
       pagination: {
-        defaultPageSize: 3,
+        defaultPageSize: 10,
         showTotal: (total) => `总共 ${total} 条`},
       searchParams: {},
     }
