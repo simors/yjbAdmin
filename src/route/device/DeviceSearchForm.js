@@ -30,7 +30,7 @@ class SearchForm extends PureComponent {
     const {requestStations, fetchDevicesAction} = this.props
     requestStations({})
     fetchDevicesAction({
-      limit: 3,
+      limit: 10,
       isRefresh: true,
       success: (total) => this.onFetchDeviceSuccess(total, {}),
       error: this.onFetchDeviceError,
@@ -77,7 +77,7 @@ class SearchForm extends PureComponent {
         deviceNo: values.deviceNo || undefined,
         stationId: values.stationId == 'all' ? undefined : values.stationId,
         status: !values.status || values.status == 'all' ? undefined : Number(values.status),
-        limit: 3,
+        limit: 10,
         isRefresh: true,
         success: (total) => this.onFetchDeviceSuccess(total, {}),
         error: this.onFetchDeviceError,

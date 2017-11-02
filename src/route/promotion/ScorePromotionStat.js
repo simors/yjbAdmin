@@ -69,7 +69,7 @@ class ScorePromotionStat extends PureComponent {
       this.props.fetchOrdersAction({
         ...searchParams,
         lastCreatedAt: scoreRecordInfolist.length > 0? scoreRecordInfolist[scoreRecordInfolist.length - 1].createdAt : undefined,
-        limit: 3,
+        limit: 10,
         isRefresh: false,
       })
     }

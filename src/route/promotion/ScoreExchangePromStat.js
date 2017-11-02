@@ -68,7 +68,7 @@ class ScoreExchangePromStat extends PureComponent {
       this.props.fetchOrdersAction({
         ...searchParams,
         lastCreatedAt: scoreExchangeRecordInfoList.length > 0? scoreExchangeRecordInfoList[scoreExchangeRecordInfoList.length - 1].createdAt : undefined,
-        limit: 3,
+        limit: 10,
         isRefresh: false,
       })
     }

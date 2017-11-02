@@ -64,7 +64,7 @@ class Order extends PureComponent {
       fetchOrdersAction({
         ...searchParams,
         lastCreatedAt: orderList.length > 0? orderList[orderList.length - 1].createdAt : undefined,
-        limit: 3,
+        limit: 10,
         isRefresh: false,
       })
     }
