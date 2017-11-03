@@ -813,7 +813,6 @@ function* sagaVerifyAuthCode(action) {
       }
     }
   } catch (e) {
-    console.log('e========>',e)
     if(payload.error){
       payload.error(e)
     }

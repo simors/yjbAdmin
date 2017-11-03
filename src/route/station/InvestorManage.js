@@ -75,7 +75,7 @@ class InvestorManage extends React.Component {
           this.refresh()
         },
         error: (err)=> {
-          console.log('i m false', err.message)
+          message.error(err.message)
         }
       }
       if (value.status == 1) {
@@ -97,17 +97,13 @@ class InvestorManage extends React.Component {
       if (errors) {
         return
       }
-      // console.log('=======>',{...this.props.form.getFieldsValue()})
       let data = this.props.form.getFieldsValue()
-      console.log('data=======>',data)
       let payload = {
         mobilePhoneNumber: data.mobilePhoneNumber,
         stationId: data.stationId,
         status: data.status && data.status.key ? parseInt(data.status.key): undefined,
         success: ()=> {
           this.props.updateLoadingState({isLoading: false})
-
-          console.log('success')
         },
         error: (err)=> {
           this.props.updateLoadingState({isLoading: false})
@@ -126,26 +122,6 @@ class InvestorManage extends React.Component {
     this.setState({
       stationId: value
     })
-  }
-
-  clearSearch() {
-    this.setState({
-      status: undefined,
-      stationId: undefined,
-      mobilePhoneNumber: undefined,
-    })
-    this.props.updateLoadingState({isLoading: true})
-
-    this.props.requestStations({
-      success: ()=> {
-      this.props.updateLoadingState({isLoading: false})
-      console.log('success')
-    },
-      error: ()=> {
-        this.props.updateLoadingState({isLoading: false})
-        console.log('error')
-      }})
-
   }
 
   renderSearchBar() {
@@ -347,7 +323,6 @@ class InvestorManage extends React.Component {
             this.createInvestorSmsModal(data)
           }}
           onCancel={()=> {
-            console.log('i, m cancel')
             this.setState({createModalVisible: false})
           }}
           userList={this.props.investorList}
@@ -360,7 +335,6 @@ class InvestorManage extends React.Component {
             this.updateInvestorSmsModal(data)
           }}
           onCancel={()=> {
-            console.log('i, m cancel')
             this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1})
           }}
           investor={this.state.selectedInvestor}
