@@ -11,6 +11,7 @@ import MpUserStat from './MpUserStat'
 import DeviceStat from './DeviceStat'
 import StationStat from './StationStat'
 import ProfitCost from './ProfitCost'
+import StationProfitRank from './StationProfitRank'
 import {dashboardSelector} from './redux'
 
 class Dashboard extends React.Component {
@@ -75,18 +76,25 @@ class Dashboard extends React.Component {
         {this.renderHeader()}
         <hr/>
         <div>
-          <Row gutter={16} style={{marginBottom: 20}}>
-            <Col span={8}>
-              <MpUserStat/>
+          <Row gutter={16}>
+            <Col span={18}>
+              <Row gutter={16} style={{marginBottom: 20}}>
+                <Col span={8}>
+                  <MpUserStat/>
+                </Col>
+                <Col span={8}>
+                  <DeviceStat/>
+                </Col>
+                <Col span={8}>
+                  <StationStat/>
+                </Col>
+              </Row>
+              {isPlatformUser ? <ProfitCost/> : null}
             </Col>
-            <Col span={8}>
-              <DeviceStat/>
-            </Col>
-            <Col span={8}>
-              <StationStat/>
+            <Col span={6}>
+              <StationProfitRank/>
             </Col>
           </Row>
-          {isPlatformUser ? <ProfitCost/> : null}
         </div>
       </div>
     )
