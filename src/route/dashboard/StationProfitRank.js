@@ -20,7 +20,7 @@ class StationProfitRank extends React.PureComponent {
     let {stationRank} = this.props
     return (
       <div>
-        <Card title="每日服务点收益排行榜">
+        <Card title="服务点昨日收益排行榜">
           {
             stationRank.map((rank, key) => {
               return (
