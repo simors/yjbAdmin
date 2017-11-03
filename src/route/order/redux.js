@@ -73,7 +73,7 @@ const DepositRecord = Record({
 
 class Deposit extends DepositRecord {
   static fromJSON(obj) {
-    let recharge = new RechargeRecord()
+    let recharge = new DepositRecord()
     return recharge.withMutations((record) => {
       record.set('id', obj.id)
       record.set('orderNo', obj.order_no)

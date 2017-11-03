@@ -133,8 +133,8 @@ class SearchForm extends PureComponent {
           {getFieldDecorator("dealType", {})(
             <Select style={{width: 120}} placeholder="类型">
               <Option value="all">全部</Option>
-              <Option value={DealType.DEAL_TYPE_DEPOSIT}>押金支付</Option>
-              <Option value={DealType.DEAL_TYPE_REFUND}>押金退款</Option>
+              <Option value={DealType.DEAL_TYPE_DEPOSIT.toString()}>押金支付</Option>
+              <Option value={DealType.DEAL_TYPE_REFUND.toString()}>押金退款</Option>
             </Select>
           )}
         </FormItem>

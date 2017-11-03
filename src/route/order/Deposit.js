@@ -67,12 +67,12 @@ class Deposit extends PureComponent {
       { title: '交易时间', dataIndex: 'dealTime', key: 'dealTime', render: (dealTime) => (<span>{moment(new Date(dealTime)).format('LLLL')}</span>) },
       { title: '用户名', dataIndex: 'nickname', key: 'nickname' },
       { title: '手机号码', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
-      { title: '金额', dataIndex: 'amount', key: 'amount',
+      { title: '金额(元)', dataIndex: 'amount', key: 'amount',
         render: (amount, record) => {
           if(record.dealType === DealType.DEAL_TYPE_DEPOSIT) {
-            return(<span>{'¥ ' + amount}</span>)
+            return(<span style={{color: 'green', fontWeight: 'bold'}}>{'  ¥ ' + amount}</span>)
           } else if(record.dealType === DealType.DEAL_TYPE_REFUND) {
-            return(<span>{'¥ ' + (-amount)}</span>)
+            return(<span style={{color: 'red', fontWeight: 'bold'}}>{'-¥ ' + amount}</span>)
           } else {
             return(<span>--</span>)
           }
