@@ -31,19 +31,20 @@ class Order extends PureComponent {
     }
   }
 
-  renderDevicePopover = (text, record, index) => {
-    const content = (
-      <Card title="干衣柜详情" bordered={false} noHovering={true}>
-        <Row>{"编号：" + record.device.deviceNo}</Row>
-        <Row>{"地址：" + record.device.deviceAddr}</Row>
-      </Card>
-    )
-    return (
-      <Popover content={content} >
-        <span>{text}</span>
-      </Popover>
-    )
-  }
+  // renderDevicePopover = (text, record, index) => {
+  //   const device = record.device
+  //   const content = (
+  //     <Card title="干衣柜详情" bordered={false} noHovering={true}>
+  //       <Row>{"编号：" + device? device.deviceNo : undefined}</Row>
+  //       <Row>{"地址：" + device? device.deviceAddr : undefined}</Row>
+  //     </Card>
+  //   )
+  //   return (
+  //     <Popover content={device? content : undefined} >
+  //       <span>{text}</span>
+  //     </Popover>
+  //   )
+  // }
 
   renderDuration = (text, record, index) => {
     if(record.start && record.end) {
@@ -92,7 +93,7 @@ class Order extends PureComponent {
       { title: '订单编号', dataIndex: 'orderNo', key: 'orderNo' },
       { title: '下单时间', dataIndex: 'start', key: 'start', render: (start) => (<span>{moment(new Date(start)).format('LLLL')}</span>)},
       { title: '服务点', dataIndex: 'stationName', key: 'stationName' },
-      { title: '干衣柜编号', dataIndex: 'deviceNo', key: 'deviceNo', render: this.renderDevicePopover},
+      { title: '干衣柜编号', dataIndex: 'deviceNo', key: 'deviceNo'},
       { title: '用户名', dataIndex: 'nickname', key: 'nickname' },
       { title: '手机号码', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
       { title: '费用(元)', dataIndex: 'amount', key: 'amount' },
