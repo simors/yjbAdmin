@@ -3,7 +3,7 @@
  */
 import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
-import {actions, selector} from './redux'
+import {actions, selector, DealType} from './redux'
 import style from './order.module.scss'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import {
@@ -31,15 +31,16 @@ class Recharge extends PureComponent {
 
   handleTableChange = (pagination, filters, sorter) => {
     const {searchParams} = this.state
-    const {rechargeList, fetchRechargesAction} = this.props
+    const {rechargeList, fetchDealAction} = this.props
 
     const pager = { ...this.state.pagination }
     pager.current = pagination.current
     this.setState({pagination: pager})
     if(rechargeList.length < pagination.total
       && pagination.current * (pagination.pageSize + 1) > rechargeList.length) {
-      fetchRechargesAction({
+      fetchDealAction({
         ...searchParams,
+        dealType: DealType.DEAL_TYPE_RECHARGE,
         lastDealTime: rechargeList.length > 0? rechargeList[rechargeList.length - 1].dealTime : undefined,
         limit: 10,
         isRefresh: false,
@@ -97,7 +98,7 @@ class Recharge extends PureComponent {
 }
 
 const mapStateToProps = (appState, ownProps) => {
-  let rechargeList = selector.selectRechargeList(appState)
+  let rechargeList = selector.selectDealRecordList(appState, DealType.DEAL_TYPE_RECHARGE)
   return {
     rechargeList: rechargeList,
   }

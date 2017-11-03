@@ -24,22 +24,26 @@ class Deposit extends PureComponent {
       pagination: {
         defaultPageSize: 10,
         showTotal: (total) => `总共 ${total} 条`},
-      searchParams: {},
+      searchParams: {dealType: DealType.DEAL_TYPE_DEPOSIT},
     }
   }
 
   handleTableChange = (pagination, filters, sorter) => {
     const {searchParams} = this.state
-    const {depositList, fetchDepositAction} = this.props
+    const {depositList, refundList, fetchDealAction} = this.props
+    let currentList = depositList
+    if(searchParams.dealType === DealType.DEAL_TYPE_DEPOSIT) {
+      currentList = refundList
+    }
 
     const pager = { ...this.state.pagination }
     pager.current = pagination.current
     this.setState({pagination: pager})
-    if(depositList.length < pagination.total
-      && pagination.current * (pagination.pageSize + 1) > depositList.length) {
-      fetchDepositAction({
+    if(currentList.length < pagination.total
+      && pagination.current * (pagination.pageSize + 1) > currentList.length) {
+      fetchDealAction({
         ...searchParams,
-        lastDealTime: depositList.length > 0? depositList[depositList.length - 1].dealTime : undefined,
+        lastDealTime: currentList.length > 0? currentList[currentList.length - 1].dealTime : undefined,
         limit: 10,
         isRefresh: false,
       })
@@ -58,6 +62,20 @@ class Deposit extends PureComponent {
 
   onSearchEnd = () => {
     this.setState({loading: false})
+  }
+
+  getCurrentList() {
+    const {searchParams} = this.state
+    const {depositList, refundList} = this.props
+    let list = undefined
+    if(searchParams.dealType === DealType.DEAL_TYPE_REFUND) {
+      list = refundList
+    } else if(searchParams.dealType === DealType.DEAL_TYPE_DEPOSIT) {
+      list = depositList
+    }
+    console.log("searchParams", searchParams)
+    console.log("list:", list)
+    return list
   }
 
   render() {
@@ -94,7 +112,7 @@ class Deposit extends PureComponent {
         </Row>
         <Table rowKey="orderNo"
                columns={columns}
-               dataSource={this.props.depositList}
+               dataSource={this.getCurrentList()}
                pagination={pagination}
                loading={loading}
                onChange={this.handleTableChange}
@@ -105,9 +123,11 @@ class Deposit extends PureComponent {
 }
 
 const mapStateToProps = (appState, ownProps) => {
-  let depositList = selector.selectDepositList(appState)
+  let depositList = selector.selectDealRecordList(appState, DealType.DEAL_TYPE_DEPOSIT)
+  let refundList = selector.selectDealRecordList(appState, DealType.DEAL_TYPE_REFUND)
   return {
     depositList: depositList,
+    refundList: refundList,
   }
 }
 

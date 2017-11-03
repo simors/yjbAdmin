@@ -33,7 +33,7 @@ class Order extends PureComponent {
 
   renderDevicePopover = (text, record, index) => {
     const content = (
-      <Card title="干衣柜详情" bordered={false}>
+      <Card title="干衣柜详情" bordered={false} noHovering={true}>
         <Row>{"编号：" + record.device.deviceNo}</Row>
         <Row>{"地址：" + record.device.deviceAddr}</Row>
       </Card>

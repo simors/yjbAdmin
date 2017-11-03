@@ -28,11 +28,12 @@ class SearchForm extends PureComponent {
   }
 
   componentWillMount() {
-    const {fetchDepositAction} = this.props
-    fetchDepositAction({
+    const {fetchDealAction} = this.props
+    fetchDealAction({
+      dealType: DealType.DEAL_TYPE_DEPOSIT,
       limit: 10,
       isRefresh: true,
-      success: (total) => this.onFetchDepositSuccess(total, {}),
+      success: (total) => this.onFetchDepositSuccess(total, {dealType: DealType.DEAL_TYPE_DEPOSIT}),
       error: this.onFetchDepositError,
     })
   }
@@ -44,7 +45,7 @@ class SearchForm extends PureComponent {
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
         mobilePhoneNumber: values.phone,
-        dealType: !values.dealType || values.dealType == 'all' ? undefined : Number(values.dealType),
+        dealType: Number(values.dealType),
       }, total)
     }
     if(onSearchEnd) {
@@ -72,7 +73,7 @@ class SearchForm extends PureComponent {
   }
 
   handleSubmit = (e) => {
-    const {fetchDepositAction, onSearchStart} = this.props
+    const {fetchDealAction, onSearchStart} = this.props
     e.preventDefault()
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
@@ -90,14 +91,14 @@ class SearchForm extends PureComponent {
         }
       }
       console.log("handleSubmit values:", values)
-      fetchDepositAction({
+      fetchDealAction({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
         mobilePhoneNumber: values.phone,
-        dealType: !values.dealType || values.dealType == 'all' ? undefined : Number(values.dealType),
+        dealType: Number(values.dealType),
         limit: 10,
         isRefresh: true,
-        success: (total) => this.onFetchDepositSuccess(total, {}),
+        success: (total) => this.onFetchDepositSuccess(total, values),
         error: this.onFetchDepositError,
       })
       if(onSearchStart) {
@@ -130,9 +131,8 @@ class SearchForm extends PureComponent {
           )}
         </FormItem>
         <FormItem>
-          {getFieldDecorator("dealType", {})(
+          {getFieldDecorator("dealType", {initialValue: DealType.DEAL_TYPE_DEPOSIT.toString()})(
             <Select style={{width: 120}} placeholder="类型">
-              <Option value="all">全部</Option>
               <Option value={DealType.DEAL_TYPE_DEPOSIT.toString()}>押金支付</Option>
               <Option value={DealType.DEAL_TYPE_REFUND.toString()}>押金退款</Option>
             </Select>
