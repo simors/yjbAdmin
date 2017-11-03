@@ -87,16 +87,16 @@ class SiderMenu extends React.Component {
     if (orderVisible || rechargeVisible || refundVisible || withdrawVisible) {
       let items = []
       if (orderVisible) {
-        items.push(<Menu.Item key="/order_list"><Link to="/order_list">订单信息管理</Link></Menu.Item>)
+        items.push(<Menu.Item key="/order_list"><Link to="/order_list">订单管理</Link></Menu.Item>)
       }
       if (rechargeVisible) {
-        items.push(<Menu.Item key="/order_recharge"><Link to="/order_recharge">用户充值管理</Link></Menu.Item>)
+        items.push(<Menu.Item key="/order_recharge"><Link to="/order_recharge">充值管理</Link></Menu.Item>)
       }
       if (refundVisible) {
-        items.push(<Menu.Item key="/order_refund"><Link to="/order_refund">退还押金管理</Link></Menu.Item>)
+        items.push(<Menu.Item key="/order_refund"><Link to="/order_refund">押金管理</Link></Menu.Item>)
       }
       if (withdrawVisible) {
-        items.push(<Menu.Item key="/order_withdraw"><Link to="/order_withdraw">收益取现管理</Link></Menu.Item>)
+        items.push(<Menu.Item key="/order_withdraw"><Link to="/order_withdraw">收益取现</Link></Menu.Item>)
       }
       return (
         <Menu.SubMenu key="/order" title={<span><Icon type="solution" />资金与订单管理</span>}>

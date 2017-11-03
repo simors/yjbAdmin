@@ -114,7 +114,7 @@ class UpdatePartnerModal extends Component {
                 }
               ]
             })(
-              <Select allowClear={true} style={{width: 200}}>
+              <Select allowClear={true} style={{width: 200}} disabled={true}>
                 {this.userList()}
               </Select>
             )}
@@ -128,7 +128,7 @@ class UpdatePartnerModal extends Component {
                   message: '投资金额未填写'
                 }
               ]
-            })(<InputNumber max={1} />)}
+            })(<InputNumber max={100} min={0} />)}
             <span className="ant-form-text">%</span>
           </FormItem>
         </Form>

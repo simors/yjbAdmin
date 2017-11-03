@@ -41,7 +41,7 @@ export async function fetchStationAccountDetail(payload) {
     if(payload.stationId&&payload.stationId!='all'){
        accounts = await AV.Cloud.run('accountGetStationAccountsDetail', payload)
     }else{
-       accounts = await AV.Cloud.run('accountGetDayAccountsSum', payload)
+       accounts = await AV.Cloud.run('accountGetPlatformAccount', payload)
     }
     return {success: true, accounts: accounts}
   } catch (error) {
