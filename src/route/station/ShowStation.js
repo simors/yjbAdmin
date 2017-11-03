@@ -408,7 +408,7 @@ class ShowStation extends React.Component {
                       message: '干衣柜单价未填写'
                     }
                   ]
-                })(<InputNumber style={{width:70}}
+                })(<InputNumber style={{width:70}} min={0}
                 />)}
                 <span className="ant-form-text">元/分</span>
               </FormItem>
@@ -439,7 +439,7 @@ class ShowStation extends React.Component {
                       message: '电费单价未填写'
                     }
                   ]
-                })(<InputNumber style={{width:70}}
+                })(<InputNumber style={{width:70}} min={0}
                 />)}
                 <span className="ant-form-text">元/度</span>
               </FormItem>

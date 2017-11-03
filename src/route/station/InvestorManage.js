@@ -53,8 +53,8 @@ class InvestorManage extends React.Component {
       }
     });
     this.props.requestStations({
+      status: 1,
       success: ()=> {
-        status: 1
       }
     });
     this.props.listUsersByRole({
