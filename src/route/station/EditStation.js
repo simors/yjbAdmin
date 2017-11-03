@@ -439,26 +439,6 @@ class EditStation extends React.Component {
             </Row>
             <LoadActivity tip="正在提交..."/>
           </Form>
-
-          <Row ></Row>
-          <Row style={{height: 20,marginTop: 20, marginBottom: 20}}>
-            <Col span={4}>
-              <div>服务点分成</div>
-            </Col>
-            <Col span={4}>
-              <Button onClick={()=> {
-                this.openCreateModal()
-              }}>添加分成方</Button>
-            </Col>
-          </Row>
-          <PartnerList editPartner={(data)=> {
-            this.openUpdateModal(data)
-          }}
-                       type='edit' partners={this.props.partners}
-                       setPartnerStatus={(data)=> {
-                         this.setPartnerStatus(data)
-                       }}
-          />
         <Row gutter={24} style={{flexDirection:'row',marginTop:20,marginBottom:20,justifyContent:' center'}}>
           <Col span={8}></Col>
           <Col span={4}>
@@ -474,31 +454,6 @@ class EditStation extends React.Component {
             }} type="primary">提交</Button>
           </Col>
         </Row>
-          <CreatePartnerModal
-            modalKey={this.state.modalKey}
-            onOk={(data)=> {
-              this.createPartner(data)
-            }}
-            onCancel={()=> {
-              this.setState({createModalVisible: false})
-            }}
-            userList={this.props.partnerList}
-            stationList={this.props.stations}
-            modalVisible={this.state.createModalVisible}
-          />
-          <UpdatePartnerModal
-            modalKey={this.state.modalKey}
-            onOk={(data)=> {
-              this.updatePartner(data)
-            }}
-            onCancel={()=> {
-              this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1})
-            }}
-            partner={this.state.selectedPartner}
-            userList={this.props.partnerList}
-            stationList={this.props.stations}
-            modalVisible={this.state.updateModalVisible}
-          />
       </div>
     )
 
