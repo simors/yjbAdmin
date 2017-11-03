@@ -6,9 +6,11 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import {Row, Col, Card} from 'antd';
 import {selector as authSelector} from '../../util/auth'
+import {ROLE_CODE} from '../../util/rolePermission'
 import MpUserStat from './MpUserStat'
 import DeviceStat from './DeviceStat'
 import StationStat from './StationStat'
+import ProfitCost from './ProfitCost'
 import {dashboardSelector} from './redux'
 
 class Dashboard extends React.Component {
@@ -67,12 +69,13 @@ class Dashboard extends React.Component {
   }
 
   render() {
+    let {isPlatformUser} = this.props
     return (
       <div>
         {this.renderHeader()}
         <hr/>
         <div>
-          <Row gutter={16}>
+          <Row gutter={16} style={{marginBottom: 20}}>
             <Col span={8}>
               <MpUserStat/>
             </Col>
@@ -83,6 +86,7 @@ class Dashboard extends React.Component {
               <StationStat/>
             </Col>
           </Row>
+          {isPlatformUser ? <ProfitCost/> : null}
         </div>
       </div>
     )
@@ -92,6 +96,7 @@ class Dashboard extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let currentAdminUser = authSelector.selectCurAdminUser(state)
   let roleNames = authSelector.selectUserRoleName(state, currentAdminUser.roles)
+  let isPlatformUser = authSelector.selectValidRoles(state, [ROLE_CODE.PLATFORM_MANAGER])
 
   let mpUserStat = dashboardSelector.selectMpUserStat(state)
   let deviceStat = dashboardSelector.selectDeviceStat(state)
@@ -100,6 +105,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     currentAdminUser,
     roleNames,
+    isPlatformUser,
     mpUserStat,
     deviceStat,
     stationStat,
