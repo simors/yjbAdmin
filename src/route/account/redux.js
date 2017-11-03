@@ -33,7 +33,6 @@ export const StationAccountRecord = Record({
   incoming: undefined,
   partnerProfit: undefined,
   investorProfit: undefined,
-  powerUnitPrice: undefined,
   stationId: undefined,
   createdAt: undefined,
   startDate: undefined,
@@ -53,7 +52,6 @@ export class StationAccount extends StationAccountRecord {
       record.set('partnerProfit', obj.partnerProfit)
       record.set('investorProfit', obj.investorProfit)
       record.set('incoming', obj.incoming)
-      record.set('powerUnitPrice', obj.powerUnitPrice)
       record.set('stationId', obj.stationId)
       record.set('createdAt', obj.createdAt)
       record.set('startDate', moment(new Date(obj.startDate)).format('YYYY-MM-DD'))
@@ -112,6 +110,8 @@ const FETCH_INVESTOR_ACCOUNT = 'FETCH_INVESTOR_ACCOUNT'
 const FETCH_INVESTOR_ACCOUNT_SUCCESS = 'FETCH_INVESTOR_ACCOUNT_SUCCESS'
 const FETCH_STATION_ACCOUNT_DETAIL = 'FETCH_STATION_ACCOUNT_DETAIL'
 const FETCH_STATION_ACCOUNT_DETAIL_SUCCESS = 'FETCH_STATION_ACCOUNT_DETAIL_SUCCESS'
+const SAVE_STATION_ACCOUNT = 'SAVE_STATION_ACCOUNT'
+const SAVE_BATCH_STATION_ACCOUNT = 'SAVE_BATCH_STATION_ACCOUNT'
 const FETCH_PARTNER_ACCOUNT_DETAIL = 'FETCH_PARTNER_ACCOUNT_DETAIL'
 const FETCH_PARTNER_ACCOUNT_DETAIL_SUCCESS = 'FETCH_PARTNER_ACCOUNT_DETAIL_SUCCESS'
 const FETCH_INVESTOR_ACCOUNT_DETAIL = 'FETCH_INVESTOR_ACCOUNT_DETAIL'
@@ -134,6 +134,8 @@ export const accountAction = {
   fetchPartnerAccountsDetail: createAction(FETCH_PARTNER_ACCOUNT_DETAIL),
   fetchInvestorAccounts: createAction(FETCH_INVESTOR_ACCOUNT),
   fetchInvestorAccountsDetail: createAction(FETCH_INVESTOR_ACCOUNT_DETAIL),
+  saveStationAccount: createAction(SAVE_STATION_ACCOUNT),
+  saveBatchStationAccount: createAction(SAVE_BATCH_STATION_ACCOUNT),
   saveAccountProfit: createAction(SAVE_ACCOUNT_PROFIT),
   saveBatchAccountProfit: createAction(SAVE_BATCH_ACCOUNT_PORFIT),
   exportStationExcel: createAction(EXPORT_STATION_EXCEL),
@@ -531,6 +533,10 @@ export function accountReducer(state = initialState, action) {
       return handleSaveStationAccounts(state, action)
     case FETCH_STATION_ACCOUNT_DETAIL_SUCCESS:
       return handleSaveStationAccountsDetail(state, action)
+    case SAVE_STATION_ACCOUNT:
+      return reduceSaveStationAccount(state, action)
+    case SAVE_BATCH_STATION_ACCOUNT:
+      return reduceSaveBatchStationAccount(state, action)
     case FETCH_PARTNER_ACCOUNT_SUCCESS:
       return handleSavePartnerAccounts(state, action)
     case FETCH_PARTNER_ACCOUNT_DETAIL_SUCCESS:
@@ -597,7 +603,6 @@ function handleSaveStationAccounts(state, action) {
 
   let stationAccounts = action.payload.stationAccounts
   let stationAccountList = action.payload.stationAccountList
-  // console.log('stationAccounts=========>', stationAccounts, stationAccountList)
   if (stationAccountList && stationAccountList.length > 0) {
     state = state.set('stationAccountList', new List(stationAccountList))
     state = handleSetAllStationAccounts(state, stationAccounts)
@@ -611,7 +616,6 @@ function handleSaveStationAccountsDetail(state, action) {
 
   let stationAccounts = action.payload.stationAccounts
   let stationAccountList = action.payload.stationAccountList
-  // console.log('stationAccounts=========>', stationAccounts, stationAccountList)
   if (stationAccountList && stationAccountList.length > 0) {
     state = state.set('stationAccountsDetailList', new List(stationAccountList))
     state = handleSetAllStationAccountsDetall(state, stationAccounts)
@@ -619,6 +623,19 @@ function handleSaveStationAccountsDetail(state, action) {
     state = state.set('stationAccountsDetailList', new List())
   }
   return state
+}
+
+function reduceSaveStationAccount(state, action) {
+  let payload = action.payload
+  let stationAccount = payload.stationAccount
+  state = state.setIn(['allStationAccounts', stationAccount.id], StationAccount.fromApi(stationAccount))
+  return state
+}
+
+function reduceSaveBatchStationAccount(state, action) {
+  let payload = action.payload
+  let stationAccounts = payload.stationAccounts
+  return handleSetAllStationAccountsDetall(state, stationAccounts)
 }
 
 function handleSavePartnerAccounts(state, action) {
@@ -711,6 +728,17 @@ function selectStationAccountsDetail(state) {
     })
   }
   return stationAccounts
+}
+
+function selectStationAccountById(state, accountId) {
+  let stationAccount = state.ACCOUNT.getIn(['allStationAccounts', accountId])
+  if (!stationAccount) {
+    return undefined
+  }
+  let accountInfo = stationAccount.toJS()
+  let station = stationSelector.selectStationById(state, accountInfo.stationId)
+  accountInfo.station = station
+  return accountInfo
 }
 
 function selectPartnerAccounts(state) {
@@ -808,4 +836,5 @@ export const accountSelector = {
   selectInvestorAccounts,
   selectInvestorAccountsDetail,
   selectAccountProfitById,
+  selectStationAccountById,
 }

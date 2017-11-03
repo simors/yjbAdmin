@@ -18,3 +18,10 @@ export async function fetchStationStat() {
 export async function fetchPlatformProfitStat() {
   return await AV.Cloud.run('accountStatPlatformAccount', {})
 }
+
+export async function fetchStationAccountRank(payload) {
+  let params = {
+    rankDate: payload.rankDate,
+  }
+  return await AV.Cloud.run('accountFetchStationAccountRank', params)
+}
