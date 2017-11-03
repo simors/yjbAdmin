@@ -75,7 +75,7 @@ class InvestorAccountManager extends React.Component {
       }
       const rangeTimeValue = fieldsValue['rangeTimePicker']
       let values = fieldsValue
-      console.log('==============value------->',values)
+      // console.log('==============value------->',values)
       if(rangeTimeValue && rangeTimeValue.length === 2) {
         values = {
           ...fieldsValue,
@@ -92,6 +92,7 @@ class InvestorAccountManager extends React.Component {
         let payload = {
           stationId: values.stationId,
           userId: values.userId,
+          mobilePhoneNumber: values.mobilePhoneNumber,
           startDate: values.rangeTimePicker? values.rangeTimePicker[0] : moment().day(-30).formate(),
           endDate: values.rangeTimePicker? values.rangeTimePicker[1] : moment().formate(),
           success: ()=> {
@@ -101,7 +102,7 @@ class InvestorAccountManager extends React.Component {
             console.log('error')
           }
         }
-        console.log('payload========>',payload)
+        // console.log('payload========>',payload)
         this.setState({viewType:values.selectedType},()=>{
           if(values.selectedType=='all'){
             this.props.fetchInvestorAccounts(payload)
@@ -169,6 +170,12 @@ class InvestorAccountManager extends React.Component {
               ))
             }
           </Select>
+        )}
+      </FormItem>
+      <FormItem>
+        {getFieldDecorator("mobilePhoneNumber", {
+        })(
+          <Input placeholder = '电话号码' />
         )}
       </FormItem>
       <FormItem>

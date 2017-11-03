@@ -95,6 +95,7 @@ class StationAccountManager extends React.Component {
       }else{
         let payload = {
           userId: values.userId,
+          mobilePhoneNumber: values.mobilePhoneNumber,
           startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
           endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
           success: ()=> {
@@ -145,6 +146,12 @@ class StationAccountManager extends React.Component {
                 ))
               }
             </Select>
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("mobilePhoneNumber", {
+          })(
+            <Input placeholder = '电话号码' />
           )}
         </FormItem>
         <FormItem>
