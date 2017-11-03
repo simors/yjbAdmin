@@ -30,17 +30,9 @@ class Device extends PureComponent {
       showDeviceEditModal: false,
       loading: true,
       pagination: {
-        defaultPageSize: 3,
+        defaultPageSize: 10,
         showTotal: (total) => `总共 ${total} 条`},
       searchParams: {},
-    }
-  }
-
-  showDetail = () => {
-    if(this.state.selectDevice) {
-      this.setState({
-        showDeviceDetailModal: true,
-      })
     }
   }
 
@@ -63,6 +55,9 @@ class Device extends PureComponent {
       selectDevice: record,
       showDeviceEditModal: true,
     })
+  }
+  onReload = () => {
+
   }
 
   renderOperateCol = (record) => {
@@ -176,9 +171,8 @@ class Device extends PureComponent {
       <div className={style.content}>
         <div className={style.operation}>
           <ButtonGroup>
-            <Button icon="info-circle-o" onClick={this.showDetail}>查看</Button>
             <Button icon="link" onClick={() => {}}>批量操作</Button>
-            <Button icon="reload">刷新</Button>
+            <Button icon="reload" onClick={this.onReload}>刷新</Button>
           </ButtonGroup>
         </div>
         <Row>

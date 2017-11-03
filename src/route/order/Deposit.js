@@ -1,9 +1,9 @@
 /**
- * Created by wanpeng on 2017/10/4.
+ * Created by wanpeng on 2017/11/3.
  */
 import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
-import {actions, selector} from './redux'
+import {actions, selector, DealType} from './redux'
 import style from './order.module.scss'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import {
@@ -13,11 +13,10 @@ import {
   Popover,
 } from 'antd'
 import moment from "moment"
-import RechargeSearchForm from './RechargeSearchForm'
+import DepositSearchForm from './DepositSearchForm'
 const ButtonGroup = Button.Group
 
-
-class Recharge extends PureComponent {
+class Deposit extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -31,16 +30,16 @@ class Recharge extends PureComponent {
 
   handleTableChange = (pagination, filters, sorter) => {
     const {searchParams} = this.state
-    const {rechargeList, fetchRechargesAction} = this.props
+    const {depositList, fetchDepositAction} = this.props
 
     const pager = { ...this.state.pagination }
     pager.current = pagination.current
     this.setState({pagination: pager})
-    if(rechargeList.length < pagination.total
-      && pagination.current * (pagination.pageSize + 1) > rechargeList.length) {
-      fetchRechargesAction({
+    if(depositList.length < pagination.total
+      && pagination.current * (pagination.pageSize + 1) > depositList.length) {
+      fetchDepositAction({
         ...searchParams,
-        lastDealTime: rechargeList.length > 0? rechargeList[rechargeList.length - 1].dealTime : undefined,
+        lastDealTime: depositList.length > 0? depositList[depositList.length - 1].dealTime : undefined,
         limit: 10,
         isRefresh: false,
       })
@@ -64,11 +63,21 @@ class Recharge extends PureComponent {
   render() {
     const {pagination, loading} = this.state
     const columns = [
-      { title: '充值单号', dataIndex: 'orderNo', key: 'orderNo' },
-      { title: '充值时间', dataIndex: 'dealTime', key: 'dealTime', render: (dealTime) => (<span>{moment(new Date(dealTime)).format('LLLL')}</span>) },
+      { title: '押金单号', dataIndex: 'orderNo', key: 'orderNo' },
+      { title: '交易时间', dataIndex: 'dealTime', key: 'dealTime', render: (dealTime) => (<span>{moment(new Date(dealTime)).format('LLLL')}</span>) },
       { title: '用户名', dataIndex: 'nickname', key: 'nickname' },
       { title: '手机号码', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
-      { title: '充值金额', dataIndex: 'amount', key: 'amount', render: (amount) => (<span>{'¥ ' + amount}</span>) },
+      { title: '金额(元)', dataIndex: 'amount', key: 'amount',
+        render: (amount, record) => {
+          if(record.dealType === DealType.DEAL_TYPE_DEPOSIT) {
+            return(<span style={{color: 'green', fontWeight: 'bold'}}>{'  ¥ ' + amount}</span>)
+          } else if(record.dealType === DealType.DEAL_TYPE_REFUND) {
+            return(<span style={{color: 'red', fontWeight: 'bold'}}>{'-¥ ' + amount}</span>)
+          } else {
+            return(<span>--</span>)
+          }
+        }
+      },
     ]
     return (
       <div className={style.content}>
@@ -79,13 +88,13 @@ class Recharge extends PureComponent {
           </ButtonGroup>
         </div>
         <Row>
-          <RechargeSearchForm updateSearchParams={this.updateSearchParams}
+          <DepositSearchForm updateSearchParams={this.updateSearchParams}
                               onSearchStart={this.onSearchStart}
                               onSearchEnd={this.onSearchEnd} />
         </Row>
         <Table rowKey="orderNo"
                columns={columns}
-               dataSource={this.props.rechargeList}
+               dataSource={this.props.depositList}
                pagination={pagination}
                loading={loading}
                onChange={this.handleTableChange}
@@ -93,13 +102,12 @@ class Recharge extends PureComponent {
       </div>
     )
   }
-
 }
 
 const mapStateToProps = (appState, ownProps) => {
-  let rechargeList = selector.selectRechargeList(appState)
+  let depositList = selector.selectDepositList(appState)
   return {
-    rechargeList: rechargeList,
+    depositList: depositList,
   }
 }
 
@@ -107,4 +115,4 @@ const mapDispatchToProps = {
   ...actions,
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Recharge))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Deposit))

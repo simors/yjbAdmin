@@ -1,5 +1,5 @@
 /**
- * Created by wanpeng on 2017/9/30.
+ * Created by yangyang on 2017/11/3.
  */
 import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
@@ -9,17 +9,16 @@ import {
   Table,
   Row,
   Popover,
-  Card,
 } from 'antd'
 import mathjs from 'mathjs'
 import moment from "moment"
 import style from './order.module.scss'
 import {OrderStatus, actions, selector} from './redux'
-import OrderSearchForm from './OrderSearchForm'
+import WithdrawSearchForm from './WithdrawSearchForm'
 
 const ButtonGroup = Button.Group
 
-class Order extends PureComponent {
+class WithdrawRecords extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -29,28 +28,6 @@ class Order extends PureComponent {
         showTotal: (total) => `总共 ${total} 条`},
       searchParams: {},
     }
-  }
-
-  renderDevicePopover = (text, record, index) => {
-    const content = (
-      <Card title="干衣柜详情" bordered={false}>
-        <Row>{"编号：" + record.device.deviceNo}</Row>
-        <Row>{"地址：" + record.device.deviceAddr}</Row>
-      </Card>
-    )
-    return (
-      <Popover content={content} >
-        <span>{text}</span>
-      </Popover>
-    )
-  }
-
-  renderDuration = (text, record, index) => {
-    if(record.start && record.end) {
-      let duration = mathjs.chain(new Date(record.end) - new Date(record.start)).divide(1000).divide(60).done()
-      return (<span>{Math.round(duration)}</span>)
-    }
-    return (<span>--</span>)
   }
 
   handleTableChange = (pagination, filters, sorter) => {
@@ -89,40 +66,21 @@ class Order extends PureComponent {
     const {pagination, loading} = this.state
     const {orderList} = this.props
     const columns = [
-      { title: '订单编号', dataIndex: 'orderNo', key: 'orderNo' },
-      { title: '下单时间', dataIndex: 'start', key: 'start', render: (start) => (<span>{moment(new Date(start)).format('LLLL')}</span>)},
-      { title: '服务点', dataIndex: 'stationName', key: 'stationName' },
-      { title: '干衣柜编号', dataIndex: 'deviceNo', key: 'deviceNo', render: this.renderDevicePopover},
+      { title: '取现单号', dataIndex: 'orderNo', key: 'orderNo' },
+      { title: '取现时间', dataIndex: 'start', key: 'start', render: (start) => (<span>{moment(new Date(start)).format('LLLL')}</span>)},
       { title: '用户名', dataIndex: 'nickname', key: 'nickname' },
       { title: '手机号码', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
-      { title: '费用(元)', dataIndex: 'amount', key: 'amount' },
-      { title: '时长(分钟)', dataIndex: 'duration', key: 'duration', render: this.renderDuration},
-      { title: '状态', dataIndex: 'status', key: 'status', render: (status) => {
-        switch (status) {
-          case OrderStatus.ORDER_STATUS_UNPAID:
-            return <span>未支付</span>
-            break
-          case OrderStatus.ORDER_STATUS_OCCUPIED:
-            return <span>使用中</span>
-            break
-          case OrderStatus.ORDER_STATUS_PAID:
-            return <span>已支付</span>
-            break
-          default:
-            break
-        }
-      }},
+      { title: '取现金额(元)', dataIndex: 'amount', key: 'amount' },
     ]
     return (
       <div className={style.content}>
         <div className={style.operation}>
           <ButtonGroup>
-            <Button icon="info-circle-o" onClick={this.showDetail}>查看</Button>
             <Button icon="reload">刷新</Button>
           </ButtonGroup>
         </div>
         <Row>
-          <OrderSearchForm updateSearchParams={this.updateSearchParams}
+          <WithdrawSearchForm updateSearchParams={this.updateSearchParams}
                            onSearchStart={this.onSearchStart}
                            onSearchEnd={this.onSearchEnd} />
         </Row>
@@ -149,4 +107,4 @@ const mapDispatchToProps = {
   ...actions,
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Order))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(WithdrawRecords))

@@ -60,10 +60,35 @@ class StationStat extends Record({
   }
 }
 
+class PlatformProfitStat extends Record({
+  profit: undefined,
+  partnerProfit: undefined,
+  investorProfit: undefined,
+  platformProfit: undefined,
+  cost: undefined,
+  incoming: undefined,
+}, 'PlatformProfitStat') {
+  static fromJson(json) {
+    let platformProfitStat = new PlatformProfitStat()
+    return platformProfitStat.withMutations((record) => {
+      record.set('profit', json.profit)
+      record.set('partnerProfit', json.partnerProfit)
+      record.set('investorProfit', json.investorProfit)
+      record.set('platformProfit', json.platformProfit)
+      record.set('cost', json.cost)
+      record.set('incoming', json.incoming)
+    })
+  }
+}
+
 class Dashboard extends Record({
   mpUserStat: undefined,
   deviceStat: undefined,
   stationStat: undefined,
+  platformAccount: undefined,
+  lastDayPlatformAccount: undefined,
+  lastMonthPlatformAccount: undefined,
+  lastYearPlatformAccount: undefined,
 }, 'Dashboard') {}
 
 /******* Constants *******/
@@ -74,6 +99,8 @@ const REQUEST_DEVICE_STAT = 'REQUEST_DEVICE_STAT'
 const SAVE_DEVICE_STAT = 'SAVE_DEVICE_STAT'
 const REQUEST_STATION_STAT = 'REQUEST_STATION_STAT'
 const SAVE_STATION_STAT = 'SAVE_STATION_STAT'
+const REQUEST_PLATFORM_PROFIT_STAT = 'REQUEST_PLATFORM_PROFIT_STAT'
+const SAVE_PLATFORM_PROFIT_STAT = 'SAVE_PLATFORM_PROFIT_STAT'
 
 /******* Action *******/
 
@@ -81,11 +108,13 @@ export const dashboardAction = {
   requestMpUserStat: createAction(REQUEST_MP_USER_STAT),
   requestDeviceStat: createAction(REQUEST_DEVICE_STAT),
   requestStationStat: createAction(REQUEST_STATION_STAT),
+  requestPlatformProfitStat: createAction(REQUEST_PLATFORM_PROFIT_STAT),
 }
 
 const saveMpUserStat = createAction(SAVE_MP_USER_STAT)
 const saveDeviceStat = createAction(SAVE_DEVICE_STAT)
 const saveStationStat = createAction(SAVE_STATION_STAT)
+const savePlatformProfitStat = createAction(SAVE_PLATFORM_PROFIT_STAT)
 
 /******* Saga *******/
 
@@ -93,6 +122,7 @@ export const dashboardSaga = [
   takeLatest(REQUEST_MP_USER_STAT, sagaFetchMpUserStat),
   takeLatest(REQUEST_DEVICE_STAT, sagaFetchDeviceStat),
   takeLatest(REQUEST_STATION_STAT, sagaFetchStationStat),
+  takeLatest(REQUEST_PLATFORM_PROFIT_STAT, sagaFetchPlatformProfitStat),
 ]
 
 function* sagaFetchMpUserStat(action) {
@@ -140,6 +170,21 @@ function* sagaFetchStationStat(action) {
   }
 }
 
+function* sagaFetchPlatformProfitStat(action) {
+  let payload = action.payload
+  try {
+    let result = yield call(dashboardCloud.fetchPlatformProfitStat)
+    yield put(savePlatformProfitStat({platformProfit: result}))
+    if (payload.success) {
+      payload.success();
+    }
+  } catch (e) {
+    if (payload.error) {
+      payload.error(e.code);
+    }
+  }
+}
+
 /******* Reducer *******/
 
 const initialState = new Dashboard();
@@ -152,6 +197,8 @@ export function dashboardReducer(state=initialState, action) {
       return reduceSaveDeviceStat(state, action)
     case SAVE_STATION_STAT:
       return reduceSaveStationStat(state, action)
+    case SAVE_PLATFORM_PROFIT_STAT:
+      return reduceSavePlatformProfitStat(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -180,6 +227,16 @@ function reduceSaveStationStat(state, action) {
   return state
 }
 
+function reduceSavePlatformProfitStat(state, action) {
+  let payload = action.payload
+  let platformProfit = payload.platformProfit
+  state = state.set('platformAccount', PlatformProfitStat.fromJson(platformProfit.platformAccount))
+  state = state.set('lastDayPlatformAccount', PlatformProfitStat.fromJson(platformProfit.lastDayPlatformAccount))
+  state = state.set('lastMonthPlatformAccount', PlatformProfitStat.fromJson(platformProfit.lastMonthPlatformAccount))
+  state = state.set('lastYearPlatformAccount', PlatformProfitStat.fromJson(platformProfit.lastYearPlatformAccount))
+  return state
+}
+
 function onRehydrate(state, action) {
   const incoming = action.payload.DASHBOARD;
   if (!incoming) {
@@ -199,6 +256,26 @@ function onRehydrate(state, action) {
   if (stationStat) {
     state = state.set('stationStat', StationStat.fromJson(stationStat))
   }
+
+  let platformAccount = incoming.platformAccount
+  if (platformAccount) {
+    state = state.set('platformAccount', PlatformProfitStat.fromJson(platformAccount))
+  }
+
+  let lastDayPlatformAccount = incoming.lastDayPlatformAccount
+  if (lastDayPlatformAccount) {
+    state = state.set('lastDayPlatformAccount', PlatformProfitStat.fromJson(lastDayPlatformAccount))
+  }
+
+  let lastMonthPlatformAccount = incoming.lastMonthPlatformAccount
+  if (lastMonthPlatformAccount) {
+    state = state.set('lastMonthPlatformAccount', PlatformProfitStat.fromJson(lastMonthPlatformAccount))
+  }
+
+  let lastYearPlatformAccount = incoming.lastYearPlatformAccount
+  if (lastYearPlatformAccount) {
+    state = state.set('lastYearPlatformAccount', PlatformProfitStat.fromJson(lastYearPlatformAccount))
+  }
   return state
 }
 
@@ -208,6 +285,7 @@ export const dashboardSelector = {
   selectMpUserStat,
   selectDeviceStat,
   selectStationStat,
+  selectPlatformProfitStat,
 }
 
 function selectMpUserStat(state) {
@@ -232,4 +310,25 @@ function selectStationStat(state) {
     return undefined
   }
   return stationStat.toJS()
+}
+
+function selectPlatformProfitStat(state) {
+  let platformProfit = {}
+  let platformAccount = state.DASHBOARD.platformAccount
+  if (platformAccount) {
+    platformProfit.platformAccount = platformAccount.toJS()
+  }
+  let lastDayPlatformAccount = state.DASHBOARD.lastDayPlatformAccount
+  if (lastDayPlatformAccount) {
+    platformProfit.lastDayPlatformAccount = lastDayPlatformAccount.toJS()
+  }
+  let lastMonthPlatformAccount = state.DASHBOARD.lastMonthPlatformAccount
+  if (lastMonthPlatformAccount) {
+    platformProfit.lastMonthPlatformAccount = lastMonthPlatformAccount.toJS()
+  }
+  let lastYearPlatformAccount = state.DASHBOARD.lastYearPlatformAccount
+  if (lastYearPlatformAccount) {
+    platformProfit.lastYearPlatformAccount = lastYearPlatformAccount.toJS()
+  }
+  return platformProfit
 }

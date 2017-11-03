@@ -22,3 +22,7 @@ export async function fetchRechargesApi(payload) {
     throw error
   }
 }
+
+export async function fetchDepositApi(paylaod) {
+  return await AV.Cloud.run('pingppFetchDeposit', paylaod)
+}

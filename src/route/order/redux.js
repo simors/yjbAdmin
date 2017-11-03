@@ -5,7 +5,7 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
-import {fetchOrdersApi, fetchRechargesApi} from './cloud'
+import {fetchOrdersApi, fetchRechargesApi, fetchDepositApi} from './cloud'
 import {deviceActions} from '../device'
 import {stationSelector, stationAction} from '../station/redux'
 import {deviceSelector} from '../device'
@@ -62,11 +62,36 @@ class Recharge extends RechargeRecord {
   }
 }
 
+const DepositRecord = Record({
+  id: undefined,                  //押金记录id
+  orderNo: undefined,             //押金单号
+  userId: undefined,              //押金用户id
+  amount: undefined,              //押金金额
+  dealTime: undefined,            //交易时间
+  dealType: undefined,            //交易类型（押金付款&押金退款）
+}, 'DepositRecord')
+
+class Deposit extends DepositRecord {
+  static fromJSON(obj) {
+    let recharge = new DepositRecord()
+    return recharge.withMutations((record) => {
+      record.set('id', obj.id)
+      record.set('orderNo', obj.order_no)
+      record.set('userId', obj.userId)
+      record.set('amount', obj.cost)
+      record.set('dealTime', obj.dealTime)
+      record.set('dealType', obj.dealType)
+    })
+  }
+}
+
 const OrderState = Record({
   orders: Map(),            //订单信息 健为orderId，值为OrderRecord
   orderList: List(),
   recharges: Map(),         //充值记录
   rechargeList: List(),
+  deposits: Map(),          //押金记录(支付&退款)
+  depositList: List(),
 }, 'OrderState')
 /**** Constant ****/
 const FETCH_ORDERS = 'FETCH_ORDERS'
@@ -77,15 +102,31 @@ const FETCH_RECHARGES = 'FETCH_RECHARGES'
 const SAVE_RECHARGE = 'SAVE_RECHARGE'
 const SAVE_RECHARGES = 'SAVE_RECHARGES'
 const UPDATE_RECHARGE_LIST = 'UPDATE_RECHARGE_LIST'
+const FETCH_DEPOSIT = 'FETCH_DEPOSIT'
+const SAVE_DEPOSIT = 'SAVE_DEPOSIT'
+const SAVE_DEPOSITS = 'SAVE_DEPOSITS'
+const UPDATE_DEPOSIT_LIST = 'UPDATE_DEPOSIT_LIST'
 
 export const OrderStatus = {
   ORDER_STATUS_UNPAID : 0,      //未支付
   ORDER_STATUS_OCCUPIED : 1,    //使用中
   ORDER_STATUS_PAID : 2,        //已支付
 }
+
+export const DealType = {
+  DEAL_TYPE_DEPOSIT : 1,                // 押金
+  DEAL_TYPE_RECHARGE : 2,               // 充值
+  DEAL_TYPE_SERVICE : 3,                // 服务消费
+  DEAL_TYPE_REFUND : 4,                 // 押金退款
+  DEAL_TYPE_WITHDRAW : 5,               // 提现
+  DEAL_TYPE_SYS_PRESENT : 6,            // 系统赠送
+  DEAL_TYPE_ORDER_PAY : 7,              // 订单支付
+
+}
 /**** Action ****/
 const updateOrderList = createAction(UPDATE_ORDER_LIST)
 const updateRechargeList = createAction(UPDATE_RECHARGE_LIST)
+const updateDepositList = createAction(UPDATE_DEPOSIT_LIST)
 
 export const actions = {
   fetchOrdersAction: createAction(FETCH_ORDERS),
@@ -94,6 +135,7 @@ export const actions = {
   saveRecharge: createAction(SAVE_RECHARGE),
   saveRecharges: createAction(SAVE_RECHARGES),
   fetchRechargesAction: createAction(FETCH_RECHARGES),
+  fetchDepositAction: createAction(FETCH_DEPOSIT),
 }
 /**** Saga ****/
 function* fetchOrders(action) {
@@ -179,11 +221,48 @@ function* fetchRecharges(action) {
       payload.error(error)
     }
   }
+}
 
+function* fetchDeposits(action) {
+  let payload = action.payload
+  let apiPayload = {
+    start: payload.start,
+    end: payload.end,
+    mobilePhoneNumber: payload.mobilePhoneNumber,
+    limit: payload.limit,
+    isRefresh: payload.isRefresh,
+    lastDealTime: payload.lastDealTime || undefined,
+    dealType: payload.dealType
+  }
+
+  try {
+    let result = yield call(fetchDepositApi, apiPayload)
+    let deposits = result.depositList
+    let total = result.total
+    yield put(updateDepositList({deposits: deposits, isRefresh: apiPayload.isRefresh}))
+    let users = new Set()
+    deposits.forEach((deal) => {
+      let user = deal.user
+      if(user) {
+        users.add(user)
+      }
+    })
+    if(users.size > 0) {
+      yield put(userActions.saveUsers({ users }))
+    }
+    if(payload.success) {
+      payload.success(total)
+    }
+  } catch (error) {
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
 }
 export const saga = [
   takeLatest(FETCH_ORDERS, fetchOrders),
-  takeLatest(FETCH_RECHARGES, fetchRecharges)
+  takeLatest(FETCH_RECHARGES, fetchRecharges),
+  takeLatest(FETCH_DEPOSIT, fetchDeposits),
 ]
 /**** Reducer ****/
 const initialState = OrderState()
@@ -202,6 +281,12 @@ export function reducer(state = initialState, action) {
       return handleSaveRecharges(state, action)
     case UPDATE_RECHARGE_LIST:
       return handleUpdateRechargeList(state, action)
+    case SAVE_DEPOSIT:
+      return handleSaveDeposit(state, action)
+    case SAVE_DEPOSITS:
+      return handleSaveDeposits(state, action)
+    case UPDATE_DEPOSIT_LIST:
+      return handleUpdateDepositList(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -223,6 +308,13 @@ function handleSaveRecharge(state, action) {
   return state
 }
 
+function handleSaveDeposit(state, action) {
+  let deposit = action.payload.deposit
+  let depositRecord = Deposit.fromJSON(deposit)
+  state = state.setIn(['deposits', deposit.id], depositRecord)
+  return state
+}
+
 function handleSaveOrders(state, action) {
   let orders = action.payload.orders
 
@@ -239,6 +331,15 @@ function handleSaveRecharges(state, action) {
   recharges.forEach((recharge) => {
     let rechargeRecord = Recharge.fromApi(recharge)
     state = state.setIn(['recharges', recharge.id], rechargeRecord)
+  })
+  return state
+}
+
+function handleSaveDeposits(state, action) {
+  let deposits = action.payload.deposits
+  deposits.forEach((deposit) => {
+    let depositRecord = Deposit.fromJSON(deposit)
+    state = state.setIn(['deposits', deposit.id], depositRecord)
   })
   return state
 }
@@ -272,6 +373,22 @@ function handleUpdateRechargeList(state, action) {
     rechargeList = rechargeList.push(recharge.id)
   })
   state = state.set('rechargeList', rechargeList)
+  return state
+}
+
+function handleUpdateDepositList(state, action) {
+  let deposits = action.payload.deposits
+  let isRefresh = action.payload.isRefresh
+  let depositList = List()
+  if(!isRefresh) {
+    depositList = state.get('depositList')
+  }
+  deposits.forEach((deposit) => {
+    let depositRecord = Deposit.fromJSON(deposit)
+    state = state.setIn(['deposits', deposit.id], depositRecord)
+    depositList = depositList.push(deposit.id)
+  })
+  state = state.set('depositList', depositList)
   return state
 }
 
@@ -339,6 +456,7 @@ function selectOrderList(state) {
     orderInfo.stationName = stationInfo? stationInfo.name : undefined
     orderInfo.nickname = userInfo? userInfo.nickname : undefined
     orderInfo.mobilePhoneNumber = userInfo? userInfo.mobilePhoneNumber : undefined
+    orderInfo.device = deviceInfo
     orderInfoList.push(orderInfo)
   })
   return orderInfoList
@@ -368,9 +486,34 @@ function selectRechargeList(state) {
   return rechargeInfoList
 }
 
+function selectDeposit(state, depositId) {
+  if(!depositId) {
+    return undefined
+  }
+  let depositRecord = state.ORDER.getIn(['deposits', depositId])
+  return depositRecord? depositRecord.toJS() : undefined
+}
+
+function selectDepositList(state) {
+  let depositList = state.ORDER.get('depositList')
+  let depositInfoList = []
+
+  depositList.toArray().forEach((depositId) => {
+    let depositInfo = selectDeposit(state, depositId)
+    let userInfo = depositInfo? userSelector.selectUserById(state, depositInfo.userId) : undefined
+    depositInfo.nickname = userInfo? userInfo.nickname : undefined
+    depositInfo.mobilePhoneNumber = userInfo? userInfo.mobilePhoneNumber : undefined
+    if(depositInfo) {
+      depositInfoList.push(depositInfo)
+    }
+  })
+  return depositInfoList
+}
+
 export const selector = {
   selectOrder,
   selectOrderList,
   selectRecharge,
   selectRechargeList,
+  selectDepositList,
 }

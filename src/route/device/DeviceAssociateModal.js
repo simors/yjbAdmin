@@ -32,7 +32,7 @@ class DeviceAssociateModal extends PureComponent {
   }
 
   componentWillMount() {
-    this.props.requestStations({})
+    this.props.requestStations({status: 1})
   }
 
   onDivisionChange = (value, selectedOptions) => {

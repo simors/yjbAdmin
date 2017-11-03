@@ -14,3 +14,7 @@ export async function fetchDeviceStat() {
 export async function fetchStationStat() {
   return await AV.Cloud.run('stationFetchStationStat', {})
 }
+
+export async function fetchPlatformProfitStat() {
+  return await AV.Cloud.run('accountStatPlatformAccount', {})
+}

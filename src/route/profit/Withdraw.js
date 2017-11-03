@@ -15,9 +15,22 @@ class Withdraw extends React.PureComponent {
     super(props)
   }
 
+  componentDidMount() {
+    // To disabled submit button at the beginning.
+    this.props.form.validateFields()
+  }
+
   closeModel = () => {
     let {onCancel} = this.props
     onCancel()
+  }
+
+  hasErrors(fieldsError, values, balance) {
+    if (Object.keys(fieldsError).some(field => fieldsError[field])) {
+      return true
+    }
+    let isValid = values['withdraw'] > 0 && values['withdraw'] <= balance && values['withdraw'] <= 9999
+    return !isValid
   }
 
   handleSubmit = (e) => {
@@ -71,7 +84,7 @@ class Withdraw extends React.PureComponent {
   }
 
   render() {
-    const { getFieldDecorator } = this.props.form
+    const { getFieldDecorator, getFieldsValue, getFieldsError } = this.props.form
     let {adminProfit, currentUser} = this.props
     if (!adminProfit) {
       return null
@@ -89,19 +102,20 @@ class Withdraw extends React.PureComponent {
               <div style={{fontSize: 16, marginBottom: 10}}>输入提现金额</div>
               <div style={{marginLeft: 20}}>
                 <Form onSubmit={this.handleSubmit}>
-                  <FormItem help="一次最多提取9999.99元，精确到2位小数">
+                  <FormItem help="一次最多提取9999元，只允许输入整数值">
                     {getFieldDecorator('withdraw', {
                       rules:
                         [
-                          {required: true, type: 'number', message: '请输入取现金额'},
+                          {required: true, type: 'integer', message: '请输入取现金额'},
                         ],
                     })(
                       <InputNumber
                         style={{width: '100%'}}
                         formatter={value => `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         parser={value => value.replace(/\¥\s?|(,*)/g, '')}
-                        precision={2}
-                        max={9999.99}
+                        precision={0}
+                        max={9999}
+                        min={1}
                       />
                     )}
                   </FormItem>
@@ -111,7 +125,7 @@ class Withdraw extends React.PureComponent {
 
               <div style={{marginTop: 20, marginLeft: 20}}>
                 <Popconfirm placement="top" title="确认需要取现吗？" onConfirm={this.handleSubmit} okText="是的" cancelText="再想想">
-                  <Button type="primary" size="large">取现到微信余额</Button>
+                  <Button type="primary" size="large" disabled={this.hasErrors(getFieldsError(), getFieldsValue(), adminProfit.balance)}>取现到微信余额</Button>
                 </Popconfirm>
               </div>
             </Col>

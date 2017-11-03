@@ -83,17 +83,23 @@ class SiderMenu extends React.Component {
   }
 
   renderRechargeOrderMenu() {
-    let {orderVisible, rechargeVisible} = this.props
-    if (orderVisible || rechargeVisible) {
+    let {orderVisible, rechargeVisible, refundVisible, withdrawVisible} = this.props
+    if (orderVisible || rechargeVisible || refundVisible || withdrawVisible) {
       let items = []
       if (orderVisible) {
-        items.push(<Menu.Item key="/order_list"><Link to="/order_list">订单信息管理</Link></Menu.Item>)
+        items.push(<Menu.Item key="/order_list"><Link to="/order_list">订单管理</Link></Menu.Item>)
       }
       if (rechargeVisible) {
-        items.push(<Menu.Item key="/order_recharge"><Link to="/order_recharge">用户充值管理</Link></Menu.Item>)
+        items.push(<Menu.Item key="/order_recharge"><Link to="/order_recharge">充值管理</Link></Menu.Item>)
+      }
+      if (refundVisible) {
+        items.push(<Menu.Item key="/order_refund"><Link to="/order_refund">押金管理</Link></Menu.Item>)
+      }
+      if (withdrawVisible) {
+        items.push(<Menu.Item key="/order_withdraw"><Link to="/order_withdraw">收益取现</Link></Menu.Item>)
       }
       return (
-        <Menu.SubMenu key="/order" title={<span><Icon type="solution" />充值与订单管理</span>}>
+        <Menu.SubMenu key="/order" title={<span><Icon type="solution" />资金与订单管理</span>}>
           {items}
         </Menu.SubMenu>
       )
@@ -245,6 +251,8 @@ const mapStateToProps = (appState, ownProps) => {
 
   const orderVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_ORDER_QUERY])
   const rechargeVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_MAN_USER_PAID])
+  const refundVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_REFUND_QUERY])
+  const withdrawVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_WITHDRAW_QUERY])
 
   const accountStationVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.ACCOUNT_STAT_STATION_DIVIDEND])
   const accountDepartmentVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.ACCOUNT_STATION_DEPARTMENT_DIVIDEND])
@@ -272,6 +280,8 @@ const mapStateToProps = (appState, ownProps) => {
     stationInvestorVisible,
     orderVisible,
     rechargeVisible,
+    refundVisible,
+    withdrawVisible,
     accountStationVisible,
     accountDepartmentVisible,
     accountInvestorVisible,
