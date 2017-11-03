@@ -4,7 +4,7 @@
 import AV from 'leancloud-storage'
 
 export async function getOperationList(payload) {
-  console.log('payload========>',payload)
+  // console.log('payload========>',payload)
   return await AV.Cloud.run('operationFetchOperationLogs', payload)
 }
 

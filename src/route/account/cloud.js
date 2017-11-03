@@ -43,7 +43,6 @@ export async function fetchStationAccountDetail(payload) {
     }else{
        accounts = await AV.Cloud.run('accountGetDayAccountsSum', payload)
     }
-    console.log('accounts===~~~~~~~~~~~~~~~~~===>',accounts)
     return {success: true, accounts: accounts}
   } catch (error) {
     console.error(error)
