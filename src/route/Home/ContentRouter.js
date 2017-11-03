@@ -8,7 +8,7 @@ import {SystemMessage, PromotionMessage} from '../../route/notification/';
 import {EndUser} from '../enduser/'
 import {AdminUser} from '../adminuser/'
 import StationManager from '../station/StationManage'
-import Order, {Recharge} from '../order'
+import Order, {Recharge, WithdrawRecords} from '../order'
 import Device from '../device'
 import InvestorManager from '../station/InvestorManage'
 import ShowStation from '../station/ShowStation'
@@ -51,6 +51,7 @@ const ContentRouter = (props) => {
       <Route exact path="/site_investor" component={InvestorManager}/>
       <Route exact path="/order_list" component={Order}/>
       <Route exact path="/order_recharge" component={Recharge}/>
+      <Route exact path="/order_withdraw" component={WithdrawRecords}/>
       <Route exact path="/promotion_list" component={Promotion}/>
       <Route exact path="/promotion_list/recharge_stat" component={RechargePromotionStat}/>
       <Route exact path="/promotion_list/score_stat" component={ScorePromotionStat}/>
@@ -83,6 +84,7 @@ export const breadcrumbNameMap = {
   '/site_investor': '投资人信息管理',
   '/order_list': '订单信息管理',
   '/order_recharge': '用户充值管理',
+  '/order_withdraw': '收益取现管理',
   '/promotion_list': '活动管理',
   '/promotion_list/recharge_stat': '充值活动统计',
   '/promotion_list/score_stat': '积分倍率活动统计',
