@@ -214,7 +214,7 @@ class AddStation extends React.Component {
                       message: '干衣柜单价未填写'
                     }
                   ]
-                })(<InputNumber style={{width:70}}
+                })(<InputNumber style={{width:70}} min={0}
                 />)}
                 <span className="ant-form-text">元／分</span>
 
@@ -230,7 +230,7 @@ class AddStation extends React.Component {
                       message: '干衣柜押金未填写'
                     }
                   ]
-                })(<InputNumber
+                })(<InputNumber min={0}
                 />)}
                 <span className="ant-form-text"> 元</span>
               </FormItem>
@@ -245,7 +245,7 @@ class AddStation extends React.Component {
                       message: '电费单价未填写'
                     }
                   ]
-                })(<InputNumber
+                })(<InputNumber min={0}
                 />)}
                 <span className="ant-form-text"> 元／度</span>
 
@@ -261,7 +261,7 @@ class AddStation extends React.Component {
                       message: '平台分成比例未填写'
                     }
                   ]
-                })(<InputNumber
+                })(<InputNumber min={0}
                 />)}
                 <span className="ant-form-text"> %</span>
 

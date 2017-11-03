@@ -152,7 +152,7 @@ class UpdateInvestorModal extends Component {
                 }
               ]
             })(
-              <Select allowClear={true} style={{width: 200}}>
+              <Select allowClear={true} style={{width: 200}} disabled = {true}>
                 {this.userList()}
               </Select>
             )}
@@ -166,7 +166,7 @@ class UpdateInvestorModal extends Component {
                   message: '投资服务点未选择'
                 }
               ]
-            })(<Select allowClear={true} style={{width: 200}}>
+            })(<Select allowClear={true} style={{width: 200}}  disabled = {true}>
               {this.stationList()}
             </Select>)}
           </FormItem>
@@ -181,7 +181,7 @@ class UpdateInvestorModal extends Component {
                       message: '投资金额未填写'
                     }
                   ]
-                })(<InputNumber />)}
+                })(<InputNumber   disabled = {true}/>)}
               </FormItem>
             </Col>
             <Col span={6}>

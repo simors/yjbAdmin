@@ -15,6 +15,7 @@ import UpdateInvestorModal from '../../component/station/UpdateInvestorModal'
 import {selector, action} from '../../util/auth'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
 import {ROLE_CODE,PERMISSION_CODE} from '../../util/rolePermission'
+import {smsAction,smsSelector} from '../../component/smsModal'
 
 const Option = Select.Option;
 const ButtonGroup = Button.Group
@@ -52,8 +53,8 @@ class InvestorManage extends React.Component {
       }
     });
     this.props.requestStations({
+      status: 1,
       success: ()=> {
-        status: 1
       }
     });
     this.props.listUsersByRole({
@@ -74,7 +75,7 @@ class InvestorManage extends React.Component {
           this.refresh()
         },
         error: (err)=> {
-          console.log('i m false', err.message)
+          message.error(err.message)
         }
       }
       if (value.status == 1) {
@@ -96,17 +97,13 @@ class InvestorManage extends React.Component {
       if (errors) {
         return
       }
-      // console.log('=======>',{...this.props.form.getFieldsValue()})
       let data = this.props.form.getFieldsValue()
-      console.log('data=======>',data)
       let payload = {
         mobilePhoneNumber: data.mobilePhoneNumber,
         stationId: data.stationId,
         status: data.status && data.status.key ? parseInt(data.status.key): undefined,
         success: ()=> {
           this.props.updateLoadingState({isLoading: false})
-
-          console.log('success')
         },
         error: (err)=> {
           this.props.updateLoadingState({isLoading: false})
@@ -125,26 +122,6 @@ class InvestorManage extends React.Component {
     this.setState({
       stationId: value
     })
-  }
-
-  clearSearch() {
-    this.setState({
-      status: undefined,
-      stationId: undefined,
-      mobilePhoneNumber: undefined,
-    })
-    this.props.updateLoadingState({isLoading: true})
-
-    this.props.requestStations({
-      success: ()=> {
-      this.props.updateLoadingState({isLoading: false})
-      console.log('success')
-    },
-      error: ()=> {
-        this.props.updateLoadingState({isLoading: false})
-        console.log('error')
-      }})
-
   }
 
   renderSearchBar() {
@@ -244,6 +221,7 @@ class InvestorManage extends React.Component {
   }
 
   openUpdateModal(value) {
+    // console.log('value=======>',value)
     this.props.requestStations({
       status: 1,
       success: ()=> {
@@ -251,6 +229,29 @@ class InvestorManage extends React.Component {
     })
     this.setState({selectedInvestor:value,updateModalVisible: true})
   }
+
+  createInvestorSmsModal(data) {
+    let payload = {
+      modalVisible: true,
+      op: '增加投资人',
+      verifySuccess: ()=>{this.createInvestor(data)},
+      verifyError: ()=>{message.error('验证错误')}
+
+    }
+    this.props.updateSmsModal(payload)
+  }
+
+  updateInvestorSmsModal(data) {
+    let payload = {
+      modalVisible: true,
+      op: '更新投资人',
+      verifySuccess: ()=>{this.updateInvestor(data)},
+      verifyError: (e)=>{message.error(e.message)}
+
+    }
+    this.props.updateSmsModal(payload)
+  }
+
 
   createInvestor(data) {
     this.props.updateLoadingState({isLoading: true})
@@ -271,9 +272,10 @@ class InvestorManage extends React.Component {
   }
 
   updateInvestor(data) {
+    // console.log('data======>',data)
     let payload = {
       ...data,
-      investorId: this.state.selectedRowId[0],
+      investorId: this.state.selectedInvestor.id,
       success: ()=> {
         this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1}, ()=> {
           this.refresh()
@@ -318,10 +320,9 @@ class InvestorManage extends React.Component {
         <CreateInvestorModal
           modalKey={this.state.modalKey}
           onOk={(data)=> {
-            this.createInvestor(data)
+            this.createInvestorSmsModal(data)
           }}
           onCancel={()=> {
-            console.log('i, m cancel')
             this.setState({createModalVisible: false})
           }}
           userList={this.props.investorList}
@@ -331,10 +332,9 @@ class InvestorManage extends React.Component {
         {this.state.updateModalVisible ? <UpdateInvestorModal
           modalKey={this.state.modalKey}
           onOk={(data)=> {
-            this.updateInvestor(data)
+            this.updateInvestorSmsModal(data)
           }}
           onCancel={()=> {
-            console.log('i, m cancel')
             this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1})
           }}
           investor={this.state.selectedInvestor}
@@ -365,7 +365,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = {
   ...stationAction,
   ...action,
-  ...loadAction
+  ...loadAction,
+  ...smsAction
 
 };
 

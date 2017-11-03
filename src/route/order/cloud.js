@@ -13,16 +13,6 @@ export async function fetchOrdersApi(payload) {
   }
 }
 
-export async function fetchRechargesApi(payload) {
-  try {
-    let result = await AV.Cloud.run('pingppFetchRecharges', payload)
-    return result
-  } catch (error) {
-    console.error(error)
-    throw error
-  }
-}
-
-export async function fetchDepositApi(paylaod) {
-  return await AV.Cloud.run('pingppFetchDeposit', paylaod)
+export async function fetchDealRecordApi(payload) {
+  return await AV.Cloud.run('pingppFetchDealRecord', payload)
 }
