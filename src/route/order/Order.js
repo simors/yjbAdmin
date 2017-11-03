@@ -9,6 +9,7 @@ import {
   Table,
   Row,
   Popover,
+  Card,
 } from 'antd'
 import mathjs from 'mathjs'
 import moment from "moment"
@@ -32,13 +33,13 @@ class Order extends PureComponent {
 
   renderDevicePopover = (text, record, index) => {
     const content = (
-      <div>
-        <label for="deviceNo">编号：</label>
-        <input id="deviceNo" type="text" value={record.deviceNo} />
-      </div>
+      <Card title="干衣柜详情" bordered={false}>
+        <Row>{"编号：" + record.device.deviceNo}</Row>
+        <Row>{"地址：" + record.device.deviceAddr}</Row>
+      </Card>
     )
     return (
-      <Popover content={content} title="干衣柜详情" >
+      <Popover content={content} >
         <span>{text}</span>
       </Popover>
     )
