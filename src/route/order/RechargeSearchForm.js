@@ -15,7 +15,7 @@ import {
   message,
 } from 'antd'
 import style from './order.module.scss'
-import {actions} from './redux'
+import {actions, DealType} from './redux'
 import * as errno from '../../errno'
 
 const FormItem = Form.Item
@@ -28,8 +28,9 @@ class SearchForm extends PureComponent {
   }
 
   componentWillMount() {
-    const {fetchRechargesAction} = this.props
-    fetchRechargesAction({
+    const {fetchDealAction} = this.props
+    fetchDealAction({
+      dealType: DealType.DEAL_TYPE_RECHARGE,
       limit: 10,
       isRefresh: true,
       success: (total) => this.onFetchRechargeSuccess(total, {}),
@@ -71,7 +72,7 @@ class SearchForm extends PureComponent {
   }
 
   handleSubmit = (e) => {
-    const {fetchRechargesAction, onSearchStart} = this.props
+    const {onSearchStart, fetchDealAction} = this.props
     e.preventDefault()
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
@@ -89,7 +90,8 @@ class SearchForm extends PureComponent {
         }
       }
       console.log("handleSubmit values:", values)
-      fetchRechargesAction({
+      fetchDealAction({
+        dealType: DealType.DEAL_TYPE_RECHARGE,
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
         mobilePhoneNumber: values.phone,
