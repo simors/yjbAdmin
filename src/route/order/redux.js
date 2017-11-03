@@ -456,6 +456,7 @@ function selectOrderList(state) {
     orderInfo.stationName = stationInfo? stationInfo.name : undefined
     orderInfo.nickname = userInfo? userInfo.nickname : undefined
     orderInfo.mobilePhoneNumber = userInfo? userInfo.mobilePhoneNumber : undefined
+    orderInfo.device = deviceInfo
     orderInfoList.push(orderInfo)
   })
   return orderInfoList
