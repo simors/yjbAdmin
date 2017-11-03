@@ -414,9 +414,9 @@ class EditStation extends React.Component {
                         message: '电费单价未填写'
                       }
                     ]
-                  })(<InputNumber
+                  })(<InputNumber style={{width:70}}
                   />)}
-                  <span className="ant-form-text">元</span>
+                  <span className="ant-form-text">元／度</span>
                 </FormItem>
               </Col>
               <Col span={6}>

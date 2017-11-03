@@ -15,6 +15,7 @@ import {action, selector} from '../../util/auth'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
 import {ROLE_CODE, PERMISSION_CODE} from '../../util/rolePermission'
 import mathjs from 'mathjs'
+import {smsAction,smsSelector} from '../../component/smsModal'
 
 const Option = Select.Option;
 const FormItem = Form.Item
@@ -199,6 +200,30 @@ class ShowStation extends React.Component {
     } else {
       return null
     }
+  }
+
+  createPartnerSmsModal(data) {
+
+    let payload = {
+      modalVisible: true,
+      op: '增加服务单位',
+      verifySuccess: ()=>{this.createPartner(data)},
+      verifyError: ()=>{message.error('验证错误')}
+
+    }
+    this.props.updateSmsModal(payload)
+  }
+
+  updatePartnerSmsModal(data) {
+
+    let payload = {
+      modalVisible: true,
+      op: '修改服务单位',
+      verifySuccess: ()=>{this.updatePartner(data)},
+      verifyError: ()=>{message.error('验证错误')}
+
+    }
+    this.props.updateSmsModal(payload)
   }
 
   createPartner(data) {
@@ -398,7 +423,7 @@ class ShowStation extends React.Component {
                       message: '干衣柜押金未填写'
                     }
                   ]
-                })(<InputNumber
+                })(<InputNumber min={0}
                 />)}
                 <span className="ant-form-text">元</span>
 
@@ -414,9 +439,9 @@ class ShowStation extends React.Component {
                       message: '电费单价未填写'
                     }
                   ]
-                })(<InputNumber
+                })(<InputNumber style={{width:70}}
                 />)}
-                <span className="ant-form-text">元</span>
+                <span className="ant-form-text">元/度</span>
               </FormItem>
             </Col>
             <Col span={6}>
@@ -477,7 +502,7 @@ class ShowStation extends React.Component {
         <CreatePartnerModal
           modalKey={this.state.modalKey}
           onOk={(data)=> {
-            this.createPartner(data)
+            this.createPartnerSmsModal(data)
           }}
           onCancel={()=> {
             this.setState({createModalVisible: false})
@@ -489,7 +514,7 @@ class ShowStation extends React.Component {
         <UpdatePartnerModal
           modalKey={this.state.modalKey}
           onOk={(data)=> {
-            this.updatePartner(data)
+            this.updatePartnerSmsModal(data)
           }}
           onCancel={()=> {
             this.setState({updateModalVisible: false, modalKey: this.state.modalKey - 1})
@@ -523,6 +548,7 @@ const mapDispatchToProps = {
   ...stationAction,
   ...action,
   ...loadAction,
+  ...smsAction
 
 };
 
