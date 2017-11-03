@@ -205,6 +205,7 @@ class PartnerAccountManager extends React.Component {
       }else{
         let payload = {
           stationId: values.stationId,
+          mobilePhoneNumber: values.mobilePhoneNumber,
           userId: values.userId,
           startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
           endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
@@ -285,17 +286,9 @@ class PartnerAccountManager extends React.Component {
           )}
         </FormItem>
         <FormItem>
-          {getFieldDecorator("userId", {
-            initialValue: '',
+          {getFieldDecorator("mobilePhoneNumber", {
           })(
-            <Select defalutValue='' style={{width: 120}} placeholder="选择分成方">
-              <Option value=''>全部</Option>
-              {
-                this.props.userList.map((user, index) => (
-                  <Option key={index} value={user.id}>{user.nickname + '  ' + user.mobilePhoneNumber}</Option>
-                ))
-              }
-            </Select>
+            <Input placeholder = '电话号码' />
           )}
         </FormItem>
         <FormItem>
