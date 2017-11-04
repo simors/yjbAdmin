@@ -19,3 +19,4 @@ export const stationAction = redux.stationAction
 export default StationManage
 
 export const PROFIT_SHARE_TYPE = redux.PROFIT_SHARE_TYPE
+export const StationStatus = redux.StationStatus

@@ -16,6 +16,7 @@ import LoadActivity, {loadAction} from '../../component/loadActivity'
 import {ROLE_CODE, PERMISSION_CODE} from '../../util/rolePermission'
 import mathjs from 'mathjs'
 import {smsAction,smsSelector} from '../../component/smsModal'
+import {StationStatus} from './index'
 
 const Option = Select.Option;
 const FormItem = Form.Item
@@ -107,7 +108,7 @@ class ShowStation extends React.Component {
           console.log('i m false', err.message)
         }
       }
-      if (data.status == 1) {
+      if (data.status == StationStatus.STATION_STATUS_OPEN) {
         this.props.closeInvestor(payload)
       } else {
         this.props.openInvestor(payload)
@@ -172,7 +173,7 @@ class ShowStation extends React.Component {
         console.log('err==>', err.message)
       }
     }
-    if (data.status == 1) {
+    if (data.status == StationStatus.STATION_STATUS_OPEN) {
       this.props.closePartner(payload)
     } else {
       this.props.openPartner(payload)

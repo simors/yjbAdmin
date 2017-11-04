@@ -14,6 +14,7 @@ import {accountAction, accountSelector} from '../account/redux'
 import {PERMISSION_CODE} from '../../util/rolePermission'
 import {smsAction,smsSelector} from '../../component/smsModal'
 import {loadAction} from '../../component/loadActivity'
+import {StationStatus} from './index'
 
 const Option = Select.Option;
 const ButtonGroup = Button.Group
@@ -74,7 +75,7 @@ class StationManage extends React.Component {
         message.error(err.message)
       }
     }
-    if (value.status == 1) {
+    if (value.status == StationStatus.STATION_STATUS_OPEN) {
       this.props.closeStation(payload)
     } else {
       this.props.openStation(payload)
