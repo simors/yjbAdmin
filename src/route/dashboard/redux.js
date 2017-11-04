@@ -6,6 +6,8 @@ import {createAction} from 'redux-actions';
 import {Record, Map, Set, List} from 'immutable';
 import {REHYDRATE} from 'redux-persist/constants';
 import * as dashboardCloud from './cloud'
+import {stationAction, stationSelector} from '../station'
+import {accountAction, accountSelector} from '../account'
 
 /******* Model *******/
 
@@ -89,6 +91,7 @@ class Dashboard extends Record({
   lastDayPlatformAccount: undefined,
   lastMonthPlatformAccount: undefined,
   lastYearPlatformAccount: undefined,
+  stationAccountRank: List(),
 }, 'Dashboard') {}
 
 /******* Constants *******/
@@ -101,6 +104,8 @@ const REQUEST_STATION_STAT = 'REQUEST_STATION_STAT'
 const SAVE_STATION_STAT = 'SAVE_STATION_STAT'
 const REQUEST_PLATFORM_PROFIT_STAT = 'REQUEST_PLATFORM_PROFIT_STAT'
 const SAVE_PLATFORM_PROFIT_STAT = 'SAVE_PLATFORM_PROFIT_STAT'
+const REQUEST_STATION_ACCOUNT_RANK = 'REQUEST_STATION_ACCOUNT_RANK'
+const SAVE_STATION_ACCOUNT_RANK = 'SAVE_STATION_ACCOUNT_RANK'
 
 /******* Action *******/
 
@@ -109,12 +114,14 @@ export const dashboardAction = {
   requestDeviceStat: createAction(REQUEST_DEVICE_STAT),
   requestStationStat: createAction(REQUEST_STATION_STAT),
   requestPlatformProfitStat: createAction(REQUEST_PLATFORM_PROFIT_STAT),
+  requestStationAccountRank: createAction(REQUEST_STATION_ACCOUNT_RANK),
 }
 
 const saveMpUserStat = createAction(SAVE_MP_USER_STAT)
 const saveDeviceStat = createAction(SAVE_DEVICE_STAT)
 const saveStationStat = createAction(SAVE_STATION_STAT)
 const savePlatformProfitStat = createAction(SAVE_PLATFORM_PROFIT_STAT)
+const saveStationAccountRank = createAction(SAVE_STATION_ACCOUNT_RANK)
 
 /******* Saga *******/
 
@@ -123,6 +130,7 @@ export const dashboardSaga = [
   takeLatest(REQUEST_DEVICE_STAT, sagaFetchDeviceStat),
   takeLatest(REQUEST_STATION_STAT, sagaFetchStationStat),
   takeLatest(REQUEST_PLATFORM_PROFIT_STAT, sagaFetchPlatformProfitStat),
+  takeLatest(REQUEST_STATION_ACCOUNT_RANK, sagaFetchStationAccountRank),
 ]
 
 function* sagaFetchMpUserStat(action) {
@@ -185,6 +193,27 @@ function* sagaFetchPlatformProfitStat(action) {
   }
 }
 
+function* sagaFetchStationAccountRank(action) {
+  let payload = action.payload
+  try {
+    let result = yield call(dashboardCloud.fetchStationAccountRank, {rankDate: payload.rankDate})
+    let stations = []
+    result.forEach((account) => {
+      stations.push(account.station)
+    })
+    yield put(stationAction.saveStations({stations}))
+    yield put(accountAction.saveBatchStationAccount({stationAccounts: result}))
+    yield put(saveStationAccountRank({stationRank: result}))
+    if (payload.success) {
+      payload.success();
+    }
+  } catch (e) {
+    if (payload.error) {
+      payload.error(e.code);
+    }
+  }
+}
+
 /******* Reducer *******/
 
 const initialState = new Dashboard();
@@ -199,6 +228,8 @@ export function dashboardReducer(state=initialState, action) {
       return reduceSaveStationStat(state, action)
     case SAVE_PLATFORM_PROFIT_STAT:
       return reduceSavePlatformProfitStat(state, action)
+    case SAVE_STATION_ACCOUNT_RANK:
+      return reduceSaveStationAccountRank(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -234,6 +265,17 @@ function reduceSavePlatformProfitStat(state, action) {
   state = state.set('lastDayPlatformAccount', PlatformProfitStat.fromJson(platformProfit.lastDayPlatformAccount))
   state = state.set('lastMonthPlatformAccount', PlatformProfitStat.fromJson(platformProfit.lastMonthPlatformAccount))
   state = state.set('lastYearPlatformAccount', PlatformProfitStat.fromJson(platformProfit.lastYearPlatformAccount))
+  return state
+}
+
+function reduceSaveStationAccountRank(state, action) {
+  let payload = action.payload
+  let rank = payload.stationRank
+  let rankList = []
+  rank.forEach((account) => {
+    rankList.push(account.id)
+  })
+  state = state.set('stationAccountRank', new List(rankList))
   return state
 }
 
@@ -276,6 +318,11 @@ function onRehydrate(state, action) {
   if (lastYearPlatformAccount) {
     state = state.set('lastYearPlatformAccount', PlatformProfitStat.fromJson(lastYearPlatformAccount))
   }
+
+  let stationAccountRank = incoming.stationAccountRank
+  if (stationAccountRank) {
+    state = state.set('stationAccountRank', new List(stationAccountRank))
+  }
   return state
 }
 
@@ -286,6 +333,7 @@ export const dashboardSelector = {
   selectDeviceStat,
   selectStationStat,
   selectPlatformProfitStat,
+  selectStationAccountList,
 }
 
 function selectMpUserStat(state) {
@@ -331,4 +379,17 @@ function selectPlatformProfitStat(state) {
     platformProfit.lastYearPlatformAccount = lastYearPlatformAccount.toJS()
   }
   return platformProfit
+}
+
+function selectStationAccountList(state) {
+  let stationAccountRank = state.DASHBOARD.stationAccountRank
+  if (!stationAccountRank) {
+    return []
+  }
+  let rankList = stationAccountRank.toJS()
+  let rank = []
+  rankList.forEach((accountId) => {
+    rank.push(accountSelector.selectStationAccountById(state, accountId))
+  })
+  return rank
 }
