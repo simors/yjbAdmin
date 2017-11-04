@@ -84,12 +84,13 @@ class Login extends React.Component {
         <Form onSubmit={this.handleSubmit}>
           <FormItem hasFeedback>
             {getFieldDecorator('phone', {
-              rules: [
-                {
-                  required: true,
-                  message: '请填写手机号'
-                }
-              ]
+              rules: [{
+                required: true,
+                message: '请填写手机号'
+              }, {
+                pattern: /^1\d{10}$/,
+                message: '请输入正确的手机号'
+              }]
             })(<Input size='large' onPressEnter={this.handleSubmit} placeholder='手机号'/>)}
           </FormItem>
           <FormItem hasFeedback>
