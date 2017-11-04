@@ -1,2 +1,4 @@
-export {default as SystemMessage} from './system';
-export {default as PromotionMessage} from './promotion';
+export {action, selector, saga, reducer} from './redux';
+
+export {default as SystemNotification} from './system';
+export {default as PromotionNotification} from './promotion';
