@@ -162,6 +162,11 @@ const requestPartnersSuccess = createAction(FETCH_PARTNERS_SUCCESS)
 const createStationSuccess = createAction(CREATE_STATION_SUCCESS)
 const updateStationSuccess = createAction(UPDATE_STATION_SUCCESS)
 
+export const StationStatus = {
+  STATION_STATUS_OPEN : 1,       //服务点为开启
+  STATION_STATUS_CLOSE : 0,          //服务点为关闭
+
+}
 
 /**** Saga ****/
 
