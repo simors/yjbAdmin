@@ -150,6 +150,43 @@ config.module.rules.push({
   })
 })
 
+config.module.rules.push({
+  test: /\.module.(less)$/,
+  loader: extractStyles.extract({
+    fallback: 'style-loader',
+    use: [
+      {
+        loader: 'css-loader',
+        options: {
+          modules: true,
+          localIdentName: "[name]__[local]___[hash:base64:5]",
+          sourceMap: project.sourcemaps,
+          minimize: {
+            autoprefixer: {
+              add: true,
+              remove: true,
+              browsers: ['last 2 versions'],
+            },
+            discardComments: {
+              removeAll : true,
+            },
+            discardUnused: false,
+            mergeIdents: false,
+            reduceIdents: false,
+            safe: true,
+            sourcemap: project.sourcemaps,
+          },
+        },
+      },
+      {
+        loader: 'less-loader',
+        options: {
+        },
+      }
+    ],
+  })
+})
+
 // global style
 config.module.rules.push({
   test: /^((?!\.module).)*(sass|scss|css)$/,
