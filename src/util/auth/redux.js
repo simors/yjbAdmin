@@ -497,6 +497,7 @@ function* sagaListAdminUsers(action) {
       mobilePhoneNumber: params.mobilePhoneNumber,
       roles: params.roles,
       status: params.status,
+      skipMyself: true,
     } = payload);
 
     // result = {
