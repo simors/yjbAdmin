@@ -1,9 +1,9 @@
 /**
  * Created by yangyang on 2017/11/3.
  */
-import React, {PureComponent} from 'react'
+import React from 'react'
 import {connect} from 'react-redux'
-import {Link, Route, withRouter, Switch} from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
 import {
   Button,
   Table,
@@ -16,7 +16,7 @@ import WithdrawSearchForm from './WithdrawSearchForm'
 
 const ButtonGroup = Button.Group
 
-class WithdrawRecords extends PureComponent {
+class WithdrawRecords extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
