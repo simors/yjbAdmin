@@ -16,7 +16,7 @@ import {
 } from 'antd'
 import style from './order.module.scss'
 import {stationSelector, stationAction} from '../station/redux'
-import {OrderStatus, actions} from './redux'
+import {DealType, actions} from './redux'
 import * as errno from '../../errno'
 
 const FormItem = Form.Item
@@ -30,24 +30,24 @@ class WithdrawSearchForm extends React.PureComponent {
   }
 
   componentWillMount() {
-    const {requestStations, fetchOrdersAction} = this.props
-    requestStations({})
-    fetchOrdersAction({
+    const {fetchDealAction} = this.props
+    fetchDealAction({
+      dealType: DealType.DEAL_TYPE_WITHDRAW,
       limit: 10,
       isRefresh: true,
-      success: (total) => this.onFetchOrdersSuccess(total, {}),
-      error: this.onFetchOrdersError,
+      success: (total) => this.onFetchWithdrawSuccess(total, {dealType: DealType.DEAL_TYPE_DEPOSIT}),
+      error: this.onFetchWithdrawError,
     })
   }
 
-  onFetchOrdersSuccess(total, values) {
+  onFetchWithdrawSuccess(total, values) {
     const {updateSearchParams, onSearchEnd} = this.props
     if (updateSearchParams) {
       updateSearchParams({
-        start: values.rangeTimePicker ? values.rangeTimePicker[0] : undefined,
-        end: values.rangeTimePicker ? values.rangeTimePicker[1] : undefined,
+        start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
+        end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
         mobilePhoneNumber: values.phone,
-        stationId: values.stationId == 'all' ? undefined : values.stationId,
+        dealType: DealType.DEAL_TYPE_WITHDRAW,
       }, total)
     }
     if(onSearchEnd) {
@@ -55,7 +55,7 @@ class WithdrawSearchForm extends React.PureComponent {
     }
   }
 
-  onFetchOrdersError = (error) => {
+  onFetchWithdrawError = (error) => {
     const {onSearchEnd} = this.props
     if(onSearchEnd) {
       onSearchEnd()
@@ -65,22 +65,25 @@ class WithdrawSearchForm extends React.PureComponent {
       case errno.EPERM:
         message.error("用户未登录")
         break
+      case errno.ERROR_NO_USER:
+        message.error("用户不存在")
+        break
       default:
-        message.error(`查询订单信息失败, 错误：${error.code}`)
+        message.error(`查询押金记录, 错误：${error.code}`)
         break
     }
   }
 
   handleSubmit = (e) => {
-    const {form, fetchOrdersAction, onSearchStart} = this.props
+    const {fetchDealAction, onSearchStart} = this.props
     e.preventDefault()
-    form.validateFields((err, fieldsValue) => {
+    this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
         return
       }
       const rangeTimeValue = fieldsValue['rangeTimePicker']
       let values = fieldsValue
-      if (rangeTimeValue && rangeTimeValue.length === 2) {
+      if(rangeTimeValue && rangeTimeValue.length === 2) {
         values = {
           ...fieldsValue,
           'rangeTimePicker': [
@@ -89,15 +92,15 @@ class WithdrawSearchForm extends React.PureComponent {
           ],
         }
       }
-      fetchOrdersAction({
-        start: values.rangeTimePicker ? values.rangeTimePicker[0] : undefined,
-        end: values.rangeTimePicker ? values.rangeTimePicker[1] : undefined,
-        status: !values.status || values.status == 'all' ? undefined : Number(values.status),
+      fetchDealAction({
+        start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
+        end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
         mobilePhoneNumber: values.phone,
+        dealType: DealType.DEAL_TYPE_WITHDRAW,
         limit: 10,
         isRefresh: true,
-        success: (total) => this.onFetchOrdersSuccess(total, values),
-        error: this.onFetchOrdersError,
+        success: (total) => this.onFetchWithdrawSuccess(total, values),
+        error: this.onFetchWithdrawError,
       })
       if(onSearchStart) {
         onSearchStart()
@@ -141,15 +144,12 @@ class WithdrawSearchForm extends React.PureComponent {
 }
 
 const mapStateToProps = (appState, ownProps) => {
-  let stationList = stationSelector.selectStations(appState)
   return {
-    stationList: stationList,
   }
 }
 
 const mapDispatchToProps = {
   ...actions,
-  ...stationAction,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(WithdrawSearchForm))
