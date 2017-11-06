@@ -15,6 +15,7 @@ import style from './order.module.scss'
 import WithdrawApplySearchForm from './WithdrawApplySearchForm'
 import {WITHDRAW_STATUS, WITHDRAW_APPLY_TYPE, selector, actions, DEAL_TYPE} from './redux'
 import * as errno from '../../errno'
+import {selector as authSelector} from '../../util/auth'
 
 class WithdrawApply extends React.PureComponent {
   constructor(props) {
@@ -38,7 +39,7 @@ class WithdrawApply extends React.PureComponent {
   }
 
   agreeWithdraw(record) {
-    console.log('record', record)
+    let {currentUser} = this.props
     let dealType = undefined
     if (record.applyType === WITHDRAW_APPLY_TYPE.PROFIT) {
       dealType = DEAL_TYPE.WITHDRAW
@@ -51,7 +52,9 @@ class WithdrawApply extends React.PureComponent {
       metadata: {
         'fromUser': 'platform',
         'toUser': record.userId,
-        'dealType': dealType
+        'dealType': dealType,
+        'operator': currentUser.id,
+        'withdrawId': record.id,
       },
       openid: record.openid,
       username: '',
@@ -142,8 +145,10 @@ class WithdrawApply extends React.PureComponent {
 
 const mapStateToProps = (appState, ownProps) => {
   let withdrawApplyList = selector.selectWithdrawApplyList(appState)
+  let currentUser = authSelector.selectCurUser(appState)
   return {
     withdrawApplyList,
+    currentUser,
   }
 }
 
