@@ -238,7 +238,16 @@ class InvestorManage extends React.Component {
       verifyError: ()=>{message.error('验证错误')}
 
     }
-    this.props.updateSmsModal(payload)
+
+
+    let params = {
+      ...data,
+      type: 'investor',
+      success: ()=>{    this.props.updateSmsModal(payload)
+      },
+      error: (err)=>{message.error('该服务点已存在该投资人')}
+    }
+    this.props.validProfitSharing(params)
   }
 
   updateInvestorSmsModal(data) {

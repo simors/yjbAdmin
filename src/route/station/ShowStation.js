@@ -210,7 +210,15 @@ class ShowStation extends React.Component {
       verifyError: ()=>{message.error('验证错误')}
 
     }
-    this.props.updateSmsModal(payload)
+    let params = {
+      ...data,
+      stationId: this.props.match.params.id,
+      type: 'partner',
+      success: ()=>{       this.props.updateSmsModal(payload)
+      },
+      error: (err)=>{message.error('该服务点已存在该服务单位')}
+    }
+    this.props.validProfitSharing(params)
   }
 
   updatePartnerSmsModal(data) {

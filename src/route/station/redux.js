@@ -125,7 +125,7 @@ const SAVE_BATCH_PROFIT_SHARE = 'SAVE_BATCH_PROFIT_SHARE'
 const VALID_ADMIN_HAVE_NO_STATION = 'VALID_ADMIN_HAVE_NO_STATION'
 const VALID_INVESTOR_HAVE_NO_STATION = 'VALID_INVESTOR_HAVE_NO_STATION'
 const VALID_PARTNER_HAVE_NO_STATION = 'VALID_PARTNER_HAVE_NO_STATION'
-
+const VALID_PROFIT_SHARING = 'VALID_PROFIT_SHARING'
 /**** Action ****/
 
 export const stationAction = {
@@ -150,8 +150,8 @@ export const stationAction = {
   saveBatchProfitShare: createAction(SAVE_BATCH_PROFIT_SHARE),
   validAdminHaveNoStation: createAction(VALID_ADMIN_HAVE_NO_STATION),// payload:{userId: Str,success: Func, error: Func}
   validPartnerHaveNoStation: createAction(VALID_PARTNER_HAVE_NO_STATION),// payload:{userId: Str,success: Func, error: Func}
-  validInvestorHaveNoStation: createAction(VALID_INVESTOR_HAVE_NO_STATION)// payload:{userId: Str,success: Func, error: Func}
-
+  validInvestorHaveNoStation: createAction(VALID_INVESTOR_HAVE_NO_STATION),// payload:{userId: Str,success: Func, error: Func}
+  validProfitSharing: createAction(VALID_PROFIT_SHARING),// payload:{userId: Str, stationId: Str, type: 'investor','partner'}
 }
 
 const requestStationsSuccess = createAction(FETCH_STATIONS_SUCCESS)
@@ -530,6 +530,26 @@ function* sagaValidInvestorHaveNoStation(action) {
   }
 }
 
+function* sagaValidProfitSharing(action) {
+  let payload = action.payload
+  try{
+    let valid = yield call(stationFuncs.validProfitSharing, payload)
+    if(valid){
+      if(payload.success){
+        payload.success()
+      }
+    }else{
+      if(payload.error){
+        payload.error('已存在该用户')
+      }
+    }
+  }catch (err){
+    if(payload.error){
+      payload.error('已存在该用户')
+    }
+  }
+}
+
 
 export const stationSaga = [
   takeLatest(FETCH_STATIONS, fetchStationsAction),
@@ -550,6 +570,7 @@ export const stationSaga = [
   takeLatest(VALID_ADMIN_HAVE_NO_STATION, sagaValidAdminHaveNoStation),
   takeLatest(VALID_PARTNER_HAVE_NO_STATION, sagaValidPartnerHaveNoStation),
   takeLatest(VALID_INVESTOR_HAVE_NO_STATION, sagaValidInvestorHaveNoStation),
+  takeLatest(VALID_PROFIT_SHARING, sagaValidProfitSharing),
 
 
 
