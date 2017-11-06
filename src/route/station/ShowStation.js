@@ -156,8 +156,8 @@ class ShowStation extends React.Component {
   }
 
   openUpdateModal(data) {
-    this.setState({selectedPartner: data})
-    this.setState({updateModalVisible: true})
+    this.setState({selectedPartner: data},this.setState({updateModalVisible: true}))
+
   }
 
   setPartnerStatus(data) {
@@ -202,35 +202,66 @@ class ShowStation extends React.Component {
   }
 
   createPartnerSmsModal(data) {
-
-    let payload = {
-      modalVisible: true,
-      op: '增加服务单位',
-      verifySuccess: ()=>{this.createPartner(data)},
-      verifyError: ()=>{message.error('验证错误')}
-
+    let stationRoyalty = this.props.station.platformProp
+    let allRoyalty = 0
+    if(this.props.partners&&this.props.partners.length>0){
+      this.props.partners.forEach((item)=>{
+        console.log('item=====>',item)
+        allRoyalty = item.royalty + allRoyalty
+      })
     }
-    let params = {
-      ...data,
-      stationId: this.props.match.params.id,
-      type: 'partner',
-      success: ()=>{       this.props.updateSmsModal(payload)
-      },
-      error: (err)=>{message.error('该服务点已存在该服务单位')}
+    console.log('stationRoyalty========>',stationRoyalty)
+    console.log('allRoyalty========>',allRoyalty)
+    console.log('data.royalty========>',data.royalty)
+
+    if(stationRoyalty+allRoyalty+data.royalty>1){
+      message.error('分成比例总和不能大于100%')
+    }else{
+      let payload = {
+        modalVisible: true,
+        op: '增加服务单位',
+        verifySuccess: ()=>{this.createPartner(data)},
+        verifyError: ()=>{message.error('验证错误')}
+
+      }
+      let params = {
+        ...data,
+        stationId: this.props.match.params.id,
+        type: 'partner',
+        success: ()=>{       this.props.updateSmsModal(payload)
+        },
+        error: (err)=>{message.error('该服务点已存在该服务单位')}
+      }
+      this.props.validProfitSharing(params)
     }
-    this.props.validProfitSharing(params)
+
   }
 
   updatePartnerSmsModal(data) {
-
-    let payload = {
-      modalVisible: true,
-      op: '修改服务单位',
-      verifySuccess: ()=>{this.updatePartner(data)},
-      verifyError: ()=>{message.error('验证错误')}
-
+    let stationRoyalty = this.props.station.platformProp
+    let allRoyalty = 0
+    if(this.props.partners&&this.props.partners.length>0){
+      this.props.partners.forEach((item)=>{
+        if(item.id!=this.state.selectedPartner.id)
+        allRoyalty = item.royalty + allRoyalty
+      })
     }
-    this.props.updateSmsModal(payload)
+    if(stationRoyalty+allRoyalty+data.royalty>1){
+      message.error('分成比例总和不能大于100%')
+    }else {
+      let payload = {
+        modalVisible: true,
+        op: '修改服务单位',
+        verifySuccess: ()=> {
+          this.updatePartner(data)
+        },
+        verifyError: ()=> {
+          message.error('验证错误')
+        }
+
+      }
+      this.props.updateSmsModal(payload)
+    }
   }
 
   createPartner(data) {
@@ -467,8 +498,7 @@ class ShowStation extends React.Component {
                        this.setPartnerStatus(data)
                      }}
         />
-
-        <CreatePartnerModal
+        {this.state.createModalVisible?<CreatePartnerModal
           modalKey={this.state.modalKey}
           onOk={(data)=> {
             this.createPartnerSmsModal(data)
@@ -479,8 +509,9 @@ class ShowStation extends React.Component {
           userList={this.props.partnerList}
           stationList={this.props.stations}
           modalVisible={this.state.createModalVisible}
-        />
-        <UpdatePartnerModal
+        />:null}
+
+        {this.state.updateModalVisible?<UpdatePartnerModal
           modalKey={this.state.modalKey}
           onOk={(data)=> {
             this.updatePartnerSmsModal(data)
@@ -492,7 +523,8 @@ class ShowStation extends React.Component {
           userList={this.props.partnerList}
           stationList={this.props.stations}
           modalVisible={this.state.updateModalVisible}
-        />
+        />:null}
+
       </div>
     )
 
