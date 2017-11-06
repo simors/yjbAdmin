@@ -20,9 +20,7 @@ export default class ContentHead extends React.Component {
           {this.props.addVisible ? <Button onClick={()=> {
             this.props.add()
           }} icon="plus-circle-o">新增</Button> : null}
-          <Button onClick={()=> {
-            this.props.refresh()
-          }} icon="reload">刷新</Button>
+
         </ButtonGroup>
       </div>
     )
