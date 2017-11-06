@@ -60,6 +60,7 @@ class WithdrawApply extends React.PureComponent {
       username: '',
       success: () => {
         message.success('取现申请提交成功，请稍后查看收益余额及微信钱包')
+        this.props.deleteWithdrawApply({applyId: record.id})
       },
       error: (error) => {
         switch (error.code) {

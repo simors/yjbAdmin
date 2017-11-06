@@ -118,6 +118,7 @@ const SAVE_DEAL = 'SAVE_DEAL'
 const SAVE_DEALS = 'SAVE_DEALS'
 const UPDATE_DEAL_TYPE_LIST = 'UPDATE_DEAL_TYPE_LIST'
 const FETCH_WITHDRAW_APPLY = 'FETCH_WITHDRAW_APPLY'
+const DELETE_WITHDRAW_APPLY = 'DELETE_WITHDRAW_APPLY'
 const SAVE_WITHDRAW_APPLY = 'SAVE_WITHDRAW_APPLY'
 const SAVE_BATCH_WITHDRAW_APPLY = 'SAVE_BATCH_WITHDRAW_APPLY'
 const SAVE_WITHDRAW_APPLY_LIST = 'SAVE_WITHDRAW_APPLY_LIST'
@@ -175,6 +176,7 @@ export const actions = {
   fetchDealAction: createAction(FETCH_DEALS),
   fetchWithdrawApply: createAction(FETCH_WITHDRAW_APPLY),
   requestWithdraw: createAction(REQUEST_WITHDRAW),
+  deleteWithdrawApply: createAction(DELETE_WITHDRAW_APPLY),
 }
 
 /**** Saga ****/
@@ -336,6 +338,8 @@ export function reducer(state = initialState, action) {
       return handleSaveBatchWithdrawApply(state, action)
     case SAVE_WITHDRAW_APPLY_LIST:
       return handleSaveWithdrawApplyList(state, action)
+    case DELETE_WITHDRAW_APPLY:
+      return handleDeleteWithdrawApply(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -435,6 +439,15 @@ function handleSaveWithdrawApplyList(state, action) {
     applyList.push(apply.id)
   })
   state = state.set('withdrawApplyList', new List(applyList))
+  return state
+}
+
+function handleDeleteWithdrawApply(state, action) {
+  let payload = action.payload
+  let applyId = payload.applyId
+  let applyList = state.get('withdrawApplyList')
+  let newList = applyList.filter((v) => v != applyId)
+  state = state.set('withdrawApplyList', newList)
   return state
 }
 
