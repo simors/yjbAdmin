@@ -5,7 +5,7 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
-import {fetchOrdersApi, fetchDealRecordApi, fetchWithdrawApply} from './cloud'
+import {fetchOrdersApi, fetchDealRecordApi, fetchWithdrawApply, createTransfer} from './cloud'
 import {deviceActions} from '../device'
 import {stationSelector, stationAction} from '../station/redux'
 import {deviceSelector} from '../device'
@@ -121,6 +121,7 @@ const FETCH_WITHDRAW_APPLY = 'FETCH_WITHDRAW_APPLY'
 const SAVE_WITHDRAW_APPLY = 'SAVE_WITHDRAW_APPLY'
 const SAVE_BATCH_WITHDRAW_APPLY = 'SAVE_BATCH_WITHDRAW_APPLY'
 const SAVE_WITHDRAW_APPLY_LIST = 'SAVE_WITHDRAW_APPLY_LIST'
+const REQUEST_WITHDRAW = 'REQUEST_WITHDRAW'
 
 export const OrderStatus = {
   ORDER_STATUS_UNPAID : 0,      //未支付
@@ -149,6 +150,15 @@ export const WITHDRAW_APPLY_TYPE = {
   PROFIT: 2,        // 服务单位和投资人申请收益取现
 }
 
+export const DEAL_TYPE = {
+  DEPOSIT: 1,           // 押金
+  RECHARGE: 2,          // 充值
+  SERVICE: 3,           // 服务消费
+  REFUND: 4,            // 押金退款
+  WITHDRAW: 5,          // 提现
+  SYS_PRESENT: 6,       // 系统赠送
+}
+
 /**** Action ****/
 const updateOrderList = createAction(UPDATE_ORDER_LIST)
 const updateDealTypeList = createAction(UPDATE_DEAL_TYPE_LIST)
@@ -164,6 +174,7 @@ export const actions = {
   saveDeals: createAction(SAVE_DEALS),
   fetchDealAction: createAction(FETCH_DEALS),
   fetchWithdrawApply: createAction(FETCH_WITHDRAW_APPLY),
+  requestWithdraw: createAction(REQUEST_WITHDRAW),
 }
 
 /**** Saga ****/
@@ -271,10 +282,35 @@ function* sagaFetchWithdrawApply(action) {
   }
 }
 
+function* sagaRequestWithdraw(action) {
+  let payload = action.payload
+
+  let transferPayload = {
+    amount: payload.amount,
+    channel: payload.channel,
+    metadata: payload.metadata,
+    openid: payload.openid,
+    username: payload.username,
+  }
+
+  try {
+    let transfer = yield call(createTransfer, transferPayload)
+    if(payload.success) {
+      payload.success(transfer)
+    }
+
+  } catch(error) {
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const saga = [
   takeLatest(FETCH_ORDERS, fetchOrders),
   takeLatest(FETCH_DEALS, fetchDealRecord),
   takeLatest(FETCH_WITHDRAW_APPLY, sagaFetchWithdrawApply),
+  takeLatest(REQUEST_WITHDRAW, sagaRequestWithdraw),
 ]
 
 /**** Reducer ****/

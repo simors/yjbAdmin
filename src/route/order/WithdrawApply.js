@@ -8,11 +8,13 @@ import {
   Table,
   Row,
   Popconfirm,
+  message,
 } from 'antd'
 import moment from "moment"
 import style from './order.module.scss'
 import WithdrawApplySearchForm from './WithdrawApplySearchForm'
-import {WITHDRAW_STATUS, WITHDRAW_APPLY_TYPE, selector} from './redux'
+import {WITHDRAW_STATUS, WITHDRAW_APPLY_TYPE, selector, actions, DEAL_TYPE} from './redux'
+import * as errno from '../../errno'
 
 class WithdrawApply extends React.PureComponent {
   constructor(props) {
@@ -37,6 +39,44 @@ class WithdrawApply extends React.PureComponent {
 
   agreeWithdraw(record) {
     console.log('record', record)
+    let dealType = undefined
+    if (record.applyType === WITHDRAW_APPLY_TYPE.PROFIT) {
+      dealType = DEAL_TYPE.WITHDRAW
+    } else if (record.applyType === WITHDRAW_APPLY_TYPE.REFUND) {
+      dealType = DEAL_TYPE.REFUND
+    }
+    this.props.requestWithdraw({
+      amount: record.amount,
+      channel: 'wx_pub',
+      metadata: {
+        'fromUser': 'platform',
+        'toUser': record.userId,
+        'dealType': dealType
+      },
+      openid: record.openid,
+      username: '',
+      success: () => {
+        message.success('取现申请提交成功，请稍后查看收益余额及微信钱包')
+      },
+      error: (error) => {
+        switch (error.code) {
+          case errno.ERROR_IN_WITHDRAW_PROCESS:
+            message.error('最近已提交过申请，请等待上一笔取现申请处理完后再重新取现')
+            break
+          case errno.ERROR_NOT_ENOUGH_MONEY:
+            message.error('余额不足')
+            break
+          case errno.ERROR_NOT_WITHDRAW_DATE:
+            message.error('只允许在每个月的10号到15号提交取现申请')
+            break
+          case errno.ERROR_UNSUPPORT_CHANNEL:
+            message.error('不支持的取现渠道')
+            break
+          default:
+            message.error('提现失败，请联系客服')
+        }
+      }
+    })
   }
 
   renderOperateCol = (record) => {
@@ -108,6 +148,7 @@ const mapStateToProps = (appState, ownProps) => {
 }
 
 const mapDispatchToProps = {
+  ...actions,
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(WithdrawApply))

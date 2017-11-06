@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import { Row, Col, Modal, Form, Popconfirm, InputNumber, Button, message } from 'antd'
-import {profitSelector, profitAction, DEAL_TYPE} from './redux'
+import {profitSelector, profitAction} from './redux'
 import {selector as authSelector} from '../../util/auth'
 import * as errno from '../../errno'
 
@@ -35,48 +35,25 @@ class Withdraw extends React.PureComponent {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    let {currentUser} = this.props
     this.props.form.validateFields((err, values) => {
       if (err) {
         message.error('数据输入错误，请检查输入金额')
         return
       }
-      this.props.requestWithdraw({
+      this.props.requestProfitWithdraw({
         amount: values.withdraw,
-        channel: 'wx_pub',
-        metadata: {
-          'fromUser': 'platform',
-          'toUser': currentUser.id,
-          'dealType': DEAL_TYPE.WITHDRAW
-        },
-        openid: currentUser.authData.weixin.openid,
-        username: '',
         success: () => {
           this.closeModel()
-          message.success('取现申请提交成功，请稍后查看收益余额及微信钱包')
-          this.props.getCurrentAdminProfit({
-            error: () => {
-              message.error('获取新的收益余额失败')
-            }
-          })
+          message.success('取现申请提交成功，7个工作日到账')
         },
         error: (error) => {
           this.closeModel()
           switch (error.code) {
-            case errno.ERROR_IN_WITHDRAW_PROCESS:
-              message.error('最近已提交过申请，请等待上一笔取现申请处理完后再重新取现')
-              break
-            case errno.ERROR_NOT_ENOUGH_MONEY:
-              message.error('余额不足')
-              break
-            case errno.ERROR_NOT_WITHDRAW_DATE:
-              message.error('只允许在每个月的10号到15号提交取现申请')
-              break
-            case errno.ERROR_UNSUPPORT_CHANNEL:
-              message.error('不支持的取现渠道')
+            case errno.ERROR_NO_WECHAT:
+              message.error('未绑定微信号，不能取现')
               break
             default:
-              message.error('提现失败，请联系客服')
+              message.error('提交取现申请失败，请重试')
           }
         }
       })

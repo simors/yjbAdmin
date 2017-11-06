@@ -35,8 +35,12 @@ export async function stat1YearAccountProfit(payload) {
   return await AV.Cloud.run('accountStatLast1YearAccountProfit', params)
 }
 
-export async function createTransfer(payload) {
-  return await AV.Cloud.run('pingppCreateTransfer', payload)
+export async function createWithdrawApply(payload) {
+  let params = {
+    amount: payload.amount,
+    applyType: payload.applyType,
+  }
+  return await AV.Cloud.run('withdrawCreateApply', params)
 }
 
 export async function getProfitSharing(payload) {
