@@ -8,6 +8,7 @@ import {REHYDRATE} from 'redux-persist/constants'
 import * as profitCloud from './cloud'
 import {stationAction} from '../station'
 import {accountAction, ACCOUNT_TYPE} from '../account'
+import {WITHDRAW_APPLY_TYPE} from '../order'
 
 // --- model
 
@@ -40,15 +41,6 @@ class Profit extends Record({
 
 // --- constant
 
-export const DEAL_TYPE = {
-  DEPOSIT: 1,           // 押金
-  RECHARGE: 2,          // 充值
-  SERVICE: 3,           // 服务消费
-  REFUND: 4,            // 押金退款
-  WITHDRAW: 5,          // 提现
-  SYS_PRESENT: 6,       // 系统赠送
-}
-
 const GET_CURRENT_ADMIN_PROFIT = 'GET_CURRENT_ADMIN_PROFIT'
 const SAVE_ADMIN_PROFIT = 'SAVE_ADMIN_PROFIT'
 const GET_30_DAYS_ACCOUNT_PROFIT = 'GET_30_DAYS_ACCOUNT_PROFIT'
@@ -57,7 +49,7 @@ const GET_HALF_YEAR_ACCOUNT_PROFIT = 'GET_HALF_YEAR_ACCOUNT_PROFIT'
 const GET_1_YEAR_ACCOUNT_PROFIT = 'GET_1_YEAR_ACCOUNT_PROFIT'
 const SAVE_INVEST_PROFIT_STAT = 'SAVE_INVEST_PROFIT_STAT'
 const SAVE_PARTNER_PROFIT_STAT = 'SAVE_PARTNER_PROFIT_STAT'
-const REQUEST_WITHDRAW = 'REQUEST_WITHDRAW'
+const REQUEST_PROFIT_WITHDRAW = 'REQUEST_PROFIT_WITHDRAW'
 const GET_PROFIT_SHARING = 'GET_PROFIT_SHARING'
 const SAVE_PROFIT_SHARING = 'SAVE_PROFIT_SHARING'
 
@@ -69,7 +61,7 @@ export const profitAction = {
   stat3MonthsAccountProfit: createAction(GET_3_MONTHS_ACCOUNT_PROFIT),
   statHalfYearAccountProfit: createAction(GET_HALF_YEAR_ACCOUNT_PROFIT),
   stat1YearAccountProfit: createAction(GET_1_YEAR_ACCOUNT_PROFIT),
-  requestWithdraw: createAction(REQUEST_WITHDRAW),
+  requestProfitWithdraw: createAction(REQUEST_PROFIT_WITHDRAW),
   getProfitSharing: createAction(GET_PROFIT_SHARING),
 }
 
@@ -86,7 +78,7 @@ export const profitSaga = [
   takeLatest(GET_3_MONTHS_ACCOUNT_PROFIT, sagaStat3MonthsAccountProfit),
   takeLatest(GET_HALF_YEAR_ACCOUNT_PROFIT, sagaStatHalfYearAccountProfit),
   takeLatest(GET_1_YEAR_ACCOUNT_PROFIT, sagaStat1YearAccountProfit),
-  takeLatest(REQUEST_WITHDRAW, sagaRequestWithdraw),
+  takeLatest(REQUEST_PROFIT_WITHDRAW, sagaRequestProfitWithdraw),
   takeLatest(GET_PROFIT_SHARING, sagaGetProfitSharing),
 ]
 
@@ -205,21 +197,18 @@ function* sagaStat1YearAccountProfit(action) {
   }
 }
 
-function* sagaRequestWithdraw(action) {
+function* sagaRequestProfitWithdraw(action) {
   let payload = action.payload
 
   let transferPayload = {
     amount: payload.amount,
-    channel: payload.channel,
-    metadata: payload.metadata,
-    openid: payload.openid,
-    username: payload.username,
+    applyType: WITHDRAW_APPLY_TYPE.PROFIT,
   }
 
   try {
-    let transfer = yield call(profitCloud.createTransfer, transferPayload)
+    let result = yield call(profitCloud.createWithdrawApply, transferPayload)
     if(payload.success) {
-      payload.success(transfer)
+      payload.success(result)
     }
 
   } catch(error) {

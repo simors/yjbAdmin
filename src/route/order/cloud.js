@@ -28,3 +28,7 @@ export async function fetchWithdrawApply(payload) {
   }
   return await AV.Cloud.run('withdrawFetchApply', params)
 }
+
+export async function createTransfer(payload) {
+  return await AV.Cloud.run('pingppCreateTransfer', payload)
+}
