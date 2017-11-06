@@ -51,6 +51,8 @@ class WithdrawApply extends React.PureComponent {
     ]
     if (Number(searchParams.status) === WITHDRAW_STATUS.DONE) {
       columns.pop()
+      columns.push({ title: '操作员', dataIndex: 'operator', key: 'operator' })
+      columns.push({ title: '操作时间', dataIndex: 'operateDate', key: 'operateDate', render: (operateDate) => (<span>{moment(new Date(operateDate)).format('LLLL')}</span>) })
     }
     return (
       <div className={style.content}>
