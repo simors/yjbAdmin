@@ -23,24 +23,22 @@ const FormItem = Form.Item
 const formItemLayout = {
   labelCol: {
     span: 6,
-    offset: -3,
+    offset: 0,
   },
   wrapperCol: {
     span: 18,
-    offset: -3,
+    offset: 0,
   }
 }
 
 const formItemLayout2 = {
   labelCol: {
-    span: 12,
-    offset: -3,
-
+    span: 3,
+    offset: 0,
   },
   wrapperCol: {
-    span: 12,
-    offset: -3,
-
+    span: 21,
+    offset: 0,
   }
 }
 
@@ -274,41 +272,6 @@ class ShowStation extends React.Component {
     this.props.updatePartner(payload)
   }
 
-  submitStation() {
-    this.props.form.validateFields((errors) => {
-      if (errors) {
-        return
-      }
-      let data = this.props.form.getFieldsValue()
-      data.platformProp = mathjs.chain(data.platformProp).multiply(1/100).done()
-
-      let payload = {
-        ...data,
-        stationId: this.props.match.params.id,
-        province: this.state.province,
-        city: this.state.city,
-        area: this.state.area,
-        success: ()=> {
-          this.setState({spinShow: false})
-          message.success('提交成功')
-          this.props.history.push({
-            pathname: '/site_list'
-          })
-          this.props.updateLoadingState({isLoading: false})
-        },
-        error: (err)=> {
-          message.error(err.message)
-          this.props.updateLoadingState({isLoading: false})
-          // console.log(err.message)
-        }
-      }
-      this.props.updateLoadingState({isLoading: true})
-      console.log('data======>', data)
-      this.props.updateStation(payload)
-    })
-  }
-
-
   render() {
     let station = this.props.station
     let division = []
@@ -325,141 +288,151 @@ class ShowStation extends React.Component {
     }
     return (
       <div>
-        <Form >
-          <Row>
-            <Col span={12}>
-              <FormItem label='服务点名称' hasFeedback {...formItemLayout}>
+        <Row gutter={24} style={{flexDirection:'row',marginTop:20,marginBottom:20,justifyContent:' center'}}>
+          <Col span={4}>
+            <Button onClick={()=> {
+              this.props.history.push({
+                pathname: '/site_list'
+              })
+            }} type="primary">返回</Button>
+          </Col>
+          <Col span={20}></Col>
+
+        </Row>
+        <Form  hideRequiredMark={ true}>
+          <Row gutter={24}>
+            <Col span={16}>
+              <FormItem label='服务点名称' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('name', {
-                  // getValueFromEvent:(e)=>{
-                  //  let value=this.setTrimValue(e.target.value)
-                  //  return value
-                  //},
+
                   initialValue: station ? station.name : '',
                   rules: [
                     {
-                      required: true,
+                      required: false,
                       message: '服务点名称未填写'
                     }
                   ]
                 })(
-                  <Input/>
+                  <Input disabled={true} />
                 )}
               </FormItem>
             </Col>
-            <Col span={12}>
-              <FormItem label='管理员' hasFeedback {...formItemLayout}>
+            <Col span={8}>
+              <FormItem label='选择管理员' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('adminId', {
                   initialValue: station ? station.adminId : '',
                   rules: [
                     {
-                      required: true,
+                      required: false,
                       message: '管理员未选择'
                     }
                   ]
                 })(
-                  <Select allowClear={true} style={{width: 200}}>
+                  <Select allowClear={true}  disabled={true}>
                     {this.adminList()}
                   </Select>
                 )}
               </FormItem>
             </Col>
           </Row>
-          <Row>
-            <Col span={12}>
-              <FormItem label='省市区' hasFeedback {...formItemLayout}>
+          <Row gutter={24}>
+            <Col span={8}>
+              <FormItem label='服务点地址' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('division', {
                   initialValue: division,
                   rules: [
                     {
-                      required: true,
+                      required: false,
                       message: '省市区未选择'
                     }
                   ]
                 })(
                   <DivisionCascader onChange={(value, label)=> {
                     this.selectDivision(value, label)
-                  }}/>
+                  }} disabled={true} cascaderSize="large" width="300px"/>
                 )}
               </FormItem>
             </Col>
-            <Col span={12}>
-              <FormItem label='服务点地址' hasFeedback {...formItemLayout}>
+            <Col span={8}>
+              <FormItem hasFeedback >
                 {this.props.form.getFieldDecorator('addr', {
                   initialValue: station ? station.addr : '',
                   rules: [
                     {
-                      required: true,
+                      required: false,
                       message: '服务点地址未填写'
                     }
                   ]
                 })(
-                  <Input/>
+                  <Input disabled={true} placeholder="服务点地址"/>
                 )}
               </FormItem>
             </Col>
-          </Row>
-          <Row>
-            <Col span={6}>
-              <FormItem label='干衣柜单价：' hasFeedback {...formItemLayout2}>
-                {this.props.form.getFieldDecorator('unitPrice', {
-                  initialValue: station ? station.unitPrice : 0,
-                  rules: [
-                    {
-                      required: true,
-                      message: '干衣柜单价未填写'
-                    }
-                  ]
-                })(<InputNumber style={{width:70}} min={0}
-                />)}
-                <span className="ant-form-text">元/分</span>
-              </FormItem>
-            </Col>
-            <Col span={6}>
-              <FormItem label='干衣柜押金：' hasFeedback {...formItemLayout2}>
-                {this.props.form.getFieldDecorator('deposit', {
-                  initialValue: station ? station.deposit : 0,
-                  rules: [
-                    {
-                      required: true,
-                      message: '干衣柜押金未填写'
-                    }
-                  ]
-                })(<InputNumber min={0}
-                />)}
-                <span className="ant-form-text">元</span>
-
-              </FormItem>
-            </Col>
-            <Col span={6}>
-              <FormItem label='电费单价：' hasFeedback {...formItemLayout2}>
-                {this.props.form.getFieldDecorator('powerUnitPrice', {
-                  initialValue: station ? station.powerUnitPrice : 0,
-                  rules: [
-                    {
-                      required: true,
-                      message: '电费单价未填写'
-                    }
-                  ]
-                })(<InputNumber style={{width:70}} min={0}
-                />)}
-                <span className="ant-form-text">元/度</span>
-              </FormItem>
-            </Col>
-            <Col span={6}>
-              <FormItem label='平台分成比例：' hasFeedback {...formItemLayout2}>
+            <Col span={8}>
+              <FormItem label='平台分成比例' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('platformProp', {
                   initialValue: station ? station.platformProp*100 : 0,
                   rules: [
                     {
-                      required: true,
+                      required: false,
                       message: '平台分成比例未填写'
                     }
                   ]
-                })(<InputNumber
-                  max={100}
-                  min={0}
+                })(<InputNumber disabled={true}
+                                max={100}
+                                min={0}
                 />)}
                 <span className="ant-form-text">%</span>
+              </FormItem>
+
+            </Col>
+          </Row>
+          <Row gutter={24}>
+            <Col span={8}>
+              <FormItem label='干衣柜单价' hasFeedback {...formItemLayout}>
+                {this.props.form.getFieldDecorator('unitPrice', {
+                  initialValue: station ? station.unitPrice : 0,
+                  rules: [
+                    {
+                      required: false,
+                      message: '干衣柜单价未填写'
+                    }
+                  ]
+                })(<InputNumber  min={0} disabled={true}
+                />)}
+                <span className="ant-form-text">元/分</span>
+              </FormItem>
+            </Col>
+
+            <Col span={8}>
+              <FormItem label='电费单价' hasFeedback {...formItemLayout}>
+                {this.props.form.getFieldDecorator('powerUnitPrice', {
+                  initialValue: station ? station.powerUnitPrice : 0,
+                  rules: [
+                    {
+                      required: false,
+                      message: '电费单价未填写'
+                    }
+                  ]
+                })(<InputNumber  min={0} disabled={true}
+                />)}
+                <span className="ant-form-text">元/度</span>
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem label='干衣柜押金' hasFeedback {...formItemLayout}>
+                {this.props.form.getFieldDecorator('deposit', {
+                  initialValue: station ? station.deposit : 0,
+                  rules: [
+                    {
+                      required: false,
+                      message: '干衣柜押金未填写'
+                    }
+                  ]
+                })(<InputNumber min={0} disabled={true}
+                />)}
+                <span className="ant-form-text">元</span>
+
               </FormItem>
             </Col>
           </Row>
@@ -471,10 +444,11 @@ class ShowStation extends React.Component {
           <Col span={4}>
             <div>服务点分成</div>
           </Col>
+          <Col span={16}></Col>
           <Col span={4}>
-            <Button onClick={()=> {
+            <Button type='primary' onClick={()=> {
               this.openCreateModal()
-            }}>添加分成方</Button>
+            }}>添加服务单位</Button>
           </Col>
         </Row>
         <PartnerList editPartner={(data)=> {
@@ -485,21 +459,7 @@ class ShowStation extends React.Component {
                        this.setPartnerStatus(data)
                      }}
         />
-        <Row gutter={24} style={{flexDirection:'row',marginTop:20,marginBottom:20,justifyContent:' center'}}>
-          <Col span={8}></Col>
-          <Col span={4}>
-            <Button onClick={()=> {
-              this.props.history.push({
-                pathname: '/site_list'
-              })
-            }} type="primary">返回</Button>
-          </Col>
-          <Col span={4}>
-            <Button onClick={()=> {
-              this.submitStation()
-            }} type="primary">提交</Button>
-          </Col>
-        </Row>
+
         <CreatePartnerModal
           modalKey={this.state.modalKey}
           onOk={(data)=> {

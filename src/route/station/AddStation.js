@@ -25,10 +25,10 @@ const formItemLayout = {
 }
 const formItemLayout2 = {
   labelCol: {
-    span: 12
+    span: 3
   },
   wrapperCol: {
-    span: 12
+    span: 21
   }
 }
 
@@ -107,7 +107,7 @@ class AddStation extends React.Component {
         area: this.state.area,
         success: (stationId)=> {
           this.props.updateLoadingState({isLoading: false})
-          this.props.history.push({pathname: '/site_list/showStation/' + stationId})
+          this.props.history.push({pathname: '/site_list/shho/' + stationId})
         },
         error: (err)=> {
           console.log(err.message)
@@ -129,146 +129,142 @@ class AddStation extends React.Component {
     // let partnerList = this.state.partnerList.splice(0,0,plate)
     return (
       <div>
-        <Form >
-          <Row style={{justifyContent:'start'}}>
-            <Col span={12}>
-              <FormItem label='服务点名称' hasFeedback {...formItemLayout}>
+        <Form  hideRequiredMark={ true}>
+          <Row gutter={24}>
+            <Col span={16}>
+              <FormItem label='服务点名称' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('name', {
-                  // getValueFromEvent:(e)=>{
-                  //  let value=this.setTrimValue(e.target.value)
-                  //  return value
-                  //},
+
+                  initialValue:  '',
                   rules: [
                     {
-                      required: true,
+                      required: false,
                       message: '服务点名称未填写'
                     }
                   ]
                 })(
-                  <Input/>
+                  <Input  />
                 )}
               </FormItem>
             </Col>
-            <Col span={12}>
-              <FormItem label='管理员' hasFeedback {...formItemLayout}>
+            <Col span={8}>
+              <FormItem label='选择管理员' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('adminId', {
-
+                  rules: [
+                    {
+                      required: false,
+                      message: '管理员未选择'
+                    }
+                  ]
                 })(
-                  <Select allowClear={true} style={{width: 200}}>
+                  <Select allowClear={true}  >
                     {this.userList()}
                   </Select>
                 )}
               </FormItem>
             </Col>
           </Row>
-          <Row>
-            <Col span={12}>
-              <FormItem label='省市区' hasFeedback {...formItemLayout}>
+          <Row gutter={24}>
+            <Col span={8}>
+              <FormItem label='服务点地址' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('division', {
-                  // getValueFromEvent:(e)=>{
-                  //  let value=this.setTrimValue(e.target.value)
-                  //  return value
-                  //},
-                  initialValue: [],
-
                   rules: [
                     {
-                      required: true,
+                      required: false,
                       message: '省市区未选择'
                     }
                   ]
                 })(
                   <DivisionCascader onChange={(value, label)=> {
                     this.selectDivision(value, label)
-                  }}/>
+                  }} cascaderSize="large" width="300px"/>
                 )}
               </FormItem>
             </Col>
-            <Col span={12}>
-              <FormItem label='服务点地址' hasFeedback {...formItemLayout}>
+            <Col span={8}>
+              <FormItem hasFeedback >
                 {this.props.form.getFieldDecorator('addr', {
-                  // getValueFromEvent:(e)=>{
-                  //  let value=this.setTrimValue(e.target.value)
-                  //  return value
-                  //},
+                  initialValue:  '',
                   rules: [
                     {
-                      required: true,
+                      required: false,
                       message: '服务点地址未填写'
                     }
                   ]
                 })(
-                  <Input/>
+                  <Input placeholder="服务点地址"/>
                 )}
               </FormItem>
             </Col>
-          </Row>
-          <Row>
-            <Col span={6}>
-              <FormItem label='干衣柜单价：' hasFeedback {...formItemLayout2}>
-                {this.props.form.getFieldDecorator('unitPrice', {
-                  initialValue: 0,
+            <Col span={8}>
+              <FormItem label='平台分成比例' hasFeedback {...formItemLayout}>
+                {this.props.form.getFieldDecorator('platformProp', {
+                  initialValue:  0,
                   rules: [
                     {
-                      required: true,
+                      required: false,
+                      message: '平台分成比例未填写'
+                    }
+                  ]
+                })(<InputNumber
+                                max={100}
+                                min={0}
+                />)}
+                <span className="ant-form-text">%</span>
+              </FormItem>
+
+            </Col>
+          </Row>
+          <Row gutter={24}>
+            <Col span={8}>
+              <FormItem label='干衣柜单价' hasFeedback {...formItemLayout}>
+                {this.props.form.getFieldDecorator('unitPrice', {
+                  initialValue:  0,
+                  rules: [
+                    {
+                      required: false,
                       message: '干衣柜单价未填写'
                     }
                   ]
-                })(<InputNumber style={{width:70}} min={0}
+                })(<InputNumber  min={0}
                 />)}
-                <span className="ant-form-text">元／分</span>
-
+                <span className="ant-form-text">元/分</span>
               </FormItem>
             </Col>
-            <Col span={6}>
-              <FormItem label='干衣柜押金：' hasFeedback {...formItemLayout2}>
-                {this.props.form.getFieldDecorator('deposit', {
+
+            <Col span={8}>
+              <FormItem label='电费单价' hasFeedback {...formItemLayout}>
+                {this.props.form.getFieldDecorator('powerUnitPrice', {
                   initialValue: 0,
                   rules: [
                     {
-                      required: true,
+                      required: false,
+                      message: '电费单价未填写'
+                    }
+                  ]
+                })(<InputNumber  min={0}
+                />)}
+                <span className="ant-form-text">元/度</span>
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem label='干衣柜押金' hasFeedback {...formItemLayout}>
+                {this.props.form.getFieldDecorator('deposit', {
+                  initialValue:  0,
+                  rules: [
+                    {
+                      required: false,
                       message: '干衣柜押金未填写'
                     }
                   ]
                 })(<InputNumber min={0}
                 />)}
-                <span className="ant-form-text"> 元</span>
-              </FormItem>
-            </Col>
-            <Col span={6}>
-              <FormItem label='电费单价：' hasFeedback {...formItemLayout2}>
-                {this.props.form.getFieldDecorator('powerUnitPrice', {
-                  initialValue: 0,
-                  rules: [
-                    {
-                      required: true,
-                      message: '电费单价未填写'
-                    }
-                  ]
-                })(<InputNumber min={0}
-                />)}
-                <span className="ant-form-text"> 元／度</span>
-
-              </FormItem>
-            </Col>
-            <Col span={6}>
-              <FormItem label='平台分成比例：' hasFeedback {...formItemLayout2}>
-                {this.props.form.getFieldDecorator('platformProp', {
-                  initialValue: 0,
-                  rules: [
-                    {
-                      required: true,
-                      message: '平台分成比例未填写'
-                    }
-                  ]
-                })(<InputNumber min={0}
-                />)}
-                <span className="ant-form-text"> %</span>
+                <span className="ant-form-text">元</span>
 
               </FormItem>
             </Col>
           </Row>
-          <LoadActivity tip = '正在提交...'/>
+          <LoadActivity tip="正在提交..."/>
         </Form>
         <Row gutter={24} style={{flexDirection:'row',marginTop:20,marginBottom:20,justifyContent:' center'}}>
           <Col span={8}></Col>
