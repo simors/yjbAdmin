@@ -79,7 +79,7 @@ class SearchForm extends PureComponent {
         status: !values.status || values.status == 'all' ? undefined : Number(values.status),
         limit: 10,
         isRefresh: true,
-        success: (total) => this.onFetchDeviceSuccess(total, {}),
+        success: (total) => this.onFetchDeviceSuccess(total, values),
         error: this.onFetchDeviceError,
       })
       if (onSearchStart) {

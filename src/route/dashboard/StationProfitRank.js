@@ -13,7 +13,7 @@ class StationProfitRank extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.props.requestStationAccountRank({rankDate: moment().subtract(2, 'days').format('YYYY-MM-DD')})
+    this.props.requestStationAccountRank({rankDate: moment().subtract(1, 'days').format('YYYY-MM-DD')})
   }
 
   render() {

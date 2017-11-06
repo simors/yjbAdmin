@@ -5,6 +5,7 @@ import {loadReducer} from '../component/loadActivity'
 import {reducer as authReducer} from '../util/auth/'
 import {reducer as endUserReducer} from '../route/enduser/'
 import {reducer as adminUserReducer} from '../route/adminuser/'
+import {reducer as notificationReducer} from '../route/notification/'
 import {stationReducer} from '../route/station/redux'
 import {deviceReducer} from '../route/device'
 import {orderReducer} from '../route/order'
@@ -24,6 +25,7 @@ export const makeRootReducer = (asyncReducers) => {
     AUTH: authReducer,
     ENDUSER: endUserReducer,
     ADMINUSER: adminUserReducer,
+    NOTIFICATION: notificationReducer,
     STATION: stationReducer,
     ORDER: orderReducer,
     DEVICE: deviceReducer,

@@ -3,6 +3,7 @@ import Order from './Order'
 import Recharge from './Recharge'
 import WithdrawRecords from './WithdrawRecords'
 import Deposit from './Deposit'
+import WithdrawApply from './WithdrawApply'
 
 /* export saga */
 export const orderSaga = redux.saga
@@ -16,6 +17,6 @@ export const orderActions = redux.actions
 /* export selector */
 export const orderSelector = redux.selector
 
-export {Recharge, WithdrawRecords, Deposit}
+export {Recharge, WithdrawRecords, Deposit, WithdrawApply}
 
 export default Order

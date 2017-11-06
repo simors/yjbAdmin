@@ -5,7 +5,7 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
-import {fetchOrdersApi, fetchDealRecordApi} from './cloud'
+import {fetchOrdersApi, fetchDealRecordApi, fetchWithdrawApply} from './cloud'
 import {deviceActions} from '../device'
 import {stationSelector, stationAction} from '../station/redux'
 import {deviceSelector} from '../device'
@@ -64,12 +64,48 @@ class Deal extends DealRecord {
   }
 }
 
+class WithdrawApply extends Record({
+  id: undefined,
+  userId: undefined,
+  nickname: undefined,
+  mobilePhoneNumber: undefined,
+  openid: undefined,
+  amount: undefined,
+  applyDate: undefined,
+  applyType: undefined,
+  status: undefined,
+  operator: undefined,
+  operatorName: undefined,
+  operateDate: undefined,
+}, 'WithdrawApply') {
+  static fromJson(json) {
+    let apply = new WithdrawApply()
+    return apply.withMutations((record) => {
+      record.set('id', json.id)
+      record.set('userId', json.userId)
+      record.set('nickname', json.nickname)
+      record.set('mobilePhoneNumber', json.mobilePhoneNumber)
+      record.set('openid', json.openid)
+      record.set('amount', json.amount)
+      record.set('applyDate', json.applyDate)
+      record.set('applyType', json.applyType)
+      record.set('status', json.status)
+      record.set('operator', json.operator)
+      record.set('operatorName', json.operatorName)
+      record.set('operateDate', json.operateDate)
+    })
+  }
+}
+
 const OrderState = Record({
-  orders: Map(),            //订单信息 健为orderId，值为OrderRecord
+  orders: Map(),                  // 订单信息 健为orderId，值为OrderRecord
   orderList: List(),
-  deals: Map(),             //交易记录
-  dealTypeList: Map(),      //健为交易类型，值为交易记录id列表
+  deals: Map(),                   // 交易记录
+  dealTypeList: Map(),            // 健为交易类型，值为交易记录id列表
+  withdrawApplys: Map(),          // 记录WithdrawApply的详情
+  withdrawApplyList: List(),      // 取现申请列表
 }, 'OrderState')
+
 /**** Constant ****/
 const FETCH_ORDERS = 'FETCH_ORDERS'
 const UPDATE_ORDER_LIST = 'UPDATE_ORDER_LIST'
@@ -81,6 +117,10 @@ const FETCH_DEALS = 'FETCH_DEALS'
 const SAVE_DEAL = 'SAVE_DEAL'
 const SAVE_DEALS = 'SAVE_DEALS'
 const UPDATE_DEAL_TYPE_LIST = 'UPDATE_DEAL_TYPE_LIST'
+const FETCH_WITHDRAW_APPLY = 'FETCH_WITHDRAW_APPLY'
+const SAVE_WITHDRAW_APPLY = 'SAVE_WITHDRAW_APPLY'
+const SAVE_BATCH_WITHDRAW_APPLY = 'SAVE_BATCH_WITHDRAW_APPLY'
+const SAVE_WITHDRAW_APPLY_LIST = 'SAVE_WITHDRAW_APPLY_LIST'
 
 export const OrderStatus = {
   ORDER_STATUS_UNPAID : 0,      //未支付
@@ -98,9 +138,23 @@ export const DealType = {
   DEAL_TYPE_ORDER_PAY : 7,              // 订单支付
 
 }
+
+export const WITHDRAW_STATUS = {
+  APPLYING: 0,      // 提交申请
+  DONE: 1,          // 处理完成
+}
+
+export const WITHDRAW_APPLY_TYPE = {
+  REFUND: 1,        // 微信端用户申请退还押金
+  PROFIT: 2,        // 服务单位和投资人申请收益取现
+}
+
 /**** Action ****/
 const updateOrderList = createAction(UPDATE_ORDER_LIST)
 const updateDealTypeList = createAction(UPDATE_DEAL_TYPE_LIST)
+const saveWithdrawApply = createAction(SAVE_WITHDRAW_APPLY)
+const saveBatchWithdrawApply = createAction(SAVE_BATCH_WITHDRAW_APPLY)
+const saveWithdrawApplyList = createAction(SAVE_WITHDRAW_APPLY_LIST)
 
 export const actions = {
   fetchOrdersAction: createAction(FETCH_ORDERS),
@@ -109,7 +163,9 @@ export const actions = {
   saveDeal: createAction(SAVE_DEAL),
   saveDeals: createAction(SAVE_DEALS),
   fetchDealAction: createAction(FETCH_DEALS),
+  fetchWithdrawApply: createAction(FETCH_WITHDRAW_APPLY),
 }
+
 /**** Saga ****/
 function* fetchOrders(action) {
   let payload = action.payload
@@ -199,10 +255,28 @@ function* fetchDealRecord(action) {
   }
 }
 
+function* sagaFetchWithdrawApply(action) {
+  let payload = action.payload
+  try {
+    let result = yield call(fetchWithdrawApply, payload)
+    yield put(saveBatchWithdrawApply({applys: result}))
+    yield put(saveWithdrawApplyList({applys: result}))
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const saga = [
   takeLatest(FETCH_ORDERS, fetchOrders),
   takeLatest(FETCH_DEALS, fetchDealRecord),
+  takeLatest(FETCH_WITHDRAW_APPLY, sagaFetchWithdrawApply),
 ]
+
 /**** Reducer ****/
 const initialState = OrderState()
 
@@ -220,6 +294,12 @@ export function reducer(state = initialState, action) {
       return handleSaveDeals(state, action)
     case UPDATE_DEAL_TYPE_LIST:
       return handleUpdateDealTypeList(state, action)
+    case SAVE_WITHDRAW_APPLY:
+      return handleSaveWithdrawApply(state, action)
+    case SAVE_BATCH_WITHDRAW_APPLY:
+      return handleSaveBatchWithdrawApply(state, action)
+    case SAVE_WITHDRAW_APPLY_LIST:
+      return handleSaveWithdrawApplyList(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -292,6 +372,33 @@ function handleUpdateDealTypeList(state, action) {
     list.push(deal.id)
   })
   state = state.setIn(['dealTypeList', dealType], list)
+  return state
+}
+
+function handleSaveWithdrawApply(state, action) {
+  let payload = action.payload
+  let apply = payload.apply
+  state = state.setIn(['withdrawApplys', apply.id], WithdrawApply.fromJson(apply))
+  return state
+}
+
+function handleSaveBatchWithdrawApply(state, action) {
+  let payload = action.payload
+  let applys = payload.applys
+  applys.forEach((apply) => {
+    state = state.setIn(['withdrawApplys', apply.id], WithdrawApply.fromJson(apply))
+  })
+  return state
+}
+
+function handleSaveWithdrawApplyList(state, action) {
+  let payload = action.payload
+  let applys = payload.applys
+  let applyList = []
+  applys.forEach((apply) => {
+    applyList.push(apply.id)
+  })
+  state = state.set('withdrawApplyList', new List(applyList))
   return state
 }
 
@@ -377,8 +484,30 @@ function selectDealRecordList(state, dealType) {
   return dealInfoList
 }
 
+function selectWithdrawApplyById(state, id) {
+  let apply = state.ORDER.getIn(['withdrawApplys', id])
+  if (!apply) {
+    return undefined
+  }
+  return apply.toJS()
+}
+
+function selectWithdrawApplyList(state) {
+  let applyList = state.ORDER.get('withdrawApplyList')
+  if (!applyList) {
+    return []
+  }
+  let retApplys = []
+  applyList.forEach((id) => {
+    retApplys.push(selectWithdrawApplyById(state, id))
+  })
+  return retApplys
+}
+
 export const selector = {
   selectOrder,
   selectOrderList,
   selectDealRecordList,
+  selectWithdrawApplyById,
+  selectWithdrawApplyList,
 }

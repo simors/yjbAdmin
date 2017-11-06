@@ -1,7 +1,7 @@
 /**
- * Created by wanpeng on 2017/10/4.
+ * Created by yangyang on 2017/11/6.
  */
-import React, {PureComponent} from 'react'
+import React from 'react'
 import {connect} from 'react-redux'
 import {
   Button,
@@ -15,44 +15,44 @@ import {
   message,
 } from 'antd'
 import style from './order.module.scss'
-import {actions, DealType} from './redux'
+import {actions, WITHDRAW_STATUS, WITHDRAW_APPLY_TYPE} from './redux'
 import * as errno from '../../errno'
 
 const FormItem = Form.Item
 const RangePicker = DatePicker.RangePicker
 const Option = Select.Option
 
-class SearchForm extends PureComponent {
+class WithdrawApplySearchForm extends React.PureComponent {
   constructor(props) {
     super(props)
   }
 
   componentWillMount() {
-    const {fetchDealAction} = this.props
-    fetchDealAction({
-      dealType: DealType.DEAL_TYPE_RECHARGE,
-      limit: 10,
-      isRefresh: true,
-      success: (total) => this.onFetchRechargeSuccess(total, {}),
-      error: this.onFetchRechargeError,
+    const {fetchWithdrawApply} = this.props
+    fetchWithdrawApply({
+      status: WITHDRAW_STATUS.APPLYING,
+      success: () => this.onWithdrawProcessSuccess({}),
+      error: this.onWithdrawProcessError,
     })
   }
 
-  onFetchRechargeSuccess(total, values) {
+  onWithdrawProcessSuccess(values) {
     const {updateSearchParams, onSearchEnd} = this.props
     if (updateSearchParams) {
       updateSearchParams({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
-        mobilePhoneNumber: values.phone || undefined,
-      }, total)
+        mobilePhoneNumber: values.phone ? values.phone : undefined,
+        applyType: values.applyType ? values.applyType : undefined,
+        status: values.status ? values.status : WITHDRAW_STATUS.APPLYING,
+      })
     }
     if(onSearchEnd) {
       onSearchEnd()
     }
   }
 
-  onFetchRechargeError = (error) => {
+  onWithdrawProcessError = (error) => {
     const {onSearchEnd} = this.props
     if(onSearchEnd) {
       onSearchEnd()
@@ -72,7 +72,7 @@ class SearchForm extends PureComponent {
   }
 
   handleSubmit = (e) => {
-    const {onSearchStart, fetchDealAction} = this.props
+    const {onSearchStart, fetchWithdrawApply} = this.props
     e.preventDefault()
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
@@ -90,15 +90,14 @@ class SearchForm extends PureComponent {
         }
       }
       console.log("handleSubmit values:", values)
-      fetchDealAction({
-        dealType: DealType.DEAL_TYPE_RECHARGE,
+      fetchWithdrawApply({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
-        mobilePhoneNumber: values.phone || undefined,
-        limit: 10,
-        isRefresh: true,
-        success: (total) => this.onFetchRechargeSuccess(total, values),
-        error: this.onFetchRechargeError,
+        mobilePhoneNumber: values.phone,
+        applyType: values.applyType ? values.applyType : undefined,
+        status: values.status ? values.status : undefined,
+        success: () => this.onWithdrawProcessSuccess(values),
+        error: this.onWithdrawProcessError,
       })
       if(onSearchStart) {
         onSearchStart()
@@ -130,6 +129,24 @@ class SearchForm extends PureComponent {
           )}
         </FormItem>
         <FormItem>
+          {getFieldDecorator("applyType", {})(
+            <Select style={{width: 120}} placeholder="选择申请类别" allowClear>
+              <Option value={WITHDRAW_APPLY_TYPE.PROFIT.toString()}>收益取现</Option>
+              <Option value={WITHDRAW_APPLY_TYPE.REFUND.toString()}>押金返还</Option>
+            </Select>
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("status", {
+            initialValue: WITHDRAW_STATUS.APPLYING.toString()
+          })(
+            <Select style={{width: 120}} placeholder="选择状态">
+              <Option value={WITHDRAW_STATUS.APPLYING.toString()}>等待处理</Option>
+              <Option value={WITHDRAW_STATUS.DONE.toString()}>处理完成</Option>
+            </Select>
+          )}
+        </FormItem>
+        <FormItem>
           <Button.Group>
             <Button onClick={() => {this.props.form.resetFields()}}>重置</Button>
             <Button type="primary" htmlType="submit">查询</Button>
@@ -140,8 +157,6 @@ class SearchForm extends PureComponent {
   }
 }
 
-const RechargeSearchForm = Form.create()(SearchForm)
-
 const mapStateToProps = (appState, ownProps) => {
   return {
   }
@@ -151,4 +166,4 @@ const mapDispatchToProps = {
   ...actions,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(RechargeSearchForm)
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(WithdrawApplySearchForm))

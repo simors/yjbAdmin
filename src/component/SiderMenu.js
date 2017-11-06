@@ -83,14 +83,17 @@ class SiderMenu extends React.Component {
   }
 
   renderRechargeOrderMenu() {
-    let {orderVisible, rechargeVisible, refundVisible, withdrawVisible} = this.props
-    if (orderVisible || rechargeVisible || refundVisible || withdrawVisible) {
+    let {orderVisible, rechargeVisible, refundVisible, withdrawVisible, withdrawApplyVisible} = this.props
+    if (orderVisible || rechargeVisible || refundVisible || withdrawVisible || withdrawApplyVisible) {
       let items = []
       if (orderVisible) {
         items.push(<Menu.Item key="/order_list"><Link to="/order_list">订单管理</Link></Menu.Item>)
       }
       if (rechargeVisible) {
         items.push(<Menu.Item key="/order_recharge"><Link to="/order_recharge">充值管理</Link></Menu.Item>)
+      }
+      if (withdrawApplyVisible) {
+        items.push(<Menu.Item key="/order_withdraw_apply"><Link to="/order_withdraw_apply">取现申请</Link></Menu.Item>)
       }
       if (refundVisible) {
         items.push(<Menu.Item key="/order_refund"><Link to="/order_refund">押金管理</Link></Menu.Item>)
@@ -253,6 +256,7 @@ const mapStateToProps = (appState, ownProps) => {
   const rechargeVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_MAN_USER_PAID])
   const refundVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_REFUND_QUERY])
   const withdrawVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_WITHDRAW_QUERY])
+  const withdrawApplyVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.RECHARGE_WITHDRAW_APPLY])
 
   const accountStationVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.ACCOUNT_STAT_STATION_DIVIDEND])
   const accountDepartmentVisible = authSelector.selectValidPermissions(appState, [PERMISSION_CODE.ACCOUNT_STATION_DEPARTMENT_DIVIDEND])
@@ -282,6 +286,7 @@ const mapStateToProps = (appState, ownProps) => {
     rechargeVisible,
     refundVisible,
     withdrawVisible,
+    withdrawApplyVisible,
     accountStationVisible,
     accountDepartmentVisible,
     accountInvestorVisible,

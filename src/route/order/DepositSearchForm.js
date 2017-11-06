@@ -44,7 +44,7 @@ class SearchForm extends PureComponent {
       updateSearchParams({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
-        mobilePhoneNumber: values.phone,
+        mobilePhoneNumber: values.phone || undefined,
         dealType: Number(values.dealType),
       }, total)
     }

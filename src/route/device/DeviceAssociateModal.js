@@ -17,7 +17,7 @@ import {
 } from 'antd'
 import style from './device.module.scss'
 import DivisionCascader from '../../component/DivisionCascader'
-import {stationSelector, stationAction} from '../station/redux'
+import {StationStatus, stationAction, stationSelector} from '../station'
 import {actions} from './redux'
 
 const Option = Select.Option
@@ -32,7 +32,7 @@ class DeviceAssociateModal extends PureComponent {
   }
 
   componentWillMount() {
-    this.props.requestStations({status: 1})
+    this.props.requestStations({})
   }
 
   onDivisionChange = (value, selectedOptions) => {
@@ -42,9 +42,9 @@ class DeviceAssociateModal extends PureComponent {
   }
 
   inDivision(station) {
-    let provinceCode =station.province? station.province.value: undefined
-    let cityCode =station.city? station.city.value: undefined
-    let areaCode =station.area? station.area.value: undefined
+    let provinceCode = station.province? station.province.value: undefined
+    let cityCode = station.city? station.city.value: undefined
+    let areaCode = station.area? station.area.value: undefined
     if(this.state.division == undefined) {
       return true
     }
@@ -111,7 +111,7 @@ class DeviceAssociateModal extends PureComponent {
               <Select style={{width: 120}} placeholder="选择服务网点" onChange={this.onStationChange}>
                 {
                   this.props.stationList.map((station, index) => {
-                    if(this.inDivision(station)) {
+                    if(this.inDivision(station) && station.status === StationStatus.STATION_STATUS_OPEN) {
                       return <Option key={index} value={station.id}>{station.name}</Option>
                     }
                   })

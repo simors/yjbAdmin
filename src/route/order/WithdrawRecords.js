@@ -1,24 +1,22 @@
 /**
  * Created by yangyang on 2017/11/3.
  */
-import React, {PureComponent} from 'react'
+import React from 'react'
 import {connect} from 'react-redux'
-import {Link, Route, withRouter, Switch} from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
 import {
   Button,
   Table,
   Row,
-  Popover,
 } from 'antd'
-import mathjs from 'mathjs'
 import moment from "moment"
 import style from './order.module.scss'
-import {OrderStatus, actions, selector} from './redux'
+import {DealType, actions, selector} from './redux'
 import WithdrawSearchForm from './WithdrawSearchForm'
 
 const ButtonGroup = Button.Group
 
-class WithdrawRecords extends PureComponent {
+class WithdrawRecords extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -32,16 +30,17 @@ class WithdrawRecords extends PureComponent {
 
   handleTableChange = (pagination, filters, sorter) => {
     const {searchParams} = this.state
-    const {orderList, fetchOrdersAction} = this.props
+    const {withdrawList, fetchDealAction} = this.props
 
     const pager = { ...this.state.pagination }
     pager.current = pagination.current
     this.setState({pagination: pager})
-    if(orderList.length < pagination.total
-      && pagination.current * (pagination.pageSize + 1) > orderList.length) {
-      fetchOrdersAction({
+    if(withdrawList.length < pagination.total
+      && pagination.current * (pagination.pageSize + 1) > withdrawList.length) {
+      fetchDealAction({
         ...searchParams,
-        lastCreatedAt: orderList.length > 0? orderList[orderList.length - 1].createdAt : undefined,
+        dealType: DealType.DEAL_TYPE_WITHDRAW,
+        lastDealTime: withdrawList.length > 0? withdrawList[withdrawList.length - 1].dealTime : undefined,
         limit: 10,
         isRefresh: false,
       })
@@ -64,10 +63,10 @@ class WithdrawRecords extends PureComponent {
 
   render() {
     const {pagination, loading} = this.state
-    const {orderList} = this.props
+    const {withdrawList} = this.props
     const columns = [
       { title: '取现单号', dataIndex: 'orderNo', key: 'orderNo' },
-      { title: '取现时间', dataIndex: 'start', key: 'start', render: (start) => (<span>{moment(new Date(start)).format('LLLL')}</span>)},
+      { title: '取现时间', dataIndex: 'dealTime', key: 'dealTime', render: (dealTime) => (<span>{moment(new Date(dealTime)).format('LLLL')}</span>)},
       { title: '用户名', dataIndex: 'nickname', key: 'nickname' },
       { title: '手机号码', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
       { title: '取现金额(元)', dataIndex: 'amount', key: 'amount' },
@@ -87,7 +86,7 @@ class WithdrawRecords extends PureComponent {
         <Table rowKey="orderNo"
                columns={columns}
                pagination={pagination}
-               dataSource={orderList}
+               dataSource={withdrawList}
                loading={loading}
                onChange={this.handleTableChange}
         />
@@ -97,9 +96,9 @@ class WithdrawRecords extends PureComponent {
 }
 
 const mapStateToProps = (appState, ownProps) => {
-  let orderList = selector.selectOrderList(appState)
+  let withdrawList = selector.selectDealRecordList(appState, DealType.DEAL_TYPE_WITHDRAW)
   return {
-    orderList: orderList,
+    withdrawList,
   }
 }
 

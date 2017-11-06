@@ -6,6 +6,7 @@ import {loadSaga} from '../component/loadActivity'
 import {appStateSaga} from '../util/appstate'
 import {rehydrateSaga} from '../util/rehydrateRedux'
 import {saga as authSaga} from '../util/auth/'
+import {saga as notificationSaga} from '../route/notification/'
 import {stationSaga} from '../route/station/redux'
 import {orderSaga} from '../route/order'
 import {deviceSaga} from '../route/device'
@@ -22,6 +23,7 @@ export default function* rootSaga() {
     ...rehydrateSaga,
     ...appStateSaga,
     ...authSaga,
+    ...notificationSaga,
     ...stationSaga,
     ...orderSaga,
     ...deviceSaga,

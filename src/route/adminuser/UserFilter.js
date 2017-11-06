@@ -54,6 +54,7 @@ class UserFilter extends React.Component {
         nickname,
         mobilePhoneNumber,
         status: status && parseInt(status),
+        skipMyself: true,
       });
     });
   };

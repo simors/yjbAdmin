@@ -4,11 +4,11 @@
 import React from 'react'
 import {Route, Switch} from 'react-router-dom'
 import Dashboard from '../../route/dashboard'
-import {SystemMessage, PromotionMessage} from '../../route/notification/';
+import {SystemNotification, PromotionNotification} from '../../route/notification/';
 import {EndUser} from '../enduser/'
 import {AdminUser} from '../adminuser/'
 import StationManager from '../station/StationManage'
-import Order, {Recharge, WithdrawRecords, Deposit} from '../order'
+import Order, {Recharge, WithdrawRecords, Deposit, WithdrawApply} from '../order'
 import Device from '../device'
 import InvestorManager from '../station/InvestorManage'
 import ShowStation from '../station/ShowStation'
@@ -39,8 +39,8 @@ const ContentRouter = (props) => {
     <Switch>
       <Route exact path={match.url} component={Dashboard}/>
       <Route exact path="/device_list" component={Device}/>
-      <Route exact path="/message_system" component={SystemMessage}/>
-      <Route exact path="/message_promotion" component={PromotionMessage}/>
+      <Route exact path="/message_system" component={SystemNotification}/>
+      <Route exact path="/message_promotion" component={PromotionNotification}/>
       <Route exact path="/user_list" component={EndUser}/>
       <Route exact path="/system_user" key='/system_user' component={AdminUser}/>
       <Route exact path="/system_log" key='system_log' component={OperationLogManager}/>
@@ -53,6 +53,7 @@ const ContentRouter = (props) => {
       <Route exact path="/order_recharge" component={Recharge}/>
       <Route exact path="/order_refund" component={Deposit}/>
       <Route exact path="/order_withdraw" component={WithdrawRecords}/>
+      <Route exact path="/order_withdraw_apply" component={WithdrawApply}/>
       <Route exact path="/promotion_list" component={Promotion}/>
       <Route exact path="/promotion_list/recharge_stat" component={RechargePromotionStat}/>
       <Route exact path="/promotion_list/score_stat" component={ScorePromotionStat}/>
@@ -83,10 +84,11 @@ export const breadcrumbNameMap = {
   '/site_list/editStation': '编辑服务点信息',
   '/site_list/addStation': '新增服务点',
   '/site_investor': '投资人信息管理',
-  '/order_list': '订单信息管理',
-  '/order_recharge': '用户充值管理',
-  '/order_withdraw': '收益取现管理',
-  '/order_refund': '退还押金管理',
+  '/order_list': '订单管理',
+  '/order_recharge': '充值管理',
+  '/order_withdraw': '收益取现',
+  '/order_refund': '押金管理',
+  '/order_withdraw_apply': '取现申请',
   '/promotion_list': '活动管理',
   '/promotion_list/recharge_stat': '充值活动统计',
   '/promotion_list/score_stat': '积分倍率活动统计',

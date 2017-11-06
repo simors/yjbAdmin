@@ -16,3 +16,15 @@ export async function fetchOrdersApi(payload) {
 export async function fetchDealRecordApi(payload) {
   return await AV.Cloud.run('pingppFetchDealRecord', payload)
 }
+
+export async function fetchWithdrawApply(payload) {
+  let params = {
+    startTime: payload.start,
+    endTime: payload.end,
+    phone: payload.mobilePhoneNumber,
+    applyType: payload.applyType,
+    status: payload.status,
+    limit: payload.limit,
+  }
+  return await AV.Cloud.run('withdrawFetchApply', params)
+}
