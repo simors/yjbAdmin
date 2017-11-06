@@ -5,9 +5,9 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import {
-  Button,
   Table,
   Row,
+  Popconfirm,
 } from 'antd'
 import moment from "moment"
 import style from './order.module.scss'
@@ -33,6 +33,20 @@ class WithdrawApply extends React.PureComponent {
 
   onSearchEnd = () => {
     this.setState({loading: false})
+  }
+
+  agreeWithdraw(record) {
+    console.log('record', record)
+  }
+
+  renderOperateCol = (record) => {
+    return (
+      <span>
+        <Popconfirm title="确定通过取现申请吗？" onConfirm={() => {this.agreeWithdraw(record)}} okText="确定" cancelText="取消">
+          <a style={{color: `blue`}} href="#">同意</a>
+        </Popconfirm>
+      </span>
+    )
   }
 
   render() {
@@ -62,7 +76,7 @@ class WithdrawApply extends React.PureComponent {
             return <span>未知状态</span>
         }
       } },
-      { title: '操作', key: 'action'}
+      { title: '操作', key: 'action', render: this.renderOperateCol}
     ]
     if (Number(searchParams.status) === WITHDRAW_STATUS.DONE) {
       columns.pop()
