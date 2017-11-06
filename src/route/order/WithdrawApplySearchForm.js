@@ -28,17 +28,15 @@ class WithdrawApplySearchForm extends React.PureComponent {
   }
 
   componentWillMount() {
-    // const {fetchDealAction} = this.props
-    // fetchDealAction({
-    //   dealType: DealType.DEAL_TYPE_RECHARGE,
-    //   limit: 10,
-    //   isRefresh: true,
-    //   success: (total) => this.onWithdrawProcessSuccess(total, {}),
-    //   error: this.onWithdrawProcessError,
-    // })
+    const {fetchWithdrawApply} = this.props
+    fetchWithdrawApply({
+      status: WITHDRAW_STATUS.APPLYING,
+      success: () => this.onWithdrawProcessSuccess({}),
+      error: this.onWithdrawProcessError,
+    })
   }
 
-  onWithdrawProcessSuccess(total, values) {
+  onWithdrawProcessSuccess(values) {
     const {updateSearchParams, onSearchEnd} = this.props
     if (updateSearchParams) {
       updateSearchParams({
@@ -74,7 +72,7 @@ class WithdrawApplySearchForm extends React.PureComponent {
   }
 
   handleSubmit = (e) => {
-    const {onSearchStart, fetchDealAction} = this.props
+    const {onSearchStart, fetchWithdrawApply} = this.props
     e.preventDefault()
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
@@ -92,14 +90,13 @@ class WithdrawApplySearchForm extends React.PureComponent {
         }
       }
       console.log("handleSubmit values:", values)
-      fetchDealAction({
-        dealType: DealType.DEAL_TYPE_RECHARGE,
+      fetchWithdrawApply({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
         mobilePhoneNumber: values.phone,
-        limit: 10,
-        isRefresh: true,
-        success: (total) => this.onWithdrawProcessSuccess(total, {}),
+        applyType: values.applyType ? values.applyType : undefined,
+        status: values.status ? values.status : undefined,
+        success: () => this.onWithdrawProcessSuccess({}),
         error: this.onWithdrawProcessError,
       })
       if(onSearchStart) {
