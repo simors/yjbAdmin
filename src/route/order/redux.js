@@ -75,6 +75,7 @@ class WithdrawApply extends Record({
   applyType: undefined,
   status: undefined,
   operator: undefined,
+  operatorName: undefined,
   operateDate: undefined,
 }, 'WithdrawApply') {
   static fromJson(json) {
@@ -90,6 +91,7 @@ class WithdrawApply extends Record({
       record.set('applyType', json.applyType)
       record.set('status', json.status)
       record.set('operator', json.operator)
+      record.set('operatorName', json.operatorName)
       record.set('operateDate', json.operateDate)
     })
   }
