@@ -98,6 +98,17 @@ export const DealType = {
   DEAL_TYPE_ORDER_PAY : 7,              // 订单支付
 
 }
+
+export const WITHDRAW_STATUS = {
+  APPLYING: 0,      // 提交申请
+  DONE: 1,          // 处理完成
+}
+
+export const WITHDRAW_APPLY_TYPE = {
+  REFUND: 1,        // 微信端用户申请退还押金
+  PROFIT: 2,        // 服务单位和投资人申请收益取现
+}
+
 /**** Action ****/
 const updateOrderList = createAction(UPDATE_ORDER_LIST)
 const updateDealTypeList = createAction(UPDATE_DEAL_TYPE_LIST)
