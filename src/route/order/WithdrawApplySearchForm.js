@@ -15,7 +15,7 @@ import {
   message,
 } from 'antd'
 import style from './order.module.scss'
-import {actions, DealType, WITHDRAW_STATUS, WITHDRAW_APPLY_TYPE} from './redux'
+import {actions, WITHDRAW_STATUS, WITHDRAW_APPLY_TYPE} from './redux'
 import * as errno from '../../errno'
 
 const FormItem = Form.Item
@@ -42,9 +42,9 @@ class WithdrawApplySearchForm extends React.PureComponent {
       updateSearchParams({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
-        mobilePhoneNumber: values.phone,
-        applyType: values.applyType,
-        status: values.status,
+        mobilePhoneNumber: values.phone ? values.phone : undefined,
+        applyType: values.applyType ? values.applyType : undefined,
+        status: values.status ? values.status : WITHDRAW_STATUS.APPLYING,
       })
     }
     if(onSearchEnd) {
@@ -96,22 +96,13 @@ class WithdrawApplySearchForm extends React.PureComponent {
         mobilePhoneNumber: values.phone,
         applyType: values.applyType ? values.applyType : undefined,
         status: values.status ? values.status : undefined,
-        success: () => this.onWithdrawProcessSuccess({}),
+        success: () => this.onWithdrawProcessSuccess(values),
         error: this.onWithdrawProcessError,
       })
       if(onSearchStart) {
         onSearchStart()
       }
     })
-  }
-
-  onSelectStatusChange(newStatus) {
-    const {updateSearchParams} = this.props
-    if (updateSearchParams) {
-      updateSearchParams({
-        status: newStatus,
-      })
-    }
   }
 
   render() {
@@ -140,7 +131,6 @@ class WithdrawApplySearchForm extends React.PureComponent {
         <FormItem>
           {getFieldDecorator("applyType", {})(
             <Select style={{width: 120}} placeholder="选择申请类别" allowClear>
-              <Option value="all">全部</Option>
               <Option value={WITHDRAW_APPLY_TYPE.PROFIT.toString()}>收益取现</Option>
               <Option value={WITHDRAW_APPLY_TYPE.REFUND.toString()}>押金返还</Option>
             </Select>
@@ -150,7 +140,7 @@ class WithdrawApplySearchForm extends React.PureComponent {
           {getFieldDecorator("status", {
             initialValue: WITHDRAW_STATUS.APPLYING.toString()
           })(
-            <Select style={{width: 120}} placeholder="选择状态" onChange={(status) => this.onSelectStatusChange(status)}>
+            <Select style={{width: 120}} placeholder="选择状态">
               <Option value={WITHDRAW_STATUS.APPLYING.toString()}>等待处理</Option>
               <Option value={WITHDRAW_STATUS.DONE.toString()}>处理完成</Option>
             </Select>

@@ -67,6 +67,8 @@ class Deal extends DealRecord {
 class WithdrawApply extends Record({
   id: undefined,
   userId: undefined,
+  nickname: undefined,
+  mobilePhoneNumber: undefined,
   openid: undefined,
   amount: undefined,
   applyDate: undefined,
@@ -80,6 +82,8 @@ class WithdrawApply extends Record({
     return apply.withMutations((record) => {
       record.set('id', json.id)
       record.set('userId', json.userId)
+      record.set('nickname', json.nickname)
+      record.set('mobilePhoneNumber', json.mobilePhoneNumber)
       record.set('openid', json.openid)
       record.set('amount', json.amount)
       record.set('applyDate', json.applyDate)

@@ -46,7 +46,7 @@ class WithdrawSearchForm extends React.PureComponent {
       updateSearchParams({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
-        mobilePhoneNumber: values.phone,
+        mobilePhoneNumber: values.phone || undefined,
         dealType: DealType.DEAL_TYPE_WITHDRAW,
       }, total)
     }
@@ -95,7 +95,7 @@ class WithdrawSearchForm extends React.PureComponent {
       fetchDealAction({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
-        mobilePhoneNumber: values.phone,
+        mobilePhoneNumber: values.phone || undefined,
         dealType: DealType.DEAL_TYPE_WITHDRAW,
         limit: 10,
         isRefresh: true,

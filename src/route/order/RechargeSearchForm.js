@@ -44,7 +44,7 @@ class SearchForm extends PureComponent {
       updateSearchParams({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
-        mobilePhoneNumber: values.phone,
+        mobilePhoneNumber: values.phone || undefined,
       }, total)
     }
     if(onSearchEnd) {
@@ -94,10 +94,10 @@ class SearchForm extends PureComponent {
         dealType: DealType.DEAL_TYPE_RECHARGE,
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
-        mobilePhoneNumber: values.phone,
+        mobilePhoneNumber: values.phone || undefined,
         limit: 10,
         isRefresh: true,
-        success: (total) => this.onFetchRechargeSuccess(total, {}),
+        success: (total) => this.onFetchRechargeSuccess(total, values),
         error: this.onFetchRechargeError,
       })
       if(onSearchStart) {

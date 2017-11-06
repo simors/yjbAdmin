@@ -42,7 +42,7 @@ class SearchForm extends PureComponent {
     const {updateSearchParams, onSearchEnd} = this.props
     if (updateSearchParams) {
       updateSearchParams({
-        mobilePhoneNumber: values.phone,
+        mobilePhoneNumber: values.phone || undefined,
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
       }, total)

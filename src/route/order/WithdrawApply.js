@@ -38,7 +38,6 @@ class WithdrawApply extends React.PureComponent {
   render() {
     const {loading, searchParams} = this.state
     let columns = [
-      { title: '申请编号', dataIndex: 'id', key: 'id', colSpan: 0,},
       { title: '申请人', dataIndex: 'nickname', key: 'nickname' },
       { title: '手机号码', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
       { title: '申请日期', dataIndex: 'applyDate', key: 'applyDate', render: (applyDate) => (<span>{moment(new Date(applyDate)).format('LLLL')}</span>) },
@@ -89,7 +88,6 @@ class WithdrawApply extends React.PureComponent {
 
 const mapStateToProps = (appState, ownProps) => {
   let withdrawApplyList = selector.selectWithdrawApplyList(appState)
-  console.log('withdrawApplyList', withdrawApplyList)
   return {
     withdrawApplyList,
   }
