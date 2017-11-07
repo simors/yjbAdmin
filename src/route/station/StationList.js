@@ -7,55 +7,8 @@ import {connect} from 'react-redux';
 import {selector} from '../../util/auth'
 import {PERMISSION_CODE} from '../../util/rolePermission'
 
-// const columns = [{
-//   title: "服务点名称",
-//   dataIndex: "name",
-// }, {
-//   title: "省",
-//   dataIndex: "province",
-//   render: (text, record)=> {
-//     return (<div>{record.province?record.province.label:''}</div>)
-//   }
-// }, {
-//   title: "市",
-//   dataIndex: "city",
-//   render: (text, record)=> {
-//     return (<div>{record.city?record.city.label:''}</div>)
-//   }
-// }, {
-//   title: "区",
-//   dataIndex: "area",
-//   render: (text, record)=> {
-//     return (<div>{record.area?record.area.label:''}</div>)
-//   }
-// }, {
-//   title: "服务点地址",
-//   dataIndex: "addr",
-// }, {
-//   title: "干衣柜数量",
-//   dataIndex: "deviceNo",
-// }, {
-//   title: "管理员",
-//   dataIndex: "admin.nickname",
-// }, {
-//   title: "联系方式",
-//   dataIndex: "admin.mobilePhoneNumber",
-// }, {
-//   title: "状态",
-//   dataIndex: "status",
-//   render: (text, record)=> {
-//     return <div>{record.status ? '正常' : '已停用'}</div>
-//   }
-// }];
-
-
-const rowKey = (record) => {
-  return record.id;
-};
-
-
 const StationList = (props) => {
-  let {stations, selectStation,setStationStatus,editStation,showStation, showVisible, editVisible, changeStatusVisible} = props;
+  let {stations, editStation, showStation, showVisible, editVisible} = props;
   if (stations === null) {
     stations = [];
   }
@@ -69,16 +22,6 @@ const StationList = (props) => {
     if (editVisible) {
       items.push(<a key='c' style={{color: `blue`}} onClick={()=> {editStation(record)}}>编辑</a>)
       items.push(<span key='d' className="ant-divider" />)
-    }
-    if (changeStatusVisible) {
-      let changeBtn = (
-        record.status ?
-          <a key='e' style={{color: `blue`}} onClick={()=> {setStationStatus(record)}}>停用</a>
-          :
-          <a key='f' style={{color: `blue`}} onClick={()=> {setStationStatus(record)}}>启用</a>
-      )
-      items.push(changeBtn)
-      items.push(<span key='g' className="ant-divider" />)
     }
     if (items.length >= 2) {
       items.pop()
@@ -155,12 +98,10 @@ const StationList = (props) => {
 const mapStateToProps = (state, ownProps) => {
   let showVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_BASE_QUERY, PERMISSION_CODE.STATION_QUERY_PARTNER])
   let editVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_EDIT])
-  let changeStatusVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_CHANGE_STATUS])
 
   return {
     editVisible,
     showVisible,
-    changeStatusVisible,
   };
 };
 
