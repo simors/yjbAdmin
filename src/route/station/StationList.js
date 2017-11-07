@@ -79,13 +79,6 @@ const StationList = (props) => {
     dataIndex: "admin.mobilePhoneNumber",
     key: "admin.mobilePhoneNumber",
   }, {
-    title: "状态",
-    dataIndex: "status",
-    key: 'status',
-    render: (text, record)=> {
-      return <div>{record.status ? '正常' : '已停用'}</div>
-    }
-  }, {
     title: '操作',
     key: 'action',
     render: renderOperationBtn,

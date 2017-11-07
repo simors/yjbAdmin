@@ -130,14 +130,6 @@ class StationManage extends React.Component {
             <Input style={{width: 180}} placeholder='名称'/>)}
         </FormItem>
         <FormItem>
-          {getFieldDecorator("status", {})(
-            <Select labelInValue={true} placeholder="状态" allowClear={true}
-                    style={{width: 120}}>
-              <Option value='1'>正常</Option>
-              <Option value='0'>已停用</Option>
-            </Select>)}
-        </FormItem>
-        <FormItem>
           {getFieldDecorator("division", {
             initialValue: [],
 
