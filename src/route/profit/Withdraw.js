@@ -102,13 +102,13 @@ class Withdraw extends React.PureComponent {
 
               <div style={{marginTop: 20, marginLeft: 20}}>
                 <Popconfirm placement="top" title="确认需要取现吗？" onConfirm={this.handleSubmit} okText="是的" cancelText="再想想">
-                  <Button type="primary" size="large" disabled={this.hasErrors(getFieldsError(), getFieldsValue(), adminProfit.balance)}>取现到微信余额</Button>
+                  <Button type="primary" size="large" disabled={Number(adminProfit.balance) <= 0 || this.hasErrors(getFieldsError(), getFieldsValue(), adminProfit.balance)}>取现到微信余额</Button>
                 </Popconfirm>
               </div>
             </Col>
             <Col span={11} offset={1} style={{textAlign: 'center'}}>
               <img src={currentUser.avatar} width={200} height={200} />
-              <div style={{marginTop: 10, color: 'red'}}>每个月的10号到15号为可取现时间，取现金额将以零钱的方式充入您的微信钱包，请注意查收</div>
+              <div style={{marginTop: 10, color: 'red'}}>取现金额将在7个工作日内以零钱的方式充入您的微信钱包，请注意查收</div>
             </Col>
           </Row>
         </Modal>
