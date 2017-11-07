@@ -110,13 +110,13 @@ class ScorePromotionStat extends PureComponent {
             <div>{promotion.title}</div>
             <div>{this.getPromotionStatus(promotion)}</div>
           </Col>
-          <Col span={8} offset={9}>
+          <Col span={12} offset={8}>
             <Card bordered={false}>
-              <Card.Grid className={style.card}>
+                <Card.Grid className={style.card} style={{width: '50%'}}>
                 <div className={style.title}>赠送总积分: </div>
                 <div className={style.amount}>{Number(promotion.stat.scoreAmount).toLocaleString()}</div>
               </Card.Grid>
-              <Card.Grid className={style.card}>
+              <Card.Grid className={style.card} style={{width: '50%'}}>
                 <div className={style.title}>参与人数: </div>
                 <div className={style.amount}>{Number(promotion.stat.participant).toLocaleString()}</div>
               </Card.Grid>
