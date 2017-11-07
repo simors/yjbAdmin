@@ -163,8 +163,6 @@ export const DEAL_TYPE = {
 /**** Action ****/
 const updateOrderList = createAction(UPDATE_ORDER_LIST)
 const updateDealTypeList = createAction(UPDATE_DEAL_TYPE_LIST)
-const saveWithdrawApply = createAction(SAVE_WITHDRAW_APPLY)
-const saveBatchWithdrawApply = createAction(SAVE_BATCH_WITHDRAW_APPLY)
 const saveWithdrawApplyList = createAction(SAVE_WITHDRAW_APPLY_LIST)
 
 export const actions = {
@@ -177,6 +175,8 @@ export const actions = {
   fetchWithdrawApply: createAction(FETCH_WITHDRAW_APPLY),
   requestWithdraw: createAction(REQUEST_WITHDRAW),
   deleteWithdrawApply: createAction(DELETE_WITHDRAW_APPLY),
+  saveWithdrawApply: createAction(SAVE_WITHDRAW_APPLY),
+  saveBatchWithdrawApply: createAction(SAVE_BATCH_WITHDRAW_APPLY),
 }
 
 /**** Saga ****/

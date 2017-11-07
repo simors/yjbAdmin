@@ -20,5 +20,6 @@ export const orderSelector = redux.selector
 export {Recharge, WithdrawRecords, Deposit, WithdrawApply}
 
 export const WITHDRAW_APPLY_TYPE = redux.WITHDRAW_APPLY_TYPE
+export const WITHDRAW_STATUS = redux.WITHDRAW_STATUS
 
 export default Order

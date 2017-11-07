@@ -8,7 +8,7 @@ import {REHYDRATE} from 'redux-persist/constants'
 import * as profitCloud from './cloud'
 import {stationAction} from '../station'
 import {accountAction, ACCOUNT_TYPE} from '../account'
-import {WITHDRAW_APPLY_TYPE} from '../order'
+import {WITHDRAW_APPLY_TYPE, orderActions} from '../order'
 
 // --- model
 
@@ -37,6 +37,7 @@ class Profit extends Record({
   statInvestorProfits: List(),
   statPartnerProfits: List(),
   profitShare: Map(),             // Map(<profitShareType, List()>)
+  withdrawLog: List(),            // 收益取现记录
 }, 'Profit') {}
 
 // --- constant
@@ -52,6 +53,8 @@ const SAVE_PARTNER_PROFIT_STAT = 'SAVE_PARTNER_PROFIT_STAT'
 const REQUEST_PROFIT_WITHDRAW = 'REQUEST_PROFIT_WITHDRAW'
 const GET_PROFIT_SHARING = 'GET_PROFIT_SHARING'
 const SAVE_PROFIT_SHARING = 'SAVE_PROFIT_SHARING'
+const FETCH_MINE_WITHDRAW_LOG = 'FETCH_MINE_WITHDRAW_LOG'
+const SAVE_WITHDRAW_LOG = 'SAVE_WITHDRAW_LOG'
 
 // --- action
 
@@ -63,12 +66,14 @@ export const profitAction = {
   stat1YearAccountProfit: createAction(GET_1_YEAR_ACCOUNT_PROFIT),
   requestProfitWithdraw: createAction(REQUEST_PROFIT_WITHDRAW),
   getProfitSharing: createAction(GET_PROFIT_SHARING),
+  fetchMineWithdrawLog: createAction(FETCH_MINE_WITHDRAW_LOG),
 }
 
 const saveAdminProfit = createAction(SAVE_ADMIN_PROFIT)
 const saveInvestProfitStat = createAction(SAVE_INVEST_PROFIT_STAT)
 const savePartnerProfitStat = createAction(SAVE_PARTNER_PROFIT_STAT)
 const saveProfitSharing = createAction(SAVE_PROFIT_SHARING)
+const saveWithdrawLog = createAction(SAVE_WITHDRAW_LOG)
 
 // --- saga
 
@@ -80,6 +85,7 @@ export const profitSaga = [
   takeLatest(GET_1_YEAR_ACCOUNT_PROFIT, sagaStat1YearAccountProfit),
   takeLatest(REQUEST_PROFIT_WITHDRAW, sagaRequestProfitWithdraw),
   takeLatest(GET_PROFIT_SHARING, sagaGetProfitSharing),
+  takeLatest(FETCH_MINE_WITHDRAW_LOG, sagaGetWithdrawLog),
 ]
 
 function* sagaGetAdminProfit(action) {
@@ -231,6 +237,27 @@ function* sagaGetProfitSharing(action) {
   }
 }
 
+function* sagaGetWithdrawLog(action) {
+  let payload = action.payload
+  try {
+    let params = {
+      start: payload.start,
+      end: payload.end,
+      applyType: WITHDRAW_APPLY_TYPE.PROFIT,
+    }
+    let withdraw = yield call(profitCloud.fetchWithdrawLog, params)
+    yield put(orderActions.saveBatchWithdrawApply({applys: withdraw}))
+    yield put(saveWithdrawLog({withdrawLog: withdraw}))
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (e) {
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 // --- reducer
 
 const initialState = new Profit()
@@ -245,6 +272,8 @@ export function profitReducer(state=initialState, action) {
       return reduceSavePartnerProfitStat(state, action)
     case SAVE_PROFIT_SHARING:
       return reduceSaveProfitSharing(state, action)
+    case SAVE_WITHDRAW_LOG:
+      return reduceSaveWithdrawLog(state, action)
     case REHYDRATE:
       return onRehydrate(state, action);
     default:
@@ -293,6 +322,17 @@ function reduceSaveProfitSharing(state, action) {
   return state
 }
 
+function reduceSaveWithdrawLog(state, action) {
+  let payload = action.payload
+  let withdrawLog = payload.withdrawLog
+  let applyList = []
+  withdrawLog.forEach((apply) => {
+    applyList.push(apply.id)
+  })
+  state = state.set('withdrawLog', new List(applyList))
+  return state
+}
+
 function onRehydrate(state, action) {
   let incoming = action.payload.PROFIT
   if (!incoming) {
@@ -311,6 +351,7 @@ export const profitSelector = {
   selectInvestProfitList,
   selectPartnerProfitList,
   selectProfitShareIdList,
+  selectWithdrawLog,
 }
 
 function selectAdminProfit(state) {
@@ -343,4 +384,12 @@ function selectProfitShareIdList(state, type) {
     return []
   }
   return shareList.toJS()
+}
+
+function selectWithdrawLog(state) {
+  let logs = state.PROFIT.get('withdrawLog')
+  if (!logs) {
+    return []
+  }
+  return logs.toJS()
 }

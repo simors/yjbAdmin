@@ -30,7 +30,7 @@ import PartnerAccountManager from '../account/PartnerAccountManager'
 import PartnerAccountChartView from '../account/PartnerAccountChartView'
 import InvestorAccountManager from '../account/InvestorAccountManager'
 import InvestorAccountChartView from '../account/InvestorAccountChartView'
-import Profit from '../profit'
+import Profit, {WithdrawLog} from '../profit'
 import OperationLogManager from '../operationLog'
 
 const ContentRouter = (props) => {
@@ -70,6 +70,7 @@ const ContentRouter = (props) => {
       <Route exact path="/settlement_investor" component={InvestorAccountManager}/>
       <Route exact path="/settlement_investor/investorChart" component={InvestorAccountChartView}/>
       <Route exact path="/profit_list" component={Profit}/>
+      <Route exact path="/profit_withdraw_log" component={WithdrawLog}/>
     </Switch>
   )
 }
@@ -105,6 +106,7 @@ export const breadcrumbNameMap = {
   '/settlement_investor': '投资人分成结算',
   '/settlement_investor/investorChart': '投资人分成报表',
   '/profit_list': '投资收益管理',
+  '/profit_withdraw_log': '收益取现记录',
 };
 
 export default ContentRouter

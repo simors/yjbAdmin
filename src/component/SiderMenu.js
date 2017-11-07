@@ -215,6 +215,7 @@ class SiderMenu extends React.Component {
       return (
         <Menu.SubMenu key="/profit" title={<span><Icon type="bank" />投资收益</span>}>
           <Menu.Item key="/profit_list"><Link to="/profit_list">投资收益管理</Link></Menu.Item>
+          <Menu.Item key="/profit_withdraw_log"><Link to="/profit_withdraw_log">收益取现记录</Link></Menu.Item>
         </Menu.SubMenu>
       )
     }
