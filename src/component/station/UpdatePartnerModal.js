@@ -83,8 +83,17 @@ class UpdatePartnerModal extends Component {
     })
   }
 
+  hasErrors(fieldsError, values, balance) {
+    if (Object.keys(fieldsError).some(field => fieldsError[field])) {
+      return true
+    }
+    let isValid = values['userId'] && values['royalty'] >= 0 && values['royalty']<=100
+    return !isValid
+  }
 
   render() {
+    const { getFieldDecorator, getFieldsValue, getFieldsError } = this.props.form
+
     return (
       <Modal
         title='编辑分成方'
@@ -98,6 +107,17 @@ class UpdatePartnerModal extends Component {
         }}
         wrapClassName='vertical-center-modal'
         key={this.props.modalKey}
+        footer={[
+          <Button key="back" size="large" onClick={()=> {
+            this.setState({})
+            this.props.onCancel()
+          }}>取消</Button>,
+          <Button key="submit" disabled={this.hasErrors(getFieldsError(), getFieldsValue())} type="primary" size="large"  onClick={()=> {
+            this.handleOk()
+          }}>
+            确定
+          </Button>,
+        ]}
       >
         <Form layout="horizontal">
           <FormItem label='分成方' hasFeedback {...formItemLayout}>
