@@ -272,7 +272,7 @@ function* sagaFetchWithdrawApply(action) {
   let payload = action.payload
   try {
     let result = yield call(fetchWithdrawApply, payload)
-    yield put(saveBatchWithdrawApply({applys: result}))
+    yield put(actions.saveBatchWithdrawApply({applys: result}))
     yield put(saveWithdrawApplyList({applys: result}))
     if(payload.success) {
       payload.success()

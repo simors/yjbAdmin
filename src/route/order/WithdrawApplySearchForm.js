@@ -28,6 +28,10 @@ class WithdrawApplySearchForm extends React.PureComponent {
   }
 
   componentWillMount() {
+    const {onSearchStart} = this.props
+    if(onSearchStart) {
+      onSearchStart()
+    }
     const {fetchWithdrawApply} = this.props
     fetchWithdrawApply({
       status: WITHDRAW_STATUS.APPLYING,
@@ -57,18 +61,7 @@ class WithdrawApplySearchForm extends React.PureComponent {
     if(onSearchEnd) {
       onSearchEnd()
     }
-    switch (error.code)
-    {
-      case errno.EPERM:
-        message.error("用户未登录")
-        break
-      case errno.ERROR_NO_USER:
-        message.error("用户不存在")
-        break
-      default:
-        message.error(`查询充值订单记录, 错误：${error.code}`)
-        break
-    }
+    message.error('查询取现记录失败')
   }
 
   handleSubmit = (e) => {
@@ -89,7 +82,6 @@ class WithdrawApplySearchForm extends React.PureComponent {
           ],
         }
       }
-      console.log("handleSubmit values:", values)
       fetchWithdrawApply({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
