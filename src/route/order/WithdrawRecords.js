@@ -73,11 +73,6 @@ class WithdrawRecords extends React.PureComponent {
     ]
     return (
       <div className={style.content}>
-        <div className={style.operation}>
-          <ButtonGroup>
-            <Button icon="reload">刷新</Button>
-          </ButtonGroup>
-        </div>
         <Row>
           <WithdrawSearchForm updateSearchParams={this.updateSearchParams}
                            onSearchStart={this.onSearchStart}

@@ -151,7 +151,7 @@ class StationManage extends React.Component {
         {getFieldDecorator("name", {
           initialValue: '',
         })(
-          <Input placeholder='名称' />        )}
+          <Input style={{width: 180}} placeholder='名称' />        )}
       </FormItem>
       <FormItem>
         {getFieldDecorator("status", {
@@ -168,8 +168,8 @@ class StationManage extends React.Component {
           initialValue: [],
 
         })(
-          <DivisionCascader cascaderSize='large'
-          />     )}
+          <DivisionCascader cascaderSize='large'/>
+        )}
       </FormItem>
       <FormItem>
         <Button.Group>

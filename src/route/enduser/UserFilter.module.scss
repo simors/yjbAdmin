@@ -1,11 +1,11 @@
 .UserFilter {
-  padding: 12px 0;
+  padding: 0 0 12px 0;
 }
 
 .nickname {
   :global {
     .ant-form-item-control-wrapper {
-      width: 6rem;
+      width: 8rem;
     }
   }
 }

@@ -49,3 +49,12 @@ export async function getProfitSharing(payload) {
   }
   return await AV.Cloud.run('stationFetchProfitSharebyUser', params)
 }
+
+export async function fetchWithdrawLog(payload) {
+  let params = {
+    startTime: payload.start,
+    endTime: payload.end,
+    applyType: payload.applyType,
+  }
+  return await AV.Cloud.run('withdrawFetchApply', params)
+}

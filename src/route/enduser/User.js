@@ -16,7 +16,6 @@ class User extends React.Component {
         <Row type="flex" gutter={24}>
           <Col lg={{span: 24}}>
             <div style={{display: "flex", flexFlow: "column"}}>
-              <UserOp/>
               <UserFilter/>
               <UserList/>
             </div>

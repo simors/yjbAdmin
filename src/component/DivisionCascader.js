@@ -130,6 +130,7 @@ class DivisionCascader extends PureComponent {
                 size={cascaderSize}
                 changeOnSelect
                 disabled={disabled}
+                style={{width: width}}
                 onChange={this.onSelectChange} />
     )
   }

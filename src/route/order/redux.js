@@ -142,8 +142,8 @@ export const DealType = {
 }
 
 export const WITHDRAW_STATUS = {
-  APPLYING: 0,      // 提交申请
-  DONE: 1,          // 处理完成
+  APPLYING: 1,      // 提交申请
+  DONE: 2,          // 处理完成
 }
 
 export const WITHDRAW_APPLY_TYPE = {
@@ -163,8 +163,6 @@ export const DEAL_TYPE = {
 /**** Action ****/
 const updateOrderList = createAction(UPDATE_ORDER_LIST)
 const updateDealTypeList = createAction(UPDATE_DEAL_TYPE_LIST)
-const saveWithdrawApply = createAction(SAVE_WITHDRAW_APPLY)
-const saveBatchWithdrawApply = createAction(SAVE_BATCH_WITHDRAW_APPLY)
 const saveWithdrawApplyList = createAction(SAVE_WITHDRAW_APPLY_LIST)
 
 export const actions = {
@@ -177,6 +175,8 @@ export const actions = {
   fetchWithdrawApply: createAction(FETCH_WITHDRAW_APPLY),
   requestWithdraw: createAction(REQUEST_WITHDRAW),
   deleteWithdrawApply: createAction(DELETE_WITHDRAW_APPLY),
+  saveWithdrawApply: createAction(SAVE_WITHDRAW_APPLY),
+  saveBatchWithdrawApply: createAction(SAVE_BATCH_WITHDRAW_APPLY),
 }
 
 /**** Saga ****/
@@ -272,7 +272,7 @@ function* sagaFetchWithdrawApply(action) {
   let payload = action.payload
   try {
     let result = yield call(fetchWithdrawApply, payload)
-    yield put(saveBatchWithdrawApply({applys: result}))
+    yield put(actions.saveBatchWithdrawApply({applys: result}))
     yield put(saveWithdrawApplyList({applys: result}))
     if(payload.success) {
       payload.success()

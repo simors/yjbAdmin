@@ -132,7 +132,7 @@ class InvestorManage extends React.Component {
           {getFieldDecorator("stationId", {
             initialValue: '',
           })(
-            <Select style={{width: 120}} placeholder="选择服务网点" >
+            <Select style={{width: 200}} placeholder="选择服务网点" >
               <Option value="">全部</Option>
               {
                 this.props.stations.map((station, index) => (

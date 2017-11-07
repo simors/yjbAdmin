@@ -42,7 +42,7 @@ class InvestorProfitShare extends React.PureComponent {
                   </Row>
                   <Row>
                     <Col span={8}>分红比例</Col>
-                    <Col span={16}>{share.royalty}%</Col>
+                    <Col span={16}>{Number(share.royalty) * 100}%</Col>
                   </Row>
                 </Card.Grid>
               )

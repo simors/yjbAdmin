@@ -113,14 +113,14 @@ class OperationLogManager extends React.Component {
   renderSearchBar() {
     const {getFieldDecorator} = this.props.form
     return (
-      <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=> {
+      <Form style={{marginBottom: 12}} layout="inline" onSubmit={(e)=> {
         this.search(e)
       }}>
         <FormItem>
           {getFieldDecorator("userId", {
             initialValue: '',
           })(
-            <Select style={{width: 120}} placeholder="选择操作用户">
+            <Select style={{width: 180}} placeholder="选择操作用户">
               <Option value=''>全部</Option>
               {
                 this.props.adminList.map((item, index) => (
