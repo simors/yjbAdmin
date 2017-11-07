@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import {Table,Button} from 'antd';
+import {Table, Button, Popconfirm} from 'antd';
 import {connect} from 'react-redux';
 import {selector} from '../../util/auth'
 import {PERMISSION_CODE} from '../../util/rolePermission'
@@ -14,7 +14,7 @@ const rowKey = (record) => {
 
 
 const InvestorList = (props) => {
-  let {investors, selectStation,editInvestor,setInvestorStatus, editVisible, changeStatusVisible} = props;
+  let {investors, selectStation, editInvestor, setInvestorStatus, editVisible, changeStatusVisible} = props;
   if (investors === null) {
     investors = [];
   }
@@ -28,18 +28,28 @@ const InvestorList = (props) => {
   const renderOperateBtn = (text, record) => {
     let items = []
     if (editVisible) {
-      items.push(<a key='a' style={{color: `blue`}} onClick={()=> {editInvestor(record)}}>编辑</a>)
-      items.push(<span key='b' className="ant-divider" />)
+      items.push(<a key='a' style={{color: `blue`}} onClick={()=> {
+        editInvestor(record)
+      }}>编辑</a>)
+      items.push(<span key='b' className="ant-divider"/>)
     }
     if (changeStatusVisible) {
       let changeBtn = (
         record.status ?
-          <a key='c' style={{color: `blue`}} onClick={()=> {setInvestorStatus(record)}}>停用</a>
+          <Popconfirm key='c' title="确定停用该投资人？" onConfirm={()=> {
+            setInvestorStatus(record)
+          }}>
+            <a style={{color: `blue`}}>停用</a>
+          </Popconfirm>
           :
-          <a key='d' style={{color: `blue`}} onClick={()=> {setInvestorStatus(record)}}>启用</a>
+          <Popconfirm key='d' title="确定启用该投资人？" onConfirm={()=> {
+            setInvestorStatus(record)
+          }}>
+            <a style={{color: `blue`}}>启用</a>
+          </Popconfirm>
       )
       items.push(changeBtn)
-      items.push(<span key='e' className="ant-divider" />)
+      items.push(<span key='e' className="ant-divider"/>)
     }
     if (items.length >= 2) {
       items.pop()
@@ -92,7 +102,7 @@ const InvestorList = (props) => {
 
   return (
     <div>
-      <Table columns={columns} dataSource={investors} rowKey={rowKey} />
+      <Table columns={columns} dataSource={investors} rowKey={rowKey}/>
     </div>
   );
 };
@@ -107,8 +117,7 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = {
-};
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(InvestorList);
 
