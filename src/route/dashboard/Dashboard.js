@@ -12,6 +12,8 @@ import DeviceStat from './DeviceStat'
 import StationStat from './StationStat'
 import ProfitCost from './ProfitCost'
 import StationProfitRank from './StationProfitRank'
+import DepositStat from './DepositStat'
+import RechargeStat from './RechargeStat'
 import {dashboardSelector} from './redux'
 
 class Dashboard extends React.Component {
@@ -69,6 +71,19 @@ class Dashboard extends React.Component {
     )
   }
 
+  renderFundStat() {
+    return (
+      <Row gutter={16} style={{marginBottom: 20}}>
+        <Col span={12}>
+          <DepositStat/>
+        </Col>
+        <Col span={12}>
+          <RechargeStat/>
+        </Col>
+      </Row>
+    )
+  }
+
   render() {
     let {isPlatformUser} = this.props
     return (
@@ -78,6 +93,8 @@ class Dashboard extends React.Component {
         <div>
           <Row gutter={16}>
             <Col span={18}>
+              {isPlatformUser ? this.renderFundStat() : null}
+              {isPlatformUser ? <ProfitCost/> : null}
               <Row gutter={16} style={{marginBottom: 20}}>
                 <Col span={8}>
                   <MpUserStat/>
@@ -89,7 +106,6 @@ class Dashboard extends React.Component {
                   <StationStat/>
                 </Col>
               </Row>
-              {isPlatformUser ? <ProfitCost/> : null}
             </Col>
             <Col span={6}>
               <StationProfitRank/>

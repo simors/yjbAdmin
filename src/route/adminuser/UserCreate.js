@@ -207,7 +207,7 @@ class UserCreate extends React.Component {
   }
 
   renderValidatePhone() {
-    const {getFieldDecorator} = this.props.form;
+    const {getFieldDecorator, getFieldError, getFieldValue} = this.props.form;
 
     const prefixSelector = getFieldDecorator('prefix', {
       initialValue: '86',
@@ -217,13 +217,14 @@ class UserCreate extends React.Component {
       </Select>
     );
 
+    let smsInputDisabled = getFieldValue('mobilePhoneNumber') == '' || getFieldValue('mobilePhoneNumber') == undefined || getFieldError('mobilePhoneNumber')
+
     return (
       <div>
         <Form>
           <Form.Item
             {...formItemLayout}
             label='手机号码'
-            hasFeedback
           > {
             getFieldDecorator('mobilePhoneNumber', {
               rules: [{
@@ -239,7 +240,6 @@ class UserCreate extends React.Component {
           <Form.Item
             {...formItemLayout}
             label='验证码'
-            hasFeedback
           >
             <Row gutter={8}>
               <Col span={16}>
@@ -254,7 +254,7 @@ class UserCreate extends React.Component {
                 })(<Input />)}
               </Col>
               <Col span={8}>
-                <SmsInput params={{mobilePhoneNumber: validPhone, name: '衣家宝', op: '新增后台用户'}}/>
+                <SmsInput disabled={smsInputDisabled} params={{mobilePhoneNumber: validPhone, name: '衣家宝', op: '新增后台用户'}}/>
               </Col>
             </Row>
           </Form.Item>

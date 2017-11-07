@@ -85,8 +85,7 @@ class SmsInput extends React.Component {
 
   renderGetSmsButtonEnabled = () => {
     return (
-      <Button onClick={this.state.countDown ? ()=> {} : this.getSmsAuthCode}
-      >
+      <Button disabled={this.props.disabled} onClick={this.state.countDown ? ()=> {} : this.getSmsAuthCode}>
         {this.renderCodeFetcher()}
       </Button>
     )
@@ -116,6 +115,7 @@ class SmsInput extends React.Component {
 SmsInput.defaultProps = {
   getSmsAuthText: '获取验证码',
   smsType: 'sms',
+  disabled: false,
 
   //text input
   placeholder: '请输入6位验证码',

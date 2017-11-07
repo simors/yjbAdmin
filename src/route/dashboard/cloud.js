@@ -25,3 +25,11 @@ export async function fetchStationAccountRank(payload) {
   }
   return await AV.Cloud.run('accountFetchStationAccountRank', params)
 }
+
+export async function fetchDepositStat() {
+  return await AV.Cloud.run('pingppFetchDepositAmount')
+}
+
+export async function fetchRechargeStat() {
+  return await AV.Cloud.run('pingppFetchRechargeAmount')
+}

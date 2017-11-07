@@ -14,6 +14,7 @@ import PromotionSearchForm from './PromotionSearchForm'
 import {selector, PromotionCategoryType} from './redux'
 import PromotionDetailModal from './PromotionDetailModal'
 import PromotionEditModal from './PromotionEditModal'
+import {getDivisionName} from '../../util/division'
 
 class Promotion extends PureComponent {
   constructor(props) {
@@ -112,6 +113,7 @@ class Promotion extends PureComponent {
     const columns = [
       { title: '活动类型', dataIndex: 'categoryTitle', key: 'categoryTitle' },
       { title: '活动名称', dataIndex: 'title', key: 'title' },
+      { title: '活动区域', dataIndex: 'region', key: 'region', render: (region) => (<span>{getDivisionName(region)}</span>) },
       { title: '活动开始时间', dataIndex: 'start', key: 'start',
         render: (start) => (<span>{moment(new Date(start)).format('LLLL')}</span>)},
       { title: '活动结束时间', dataIndex: 'end', key: 'end',
