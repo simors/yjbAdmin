@@ -270,7 +270,7 @@ class UserCreate extends React.Component {
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
         <QRCode ref="qrcode" value={authUrl} size={200}/>
         <div style={{marginTop: 10, fontSize: 16, color: 'red', width: 300}}>
-          使用待添加后台用户的微信扫描上方二维码，并关注衣家宝公众号完成绑定操作
+          使用待添加后台用户的微信扫描上方二维码，完成用户授权后继续下一步
         </div>
       </div>
     )
