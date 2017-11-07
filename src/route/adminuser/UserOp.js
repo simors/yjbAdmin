@@ -25,10 +25,6 @@ class UserOp extends React.Component {
                 onClick={this.onCreate}>
           新增
         </Button>
-        <Button icon="reload"
-                onClick={this.onRefresh}>
-          刷新
-        </Button>
       </Button.Group>
     );
   }

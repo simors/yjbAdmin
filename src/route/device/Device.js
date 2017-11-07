@@ -172,7 +172,6 @@ class Device extends PureComponent {
         <div className={style.operation}>
           <ButtonGroup>
             <Button icon="link" onClick={() => {}}>批量操作</Button>
-            <Button icon="reload" onClick={this.onReload}>刷新</Button>
           </ButtonGroup>
         </div>
         <Row>

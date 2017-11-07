@@ -116,12 +116,6 @@ class Order extends PureComponent {
     ]
     return (
       <div className={style.content}>
-        <div className={style.operation}>
-          <ButtonGroup>
-            <Button icon="info-circle-o" onClick={this.showDetail}>查看</Button>
-            <Button icon="reload">刷新</Button>
-          </ButtonGroup>
-        </div>
         <Row>
           <OrderSearchForm updateSearchParams={this.updateSearchParams}
                            onSearchStart={this.onSearchStart}
