@@ -133,7 +133,7 @@ class CreateInvestorModal extends Component {
                   message: '投资金额未填写'
                 }
               ]
-            })(<InputNumber />)}
+            })(<InputNumber min={0}/>)}
           </FormItem>
         </Form>
       </Modal>

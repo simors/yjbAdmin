@@ -124,7 +124,7 @@ class CreatePartnerModal extends Component {
               rules: [
                 {
                   required: true,
-                  message: '投资金额未填写'
+                  message: '投资比例未填写'
                 }
               ]
             })(<InputNumber max={100} min={0}/>)}

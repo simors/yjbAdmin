@@ -163,3 +163,8 @@ export async function partnerHaveStation(payload) {
 export async function investorHaveStation(payload) {
   return await AV.Cloud.run('stationInvestorHaveStation',payload)
 }
+
+export async function validProfitSharing(payload) {
+  console.log('payload=====>',payload)
+  return await AV.Cloud.run('stationValidProfitSharing',payload)
+}

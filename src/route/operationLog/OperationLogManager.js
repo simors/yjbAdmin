@@ -4,15 +4,19 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Input, Select, Button} from 'antd';
+import {Row, Col, Input, Select, Button, Form, DatePicker} from 'antd';
 import OperationLogList from './OperationLogList';
 // import StationMenu from './StationMenu'
 import {selector as operationLogSelector, actions as operationLogActions} from './redux'
 import mathjs from 'mathjs'
 import {action as authActions, selector as authSelector} from '../../util/auth'
+import moment from 'moment'
 
 const Option = Select.Option;
 const ButtonGroup = Button.Group
+const FormItem = Form.Item
+const RangePicker = DatePicker.RangePicker;
+
 // var Excel = require('exceljs');
 
 class OperationLogManager extends React.Component {
@@ -30,7 +34,9 @@ class OperationLogManager extends React.Component {
       limit: 10
     })
     this.props.listAdminUsers({
-      onFailure: (e)=>{console.log('falus=====>',e.message)}
+      onFailure: (e)=> {
+        console.log('falus=====>', e.message)
+      }
     })
   }
 
@@ -38,15 +44,15 @@ class OperationLogManager extends React.Component {
     this.props.fetchOperationList({...this.state})
   }
 
-  changePageSize(page,pageSize){
-    if(this.props.operationLogs&&this.props.operationLogs.length){
+  changePageSize(page, pageSize) {
+    if (this.props.operationLogs && this.props.operationLogs.length) {
       let count = this.props.operationLogs.length
-      let pageMax = count/pageSize
+      let pageMax = count / pageSize
 
-      if(page==pageMax|| page>=pageMax){
+      if (page == pageMax || page >= pageMax) {
         let payload = {
           ...this.state,
-          lastCreatedAt: this.props.operationLogs[this.props.operationLogs.length-1].createdAt,
+          lastCreatedAt: this.props.operationLogs[this.props.operationLogs.length - 1].createdAt,
           success: ()=> {
           },
           error: ()=> {
@@ -60,19 +66,29 @@ class OperationLogManager extends React.Component {
 
   }
 
-  search() {
-    let payload = {
-      isRefresh: true ,
-      userId: this.state.userId,
-      success: ()=> {
-        console.log('success')
-      },
-      error: ()=> {
-        console.log('error')
-      },
-      limit: 10
-    }
-    this.props.fetchOperationList(payload)
+  search(e) {
+    e.preventDefault()
+    this.props.updateLoadingState({isLoading: true})
+    this.props.form.validateFields((errors) => {
+      if (errors) {
+        return
+      }
+      let data = this.props.form.getFieldsValue()
+      let payload = {
+        isRefresh: true,
+        userId: data.userId,
+        startDate: data.rangeTimePicker ? data.rangeTimePicker[0].format() : moment().day(-30).format(),
+        endDate: data.rangeTimePicker ? data.rangeTimePicker[1].format() : moment().format(),
+        success: ()=> {
+          console.log('success')
+        },
+        error: ()=> {
+          console.log('error')
+        },
+        limit: 10
+      }
+      this.props.fetchOperationList(payload)
+    })
   }
 
   clearSearch() {
@@ -86,39 +102,51 @@ class OperationLogManager extends React.Component {
     })
   }
 
-  selectAdmin(value){
+  selectAdmin(value) {
     this.setState({userId: value})
   }
 
+
   renderSearchBar() {
+    const {getFieldDecorator} = this.props.form
     return (
-      <div style={{flex: 1}}>
-        <Row >
-          <Col span={20}>
-            <Select defalutValue = '' onChange={(value)=>{this.selectAdmin(value)}} style={{width: 120}} placeholder="选择操作用户">
+      <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=> {
+        this.search(e)
+      }}>
+        <FormItem>
+          {getFieldDecorator("userId", {
+            initialValue: '',
+          })(
+            <Select style={{width: 120}} placeholder="选择操作用户">
               <Option value=''>全部</Option>
               {
                 this.props.adminList.map((item, index) => (
-                <Option key={index} value={item.id}>{item.nickname}</Option>
-              ))
+                  <Option key={index} value={item.id}>{item.nickname + '' + item.mobilePhoneNumber}</Option>
+                ))
               }
-            </Select>
-            </Col>
-          <Col span={4}>
-            <ButtonGroup>
-              <Button onClick={()=> {
-                this.search()
-              }}>查询</Button>
-            <Button onClick={()=> {
-              this.clearSearch()
+            </Select>)}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("rangeTimePicker", {
+            initialValue: [moment().day(-30), moment()],
+            rules: [{type: 'array'}],
+          })(
+            <RangePicker format="YYYY-MM-DD"/>
+          )}
+        </FormItem>
+        <FormItem>
+          <Button.Group>
+            <Button onClick={() => {
+              this.props.form.resetFields()
             }}>重置</Button>
-            </ButtonGroup>
-          </Col>
-        </Row>
+            <Button type="primary" htmlType="submit">查询</Button>
+          </Button.Group>
+        </FormItem>
+      </Form>
 
-      </div>
     )
   }
+
 
   render() {
     // console.log('[DEBUG] ---> SysUser props: ', this.props);
@@ -126,7 +154,9 @@ class OperationLogManager extends React.Component {
       <div>
         {this.renderSearchBar()}
 
-        <OperationLogList operationLogs={this.props.operationLogs} changePageSize={(page,pageSize)=>{this.changePageSize(page,pageSize)}}/>
+        <OperationLogList operationLogs={this.props.operationLogs} changePageSize={(page, pageSize)=> {
+          this.changePageSize(page, pageSize)
+        }}/>
       </div>
     )
   };
@@ -142,11 +172,11 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = {
-    ...operationLogActions,
-    ...authActions
+  ...operationLogActions,
+  ...authActions
 
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(OperationLogManager);
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(OperationLogManager));
 
 export {saga, reducer} from './redux';

@@ -179,7 +179,7 @@ class UpdateInvestorModal extends Component {
                       message: '投资金额未填写'
                     }
                   ]
-                })(<InputNumber />)}
+                })(<InputNumber min={0}/>)}
               </FormItem>
             </Col>
             <Col span={6}>
