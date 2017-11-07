@@ -15,6 +15,7 @@ import {PERMISSION_CODE} from '../../util/rolePermission'
 import {smsAction, smsSelector} from '../../component/smsModal'
 import {loadAction} from '../../component/loadActivity'
 import {StationStatus} from './index'
+import StationSelect from './StationSelect'
 
 const Option = Select.Option;
 const ButtonGroup = Button.Group

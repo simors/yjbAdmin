@@ -10,6 +10,7 @@ import {accountAction,accountSelector} from './redux'
 import AccountChart from '../../component/account/StationAccountChart'
 import moment from 'moment'
 import mathjs from 'mathjs'
+import StationSelect from '../station/StationSelect'
 
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
@@ -28,6 +29,7 @@ class StationAccountManager extends React.Component {
       division: [],
       startDate: moment().day(-30).format(),
       endDate: moment().format(),
+      selectedStationName: '全服务点'
     }
   }
 
@@ -47,9 +49,9 @@ class StationAccountManager extends React.Component {
       },
 
     })
-    this.props.requestStations({
-
-    })
+    // this.props.requestStations({
+    //
+    // })
 
   }
 
@@ -76,15 +78,27 @@ class StationAccountManager extends React.Component {
           ],
         }
       }
+      let stationName = ''
+      if(values.stationId){
+        this.props.stations.forEach((item)=>{
+          if(item.id==values.stationId){
+            stationName = item.name
+          }
+        })
+      }
+
       let dateRange = mathjs.chain(moment(values.rangeTimePicker[1]) - moment(values.rangeTimePicker[0])).multiply(1 / 31536000000).done()
       if(dateRange>2){
         message.error('时间范围请不要超过2年')
       }else{
         let payload = {
           stationId: values.stationId,
-          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
-          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
+          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).format(),
+          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().format(),
           success: ()=> {
+            if(values.stationId){
+              this.setState({selectedStationName: stationName})
+            }
             console.log('success')
           },
           error: ()=> {
@@ -110,18 +124,10 @@ class StationAccountManager extends React.Component {
             <RangePicker format="YYYY-MM-DD"/>
           )}
         </FormItem>
-        <FormItem>
+        <FormItem  >
           {getFieldDecorator("stationId", {
-            initialValue: '',
           })(
-            <Select style={{width: 120}} placeholder="选择服务网点">
-              <Option value=''>全部</Option>
-              {
-                this.props.stations.map((station, index) => (
-                  <Option key={index} value={station.id}>{station.name}</Option>
-                ))
-              }
-            </Select>
+            <StationSelect placeholder='请选择服务点' disabled={false}/>
           )}
         </FormItem>
         <FormItem>
@@ -141,6 +147,7 @@ class StationAccountManager extends React.Component {
     return (
       <div>
         {this.renderSearchBar()}
+        <h4>{this.state.selectedStationName}日结曲线图</h4>
         <AccountChart data = {this.props.stationAccounts} yline = 'profit' xline = 'accountDay'/>
       </div>
     )

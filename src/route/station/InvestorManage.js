@@ -16,10 +16,21 @@ import {selector, action} from '../../util/auth'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
 import {ROLE_CODE,PERMISSION_CODE} from '../../util/rolePermission'
 import {smsAction,smsSelector} from '../../component/smsModal'
+import StationSelect from './StationSelect'
 
 const Option = Select.Option;
 const ButtonGroup = Button.Group
 const FormItem = Form.Item
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 6 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 14 },
+  },
+};
 
 class InvestorManage extends React.Component {
   constructor(props) {
@@ -98,6 +109,7 @@ class InvestorManage extends React.Component {
         return
       }
       let data = this.props.form.getFieldsValue()
+      console.log('data====>',data)
       let payload = {
         mobilePhoneNumber: data.mobilePhoneNumber,
         stationId: data.stationId,
@@ -128,18 +140,11 @@ class InvestorManage extends React.Component {
     const { getFieldDecorator } = this.props.form
     return (
       <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=>{this.search(e)}}>
-        <FormItem>
+        <FormItem  >
           {getFieldDecorator("stationId", {
-            initialValue: '',
           })(
-            <Select style={{width: 200}} placeholder="选择服务网点" >
-              <Option value="">全部</Option>
-              {
-                this.props.stations.map((station, index) => (
-                  <Option key={index} value={station.id}>{station.name}</Option>
-                ))
-              }
-            </Select>        )}
+            <StationSelect placeholder='请选择服务点' disabled={false}/>
+          )}
         </FormItem>
         <FormItem>
           {getFieldDecorator("status", {

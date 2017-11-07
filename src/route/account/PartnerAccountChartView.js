@@ -96,8 +96,8 @@ class StationAccountManager extends React.Component {
         let payload = {
           userId: values.userId,
           mobilePhoneNumber: values.mobilePhoneNumber,
-          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
-          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
+          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).format(),
+          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().format(),
           success: ()=> {
           },
           error: ()=> {

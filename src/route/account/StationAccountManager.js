@@ -16,6 +16,7 @@ import mathjs from 'mathjs'
 import {withRouter} from 'react-router'
 import XLSX from 'xlsx'
 import {loadAction} from '../../component/loadActivity'
+import StationSelect from '../station/StationSelect'
 
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
@@ -165,18 +166,10 @@ class StationAccountManager extends React.Component {
             <RangePicker format="YYYY-MM-DD"/>
           )}
         </FormItem>
-        <FormItem>
+        <FormItem  >
           {getFieldDecorator("stationId", {
-            initialValue: '',
           })(
-            <Select style={{width: 200}} placeholder="选择服务网点">
-              <Option value=''>全部</Option>
-              {
-                this.props.stations.map((station, index) => (
-                  <Option key={index} value={station.id}>{station.name}</Option>
-                ))
-              }
-            </Select>
+            <StationSelect placeholder='请选择服务点' disabled={false}/>
           )}
         </FormItem>
         <FormItem>
