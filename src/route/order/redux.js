@@ -142,8 +142,8 @@ export const DealType = {
 }
 
 export const WITHDRAW_STATUS = {
-  APPLYING: 0,      // 提交申请
-  DONE: 1,          // 处理完成
+  APPLYING: 1,      // 提交申请
+  DONE: 2,          // 处理完成
 }
 
 export const WITHDRAW_APPLY_TYPE = {
