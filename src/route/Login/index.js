@@ -82,7 +82,7 @@ class Login extends React.Component {
           <span>衣家宝管理平台</span>
         </div>
         <Form onSubmit={this.handleSubmit}>
-          <FormItem hasFeedback>
+          <FormItem >
             {getFieldDecorator('phone', {
               rules: [{
                 required: true,
@@ -93,7 +93,7 @@ class Login extends React.Component {
               }]
             })(<Input size='large' onPressEnter={this.handleSubmit} placeholder='手机号'/>)}
           </FormItem>
-          <FormItem hasFeedback>
+          <FormItem >
             {getFieldDecorator('password', {
               rules: [
                 {
