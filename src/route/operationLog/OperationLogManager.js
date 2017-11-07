@@ -117,7 +117,7 @@ class OperationLogManager extends React.Component {
           {getFieldDecorator("userId", {
             initialValue: '',
           })(
-            <Select style={{width: 120}} placeholder="选择操作用户">
+            <Select style={{width: 180}} placeholder="选择操作用户">
               <Option value=''>全部</Option>
               {
                 this.props.adminList.map((item, index) => (

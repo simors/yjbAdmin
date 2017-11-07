@@ -127,7 +127,7 @@ class SearchForm extends PureComponent {
         </FormItem>
         <FormItem>
           {getFieldDecorator("stationId", {})(
-            <Select style={{width: 120}} placeholder="选择服务网点">
+            <Select style={{width: 200}} placeholder="选择服务网点">
               <Option value="all">全部</Option>
               {
                 this.props.stationList.map((station, index) => (
