@@ -15,10 +15,13 @@ import {PERMISSION_CODE, ROLE_CODE} from '../../util/rolePermission'
 import moment from 'moment'
 import {action as authAction, selector as authSelector} from '../../util/auth'
 import mathjs from 'mathjs'
+import StationSelect from '../station/StationSelect'
+
 const Option = Select.Option;
 const ButtonGroup = Button.Group
 const RangePicker = DatePicker.RangePicker;
 const FormItem = Form.Item
+
 
 class InvestorAccountChartView extends React.Component {
   constructor(props) {
@@ -92,8 +95,8 @@ class InvestorAccountChartView extends React.Component {
         let payload = {
           userId: values.userId,
           mobilePhoneNumber: values.mobilePhoneNumber,
-          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
-          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
+          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).format(),
+          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().format(),
           success: ()=> {
           },
           error: ()=> {

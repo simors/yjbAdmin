@@ -18,7 +18,7 @@ import mathjs from 'mathjs'
 import {withRouter} from 'react-router'
 import XLSX from 'xlsx'
 import {loadAction} from '../../component/loadActivity'
-
+import StationSelect from '../station/StationSelect'
 
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
@@ -207,8 +207,8 @@ class PartnerAccountManager extends React.Component {
           stationId: values.stationId,
           mobilePhoneNumber: values.mobilePhoneNumber,
           userId: values.userId,
-          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).formate(),
-          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().formate(),
+          startDate: values.rangeTimePicker ? values.rangeTimePicker[0] : moment().day(-30).format(),
+          endDate: values.rangeTimePicker ? values.rangeTimePicker[1] : moment().format(),
           success: ()=> {
             console.log('success')
           },
@@ -227,36 +227,6 @@ class PartnerAccountManager extends React.Component {
     })
   }
 
-  clearSearch() {
-    this.setState({
-      stationId: undefined,
-      userId: undefined,
-      startDate: moment().day(-30).format(),
-      endDate: moment().format(),
-    }, ()=> {
-      if (this.state.selectedType == 'all') {
-        this.props.fetchPartnerAccounts({...this.state})
-      } else {
-        this.props.fetchPartnerAccountsDetail({...this.state})
-      }
-    })
-
-
-  }
-
-  selectDate(date, dateString) {
-    console.log('date=====>', mathjs.chain(date[1] - date[0]).multiply(1 / 31536000000).done())
-    let dateRange = mathjs.chain(date[1] - date[0]).multiply(1 / 31536000000).done()
-
-    if (dateRange > 2) {
-      message.error('时间范围请不要超过2年')
-    } else {
-      this.setState({startDate: dateString[0], endDate: dateString[1]})
-
-    }
-  }
-
-
   renderSearchBar() {
     const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form
     return (
@@ -271,18 +241,10 @@ class PartnerAccountManager extends React.Component {
             <RangePicker format="YYYY-MM-DD"/>
           )}
         </FormItem>
-        <FormItem>
+        <FormItem  >
           {getFieldDecorator("stationId", {
-            initialValue: '',
           })(
-            <Select style={{width: 200}} placeholder="选择服务网点">
-              <Option value=''>全部</Option>
-              {
-                this.props.stations.map((station, index) => (
-                  <Option key={index} value={station.id}>{station.name}</Option>
-                ))
-              }
-            </Select>
+            <StationSelect placeholder='请选择服务点' disabled={false}/>
           )}
         </FormItem>
         <FormItem>

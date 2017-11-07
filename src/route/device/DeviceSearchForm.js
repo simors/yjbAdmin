@@ -17,6 +17,7 @@ import style from './device.module.scss'
 import {deviceStatus, actions} from './redux'
 import {stationSelector, stationAction} from '../station/redux'
 import * as errno from '../../errno'
+import StationSelect from '../station/StationSelect'
 
 const FormItem = Form.Item
 const Option = Select.Option
@@ -97,16 +98,10 @@ class SearchForm extends PureComponent {
             <Input placeholder="干衣柜编号"/>
           )}
         </FormItem>
-        <FormItem>
-          {getFieldDecorator("stationId", {})(
-            <Select style={{width: 200}} placeholder="选择服务网点">
-              <Option value="all">全部</Option>
-              {
-                this.props.stationList.map((station, index) => (
-                  <Option key={index} value={station.id}>{station.name}</Option>
-                ))
-              }
-            </Select>
+        <FormItem  >
+          {getFieldDecorator("stationId", {
+          })(
+            <StationSelect placeholder='请选择服务点' disabled={false}/>
           )}
         </FormItem>
         <FormItem>

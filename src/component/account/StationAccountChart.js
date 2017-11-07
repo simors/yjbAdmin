@@ -87,7 +87,7 @@ export default class StationAccountChart extends Component {
           alias: '收益（元）',
         })
         // chart.source(this.props.lastMonthsPerformance,defs)
-        chart.line().position(this.props.xline+'*'+this.props.yline).label(this.props.yline).shape('smooth').size(3);
+        chart.line().position(this.props.xline+'*'+this.props.yline).shape('smooth').size(3);
         chart.render();
       });
       return (
@@ -104,16 +104,16 @@ export default class StationAccountChart extends Component {
   }
 
   render() {
+    let title = '全服务点'
+    if(this.props.data&&this.props.data.length){
+
+    }
 
     return (
-      <Tabs defaultActiveKey='1' className='content-inner'>
-        <TabPane tab='地区统计' key='2'>
           <div>
-
             {this.renderStatisticsLocal()}
           </div>
-        </TabPane>
-      </Tabs>
+
     )
   }
 }
