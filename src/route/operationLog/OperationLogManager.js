@@ -11,6 +11,7 @@ import {selector as operationLogSelector, actions as operationLogActions} from '
 import mathjs from 'mathjs'
 import {action as authActions, selector as authSelector} from '../../util/auth'
 import moment from 'moment'
+import LoadActivity, {loadAction} from '../../component/loadActivity'
 
 const Option = Select.Option;
 const ButtonGroup = Button.Group
@@ -31,7 +32,7 @@ class OperationLogManager extends React.Component {
   componentWillMount() {
     this.props.fetchOperationList({
       isRefresh: true,
-      limit: 10
+      limit: 100
     })
     this.props.listAdminUsers({
       onFailure: (e)=> {
@@ -58,7 +59,7 @@ class OperationLogManager extends React.Component {
           error: ()=> {
           },
           isRefresh: false,
-          limit: 10
+          limit: 100
         }
         this.props.fetchOperationList(payload)
       }
@@ -80,12 +81,14 @@ class OperationLogManager extends React.Component {
         startDate: data.rangeTimePicker ? data.rangeTimePicker[0].format() : moment().day(-30).format(),
         endDate: data.rangeTimePicker ? data.rangeTimePicker[1].format() : moment().format(),
         success: ()=> {
+          this.props.updateLoadingState({isLoading: false})
           console.log('success')
         },
         error: ()=> {
+          this.props.updateLoadingState({isLoading: false})
           console.log('error')
         },
-        limit: 10
+        limit: 100
       }
       this.props.fetchOperationList(payload)
     })
@@ -173,7 +176,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = {
   ...operationLogActions,
-  ...authActions
+  ...authActions,
+  ...loadAction
 
 };
 

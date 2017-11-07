@@ -36,7 +36,7 @@ const OperationLogList = (props) => {
 
   let {operationLogs,changePageSize} = props;
   let Pagination = {
-    defaultPageSize: 2,
+    defaultPageSize: 10,
     onChange:(page, pageSize)=>{changePageSize(page, pageSize)}
   }
   if (operationLogs === null) {
