@@ -92,6 +92,8 @@ class Dashboard extends Record({
   lastMonthPlatformAccount: undefined,
   lastYearPlatformAccount: undefined,
   stationAccountRank: List(),
+  depositStat: undefined,
+  rechargeStat: undefined,
 }, 'Dashboard') {}
 
 /******* Constants *******/
@@ -106,6 +108,10 @@ const REQUEST_PLATFORM_PROFIT_STAT = 'REQUEST_PLATFORM_PROFIT_STAT'
 const SAVE_PLATFORM_PROFIT_STAT = 'SAVE_PLATFORM_PROFIT_STAT'
 const REQUEST_STATION_ACCOUNT_RANK = 'REQUEST_STATION_ACCOUNT_RANK'
 const SAVE_STATION_ACCOUNT_RANK = 'SAVE_STATION_ACCOUNT_RANK'
+const REQUEST_DEPOSIT_STAT = 'REQUEST_DEPOSIT_STAT'
+const SAVE_DEPOSIT_STAT = 'SAVE_DEPOSIT_STAT'
+const REQUEST_RECHARGE_STAT = 'REQUEST_RECHARGE_STAT'
+const SAVE_RECHARGE_STAT = 'SAVE_RECHARGE_STAT'
 
 /******* Action *******/
 
@@ -115,6 +121,8 @@ export const dashboardAction = {
   requestStationStat: createAction(REQUEST_STATION_STAT),
   requestPlatformProfitStat: createAction(REQUEST_PLATFORM_PROFIT_STAT),
   requestStationAccountRank: createAction(REQUEST_STATION_ACCOUNT_RANK),
+  requestDepositStat: createAction(REQUEST_DEPOSIT_STAT),
+  requestRechargeStat: createAction(REQUEST_RECHARGE_STAT),
 }
 
 const saveMpUserStat = createAction(SAVE_MP_USER_STAT)
@@ -122,6 +130,8 @@ const saveDeviceStat = createAction(SAVE_DEVICE_STAT)
 const saveStationStat = createAction(SAVE_STATION_STAT)
 const savePlatformProfitStat = createAction(SAVE_PLATFORM_PROFIT_STAT)
 const saveStationAccountRank = createAction(SAVE_STATION_ACCOUNT_RANK)
+const saveDepositStat = createAction(SAVE_DEPOSIT_STAT)
+const saveRechargeStat = createAction(SAVE_RECHARGE_STAT)
 
 /******* Saga *******/
 
@@ -131,6 +141,8 @@ export const dashboardSaga = [
   takeLatest(REQUEST_STATION_STAT, sagaFetchStationStat),
   takeLatest(REQUEST_PLATFORM_PROFIT_STAT, sagaFetchPlatformProfitStat),
   takeLatest(REQUEST_STATION_ACCOUNT_RANK, sagaFetchStationAccountRank),
+  takeLatest(REQUEST_DEPOSIT_STAT, sagaFetchDepositStat),
+  takeLatest(REQUEST_RECHARGE_STAT, sagaFetchRechargeStat),
 ]
 
 function* sagaFetchMpUserStat(action) {
@@ -214,6 +226,36 @@ function* sagaFetchStationAccountRank(action) {
   }
 }
 
+function* sagaFetchDepositStat(action) {
+  let payload = action.payload
+  try {
+    let deposit = yield call(dashboardCloud.fetchDepositStat)
+    yield put(saveDepositStat({depositStat: deposit}))
+    if (payload.success) {
+      payload.success();
+    }
+  } catch (e) {
+    if (payload.error) {
+      payload.error(e.code);
+    }
+  }
+}
+
+function* sagaFetchRechargeStat(action) {
+  let payload = action.payload
+  try {
+    let recharge = yield call(dashboardCloud.fetchRechargeStat)
+    yield put(saveRechargeStat({rechargeStat: recharge}))
+    if (payload.success) {
+      payload.success();
+    }
+  } catch (e) {
+    if (payload.error) {
+      payload.error(e.code);
+    }
+  }
+}
+
 /******* Reducer *******/
 
 const initialState = new Dashboard();
@@ -230,6 +272,10 @@ export function dashboardReducer(state=initialState, action) {
       return reduceSavePlatformProfitStat(state, action)
     case SAVE_STATION_ACCOUNT_RANK:
       return reduceSaveStationAccountRank(state, action)
+    case SAVE_DEPOSIT_STAT:
+      return reduceSaveDepositStat(state, action)
+    case SAVE_RECHARGE_STAT:
+      return reduceSaveRechargeStat(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -279,6 +325,20 @@ function reduceSaveStationAccountRank(state, action) {
   return state
 }
 
+function reduceSaveDepositStat(state, action) {
+  let payload = action.payload
+  let depositStat = payload.depositStat
+  state = state.set('depositStat', depositStat)
+  return state
+}
+
+function reduceSaveRechargeStat(state, action) {
+  let payload = action.payload
+  let rechargeStat = payload.rechargeStat
+  state = state.set('rechargeStat', rechargeStat)
+  return state
+}
+
 function onRehydrate(state, action) {
   const incoming = action.payload.DASHBOARD;
   if (!incoming) {
@@ -323,6 +383,16 @@ function onRehydrate(state, action) {
   if (stationAccountRank) {
     state = state.set('stationAccountRank', new List(stationAccountRank))
   }
+
+  let depositStat = incoming.depositStat
+  if (depositStat) {
+    state = state.set('depositStat', depositStat)
+  }
+
+  let rechargeStat = incoming.rechargeStat
+  if (rechargeStat) {
+    state = state.set('rechargeStat', rechargeStat)
+  }
   return state
 }
 
@@ -334,6 +404,8 @@ export const dashboardSelector = {
   selectStationStat,
   selectPlatformProfitStat,
   selectStationAccountList,
+  selectDepositStat,
+  selectRechargeStat,
 }
 
 function selectMpUserStat(state) {
@@ -392,4 +464,20 @@ function selectStationAccountList(state) {
     rank.push(accountSelector.selectStationAccountById(state, accountId))
   })
   return rank
+}
+
+function selectDepositStat(state) {
+  let depositStat = state.DASHBOARD.depositStat
+  if (!depositStat) {
+    return 0
+  }
+  return depositStat
+}
+
+function selectRechargeStat(state) {
+  let rechargeStat = state.DASHBOARD.rechargeStat
+  if (!rechargeStat) {
+    return 0
+  }
+  return rechargeStat
 }
