@@ -47,8 +47,14 @@ class StationManage extends React.Component {
   }
 
   componentWillMount() {
+    this.props.updateLoadingState({isLoading: true})
     this.props.requestStations({
       success: ()=> {
+        this.props.updateLoadingState({isLoading: false})
+      },
+      error: (e)=>{
+        this.props.updateLoadingState({isLoading: false})
+        message.error(e.message)
       }
     });
   }

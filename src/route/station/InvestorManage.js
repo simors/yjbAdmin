@@ -59,6 +59,7 @@ class InvestorManage extends React.Component {
   }
 
   componentWillMount() {
+    this.props.updateLoadingState({isLoading: true})
     this.props.requestInvestors({
       success: ()=> {
       }
@@ -66,6 +67,7 @@ class InvestorManage extends React.Component {
     this.props.requestStations({
       status: 1,
       success: ()=> {
+        this.props.updateLoadingState({isLoading: false})
       }
     });
     this.props.listUsersByRole({
