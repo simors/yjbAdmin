@@ -1010,7 +1010,6 @@ export const selector = {
   selectUserRoleName,
   selectAdminUsers,
   selectUserById,
-  selectCurAdminUser,
   selectUsersByRole,
   selectValidRoles,
   selectValidPermissions,
@@ -1098,18 +1097,6 @@ function selectUserRoleName(appState, roleCodes) {
     roleNames.push(roleJs.displayName)
   }
   return roleNames
-}
-
-/**
- * Get current login admin user info
- * @param appState
- * @returns {*} JSON representation of User object with roles
- */
-function selectCurAdminUser(appState) {
-  const curUserId = appState.AUTH.curUserId;
-  if (curUserId === undefined)
-    return undefined;
-  return selectUserById(appState, curUserId)
 }
 
 /**

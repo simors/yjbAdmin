@@ -118,7 +118,7 @@ class Dashboard extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let currentAdminUser = authSelector.selectCurAdminUser(state)
+  let currentAdminUser = authSelector.selectCurUser(state)
   let roleNames = authSelector.selectUserRoleName(state, currentAdminUser.roles)
   let isPlatformUser = authSelector.selectValidRoles(state, [ROLE_CODE.PLATFORM_MANAGER])
 
