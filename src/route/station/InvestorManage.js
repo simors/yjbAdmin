@@ -59,13 +59,22 @@ class InvestorManage extends React.Component {
   }
 
   componentWillMount() {
+    this.props.updateLoadingState({isLoading: true})
     this.props.requestInvestors({
       success: ()=> {
+        this.props.updateLoadingState({isLoading: false})
+      },
+      error: ()=>{
+        this.props.updateLoadingState({isLoading: false})
       }
     });
     this.props.requestStations({
       status: 1,
       success: ()=> {
+        this.props.updateLoadingState({isLoading: false})
+      },
+      error: ()=>{
+        this.props.updateLoadingState({isLoading: false})
       }
     });
     this.props.listUsersByRole({

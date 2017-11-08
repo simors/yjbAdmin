@@ -120,7 +120,7 @@ class SmsModal extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let currentUser = authSelector.selectCurAdminUser(state)
+  let currentUser = authSelector.selectCurUser(state)
   let smsStatus = smsSelector.selectSmsModalState(state)
   console.log('smsStatus======>',smsStatus)
   let {modalVisible,op,verifySuccess,verifyError,closeModal} = smsStatus

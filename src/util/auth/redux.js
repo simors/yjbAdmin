@@ -163,7 +163,6 @@ class AuthState extends Record({
 
   endUsers: List(),             // List<user id>
   adminUsers: List(),           // List<user id>
-  sysAdminUsers: List(),        // List<user id>
   adminsByRole: Map(),          // Map<role code, List<user id>>
 
   usersById: Map(),             // Map<user id, User>
@@ -202,8 +201,6 @@ const LIST_END_USERS = 'AUTH/LIST_END_USERS';
 const LISTED_END_USERS = 'AUTH/LISTED_END_USERS';
 const LIST_ADMIN_USERS = 'AUTH/LIST_ADMIN_USERS';
 const LISTED_ADMIN_USERS = 'AUTH/LISTED_ADMIN_USERS';
-const LIST_SYS_ADMIN_USERS = 'AUTH/LIST_SYS_ADMIN_USERS';
-const LISTED_SYS_ADMIN_USERS = 'AUTH/LISTED_SYS_ADMIN_USERS';
 const LIST_ADMINS_BY_ROLE = 'AUTH/LIST_ADMINS_BY_ROLE';
 const LISTED_ADMINS_BY_ROLE = 'AUTH/LISTED_ADMINS_BY_ROLE';
 const FETCH_USER_BY_PHONE = 'AUTH/FETCH_USER_BY_PHONE';
@@ -231,7 +228,6 @@ export const action = {
   logout: createAction(LOGOUT),
   listEndUsers: createAction(LIST_END_USERS),
   listAdminUsers: createAction(LIST_ADMIN_USERS),
-  listSysAdminUsers: createAction(LIST_SYS_ADMIN_USERS),
   listUsersByRole: createAction(LIST_ADMINS_BY_ROLE),
   fetchUserByPhone: createAction(FETCH_USER_BY_PHONE),
 
@@ -255,7 +251,6 @@ const loggedIn = createAction(LOGGED_IN);
 const loggedOut = createAction(LOGGED_OUT);
 const listedEndUsers = createAction(LISTED_END_USERS);
 const listedAdminUsers = createAction(LISTED_ADMIN_USERS);
-const listedSysAdminUsers = createAction(LISTED_SYS_ADMIN_USERS);
 const listedAdminsByRole = createAction(LISTED_ADMINS_BY_ROLE);
 const saveAdminQrcode = createAction(SAVE_ADMIN_QRCODE);
 
@@ -268,7 +263,6 @@ export const saga = [
 
   takeLatest(LIST_END_USERS, sagaListEndUsers),
   takeLatest(LIST_ADMIN_USERS, sagaListAdminUsers),
-  takeLatest(LIST_SYS_ADMIN_USERS, sagaListSysAdminUsers),
   takeLatest(LIST_ADMINS_BY_ROLE, sagaListAdminsByRole),
   takeLatest(FETCH_USER_BY_PHONE, sagaFetchUserByPhone),
   takeLatest(CREATE_USER, sagaCreateUser),
@@ -517,60 +511,6 @@ function* sagaListAdminUsers(action) {
     }
   } catch (e) {
     logger.error('list admin users failed：', e);
-    logger.error('code: ', e.code);
-
-    if (payload.onFailure) {
-      payload.onFailure(e.code);
-    }
-  }
-
-  if (payload.onComplete) {
-    payload.onComplete();
-  }
-}
-
-/**
- * List system admin users.
- * @param action
- * payload = {
- *   limit?: number,
- *   nickname?: string,
- *   mobilePhoneNumber?: string,
- *   status?: number,
- *   onSuccess?,
- *   onFailure?,
- *   onComplete?,
- * }
- */
-function* sagaListSysAdminUsers(action) {
-  const payload = action.payload;
-
-  try {
-    const params = {
-    };
-
-    ({
-      limit: params.limit,
-      nickname: params.nickname,
-      mobilePhoneNumber: params.mobilePhoneNumber,
-      status: params.status,
-    } = payload);
-
-    // result = {
-    //   jsonUsers,
-    // }
-    const result = yield call(api.listSysAdminUsers, params);
-
-    const {jsonUsers} = result;
-    yield put(listedSysAdminUsers({
-      jsonUsers
-    }));
-
-    if (payload.onSuccess) {
-      payload.onSuccess();
-    }
-  } catch (e) {
-    logger.error('list system admin users failed：', e);
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
@@ -834,8 +774,6 @@ export function reducer(state=initialState, action) {
       return reduceListedEndUsers(state, action);
     case LISTED_ADMIN_USERS:
       return reduceListedAdminUsers(state, action);
-    case LISTED_SYS_ADMIN_USERS:
-      return reduceListedSysAdminUsers(state, action);
     case LISTED_ADMINS_BY_ROLE:
       return reduceListedAdminsByRole(state, action);
     case REHYDRATE:
@@ -936,23 +874,6 @@ function reduceListedAdminUsers(state, action) {
   });
 }
 
-function reduceListedSysAdminUsers(state, action) {
-  const {jsonUsers} = action.payload;
-
-  return state.withMutations((m) => {
-    const userIds = [];
-
-    jsonUsers.forEach((i) => {
-      userIds.push(i.id);
-
-      const immUser = User.fromJson(i);
-      m.setIn(['usersById', i.id], immUser);
-    });
-
-    m.set('sysAdminUsers', new List(userIds));
-  });
-}
-
 function reduceListedAdminsByRole(state, action) {
   const {role, count, jsonUsers} = action.payload;
 
@@ -978,7 +899,7 @@ function reduceRehydrate(state, action) {
 
   // all data in json format
   const {token, curRoleCodes, curPermissionCodes,
-    roles, permissions, endUsers, adminUsers, sysAdminUsers,
+    roles, permissions, endUsers, adminUsers,
     adminsByRole, usersById} = storage;
 
   const immCurRoles = new Set(curRoleCodes);
@@ -1006,9 +927,6 @@ function reduceRehydrate(state, action) {
   // 'adminUsers'
   const immAdminUsers = new List(adminUsers);
 
-  // 'sysAdminUsers'
-  const immSysAdminUsers = new List(sysAdminUsers);
-
   // 'adminsByRole'
   const immUsersByRole = new Map().withMutations((m) => {
     for (const [k, v] of Object.entries(adminsByRole)) {
@@ -1032,7 +950,6 @@ function reduceRehydrate(state, action) {
     m.set('permissions', immPermissions);
     m.set('endUsers', immEndUsers);
     m.set('adminUsers', immAdminUsers);
-    m.set('sysAdminUsers', immSysAdminUsers);
     m.set('adminsByRole', immUsersByRole);
     m.set('usersById', immUsersById);
   });
@@ -1092,9 +1009,7 @@ export const selector = {
   selectEndUsers,
   selectUserRoleName,
   selectAdminUsers,
-  selectSysAdminUsers,
   selectUserById,
-  selectCurAdminUser,
   selectUsersByRole,
   selectValidRoles,
   selectValidPermissions,
@@ -1148,17 +1063,6 @@ function selectAdminUsers(appState) {
   return users;
 }
 
-function selectSysAdminUsers(appState) {
-  const users = [];
-
-  const userIds = appState.AUTH.get('sysAdminUsers', new List());
-  userIds.forEach((i) => {
-    users.push(selectUserById(appState, i));
-  });
-
-  return users;
-}
-
 /**
  * Get user detail by user id.
  * @param {Object} appState
@@ -1193,18 +1097,6 @@ function selectUserRoleName(appState, roleCodes) {
     roleNames.push(roleJs.displayName)
   }
   return roleNames
-}
-
-/**
- * Get current login admin user info
- * @param appState
- * @returns {*} JSON representation of User object with roles
- */
-function selectCurAdminUser(appState) {
-  const curUserId = appState.AUTH.curUserId;
-  if (curUserId === undefined)
-    return undefined;
-  return selectUserById(appState, curUserId)
 }
 
 /**

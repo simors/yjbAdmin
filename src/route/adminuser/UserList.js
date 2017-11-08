@@ -65,7 +65,7 @@ class UserList extends React.Component {
                     status: AUTH_USER_STATUS.ADMIN_DISABLED,
                   },
                   onSuccess: () => {
-                    this.props.listAdminUsers({limit: 100, skipMyself: true,});
+                    this.props.listAdminUsers({limit: 1000, skipMyself: true,});
                   },
                   onFailure: (code) => {
                     message.error(`禁用用户失败, 错误：${code}`);
@@ -80,7 +80,7 @@ class UserList extends React.Component {
                     status: AUTH_USER_STATUS.ADMIN_NORMAL,
                   },
                   onSuccess: () => {
-                    this.props.listAdminUsers({limit: 100, skipMyself: true,});
+                    this.props.listAdminUsers({limit: 1000, skipMyself: true,});
                   },
                   onFailure: (code) => {
                     message.error(`启用用户失败, 错误：${code}`);
@@ -109,7 +109,7 @@ class UserList extends React.Component {
   }
 
   componentDidMount() {
-    this.props.listAdminUsers({limit: 100, skipMyself: true,});
+    this.props.listAdminUsers({limit: 1000, skipMyself: true,});
   }
 
   rowKey = (record) => {
