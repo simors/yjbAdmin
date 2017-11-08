@@ -73,6 +73,9 @@ class EditForm extends PureComponent {
             case errno.ERROR_INVALID_STATUS:
               message.error('修改失败: 无效的状态')
               break
+            case errno.ERROR_OFFLINE:
+              message.error("修改失败：设备已下线")
+              break
             default:
               message.error("修改失败:" + error.code)
               break
