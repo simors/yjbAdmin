@@ -530,7 +530,7 @@ function* sagaListAdminUsers(action) {
 }
 
 /**
- * List admin users.
+ * List system admin users.
  * @param action
  * payload = {
  *   limit?: number,
@@ -589,10 +589,10 @@ function* sagaListSysAdminUsers(action) {
  * payload = {
  *   skip?: number,
  *   limit?: number,
- *   idName?: string, user's real name
+ *   nickname?: string,
  *   mobilePhoneNumber?: string,
  *   role?: number, role code
- *   status?: string, 'disabled' or empty
+ *   status?: number
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,

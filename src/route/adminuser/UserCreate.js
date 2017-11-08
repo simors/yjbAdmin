@@ -132,7 +132,7 @@ class UserCreate extends React.Component {
     let updatePayload = undefined
     if (user) {
       this.addUserId = user.objectId
-      message.warn('电话号码已被现有用户占用，请确认手机号码输入正确或直接修改相关用户信息', 30)
+      message.warn('此用户已授权，请确认手机号码输入正确或直接修改相关用户信息', 30)
       updatePayload = {
         success: ()=>{
           message.success('手机号验证成功')
