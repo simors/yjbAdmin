@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Input, Select, Button,DatePicker, Form} from 'antd';
+import {Row, Col, Input, Select, Button,DatePicker, Form, message} from 'antd';
 import InvestorAccountList from './InvestorAccountList';
 import {stationAction, stationSelector} from '../station/redux';
 import {accountAction,accountSelector} from './redux'
@@ -14,6 +14,7 @@ import moment from 'moment'
 import mathjs from 'mathjs'
 import {withRouter} from 'react-router'
 import StationSelect from '../station/StationSelect'
+import {loadAction} from '../../component/loadActivity'
 
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
@@ -115,38 +116,6 @@ class InvestorAccountManager extends React.Component {
     })
   }
 
-  selectType(value){
-    console.log('value----------------',value)
-    this.setState({selectedType: value})
-  }
-
-  clearSearch() {
-    this.setState({
-      stationId: undefined,
-      userId: undefined,
-      startDate: moment().day(-30).format(),
-      endDate: moment().format(),
-    },()=>{
-      if(this.state.selectedType=='all'){
-        this.props.fetchInvestorAccounts({...this.state})
-      }else{
-        this.props.fetchInvestorAccountsDetail(...this.state)
-      }
-    })
-
-  }
-
-  selectDate(date,dateString){
-    let dateRange = mathjs.chain(date[1]- date[0]).multiply(1/31536000000).done()
-
-    if(dateRange>2){
-      message.error('时间范围请不要超过2年')
-    }else{
-      this.setState({startDate: dateString[0],endDate: dateString[1]})
-
-    }
-  }
-
   renderSearchBar() {
     const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form
     return (
@@ -191,19 +160,84 @@ class InvestorAccountManager extends React.Component {
     )
   }
 
-  downloadFile(){
-    let data = [[ "服务点名称",    "投资人名称" , "利润" ,"日期"],]
-    // let accountArray = []
-    if(this.props.investorAccounts&&this.props.investorAccounts.length){
-      this.props.investorAccounts.forEach((account)=>{
-        let account2Arr = [account.accountDay,account.profit, account.cost,account.incoming,account.station.name]
-        data.push(account2Arr)
-      })
-    }
-    let params={data: data, sheetName:'投资人日结数据', fileName:'投资人日结数据'}
 
-    excelFuncs.exportExcel(params)
+  downExcelFile(wb) {
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        return
+      }
+      let values = fieldsValue
+      let dateRange = mathjs.chain(values.rangeTimePicker[1] - values.rangeTimePicker[0]).multiply(1 / 31536000000).done()
+      if (dateRange > 2) {
+        message.error('时间范围请不要超过2年')
+      } else {
+        let payload = {
+          limit: 1000,
+          stationId: values.stationId,
+          userId: values.userId,
+          startDate: values.rangeTimePicker ? values.rangeTimePicker[0].format() : moment().day(-30).format(),
+          endDate: values.rangeTimePicker ? values.rangeTimePicker[1].format() : moment().format(),
+          success: (data)=> {
+            let excelData = [["服务点名称", "投资人信息", "利润", "开始日期", '结束日期'],]
+            // let accountArray = []
+            if (data && data.length > 0) {
 
+              data.forEach((account)=> {
+                let account2Arr = [account.station ? account.station.name : '全服务点', account.user.nickname, account.profit, account.startDate, account.endDate]
+                excelData.push(account2Arr)
+              })
+            }
+            this.props.updateLoadingState({isLoading: false})
+            let params = {data: excelData, sheetName: '投资人日结统计数据', fileName: '投资人日结统计数据'}
+            excelFuncs.exportExcel(params)
+          },
+          error: ()=> {
+            console.log('error')
+          }
+        }
+        this.props.exportInvestorExcel(payload)
+      }
+    })
+  }
+
+
+  downDetailExcelFile() {
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        return
+      }
+      let values = fieldsValue
+      let dateRange = mathjs.chain(values.rangeTimePicker[1] - values.rangeTimePicker[0]).multiply(1 / 31536000000).done()
+      if (dateRange > 2) {
+        message.error('时间范围请不要超过2年')
+      } else {
+        let payload = {
+          limit: 1000,
+          stationId: values.stationId,
+          userId: values.userId,
+          startDate: values.rangeTimePicker ? values.rangeTimePicker[0].format() : moment().day(-30).format(),
+          endDate: values.rangeTimePicker ? values.rangeTimePicker[1].format() : moment().format(),
+          success: (data)=> {
+            let excelData = [["服务点名称", "投资人信息", "利润", '结算日期', "开始日期", '结束日期'],]
+            // let accountArray = []
+            if (data && data.length > 0) {
+              console.log('data====>',data)
+              data.forEach((account)=> {
+                let account2Arr = [account.station ? account.station.name : '全服务点', account.user?account.user.nickname:'', account.profit, account.accountDay, account.startDate, account.endDate]
+                excelData.push(account2Arr)
+              })
+            }
+            this.props.updateLoadingState({isLoading: false})
+            let params = {data: excelData, sheetName: '投资人日结数据', fileName: '投资人日结数据'}
+            excelFuncs.exportExcel(params)
+          },
+          error: ()=> {
+            console.log('error')
+          }
+        }
+        this.props.exportInvestorDetailExcel(payload)
+      }
+    })
   }
 
   viewChart(){
@@ -216,7 +250,13 @@ class InvestorAccountManager extends React.Component {
     return (
       <div>
         <ButtonGroup>
-          <Button onClick={()=>{this.downloadFile()}}>导出Excel</Button>
+          <Button onClick={()=> {
+            if (this.state.viewType == 'all') {
+              this.downExcelFile()
+            } else {
+              this.downDetailExcelFile()
+            }
+          }}>导出Excel</Button>
           <Button onClick={()=>{this.viewChart()}}>查看图表</Button>
         </ButtonGroup>
         {this.renderSearchBar()}
@@ -245,7 +285,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = {
   ...stationAction,
   ...accountAction,
-  ...authAction
+  ...authAction,
+  ...loadAction
 
 };
 

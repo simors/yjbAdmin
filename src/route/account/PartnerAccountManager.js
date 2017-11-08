@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import {connect} from 'react-redux';
-import {Row, Col, Input, Select, Button, DatePicker , Form} from 'antd';
+import {Row, Col, Input, Select, Button, DatePicker, Form, message} from 'antd';
 import PartnerAccountList from './PartnerAccountList';
 import {stationAction, stationSelector} from '../station/redux';
 import {accountAction, accountSelector} from './redux'
@@ -74,52 +74,35 @@ class PartnerAccountManager extends React.Component {
     // this.props.requestStations({...this.state})
   }
 
-  selectType(value) {
-    this.setState({selectedType: value})
-  }
-
-
-  downExcelFile(wb,lastCreatedAt){
+  downExcelFile() {
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
         return
       }
       let values = fieldsValue
       let dateRange = mathjs.chain(values.rangeTimePicker[1] - values.rangeTimePicker[0]).multiply(1 / 31536000000).done()
-      if(dateRange>2){
+      if (dateRange > 2) {
         message.error('时间范围请不要超过2年')
-      }else{
+      } else {
         let payload = {
-          limit: 8,
+          limit: 1000,
           stationId: values.stationId,
           userId: values.userId,
           startDate: values.rangeTimePicker ? values.rangeTimePicker[0].format() : moment().day(-30).format(),
           endDate: values.rangeTimePicker ? values.rangeTimePicker[1].format() : moment().format(),
-          lastCreatedAt: lastCreatedAt,
           success: (data)=> {
-            if(data&&data.length>0){
-              let excelData = [[  "服务点名称", "分成方信息", "利润","开始日期",'结束日期'],]
-              // let accountArray = []
+            let excelData = [["服务点名称", "分成方信息", "利润", "开始日期", '结束日期'],]
+            // let accountArray = []
+            if (data && data.length > 0) {
+
               data.forEach((account)=> {
-                let account2Arr = [account.station?account.station.name:'全服务点', account.user.nickname, account.profit,account.startDate,account.endDate]
+                let account2Arr = [account.station ? account.station.name : '全服务点', account.user.nickname, account.profit, account.startDate, account.endDate]
                 excelData.push(account2Arr)
               })
-
-              let lastCreatedAt = data[data.length-1].user.createdAt
-              let params = {
-                wb:wb,
-                data: excelData,
-                sheetName: '时间戳'+moment(lastCreatedAt).format('YYYY-MM-DD')
-              }
-              this.props.updateLoadingState({isLoading: true})
-
-              excelFuncs.addExcel(params)
-              this.downExcelFile(wb,lastCreatedAt)
-            }else{
-              this.props.updateLoadingState({isLoading: false})
-
-              excelFuncs.exportExcelNew({wb:wb,fileName:'服务点日结数据'})
             }
+            this.props.updateLoadingState({isLoading: false})
+            let params = {data: excelData, sheetName: '服务单位日结统计数据', fileName: '服务单位日结统计数据'}
+            excelFuncs.exportExcel(params)
           },
           error: ()=> {
             console.log('error')
@@ -131,46 +114,34 @@ class PartnerAccountManager extends React.Component {
   }
 
 
-  downDetailExcelFile(wb,lastCreatedAt){
+  downDetailExcelFile() {
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
         return
       }
       let values = fieldsValue
       let dateRange = mathjs.chain(values.rangeTimePicker[1] - values.rangeTimePicker[0]).multiply(1 / 31536000000).done()
-      if(dateRange>2){
+      if (dateRange > 2) {
         message.error('时间范围请不要超过2年')
-      }else{
+      } else {
         let payload = {
-          limit: 8,
+          limit: 1000,
           stationId: values.stationId,
           userId: values.userId,
           startDate: values.rangeTimePicker ? values.rangeTimePicker[0].format() : moment().day(-30).format(),
           endDate: values.rangeTimePicker ? values.rangeTimePicker[1].format() : moment().format(),
-          lastCreatedAt: lastCreatedAt,
           success: (data)=> {
-            if(data&&data.length>0){
-              let excelData = [[  "服务点名称", "分成方信息", "利润",'结算日期',"开始日期",'结束日期'],]
-              // let accountArray = []
+            let excelData = [["服务点名称", "分成方信息", "利润", '结算日期', "开始日期", '结束日期'],]
+            // let accountArray = []
+            if (data && data.length > 0) {
               data.forEach((account)=> {
-                let account2Arr = [account.station?account.station.name:'全服务点', account.user.nickname, account.profit,account.accountDay,account.startDate,account.endDate]
+                let account2Arr = [account.station ? account.station.name : '全服务点', account.user.nickname, account.profit, account.accountDay, account.startDate, account.endDate]
                 excelData.push(account2Arr)
               })
-              let lastCreatedAt = data[data.length-1].createdAt
-              let params = {
-                wb:wb,
-                data: excelData,
-                sheetName:  '时间戳'+moment(lastCreatedAt).format('YYYY-MM-DD')
-              }
-              this.props.updateLoadingState({isLoading: true})
-
-              excelFuncs.addExcel(params)
-              this.downDetailExcelFile(wb,lastCreatedAt)
-            }else{
-              this.props.updateLoadingState({isLoading: false})
-
-              excelFuncs.exportExcelNew({wb:wb,fileName:'服务点日结详情数据'})
             }
+            this.props.updateLoadingState({isLoading: false})
+            let params = {data: excelData, sheetName: '服务单位日结数据', fileName: '服务单位日结数据'}
+            excelFuncs.exportExcel(params)
           },
           error: ()=> {
             console.log('error')
@@ -200,9 +171,9 @@ class PartnerAccountManager extends React.Component {
         }
       }
       let dateRange = mathjs.chain(moment(values.rangeTimePicker[1]) - moment(values.rangeTimePicker[0])).multiply(1 / 31536000000).done()
-      if(dateRange>2){
+      if (dateRange > 2) {
         message.error('时间范围请不要超过2年')
-      }else{
+      } else {
         let payload = {
           stationId: values.stationId,
           mobilePhoneNumber: values.mobilePhoneNumber,
@@ -216,7 +187,7 @@ class PartnerAccountManager extends React.Component {
             console.log('error')
           }
         }
-        this.setState({viewType: values.selectedType},()=>{
+        this.setState({viewType: values.selectedType}, ()=> {
           if (values.selectedType == 'all') {
             this.props.fetchPartnerAccounts(payload)
           } else {
@@ -242,15 +213,13 @@ class PartnerAccountManager extends React.Component {
           )}
         </FormItem>
         <FormItem  >
-          {getFieldDecorator("stationId", {
-          })(
+          {getFieldDecorator("stationId", {})(
             <StationSelect placeholder='请选择服务点' disabled={false}/>
           )}
         </FormItem>
         <FormItem>
-          {getFieldDecorator("mobilePhoneNumber", {
-          })(
-            <Input placeholder = '电话号码' />
+          {getFieldDecorator("mobilePhoneNumber", {})(
+            <Input placeholder='电话号码'/>
           )}
         </FormItem>
         <FormItem>
@@ -287,11 +256,10 @@ class PartnerAccountManager extends React.Component {
       <div>
         <ButtonGroup>
           <Button onClick={()=> {
-            let wb = XLSX.utils.book_new();
-            if(this.state.viewType=='all'){
-              this.downExcelFile(wb)
-            }else{
-              this.downDetailExcelFile(wb)
+            if (this.state.viewType == 'all') {
+              this.downExcelFile()
+            } else {
+              this.downDetailExcelFile()
             }
           }}>导出EXCEL</Button>
           <Button onClick={()=> {
