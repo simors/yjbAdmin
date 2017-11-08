@@ -13,6 +13,7 @@ import {
   DatePicker,
   Alert,
   message,
+  Popconfirm,
 } from 'antd'
 import style from './promotion.module.scss'
 import DivisionCascader from '../../component/DivisionCascader'
@@ -141,10 +142,12 @@ class CreateForm extends PureComponent {
             )}
           </FormItem>
           <FormItem wrapperCol={{offset: 15}}>
-            <Button type="primary" htmlType="submit"
-                    disabled={hasErrors(getFieldsError())}>
-              发布
-            </Button>
+            <Popconfirm placement="top" title="确认发布吗？" onConfirm={this.handleSubmit} okText="是的" cancelText="再想想">
+              <Button type="primary"
+                      disabled={hasErrors(getFieldsError())}>
+                发布
+              </Button>
+            </Popconfirm>
           </FormItem>
         </Form>
       )

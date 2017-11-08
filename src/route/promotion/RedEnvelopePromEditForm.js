@@ -10,6 +10,7 @@ import {
   message,
   DatePicker,
   Switch,
+  Popconfirm,
 } from 'antd'
 import {actions}  from './redux'
 import moment from 'moment'
@@ -157,10 +158,12 @@ class EditForm extends  Component {
           )}
         </FormItem>
         <FormItem hasFeedback wrapperCol={{offset: 20}}>
-          <Button type="primary" htmlType="submit"
-                  disabled={!hasChanges(promotion, getFieldsValue()) || hasErrors(getFieldsError())}>
-            提交
-          </Button>
+          <Popconfirm placement="top" title="确认提交修改吗？" onConfirm={this.handleSubmit} okText="是的" cancelText="再想想">
+            <Button type="primary"
+                    disabled={!hasChanges(promotion, getFieldsValue()) || hasErrors(getFieldsError())}>
+              提交
+            </Button>
+          </Popconfirm>
         </FormItem>
 
       </Form>
