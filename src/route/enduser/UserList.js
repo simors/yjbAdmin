@@ -68,7 +68,7 @@ class UserList extends React.Component {
               mpStatus: AUTH_USER_STATUS.MP_DISABLED,
             },
             onSuccess: () => {
-              this.props.listEndUsers({limit: 100});
+              this.props.listEndUsers({limit: 1000});
             },
             onFailure: (code) => {
               message.error(`禁用用户失败, 错误：${code}`);
@@ -83,7 +83,7 @@ class UserList extends React.Component {
               mpStatus: AUTH_USER_STATUS.MP_NORMAL,
             },
             onSuccess: () => {
-              this.props.listEndUsers({limit: 100});
+              this.props.listEndUsers({limit: 1000});
             },
             onFailure: (code) => {
               message.error(`启用用户失败, 错误：${code}`);
@@ -115,7 +115,7 @@ class UserList extends React.Component {
   }
 
   componentDidMount() {
-    this.props.listEndUsers({limit: 100});
+    this.props.listEndUsers({limit: 1000});
   }
 
   rowKey = (record) => {

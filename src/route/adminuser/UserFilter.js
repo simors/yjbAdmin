@@ -50,7 +50,7 @@ class UserFilter extends React.Component {
 
       const {nickname, mobilePhoneNumber, status} = values;
       this.props.listAdminUsers({
-        limit: 100,
+        limit: 1000,
         nickname,
         mobilePhoneNumber,
         status: status && parseInt(status),
