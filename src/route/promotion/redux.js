@@ -152,6 +152,7 @@ function* fetchPromotions(action) {
     disabled: payload.disabled,
     start: payload.start,
     end: payload.end,
+    region: payload.region,
   }
   try {
     let promotions = yield call(fetchPromotionsApi, apiPayload)

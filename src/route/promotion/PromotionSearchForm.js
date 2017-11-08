@@ -15,6 +15,7 @@ import {
 } from 'antd'
 import {actions} from './redux'
 import style from './promotion.module.scss'
+import DivisionCascader from '../../component/DivisionCascader'
 
 const FormItem = Form.Item
 const RangePicker = DatePicker.RangePicker
@@ -50,6 +51,7 @@ class SearchForm extends PureComponent {
       this.props.fetchPromotionsAction({
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
+        region: values.region,
         disabled: !values.disabled || values.disabled == 'all'? undefined : Boolean(values.disabled),
       })
     })
@@ -66,6 +68,13 @@ class SearchForm extends PureComponent {
             rules: [{ type: 'array'}],
           })(
             <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+          )}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("region", {
+            rules: [{ type: 'array' }],
+          })(
+            <DivisionCascader level={2}/>
           )}
         </FormItem>
         <FormItem>
