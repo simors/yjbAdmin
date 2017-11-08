@@ -1,11 +1,12 @@
 /**
  * Created by lilu on 2017/9/23.
  */
-
-
 import React from 'react';
+import {connect} from 'react-redux';
 import {Table, Button, Popconfirm} from 'antd';
 import mathjs from 'mathjs'
+import {selector as authSelector} from '../../util/auth/'
+import {PERMISSION_CODE} from '../../util/rolePermission/'
 
 const showColumns = [{
   title: "分成方",
@@ -24,7 +25,7 @@ const rowKey = (record) => {
 
 const PartnerList = (props) => {
   // console.log('[DEBUG] ---> UserList props: ', props);
-  let {editPartner, partners, selectStation, type, setPartnerStatus} = props;
+  let {editPartner, partners, selectStation, type, setPartnerStatus, changePartnerVisible} = props;
   if (partners === null) {
     partners = [];
   }
@@ -52,23 +53,23 @@ const PartnerList = (props) => {
     render: (text, record)=> {
       return (
         <span>
-          <a style={{color: `blue`}} onClick={()=> {
-            editPartner(record)
-          }}>编辑</a>
-                              <span className="ant-divider"/>
+          <a style={{color: `blue`}} onClick={()=> {editPartner(record)}}>编辑</a>
+          <span className="ant-divider"/>
 
-          {record.status ?
-            <Popconfirm title="确定停用该服务单位？" onConfirm={()=> {
-              setPartnerStatus(record)
-            }}>
-              <a style={{color: `blue`}}>停用</a>
-            </Popconfirm>
-            :
-            <Popconfirm title="确定启用该服务单位？" onConfirm={()=> {
-              setPartnerStatus(record)
-            }}>
-              <a style={{color: `blue`}}>启用</a>
-            </Popconfirm>
+          {changePartnerVisible ?
+            (record.status ?
+              <Popconfirm title="确定停用该服务单位？" onConfirm={()=> {
+                setPartnerStatus(record)
+              }}>
+                <a style={{color: `blue`}}>停用</a>
+              </Popconfirm>
+              :
+              <Popconfirm title="确定启用该服务单位？" onConfirm={()=> {
+                setPartnerStatus(record)
+              }}>
+                <a style={{color: `blue`}}>启用</a>
+              </Popconfirm>
+            ) : null
           }
         </span>
       )
@@ -91,4 +92,15 @@ const PartnerList = (props) => {
   );
 };
 
-export default PartnerList;
+const mapStateToProps = (state, ownProps) => {
+  let changePartnerVisible = authSelector.selectValidPermissions(state, [PERMISSION_CODE.STATION_CHANGE_PARTNER_STATUS])
+
+  return {
+    changePartnerVisible,
+  };
+};
+
+const mapDispatchToProps = {
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PartnerList)

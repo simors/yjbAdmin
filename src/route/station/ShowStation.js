@@ -337,6 +337,7 @@ class ShowStation extends React.Component {
         division.push(station.area.value)
       }
     }
+    let {addPartnerVisible} = this.props
     return (
       <div>
         <Row gutter={24} style={{flexDirection:'row', marginBottom: 12, justifyContent:' center'}}>
@@ -501,9 +502,7 @@ class ShowStation extends React.Component {
           </Col>
           <Col span={16}></Col>
           <Col span={4}>
-            <Button type='primary' onClick={()=> {
-              this.openCreateModal()
-            }}>添加服务单位</Button>
+            {addPartnerVisible ? <Button type='primary' onClick={()=> {this.openCreateModal()}}>添加服务单位</Button> : null}
           </Col>
         </Row>
         <PartnerList editPartner={(data)=> {
@@ -553,11 +552,14 @@ const mapStateToProps = (state, ownProps) => {
   let adminList = selector.selectUsersByRole(state, ROLE_CODE.STATION_MANAGER)
   let partnerList = selector.selectUsersByRole(state, ROLE_CODE.STATION_PROVIDER)
 
+  let addPartnerVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_ADD_PARTNER])
+
   return {
     station: station,
     partners: partners,
     adminList: adminList,
-    partnerList: partnerList
+    partnerList: partnerList,
+    addPartnerVisible,
   };
 };
 
