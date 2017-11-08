@@ -122,8 +122,18 @@ class AddStation extends React.Component {
     })
   }
 
+  hasErrors(fieldsError, values, balance) {
+    if (Object.keys(fieldsError).some(field => fieldsError[field])) {
+      return true
+    }
+    let isValid = values['name'] && values['adminId'] &&  values['division'] && values['addr'] &&values['platformProp'] >= 0 && values['platformProp'] <= 100 && values['unitPrice'] >= 0 && values['powerUnitPrice'] >= 0 && values['deposit'] >= 0
+    return !isValid
+  }
+
   render() {
     let station = this.props.station
+    const { getFieldDecorator, getFieldsValue, getFieldsError } = this.props.form
+
     // console.log('[DEBUG] ---> SysUser props: ', this.state.partnerList);
     // let plate = {id:'platform',shareholderName:'平台', royalty: this.props.station?this.props.station.platformProp:0}
     // let partnerList = this.state.partnerList.splice(0,0,plate)
@@ -135,7 +145,6 @@ class AddStation extends React.Component {
               <FormItem label='服务点名称' hasFeedback {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('name', {
 
-                  initialValue:  '',
                   rules: [
                     {
                       required: false,
@@ -184,7 +193,6 @@ class AddStation extends React.Component {
             <Col span={8}>
               <FormItem hasFeedback >
                 {this.props.form.getFieldDecorator('addr', {
-                  initialValue:  '',
                   rules: [
                     {
                       required: false,
@@ -199,7 +207,6 @@ class AddStation extends React.Component {
             <Col span={8}>
               <FormItem label='平台分成比例' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('platformProp', {
-                  initialValue:  0,
                   rules: [
                     {
                       required: false,
@@ -219,7 +226,6 @@ class AddStation extends React.Component {
             <Col span={8}>
               <FormItem label='干衣柜单价' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('unitPrice', {
-                  initialValue:  0,
                   rules: [
                     {
                       required: false,
@@ -235,7 +241,6 @@ class AddStation extends React.Component {
             <Col span={8}>
               <FormItem label='电费单价' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('powerUnitPrice', {
-                  initialValue: 0,
                   rules: [
                     {
                       required: false,
@@ -250,7 +255,6 @@ class AddStation extends React.Component {
             <Col span={8}>
               <FormItem label='干衣柜押金' hasFeedback {...formItemLayout}>
                 {this.props.form.getFieldDecorator('deposit', {
-                  initialValue:  0,
                   rules: [
                     {
                       required: false,
@@ -276,7 +280,7 @@ class AddStation extends React.Component {
             }} type="primary">返回</Button>
           </Col>
           <Col span={4}>
-            <Button onClick={()=> {
+            <Button disabled={this.hasErrors(getFieldsError(), getFieldsValue())} onClick={()=> {
               this.submitStation()
             }} type="primary">提交</Button>
           </Col>

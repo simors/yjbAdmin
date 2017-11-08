@@ -172,49 +172,6 @@ class InvestorManage extends React.Component {
 
     )
   }
-  //
-  // renderSearchBar() {
-  //   const { getFieldDecorator } = this.props.form
-  //
-  //   return (
-  //     <div className="ant-form"  style={{flex: 1,fontSize: 12,marginTop: 12, marginBottom: 12}}>
-  //       <Row gutter={24} className="ant-form">
-  //         <Col span={4}>
-  //           <Select allowClear={true} style={{width: 120}} placeholder='状态' onChange={(value)=> {
-  //             this.statusChange(value)
-  //           }}>
-  //             <Option value='1'>正常</Option>
-  //             <Option value='0'>已停用</Option>
-  //           </Select>
-  //         </Col>
-  //         <Col span={4}>
-  //           <Select style={{width: 120}} placeholder="选择服务网点" onChange={(value)=>{this.selectStation(value)}}>
-  //             <Option value="">全部</Option>
-  //             {
-  //               this.props.stations.map((station, index) => (
-  //                 <Option key={index} value={station.id}>{station.name}</Option>
-  //               ))
-  //             }
-  //           </Select>
-  //           </Col>
-  //         <Col span={4}>
-  //          <Input placeholder = '电话号码' onChange={(e)=>{this.setState({mobilePhoneNumber: e.target.value})}} />
-  //         </Col>
-  //         <Col span={4}>
-  //           <ButtonGroup>
-  //           <Button type="primary" onClick={()=> {
-  //             this.search()
-  //           }}>查询</Button>
-  //           <Button type="primary" onClick={()=> {
-  //             this.clearSearch()
-  //           }}>重置</Button>
-  //                       </ButtonGroup>
-  //         </Col>
-  //       </Row>
-  //
-  //     </div>
-  //   )
-  // }
 
   openCreateModal() {
     this.props.requestStations({
@@ -302,6 +259,8 @@ class InvestorManage extends React.Component {
     this.props.updateInvestor(payload)
   }
 
+
+
   render() {
     return (
       <div>
@@ -331,7 +290,7 @@ class InvestorManage extends React.Component {
           editInvestor={(value)=>{this.openUpdateModal(value)}}
           setInvestorStatus={(value)=>{this.setStatus(value)}}
         />
-        <CreateInvestorModal
+        {this.state.createModalVisible? <CreateInvestorModal
           modalKey={this.state.modalKey}
           onOk={(data)=> {
             this.createInvestorSmsModal(data)
@@ -342,7 +301,8 @@ class InvestorManage extends React.Component {
           userList={this.props.investorList}
           stationList={this.props.stations}
           modalVisible={this.state.createModalVisible}
-        />
+        />:null}
+
         {this.state.updateModalVisible ? <UpdateInvestorModal
           modalKey={this.state.modalKey}
           onOk={(data)=> {

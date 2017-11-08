@@ -467,8 +467,10 @@ function* exportInvestorExcel(action) {
     if (data.accounts && data.accounts.length > 0) {
       data.accounts.forEach( (item)=>{
         let station = item.station
+        let user = item.user
         let accountInfo = StationAccount.fromApi(item).toJS()
         accountInfo.station = station
+        accountInfo.user = user
         stationAccounts.push(accountInfo)
       })
     }
@@ -491,9 +493,10 @@ function* exportInvestorDetailExcel(action) {
     if (data.accounts && data.accounts.length > 0) {
       data.accounts.forEach( (item)=>{
         let station = item.station
+        let user = item.user
         let accountInfo = StationAccount.fromApi(item).toJS()
         accountInfo.station = station
-        console.log('accountInfo.date========>',accountInfo.createdAt)
+        accountInfo.user = user
         stationAccounts.push(accountInfo)
       })
     }

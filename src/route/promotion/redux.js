@@ -152,6 +152,7 @@ function* fetchPromotions(action) {
     disabled: payload.disabled,
     start: payload.start,
     end: payload.end,
+    region: payload.region,
   }
   try {
     let promotions = yield call(fetchPromotionsApi, apiPayload)
@@ -264,7 +265,7 @@ function* fetchPromotionRecord(action) {
     start: payload.start,
     isRefresh: payload.isRefresh,
     limit: payload.limit,
-    lastCreatedAt: payload.lastCreatedAt
+    lastCreatedAt: payload.lastCreatedAt,
   }
 
   try {

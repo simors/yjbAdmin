@@ -48,25 +48,6 @@ class StationAccountManager extends React.Component {
     })
   }
 
-  selectType(value) {
-    this.setState({
-      selectedType: value
-    })
-  }
-
-  selectDate(date, dateString) {
-    console.log('date=====>', mathjs.chain(date[1] - date[0]).multiply(1 / 31536000000).done())
-    let dateRange = mathjs.chain(date[1] - date[0]).multiply(1 / 31536000000).done()
-
-    if (dateRange > 2) {
-      message.error('时间范围请不要超过2年')
-    } else {
-      this.setState({startDate: dateString[0], endDate: dateString[1]})
-
-    }
-  }
-
-
   componentWillMount() {
     this.props.fetchStationAccounts({
       ...this.state,
@@ -100,9 +81,9 @@ class StationAccountManager extends React.Component {
         }
       }
       let dateRange = mathjs.chain(moment(values.rangeTimePicker[1]) - moment(values.rangeTimePicker[0])).multiply(1 / 31536000000).done()
-      if(dateRange>2){
+      if (dateRange > 2) {
         message.error('时间范围请不要超过2年')
-      }else{
+      } else {
         this.props.updateLoadingState({isLoading: true})
         let payload = {
           stationId: values.stationId,
@@ -127,31 +108,6 @@ class StationAccountManager extends React.Component {
     })
   }
 
-  clearSearch() {
-    this.setState({
-      stationId: undefined,
-      startDate: moment().day(-30).format(),
-      endDate: moment().format(),
-    })
-    if (this.state.selectedType == 'all') {
-      this.props.fetchStationAccounts({
-        ...this.state,
-        success: ()=> {
-          console.log('hahhahah')
-        }
-      })
-    } else {
-      this.props.fetchStationAccountsDetail({
-        ...this.state,
-        success: ()=> {
-          console.log('hahhahah')
-        }
-      })
-    }
-
-  }
-
-
   renderSearchBar() {
     const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form
     return (
@@ -167,8 +123,7 @@ class StationAccountManager extends React.Component {
           )}
         </FormItem>
         <FormItem  >
-          {getFieldDecorator("stationId", {
-          })(
+          {getFieldDecorator("stationId", {})(
             <StationSelect placeholder='请选择服务点' disabled={false}/>
           )}
         </FormItem>
@@ -194,97 +149,76 @@ class StationAccountManager extends React.Component {
     )
   }
 
-  downExcelFile(wb,lastCreatedAt){
+  downExcelFile() {
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
         return
       }
       let values = fieldsValue
       let dateRange = mathjs.chain(values.rangeTimePicker[1] - values.rangeTimePicker[0]).multiply(1 / 31536000000).done()
-      if(dateRange>2){
+      if (dateRange > 2) {
         message.error('时间范围请不要超过2年')
-      }else{
+      } else {
         let payload = {
-          limit: 10,
+          limit: 1000,
           stationId: values.stationId,
           startDate: values.rangeTimePicker ? values.rangeTimePicker[0].format() : moment().day(-30).format(),
           endDate: values.rangeTimePicker ? values.rangeTimePicker[1].format() : moment().format(),
-          lastCreatedAt: lastCreatedAt,
           success: (data)=> {
-            if(data&&data.length>0){
-              let excelData = [[  "服务点名称", "收益", "成本","利润",'平台利润','服务单位利润','投资人利润','统计开始日期','统计结束日期'],]
+              let excelData = [["服务点名称", "收益", "成本", "利润", '平台利润', '服务单位利润', '投资人利润', '统计开始日期', '统计结束日期'],]
               // let accountArray = []
-                data.forEach((account)=> {
-                  let account2Arr = [account.station?account.station.name:'全平台', account.incoming, account.cost, account.profit,account.platformProfit,account.partnerProfit,account.investorProfit,account.startDate,account.endDate]
-                  excelData.push(account2Arr)
-                })
-
-              let lastCreatedAt = data[data.length-1].station.createdAt
-              let params = {
-                wb:wb,
-                data: excelData,
-                sheetName: moment(lastCreatedAt).format('YYYY-MM-DD')
-              }
-              this.props.updateLoadingState({isLoading: true})
-
-              excelFuncs.addExcel(params)
-              this.downExcelFile(wb,lastCreatedAt)
-            }else{
+            if (data && data.length > 0) {
+              data.forEach((account)=> {
+                let account2Arr = [account.station ? account.station.name : '全平台', account.incoming, account.cost, account.profit, account.platformProfit, account.partnerProfit, account.investorProfit, account.startDate, account.endDate]
+                excelData.push(account2Arr)
+              })
+            }
               this.props.updateLoadingState({isLoading: false})
 
-              excelFuncs.exportExcelNew({wb:wb,fileName:'服务点日结数据'})
-            }
+              let params = {data: excelData, sheetName: '服务点日结统计数据', fileName: '服务点日结统计数据'}
+
+              excelFuncs.exportExcel(params)
           },
           error: ()=> {
             console.log('error')
           }
         }
-         this.props.exportStationExcel(payload)
+        this.props.exportStationExcel(payload)
       }
     })
   }
 
 
-  downDetailExcelFile(wb,lastCreatedAt){
+
+  downDetailExcelFile() {
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
         return
       }
       let values = fieldsValue
       let dateRange = mathjs.chain(values.rangeTimePicker[1] - values.rangeTimePicker[0]).multiply(1 / 31536000000).done()
-      if(dateRange>2){
+      if (dateRange > 2) {
         message.error('时间范围请不要超过2年')
-      }else{
+      } else {
         let payload = {
-          limit: 10,
+          limit: 1000,
           stationId: values.stationId,
           startDate: values.rangeTimePicker ? values.rangeTimePicker[0].format() : moment().day(-30).format(),
           endDate: values.rangeTimePicker ? values.rangeTimePicker[1].format() : moment().format(),
-          lastCreatedAt: lastCreatedAt,
           success: (data)=> {
-            if(data&&data.length>0){
-              let excelData = [[  "服务点名称","日期", "收益", "成本","利润",'平台利润','服务单位利润','投资人利润','统计开始日期','统计结束日期'],]
-              // let accountArray = []
+            let excelData = [["服务点名称", "日期", "收益", "成本", "利润", '平台利润', '服务单位利润', '投资人利润', '统计开始日期', '统计结束日期'],]
+            // let accountArray = []
+            if (data && data.length > 0) {
+
               data.forEach((account)=> {
-                let account2Arr = [account.station?account.station.name:'全平台', account.accountDay, account.incoming, account.cost, account.profit,account.platformProfit,account.partnerProfit,account.investorProfit,account.startDate,account.endDate]
+                let account2Arr = [account.station ? account.station.name : '全平台', account.accountDay, account.incoming, account.cost, account.profit, account.platformProfit, account.partnerProfit, account.investorProfit, account.startDate, account.endDate]
                 excelData.push(account2Arr)
               })
-              let lastCreatedAt = data[data.length-1].createdAt
-              let params = {
-                wb:wb,
-                data: excelData,
-                sheetName:  moment(lastCreatedAt).format('YYYY-MM-DD')
-              }
-              console.log('params=========>',params)
-              this.props.updateLoadingState({isLoading: true})
-
-              excelFuncs.addExcel(params)
-              this.downDetailExcelFile(wb,lastCreatedAt)
-            }else{
-              this.props.updateLoadingState({isLoading: false})
-
-              excelFuncs.exportExcelNew({wb:wb,fileName:'服务点日结详情数据'})
             }
+            this.props.updateLoadingState({isLoading: false})
+            let params = {data: excelData, sheetName: '服务点日结数据', fileName: '服务点日结数据'}
+
+            excelFuncs.exportExcel(params)
           },
           error: ()=> {
             console.log('error')
@@ -307,11 +241,10 @@ class StationAccountManager extends React.Component {
       <div>
         <ButtonGroup>
           <Button onClick={()=> {
-            let wb = XLSX.utils.book_new();
-            if(this.state.viewType=='all'){
-              this.downExcelFile(wb)
-            }else{
-              this.downDetailExcelFile(wb)
+            if (this.state.viewType == 'all') {
+              this.downExcelFile()
+            } else {
+              this.downDetailExcelFile()
             }
           }}>导出EXCEL</Button>
           <Button onClick={()=> {

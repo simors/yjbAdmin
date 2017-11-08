@@ -121,8 +121,16 @@ class UpdateInvestorModal extends Component {
     })
   }
 
+  hasErrors(fieldsError, values, balance) {
+    if (Object.keys(fieldsError).some(field => fieldsError[field])) {
+      return true
+    }
+    let isValid = values['investment'] > 0
+    return !isValid
+  }
 
   render() {
+    const { getFieldDecorator, getFieldsValue, getFieldsError } = this.props.form
     let investor = this.props.investor
     return (
       <Modal
@@ -138,6 +146,17 @@ class UpdateInvestorModal extends Component {
         okText="提交"
         wrapClassName='vertical-center-modal'
         key={this.props.modalKey}
+        footer={[
+          <Button key="back" size="large" onClick={()=> {
+            this.setState({})
+            this.props.onCancel()
+          }}>取消</Button>,
+          <Button key="submit" disabled={this.hasErrors(getFieldsError(), getFieldsValue())} type="primary" size="large"  onClick={()=> {
+            this.handleOk()
+          }}>
+            确定
+          </Button>,
+        ]}
       >
         <Form layout="horizontal">
           <FormItem label='投资人' hasFeedback {...formItemLayout}>

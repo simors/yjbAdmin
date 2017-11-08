@@ -279,7 +279,18 @@ class EditStation extends React.Component {
   }
 
 
+  hasErrors(fieldsError, values, balance) {
+    if (Object.keys(fieldsError).some(field => fieldsError[field])) {
+      return true
+    }
+    let isValid = values['name'] && values['adminId'] &&  values['division'] && values['addr'] &&values['platformProp'] >= 0 && values['platformProp'] <= 100 && values['unitPrice'] >= 0 && values['powerUnitPrice'] >= 0 && values['deposit'] >= 0
+    return !isValid
+  }
+
+
   render() {
+    const { getFieldDecorator, getFieldsValue, getFieldsError } = this.props.form
+
     let station = this.props.station
     let division = []
     if (station) {
@@ -448,7 +459,7 @@ class EditStation extends React.Component {
             }} type="primary">返回</Button>
           </Col>
           <Col span={4}>
-            <Button onClick={()=> {
+            <Button disabled={this.hasErrors(getFieldsError(), getFieldsValue())} onClick={()=> {
               this.submitStation()
             }} type="primary">提交</Button>
           </Col>

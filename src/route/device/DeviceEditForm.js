@@ -9,6 +9,7 @@ import {
   Form,
   Radio,
   message,
+  Popconfirm,
 } from 'antd'
 import {deviceStatus, actions} from './redux'
 import StationSelect from '../station/StationSelect'
@@ -129,10 +130,12 @@ class EditForm extends PureComponent {
           )}
         </FormItem>
         <FormItem wrapperCol={{offset: 20}}>
-          <Button type="primary" htmlType="submit"
-                  disabled={!hasChanges(this.props.device, getFieldsValue()) || hasErrors(getFieldsError())}>
-            提交
-          </Button>
+          <Popconfirm placement="top" title="确认提交修改吗？" onConfirm={this.handleSubmit} okText="是的" cancelText="再想想">
+            <Button type="primary"
+                    disabled={!hasChanges(this.props.device, getFieldsValue()) || hasErrors(getFieldsError())}>
+              提交
+            </Button>
+          </Popconfirm>
         </FormItem>
       </Form>
     )
