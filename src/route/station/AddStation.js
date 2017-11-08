@@ -141,8 +141,8 @@ class AddStation extends React.Component {
       <div>
         <Form  hideRequiredMark={ true}>
           <Row gutter={24}>
-            <Col span={16}>
-              <FormItem label='服务点名称' hasFeedback {...formItemLayout2}>
+            <Col span={14}>
+              <FormItem label='服务点名称'  {...formItemLayout2}>
                 {this.props.form.getFieldDecorator('name', {
 
                   rules: [
@@ -156,8 +156,8 @@ class AddStation extends React.Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={8}>
-              <FormItem label='选择管理员' hasFeedback {...formItemLayout}>
+            <Col span={10}>
+              <FormItem label='选择管理员'  {...formItemLayout}>
                 {this.props.form.getFieldDecorator('adminId', {
                   rules: [
                     {
@@ -174,38 +174,43 @@ class AddStation extends React.Component {
             </Col>
           </Row>
           <Row gutter={24}>
-            <Col span={8}>
-              <FormItem label='服务点地址' hasFeedback {...formItemLayout}>
-                {this.props.form.getFieldDecorator('division', {
-                  rules: [
-                    {
-                      required: false,
-                      message: '省市区未选择'
-                    }
-                  ]
-                })(
-                  <DivisionCascader onChange={(value, label)=> {
-                    this.selectDivision(value, label)
-                  }} cascaderSize="large" width="300px"/>
-                )}
-              </FormItem>
+            <Col span={14}>
+              <Row>
+                <Col span={12}>
+                  <FormItem label='服务点地址'  {...formItemLayout}>
+                    {this.props.form.getFieldDecorator('division', {
+                      rules: [
+                        {
+                          required: false,
+                          message: '省市区未选择'
+                        }
+                      ]
+                    })(
+                      <DivisionCascader onChange={(value, label)=> {
+                        this.selectDivision(value, label)
+                      }} cascaderSize="large" />
+                    )}
+                  </FormItem>
+                </Col>
+                <Col span={12}>
+                  <FormItem  >
+                    {this.props.form.getFieldDecorator('addr', {
+                      rules: [
+                        {
+                          required: false,
+                          message: '服务点地址未填写'
+                        }
+                      ]
+                    })(
+                      <Input placeholder="服务点地址"/>
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+
             </Col>
-            <Col span={8}>
-              <FormItem hasFeedback >
-                {this.props.form.getFieldDecorator('addr', {
-                  rules: [
-                    {
-                      required: false,
-                      message: '服务点地址未填写'
-                    }
-                  ]
-                })(
-                  <Input placeholder="服务点地址"/>
-                )}
-              </FormItem>
-            </Col>
-            <Col span={8}>
-              <FormItem label='平台分成比例' hasFeedback {...formItemLayout}>
+            <Col span={10}>
+              <FormItem label='平台分成比例'  {...formItemLayout}>
                 {this.props.form.getFieldDecorator('platformProp', {
                   rules: [
                     {
@@ -223,8 +228,8 @@ class AddStation extends React.Component {
             </Col>
           </Row>
           <Row gutter={24}>
-            <Col span={8}>
-              <FormItem label='干衣柜单价' hasFeedback {...formItemLayout}>
+            <Col span={7}>
+              <FormItem label='使用单价'  {...formItemLayout}>
                 {this.props.form.getFieldDecorator('unitPrice', {
                   rules: [
                     {
@@ -234,12 +239,12 @@ class AddStation extends React.Component {
                   ]
                 })(<InputNumber  min={0}
                 />)}
-                <span className="ant-form-text">元/分</span>
+                <span className="ant-form-text">元/分钟</span>
               </FormItem>
             </Col>
 
-            <Col span={8}>
-              <FormItem label='电费单价' hasFeedback {...formItemLayout}>
+            <Col span={7}>
+              <FormItem label='电费单价'  {...formItemLayout}>
                 {this.props.form.getFieldDecorator('powerUnitPrice', {
                   rules: [
                     {
@@ -252,8 +257,8 @@ class AddStation extends React.Component {
                 <span className="ant-form-text">元/度</span>
               </FormItem>
             </Col>
-            <Col span={8}>
-              <FormItem label='干衣柜押金' hasFeedback {...formItemLayout}>
+            <Col span={10}>
+              <FormItem label='干衣柜押金'  {...formItemLayout}>
                 {this.props.form.getFieldDecorator('deposit', {
                   rules: [
                     {
