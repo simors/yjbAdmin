@@ -32,7 +32,7 @@ class OperationLogManager extends React.Component {
   componentWillMount() {
     this.props.fetchOperationList({
       isRefresh: true,
-      limit: 100
+      limit: 1000
     })
     this.props.listAdminUsers({
       onFailure: (e)=> {
@@ -59,7 +59,7 @@ class OperationLogManager extends React.Component {
           error: ()=> {
           },
           isRefresh: false,
-          limit: 100
+          limit: 1000
         }
         this.props.fetchOperationList(payload)
       }
@@ -88,7 +88,7 @@ class OperationLogManager extends React.Component {
           this.props.updateLoadingState({isLoading: false})
           console.log('error')
         },
-        limit: 100
+        limit: 1000
       }
       this.props.fetchOperationList(payload)
     })
