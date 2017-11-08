@@ -162,20 +162,32 @@ class ShowStation extends React.Component {
 
   setPartnerStatus(data) {
     console.log('data', data)
-    let payload = {
-      partnerId: data.id,
-      success: ()=> {
-        this.refresh()
-      },
-      error: (err)=> {
-        console.log('err==>', err.message)
-      }
+    let stationRoyalty = this.props.station.platformProp
+    let allRoyalty = 0
+    if(this.props.partners&&this.props.partners.length>0){
+      this.props.partners.forEach((item)=>{
+        if(item.status==1){
+          allRoyalty = item.royalty + allRoyalty
+        }
+      })
     }
-    if (data.status == StationStatus.STATION_STATUS_OPEN) {
-      this.props.closePartner(payload)
-    } else {
-      this.props.openPartner(payload)
-
+    if((stationRoyalty+allRoyalty+data.royalty>1) && (data.status == StationStatus.STATION_STATUS_CLOSE)){
+      message.error('分成比例总和不能大于100%')
+    }else {
+      let payload = {
+        partnerId: data.id,
+        success: ()=> {
+          this.refresh()
+        },
+        error: (err)=> {
+          console.log('err==>', err.message)
+        }
+      }
+      if (data.status == StationStatus.STATION_STATUS_OPEN) {
+        this.props.closePartner(payload)
+      } else {
+        this.props.openPartner(payload)
+      }
     }
   }
 
@@ -206,14 +218,11 @@ class ShowStation extends React.Component {
     let allRoyalty = 0
     if(this.props.partners&&this.props.partners.length>0){
       this.props.partners.forEach((item)=>{
-        console.log('item=====>',item)
-        allRoyalty = item.royalty + allRoyalty
+        if(item.status==1){
+          allRoyalty = item.royalty + allRoyalty
+        }
       })
     }
-    console.log('stationRoyalty========>',stationRoyalty)
-    console.log('allRoyalty========>',allRoyalty)
-    console.log('data.royalty========>',data.royalty)
-
     if(stationRoyalty+allRoyalty+data.royalty>1){
       message.error('分成比例总和不能大于100%')
     }else{
@@ -242,8 +251,11 @@ class ShowStation extends React.Component {
     let allRoyalty = 0
     if(this.props.partners&&this.props.partners.length>0){
       this.props.partners.forEach((item)=>{
-        if(item.id!=this.state.selectedPartner.id)
-        allRoyalty = item.royalty + allRoyalty
+        if(item.status==1){
+          if(item.id!=this.state.selectedPartner.id){
+            allRoyalty = item.royalty + allRoyalty
+          }
+        }
       })
     }
     if(stationRoyalty+allRoyalty+data.royalty>1){

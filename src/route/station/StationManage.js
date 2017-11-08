@@ -4,7 +4,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router'
-import {Row, Col, Input, Select, Button, message, Form,Cascader} from 'antd';
+import {Row, Col, Input, Select, Button, message, Form, Cascader} from 'antd';
 import StationList from './StationList';
 import StationMenu from './StationMenu'
 import {stationAction, stationSelector} from './redux';
@@ -12,9 +12,10 @@ import {selector} from '../../util/auth'
 import DivisionCascader from '../../component/DivisionCascader'
 import {accountAction, accountSelector} from '../account/redux'
 import {PERMISSION_CODE} from '../../util/rolePermission'
-import {smsAction,smsSelector} from '../../component/smsModal'
+import {smsAction, smsSelector} from '../../component/smsModal'
 import {loadAction} from '../../component/loadActivity'
 import {StationStatus} from './index'
+import StationSelect from './StationSelect'
 
 const Option = Select.Option;
 const ButtonGroup = Button.Group
@@ -95,12 +96,12 @@ class StationManage extends React.Component {
       }
       // console.log('=======>',{...this.props.form.getFieldsValue()})
       let data = this.props.form.getFieldsValue()
-      console.log('data=======>',data)
+      console.log('data=======>', data)
       let payload = {
         province: data.division[0],
         city: data.division[1],
         area: data.division[2],
-        status: data.status && data.status.key ? parseInt(data.status.key): undefined,
+        status: data.status && data.status.key ? parseInt(data.status.key) : undefined,
         addr: data.addr,
         name: data.name,
         success: ()=> {
@@ -116,67 +117,34 @@ class StationManage extends React.Component {
     })
   }
 
-  setDivision(value) {
-    if (value && value.length) {
-      this.setState({
-        division: value
-      }, ()=> {
-        console.log('state', this.state.division)
-      })
-    }
-  }
-
-  clearSearch() {
-    this.setState({
-      status: undefined,
-      province: undefined,
-      city: undefined,
-      area: undefined,
-      addr: undefined,
-      name: undefined,
-      division: []
-    })
-    this.props.requestStations({
-      success: ()=> {
-        console.log('hahhahah')
-      }
-    })
-  }
-
   renderSearchBar() {
-    const { getFieldDecorator } = this.props.form
+    const {getFieldDecorator} = this.props.form
     return (
-    <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=>{this.search(e)}}>
-      <FormItem>
-        {getFieldDecorator("name", {
-          initialValue: '',
-        })(
-          <Input style={{width: 180}} placeholder='名称' />        )}
-      </FormItem>
-      <FormItem>
-        {getFieldDecorator("status", {
+      <Form style={{marginTop: 12, marginBottom: 12}} layout="inline" onSubmit={(e)=> {
+        this.search(e)
+      }}>
+        <FormItem>
+          {getFieldDecorator("name", {
+            initialValue: '',
+          })(
+            <Input style={{width: 180}} placeholder='名称'/>)}
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator("division", {
+            initialValue: [],
 
-        })(
-          <Select labelInValue={true} placeholder="状态" allowClear={true}
-                  style={{width: 120}} >
-            <Option value='1'>正常</Option>
-            <Option value='0'>已停用</Option>
-          </Select>      )}
-      </FormItem>
-      <FormItem>
-        {getFieldDecorator("division", {
-          initialValue: [],
-
-        })(
-          <DivisionCascader cascaderSize='large'/>
-        )}
-      </FormItem>
-      <FormItem>
-        <Button.Group>
-          <Button onClick={() => {this.props.form.resetFields()}}>重置</Button>
-          <Button type="primary" htmlType="submit">查询</Button>
-        </Button.Group>
-      </FormItem>
+          })(
+            <DivisionCascader cascaderSize='large'/>
+          )}
+        </FormItem>
+        <FormItem>
+          <Button.Group>
+            <Button onClick={() => {
+              this.props.form.resetFields()
+            }}>重置</Button>
+            <Button type="primary" htmlType="submit">查询</Button>
+          </Button.Group>
+        </FormItem>
       </Form>
 
     )
@@ -187,8 +155,12 @@ class StationManage extends React.Component {
     let payload = {
       modalVisible: true,
       op: '开关服务点',
-      verifySuccess: ()=>{this.setStatus(value)},
-      verifyError: ()=>{message.error('验证错误')}
+      verifySuccess: ()=> {
+        this.setStatus(value)
+      },
+      verifyError: ()=> {
+        message.error('验证错误')
+      }
 
     }
     this.props.updateSmsModal(payload)
@@ -227,7 +199,7 @@ class StationManage extends React.Component {
         {this.renderSearchBar()}
 
         <StationList
-          showStation={(value)=>{
+          showStation={(value)=> {
             this.props.history.push({
               pathname: '/site_list/showStation/' + value.id,
             })
@@ -242,7 +214,7 @@ class StationManage extends React.Component {
             })
           }}
           setStationStatus={(value)=> {
-            this.openModal(value)
+            this.setStatus(value)
           }}
         />
       </div>
@@ -256,10 +228,10 @@ const mapStateToProps = (state, ownProps) => {
   let addVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_ADD])
   let editVisible = selector.selectValidPermissions(state, [PERMISSION_CODE.STATION_EDIT])
   let stationList = []
-  stations.forEach((item)=>{
+  stations.forEach((item)=> {
     stationList.push(item.id)
   })
-  console.log('stationList=======>',stationList)
+  console.log('stationList=======>', stationList)
   return {
     stations: stations,
     addVisible: addVisible,

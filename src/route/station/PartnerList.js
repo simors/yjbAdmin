@@ -4,7 +4,7 @@
 
 
 import React from 'react';
-import {Table, Button} from 'antd';
+import {Table, Button, Popconfirm} from 'antd';
 import mathjs from 'mathjs'
 
 const showColumns = [{
@@ -35,9 +35,9 @@ const PartnerList = (props) => {
   }, {
     title: "分成比例",
     dataIndex: "royalty",
-    render: (text,record)=>{
-      return(
-        <div>{mathjs.chain(record.royalty).multiply(100).done()+'%'}</div>
+    render: (text, record)=> {
+      return (
+        <div>{mathjs.chain(record.royalty).multiply(100).done() + '%'}</div>
       )
     }
   }, {
@@ -55,13 +55,21 @@ const PartnerList = (props) => {
           <a style={{color: `blue`}} onClick={()=> {
             editPartner(record)
           }}>编辑</a>
-                              <span className="ant-divider" />
+                              <span className="ant-divider"/>
 
-          {record.status?<a style={{color: `blue`}} onClick={()=> {
-            setPartnerStatus(record)
-          }}>停用</a>:<a style={{color: `blue`}} onClick={()=> {
-            setPartnerStatus(record)
-          }}>启用</a>}
+          {record.status ?
+            <Popconfirm title="确定停用该服务单位？" onConfirm={()=> {
+              setPartnerStatus(record)
+            }}>
+              <a style={{color: `blue`}}>停用</a>
+            </Popconfirm>
+            :
+            <Popconfirm title="确定启用该服务单位？" onConfirm={()=> {
+              setPartnerStatus(record)
+            }}>
+              <a style={{color: `blue`}}>启用</a>
+            </Popconfirm>
+          }
         </span>
       )
     }

@@ -24,7 +24,7 @@ class StationSelect extends React.Component {
     super(props)
     const {value, stationInfo} = props
     this.state = {
-      division: [stationInfo.province.value, stationInfo.city.value, stationInfo.area.value],
+      division: stationInfo?[stationInfo&&stationInfo.province?stationInfo.province.value:'', stationInfo&&stationInfo.city?stationInfo.city.value:'', stationInfo&&stationInfo.area?stationInfo.area.value:'']:[],
       stationId: value,
     }
   }
@@ -87,11 +87,15 @@ class StationSelect extends React.Component {
 
   render() {
     return (
-      <div style={{display: 'flex'}}>
+      <div style={{display: 'flex',flexDirection:'row',alignItems:'center'}}>
         <DivisionCascader disabled={this.props.disabled}
                           value={this.state.division}
-                          onChange={this.onDivisionChange}/>
-        <Select style={{width: 120}} notFoundContent="无服务点" value={this.state.stationId} disabled={this.props.disabled} onChange={this.onSelectChange}>
+                          onChange={this.onDivisionChange}
+                          level = {3}
+                          cascaderSize="large"
+
+        />
+        <Select size='large' placeholder='请选择服务点' style={{width: 120}} notFoundContent="无服务点" value={this.state.stationId} disabled={this.props.disabled} onChange={this.onSelectChange}>
           {
             this.props.stationList.map((station, index) => {
               if (this.inDivision(station)) {
