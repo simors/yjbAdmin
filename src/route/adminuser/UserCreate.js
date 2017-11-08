@@ -443,7 +443,7 @@ const mapStateToProps = (appState, ownProps) => {
   const allRoles = authSelector.selectRoles(appState);
   const visible = selector.selectUserCreateModalVisible(appState);
 
-  let currentUser = authSelector.selectCurAdminUser(appState)
+  let currentUser = authSelector.selectCurUser(appState)
   return {
     allRoles,
     visible,
