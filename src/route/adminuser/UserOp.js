@@ -15,7 +15,7 @@ class UserOp extends React.Component {
 
   onRefresh = () => {
     this.props.resetFilter({});
-    this.props.listAdminUsers({limit: 100, skipMyself: true,});
+    this.props.listAdminUsers({limit: 1000, skipMyself: true,});
   };
 
   render() {

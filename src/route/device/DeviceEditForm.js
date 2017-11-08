@@ -65,7 +65,13 @@ class EditForm extends PureComponent {
               message.error("参数错误")
               break
             case errno.ERROR_NO_STATION:
-              message.error("无服务点信息")
+              message.error("修改失败:无服务点信息")
+              break
+            case errno.ERROR_OCCUPIED:
+              message.error('修改失败:设备正在使用中')
+              break
+            case errno.ERROR_INVALID_STATUS:
+              message.error('修改失败: 无效的状态')
               break
             default:
               message.error("修改失败:" + error.code)
@@ -123,7 +129,7 @@ class EditForm extends PureComponent {
             <RadioGroup disabled={!changeDeviceStatusPer}>
               <Radio value={deviceStatus.DEVICE_STATUS_IDLE}>空闲</Radio>
               <Radio disabled={true} value={deviceStatus.DEVICE_STATUS_OCCUPIED}>使用中</Radio>
-              <Radio value={deviceStatus.DEVICE_STATUS_OFFLINE}>下线</Radio>
+              <Radio disabled={true} value={deviceStatus.DEVICE_STATUS_OFFLINE}>下线</Radio>
               <Radio value={deviceStatus.DEVICE_STATUS_FAULT}>故障</Radio>
               <Radio value={deviceStatus.DEVICE_STATUS_MAINTAIN}>维修保养</Radio>
             </RadioGroup>

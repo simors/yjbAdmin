@@ -53,7 +53,7 @@ class UserFilter extends React.Component {
       const [province, city] = area;
 
       this.props.listEndUsers({
-        limit: 100,
+        limit: 1000,
         nickname,
         mobilePhoneNumber,
         province,
