@@ -265,7 +265,7 @@ function* fetchPromotionRecord(action) {
     start: payload.start,
     isRefresh: payload.isRefresh,
     limit: payload.limit,
-    lastCreatedAt: payload.lastCreatedAt
+    lastCreatedAt: payload.lastCreatedAt,
   }
 
   try {

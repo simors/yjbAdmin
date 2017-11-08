@@ -28,17 +28,18 @@ class SearchForm extends PureComponent {
   }
 
   componentWillMount() {
-    const {promotion} = this.props
+    const {promotion, category} = this.props
     this.props.fetchPromotionRecordAction({
       promotionId: promotion.id,
+      type: category.type,
       isRefresh: true,
       limit: 10,
-      success: (total) => this.onFetchOrdersSuccess(total, {}),
-      error: this.onFetchOrdersError,
+      success: (total) => this.onFetchRecordsSuccess(total, {}),
+      error: this.onFetchRecordsError,
     })
   }
 
-  onFetchOrdersSuccess(total, values) {
+  onFetchRecordsSuccess(total, values) {
     const {updateSearchParams, onSearchEnd} = this.props
     if (updateSearchParams) {
       updateSearchParams({
@@ -52,7 +53,7 @@ class SearchForm extends PureComponent {
     }
   }
 
-  onFetchOrdersError = (error) => {
+  onFetchRecordsError = (error) => {
     const {onSearchEnd} = this.props
     if(onSearchEnd) {
       onSearchEnd()
@@ -71,7 +72,7 @@ class SearchForm extends PureComponent {
   }
 
   handleSubmit = (e) => {
-    const {promotion, onSearchStart} = this.props
+    const {promotion, onSearchStart, category} = this.props
     e.preventDefault()
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
@@ -90,13 +91,14 @@ class SearchForm extends PureComponent {
       }
       this.props.fetchPromotionRecordAction({
         promotionId: promotion.id,
+        type: category.type,
         isRefresh: true,
         limit: 10,
         mobilePhoneNumber: values.phone,
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
-        success: (total) => this.onFetchOrdersSuccess(total, values),
-        error: this.onFetchOrdersError,
+        success: (total) => this.onFetchRecordsSuccess(total, values),
+        error: this.onFetchRecordsError,
       })
       if(onSearchStart) {
         onSearchStart()
@@ -141,8 +143,9 @@ class SearchForm extends PureComponent {
 const PromotionRecordSearchForm = Form.create()(SearchForm)
 
 const mapStateToProps = (appState, ownProps) => {
+  const categoryId = ownProps.promotion.categoryId
   return {
-
+    category: selector.selectCategory(appState, categoryId)
   }
 }
 
