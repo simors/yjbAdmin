@@ -70,7 +70,7 @@ class UserCreate extends React.Component {
             };
           });
         }, 1000)
-        this.props.listAdminUsers({limit: 100, skipMyself: true,});
+        this.props.listAdminUsers({limit: 1000, skipMyself: true,});
       },
       onFailure: (code) => {
         message.error(`创建管理员用户失败,请重试, 错误：${code}`);
