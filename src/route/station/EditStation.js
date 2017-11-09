@@ -400,7 +400,7 @@ class EditStation extends React.Component {
           </Row>
           <Row gutter={24}>
             <Col span={7}>
-              <FormItem label='干衣柜单价'  {...formItemLayout}>
+              <FormItem label='使用单价'  {...formItemLayout}>
                 {this.props.form.getFieldDecorator('unitPrice', {
                   initialValue: station ? station.unitPrice : 0,
                   rules: [
