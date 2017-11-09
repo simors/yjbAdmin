@@ -42,12 +42,12 @@ class Order extends OrderRecord {
 }
 
 const DealRecord = Record({
-  id: undefined,                  //押金记录id
-  orderNo: undefined,             //押金单号
-  userId: undefined,              //押金用户id
-  amount: undefined,              //押金金额
+  id: undefined,                  //交易记录id
+  orderNo: undefined,             //交易单号
+  userId: undefined,              //交易用户id
+  amount: undefined,              //交易金额
   dealTime: undefined,            //交易时间
-  dealType: undefined,            //交易类型（押金付款&押金退款）
+  dealType: undefined,            //交易类型
 }, 'DealRecord')
 
 class Deal extends DealRecord {

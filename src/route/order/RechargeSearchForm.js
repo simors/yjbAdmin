@@ -5,9 +5,6 @@ import React, {PureComponent} from 'react'
 import {connect} from 'react-redux'
 import {
   Button,
-  Table,
-  Row,
-  Col,
   Input,
   Form,
   Select,
