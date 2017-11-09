@@ -16,6 +16,7 @@ import {actions}  from './redux'
 import moment from 'moment'
 import DivisionCascader from '../../component/DivisionCascader'
 import RedEnvelopeParamsInput from './RedEnvelopeParamsInput'
+import * as errno from '../../errno'
 
 const FormItem = Form.Item
 const RangePicker = DatePicker.RangePicker
@@ -44,14 +45,17 @@ class EditForm extends  Component {
       case errno.EPERM:
         message.error("用户未登录")
         break
-      case error.EINVAL:
+      case errno.EINVAL:
         message.error("参数错误")
         break
-      case  error.ENODATA:
+      case  errno.ENODATA:
         message.error("没找到该活动对象")
         break
+      case errno.ERROR_PROM_REPEAT:
+        message.error("活动重复")
+        break
       default:
-        message.error(`创建活动失败, 错误：${error.code}`)
+        message.error(`活动修改失败, 错误：${error.code}`)
     }
   }
 

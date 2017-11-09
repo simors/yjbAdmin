@@ -16,6 +16,7 @@ import {actions}  from './redux'
 import moment from 'moment'
 import DivisionCascader from '../../component/DivisionCascader'
 import AwardsInput from './AwardsInput'
+import * as errno from '../../errno'
 
 const FormItem = Form.Item
 const RangePicker = DatePicker.RangePicker
@@ -37,6 +38,25 @@ class EditForm extends Component {
   componentDidMount() {
     // To disabled submit button at the beginning.
     this.props.form.validateFields()
+  }
+
+  onSubmitError = (error) => {
+    switch (error.code) {
+      case errno.EPERM:
+        message.error("用户未登录")
+        break
+      case errno.EINVAL:
+        message.error("参数错误")
+        break
+      case  errno.ENODATA:
+        message.error("没找到该活动对象")
+        break
+      case errno.ERROR_PROM_REPEAT:
+        message.error("活动重复")
+        break
+      default:
+        message.error(`活动修改失败, 错误：${error.code}`)
+    }
   }
 
   handleSubmit = (e) => {
@@ -71,9 +91,7 @@ class EditForm extends Component {
           message.success("修改成功")
           this.props.onSubmit()
         },
-        error: (error) => {
-          message.error("活动修改失败")
-        }
+        error: this.onSubmitError
       })
     })
   }
