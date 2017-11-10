@@ -69,8 +69,17 @@ class UserCreate extends React.Component {
               title: '新增用户 —— 验证手机号',
             };
           });
-        }, 1000)
-        this.props.listAdminUsers({limit: 1000, skipMyself: true,});
+        }, 1000);
+        this.props.listAdminUsers({
+          limit: 1000,
+          skipMyself: true,
+          onStart: () => {
+            this.props.changeLoading({loading: true});
+          },
+          onComplete: () => {
+            this.props.changeLoading({loading: false});
+          },
+        });
       },
       onFailure: (code) => {
         message.error(`创建管理员用户失败,请重试, 错误：${code}`);

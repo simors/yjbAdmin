@@ -412,6 +412,7 @@ function* sagaLogout(action) {
  *   province?: string,
  *   city?: string,
  *   mpStatus?: number,
+ *   onStart?,
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,
@@ -419,6 +420,10 @@ function* sagaLogout(action) {
  */
 function* sagaListEndUsers(action) {
   const payload = action.payload;
+
+  if (payload.onStart) {
+    payload.onStart();
+  }
 
   try {
     const params = {
@@ -472,6 +477,7 @@ function* sagaListEndUsers(action) {
  *   mobilePhoneNumber?: string,
  *   roles?: Array<number>, an array of role codes, e.g., [100, 200]
  *   status?: number,
+ *   onStart?,
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,
@@ -479,6 +485,10 @@ function* sagaListEndUsers(action) {
  */
 function* sagaListAdminUsers(action) {
   const payload = action.payload;
+
+  if (payload.onStart) {
+    payload.onStart();
+  }
 
   try {
     const params = {
