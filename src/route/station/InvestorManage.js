@@ -77,7 +77,7 @@ class InvestorManage extends React.Component {
         this.props.updateLoadingState({isLoading: false})
       }
     });
-    this.props.listUsersByRole({
+    this.props.fetchAdminsByRole({
       roleCode: ROLE_CODE.STATION_INVESTOR,
     });
   }
@@ -335,7 +335,7 @@ class InvestorManage extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let investors = stationSelector.selectInvestors(state)
-  let investorList = selector.selectUsersByRole(state, ROLE_CODE.STATION_INVESTOR)
+  let investorList = selector.selectAdminsByRole(state, ROLE_CODE.STATION_INVESTOR)
   let addVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_INVESTOR_ADD])
   return {
     investors: investors,

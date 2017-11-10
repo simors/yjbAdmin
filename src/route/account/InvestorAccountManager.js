@@ -62,7 +62,7 @@ class InvestorAccountManager extends React.Component {
     this.props.requestStations({
 
     })
-    this.props.listUsersByRole({roleCode:ROLE_CODE.STATION_INVESTOR})
+    this.props.fetchAdminsByRole({roleCode:ROLE_CODE.STATION_INVESTOR})
   }
 
   refresh() {
@@ -273,7 +273,7 @@ const mapStateToProps = (state, ownProps) => {
   let accounts = accountSelector.selectInvestorAccounts(state)
   let accountsDetail = accountSelector.selectInvestorAccountsDetail(state)
 
-  let userList = authSelector.selectUsersByRole(state,ROLE_CODE.STATION_INVESTOR)
+  let userList = authSelector.selectAdminsByRole(state,ROLE_CODE.STATION_INVESTOR)
   return {
     investorAccounts: accounts,
     stations: stations,

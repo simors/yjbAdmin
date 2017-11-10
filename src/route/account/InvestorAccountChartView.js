@@ -47,7 +47,7 @@ class InvestorAccountChartView extends React.Component {
 
   componentWillMount() {
 
-    this.props.listUsersByRole({
+    this.props.fetchAdminsByRole({
       roleCode: ROLE_CODE.STATION_INVESTOR,
       onSuccess: ()=> {
         console.log('this.props.userList[0].id======>', this.props.userList[0].id)
@@ -186,7 +186,7 @@ class InvestorAccountChartView extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let userList = authSelector.selectUsersByRole(state, ROLE_CODE.STATION_INVESTOR)
+  let userList = authSelector.selectAdminsByRole(state, ROLE_CODE.STATION_INVESTOR)
   let accounts = accountSelector.selectInvestorAccountsDetail(state)
   let stationNameSet = new Set()
   let investProfitMap = new Map()

@@ -48,7 +48,7 @@ class StationAccountManager extends React.Component {
 
   componentWillMount() {
 
-    this.props.listUsersByRole({
+    this.props.fetchAdminsByRole({
       roleCode: ROLE_CODE.STATION_PROVIDER,
       onSuccess: ()=> {
         console.log('this.props.userList[0].id======>', this.props.userList[0].id)
@@ -179,7 +179,7 @@ class StationAccountManager extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let userList = authSelector.selectUsersByRole(state, ROLE_CODE.STATION_PROVIDER)
+  let userList = authSelector.selectAdminsByRole(state, ROLE_CODE.STATION_PROVIDER)
   let accounts = accountSelector.selectPartnerAccountsDetail(state)
   let stationNameSet = new Set()
   let investProfitMap = new Map()
