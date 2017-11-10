@@ -59,6 +59,12 @@ class UserFilter extends React.Component {
         province,
         city,
         mpStatus: mpStatus && parseInt(mpStatus),
+        onStart: () => {
+          this.props.changeLoading({loading: true});
+        },
+        onComplete: () => {
+          this.props.changeLoading({loading: false});
+        },
       });
     });
   };

@@ -120,7 +120,16 @@ class UserEdit extends React.Component {
             onSuccess: () => {
               this.props.hideUserEditModal({});
               this.props.form.resetFields();
-              this.props.listAdminUsers({limit: 1000, skipMyself: true,});
+              this.props.listAdminUsers({
+                limit: 1000,
+                skipMyself: true,
+                onStart: () => {
+                  this.props.changeLoading({loading: true});
+                },
+                onComplete: () => {
+                  this.props.changeLoading({loading: false});
+                },
+              });
             },
             onComplete: () => {
               this.setState((prevState, props) => {

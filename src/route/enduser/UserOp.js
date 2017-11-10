@@ -11,7 +11,15 @@ class UserOp extends React.Component {
 
   onRefresh = () => {
     this.props.resetFilter({});
-    this.props.listEndUsers({limit: 1000});
+    this.props.listEndUsers({
+      limit: 1000,
+      onStart: () => {
+        this.props.changeLoading({loading: true});
+      },
+      onComplete: () => {
+        this.props.changeLoading({loading: false});
+      },
+    });
   };
 
   render() {

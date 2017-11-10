@@ -4,6 +4,7 @@ import {Record, Set} from 'immutable';
 // --- model
 
 const UserState = Record({
+  loading: false,
   curOpUserId: undefined,
   selectedUserIds: Set(),
   needResetFilter: false,
@@ -15,6 +16,7 @@ const UserState = Record({
 
 // --- constant
 
+const CHANGE_LOADING              = 'ADMIN/USER/CHANGE_LOADING';
 const UPDATE_CUR_OP_USER_ID       = 'ADMIN/USER/UPDATE_CUR_OP_USER_ID';
 const UPDATE_SELECTED_USER_IDS    = 'ADMIN/USER/UPDATE_SELECTED_USER_IDS';
 const RESET_FILTER                = 'ADMIN/USER/RESET_FILTER';
@@ -28,6 +30,7 @@ const HIDE_USER_EDIT_MODAL        = 'ADMIN/USER/HIDE_USER_EDIT_MODAL';
 // --- action
 
 export const action = {
+  changeLoading: createAction(CHANGE_LOADING),
   updateCurOpUserId: createAction(UPDATE_CUR_OP_USER_ID),
   updateSelectedUserIds: createAction(UPDATE_SELECTED_USER_IDS),
   resetFilter: createAction(RESET_FILTER),
@@ -47,6 +50,8 @@ const initialState = new UserState();
 
 export const reducer = (state=initialState, action) => {
   switch (action.type) {
+    case CHANGE_LOADING:
+      return reduceChangeLoading(state, action);
     case UPDATE_CUR_OP_USER_ID:
       return reduceUpdateCurOpUserId(state, action);
     case UPDATE_SELECTED_USER_IDS:
@@ -69,6 +74,14 @@ export const reducer = (state=initialState, action) => {
       return state;
   }
 };
+
+function reduceChangeLoading(state, action) {
+  const {loading} = action.payload;
+
+  return state.withMutations((m) => {
+    m.set('loading', loading);
+  });
+}
 
 function reduceUpdateCurOpUserId(state, action) {
   const {curOpUserId} = action.payload;
@@ -132,6 +145,7 @@ function reduceHideUserEditModal(state, action) {
 // --- selector
 
 export const selector = {
+  selectLoading,
   selectCurOpUserId,
   selectSelectedUserIds,
   selectNeedResetFilter,
@@ -140,6 +154,11 @@ export const selector = {
   selectUserCreateModalVisible,
   selectUserEditModalVisible,
 };
+
+function selectLoading(appState) {
+  const state = appState.ADMINUSER;
+  return state.get('loading');
+}
 
 function selectCurOpUserId(appState) {
   const state = appState.ADMINUSER;

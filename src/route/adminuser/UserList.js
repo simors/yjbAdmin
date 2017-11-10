@@ -65,7 +65,16 @@ class UserList extends React.Component {
                     status: AUTH_USER_STATUS.ADMIN_DISABLED,
                   },
                   onSuccess: () => {
-                    this.props.listAdminUsers({limit: 1000, skipMyself: true,});
+                    this.props.listAdminUsers({
+                      limit: 1000,
+                      skipMyself: true,
+                      onStart: () => {
+                        this.props.changeLoading({loading: true});
+                      },
+                      onComplete: () => {
+                        this.props.changeLoading({loading: false});
+                      },
+                    });
                   },
                   onFailure: (code) => {
                     message.error(`禁用用户失败, 错误：${code}`);
@@ -80,7 +89,16 @@ class UserList extends React.Component {
                     status: AUTH_USER_STATUS.ADMIN_NORMAL,
                   },
                   onSuccess: () => {
-                    this.props.listAdminUsers({limit: 1000, skipMyself: true,});
+                    this.props.listAdminUsers({
+                      limit: 1000,
+                      skipMyself: true,
+                      onStart: () => {
+                        this.props.changeLoading({loading: true});
+                      },
+                      onComplete: () => {
+                        this.props.changeLoading({loading: false});
+                      },
+                    });
                   },
                   onFailure: (code) => {
                     message.error(`启用用户失败, 错误：${code}`);
@@ -109,7 +127,16 @@ class UserList extends React.Component {
   }
 
   componentDidMount() {
-    this.props.listAdminUsers({limit: 1000, skipMyself: true,});
+    this.props.listAdminUsers({
+      limit: 1000,
+      skipMyself: true,
+      onStart: () => {
+        this.props.changeLoading({loading: true});
+      },
+      onComplete: () => {
+        this.props.changeLoading({loading: false});
+      },
+    });
   }
 
   rowKey = (record) => {
@@ -121,6 +148,7 @@ class UserList extends React.Component {
   };
 
   render() {
+    const {loading} = this.props;
     const rowSelection = {
       type: 'radio',
       selectedRowKeys: this.props.selectedUserIds,
@@ -131,16 +159,19 @@ class UserList extends React.Component {
       <Table
              columns={this.columns} dataSource={this.props.users}
              rowKey={this.rowKey} rowSelection={rowSelection}
+             loading={loading}
       />
     );
   }
 }
 
 const mapStateToProps = (appState, ownProps) => {
+  const loading = selector.selectLoading(appState);
   const selectedUserIds = selector.selectSelectedUserIds(appState);
   const users = authSelector.selectAdminUsers(appState);
 
   return {
+    loading,
     selectedUserIds,
     users,
   };
