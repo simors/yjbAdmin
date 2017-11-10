@@ -63,8 +63,14 @@ class GiftsInput extends  Component {
 
   triggerChange(index, type, e) {
     const onChange = this.props.onChange
-    const { value } = e.target
+    let value = e.target.value
     let gifts = this.state.gifts
+    if(type === 'stocks' || type === 'scores') {
+      value = Number(value)
+      if(value < 1) {
+        value = 1
+      }
+    }
     gifts[index][type] = value
     this.setState({
       gifts: gifts

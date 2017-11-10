@@ -33,9 +33,9 @@ class RedEnvelopeParamsInput extends PureComponent {
   awardAmountChange = (e) => {
     const onChange = this.props.onChange
     const { value } = e.target
-    this.setState({awardAmount: value})
+    this.setState({awardAmount: Number(value)})
     let stat = this.state
-    stat.awardAmount = value
+    stat.awardAmount = Number(value)
     if(onChange) {
       onChange(stat)
     }
@@ -44,9 +44,9 @@ class RedEnvelopeParamsInput extends PureComponent {
   awardMaxChange = (e) => {
     const onChange = this.props.onChange
     const { value } = e.target
-    this.setState({awardMax: value})
+    this.setState({awardMax: Number(value)})
     let stat = this.state
-    stat.awardMax = value
+    stat.awardMax = Number(value)
     if(onChange) {
       onChange(stat)
     }
@@ -54,7 +54,8 @@ class RedEnvelopeParamsInput extends PureComponent {
 
   countChange = (e) => {
     const onChange = this.props.onChange
-    const { value } = e.target
+    let value = e.target.value
+    value = Math.round(value)
     this.setState({count: value})
     let stat = this.state
     stat.count = value
@@ -65,7 +66,8 @@ class RedEnvelopeParamsInput extends PureComponent {
 
   userLimitChange = (e) => {
     const onChange = this.props.onChange
-    const { value } = e.target
+    let value = e.target.value
+    value = Math.round(value)
     this.setState({userLimit: value})
     let stat = this.state
     stat.userLimit = value
@@ -106,7 +108,7 @@ class RedEnvelopeParamsInput extends PureComponent {
           <Col span={12}>
             <Input type='number'
                    value={state.count}
-                   step={50}
+                   step={1}
                    disabled={disabled}
                    placeholder="红包总数"
                    onChange={this.countChange}/>
@@ -117,6 +119,7 @@ class RedEnvelopeParamsInput extends PureComponent {
           <Col span={12}>
             <Input type='number'
                    value={state.userLimit}
+                   step={1}
                    disabled={disabled}
                    placeholder="单个用户领取次数"
                    onChange={this.userLimitChange}/>

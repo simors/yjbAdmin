@@ -78,6 +78,20 @@ class EditForm extends Component {
         }
       }
       console.log("handleSubmit values:", values)
+      let awardsError = false
+      if(values.awards.length < 1) {
+        message.error("奖励金额参数有误")
+        return
+      }
+      values.awards.forEach((value) => {
+        if(value.recharge <= 0 || value.award <= 0) {
+          awardsError = true
+        }
+      })
+      if(awardsError) {
+        message.error("奖励金额参数有误")
+        return
+      }
       this.props.editPromotion({
         promotionId: promotion.id,
         title: values.title,

@@ -72,6 +72,12 @@ class CreateForm extends PureComponent {
         }
       }
       console.log("handleSubmit values:", values)
+      const {awardAmount, awardMax, count, userLimit} = values.awards
+      if(awardAmount <= 0 || awardMax <= 0 || count < 1 || userLimit < 1 || awardMax > awardAmount) {
+        message.error("红包参数错误")
+        return
+      }
+
       this.props.publishPromotion({
         title: values.title,
         start: values.rangeTimePicker[0],
