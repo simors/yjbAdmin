@@ -89,6 +89,18 @@ export async function listAdminUsers(payload) {
 /**
  *
  * @param payload
+ * @returns {Promise.<object>}
+ * {
+ *   jsonUsers
+ * }
+ */
+export async function fetchAdminsByRole(payload) {
+  return await AV.Cloud.run('authFetchAdminsByRoles', payload);
+}
+
+/**
+ *
+ * @param payload
  * @returns {*|Promise}
  */
 export async function fetchUserByPhone(payload) {
