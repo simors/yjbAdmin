@@ -54,8 +54,8 @@ class UserDetail extends React.Component {
       statusElem = (<span style={{color: 'red'}}>禁用</span>);
     }
 
-    const createdAtElem = (<span>{moment(createdAt).format('lll')}</span>);
-    const updatedAtElem = (<span>{moment(updatedAt).format('lll')}</span>);
+    const createdAtElem = (<span>{moment(createdAt).format('LLL')}</span>);
+    const updatedAtElem = (<span>{moment(updatedAt).format('LLL')}</span>);
 
     return (
       <Modal visible={this.props.visible}
