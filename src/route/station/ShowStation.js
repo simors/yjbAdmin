@@ -498,7 +498,7 @@ class ShowStation extends React.Component {
         <Row ></Row>
         <Row style={{height: 20,marginTop: 20, marginBottom: 20}}>
           <Col span={4}>
-            <div>服务点分成</div>
+            <div>服务单位分成</div>
           </Col>
           <Col span={16}></Col>
           <Col span={4}>

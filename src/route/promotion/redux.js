@@ -149,7 +149,7 @@ function* fetchPromotions(action) {
   let payload = action.payload
 
   let apiPayload = {
-    disabled: payload.disabled,
+    showType: payload.showType,
     start: payload.start,
     end: payload.end,
     region: payload.region,
