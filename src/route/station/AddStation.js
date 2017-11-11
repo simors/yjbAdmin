@@ -5,6 +5,7 @@
 import React from 'react';
 import {withRouter} from 'react-router'
 import {connect} from 'react-redux';
+import * as errno from '../../errno'
 import {Row, Col, Input, Select, Button, Form, InputNumber, message} from 'antd';
 import {stationAction, stationSelector} from './redux';
 import DivisionCascader from '../../component/DivisionCascader'
@@ -109,9 +110,14 @@ class AddStation extends React.Component {
           this.props.updateLoadingState({isLoading: false})
           this.props.history.push({pathname: '/site_list/showStation/' + stationId})
         },
-        error: (err)=> {
-          console.log(err.message)
-          message.error(err.message)
+        error: (error)=> {
+          switch (error.code) {
+            case errno.ERROR_STATION_REPEAT:
+              message.error("服务点名字重复")
+              break
+            default:
+              message.error(`创建服务点, 错误：${error.code}`)
+          }
           this.props.updateLoadingState({isLoading: false})
         }
       }

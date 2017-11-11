@@ -10,6 +10,7 @@ import {stationAction, stationSelector} from './redux';
 import PartnerList from './PartnerList'
 import CreatePartnerModal from '../../component/station/CreatePartnerModal'
 import UpdatePartnerModal from '../../component/station/UpdatePartnerModal'
+import * as errno from '../../errno'
 import DivisionCascader from '../../component/DivisionCascader'
 import {action, selector} from '../../util/auth'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
@@ -266,9 +267,14 @@ class EditStation extends React.Component {
           })
           this.props.updateLoadingState({isLoading: false})
         },
-        error: (err)=> {
-          message.error(err.message)
-          this.props.updateLoadingState({isLoading: false})
+        error: (error)=> {
+          switch (error.code) {
+            case errno.ERROR_STATION_REPEAT:
+              message.error("服务点名字重复")
+              break
+            default:
+              message.error(`更新服务点, 错误：${error.code}`)
+          }             this.props.updateLoadingState({isLoading: false})
           // console.log(err.message)
         }
       }
