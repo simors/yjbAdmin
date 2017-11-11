@@ -16,6 +16,8 @@ import {PERMISSION_CODE, ROLE_CODE} from '../../util/rolePermission'
 import moment from 'moment'
 import {action as authAction, selector as authSelector} from '../../util/auth'
 import mathjs from 'mathjs'
+import AdminSelectByRole from '../../component/AdminSelectByRole'
+
 const history = createBrowserHistory()
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
@@ -139,13 +141,7 @@ class StationAccountManager extends React.Component {
           {getFieldDecorator("userId", {
             initialValue: this.props.userList&&this.props.userList.length?this.props.userList[0].id:undefined,
           })(
-            <Select style={{width: 120}} placeholder="选择分成方">
-              {
-                this.props.userList.map((user, index) => (
-                  <Option key={index} value={user.id}>{user.nickname + '  ' + user.mobilePhoneNumber}</Option>
-                ))
-              }
-            </Select>
+            <AdminSelectByRole roleCode={ROLE_CODE.STATION_PROVIDER} />
           )}
         </FormItem>
         <FormItem>

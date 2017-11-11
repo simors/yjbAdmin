@@ -5,6 +5,8 @@
 import AV from 'leancloud-storage'
 import React, {PropTypes, Component} from 'react'
 import {Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
+import AdminSelectByRole from '../../component/AdminSelectByRole'
+import {ROLE_CODE,PERMISSION_CODE} from '../../util/rolePermission'
 
 //import {checkBox} from '../../common/checkBox'
 const FormItem = Form.Item
@@ -83,7 +85,7 @@ class CreateInvestorModal extends Component {
       }
       // console.log('=======>',{...this.props.form.getFieldsValue()})
       let data = this.props.form.getFieldsValue()
-      // console.log('data======>',data)
+      console.log('data======>',data)
       // let count = this.state.count - 1
       this.props.onOk(data)
     })
@@ -127,9 +129,7 @@ class CreateInvestorModal extends Component {
                 }
               ]
             })(
-              <Select allowClear={true} style={{width: 200}}>
-                {this.userList()}
-              </Select>
+              <AdminSelectByRole roleCode={ROLE_CODE.STATION_INVESTOR} />
             )}
           </FormItem>
           <FormItem label='投资服务点：' hasFeedback {...formItemLayout}>

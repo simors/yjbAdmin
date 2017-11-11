@@ -15,6 +15,7 @@ import {PERMISSION_CODE, ROLE_CODE} from '../../util/rolePermission'
 import moment from 'moment'
 import {action as authAction, selector as authSelector} from '../../util/auth'
 import mathjs from 'mathjs'
+import AdminSelectByRole from '../../component/AdminSelectByRole'
 import StationSelect from '../station/StationSelect'
 
 const Option = Select.Option;
@@ -146,13 +147,8 @@ class InvestorAccountChartView extends React.Component {
           {getFieldDecorator("userId", {
             initialValue: this.props.userList&&this.props.userList.length?this.props.userList[0].id:undefined,
           })(
-            <Select style={{width: 120}} placeholder="选择分成方">
-              {
-                this.props.userList.map((user, index) => (
-                  <Option key={index} value={user.id}>{user.nickname + '  ' + user.mobilePhoneNumber}</Option>
-                ))
-              }
-            </Select>
+            <AdminSelectByRole roleCode={ROLE_CODE.STATION_INVESTOR} />
+
           )}
         </FormItem>
         <FormItem>

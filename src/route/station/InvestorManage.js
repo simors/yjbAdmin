@@ -145,6 +145,14 @@ class InvestorManage extends React.Component {
     })
   }
 
+  userChange(value){
+    console.log('value=====>',value)
+    this.props.fetchAdminsByRole({
+      roleCode: ROLE_CODE.STATION_INVESTOR,
+      nicknameOrMobilePhoneNumber: value,
+    });
+  }
+
   renderSearchBar() {
     const { getFieldDecorator } = this.props.form
     return (
@@ -300,6 +308,7 @@ class InvestorManage extends React.Component {
           setInvestorStatus={(value)=>{this.setStatus(value)}}
         />
         {this.state.createModalVisible? <CreateInvestorModal
+          userChange = {(value)=>{this.userChange(value)}}
           modalKey={this.state.modalKey}
           onOk={(data)=> {
             this.createInvestorSmsModal(data)

@@ -554,6 +554,7 @@ function* sagaFetchAdminsByRole(action) {
     };
 
     ({
+      nicknameOrMobilePhoneNumber: params.nicknameOrMobilePhoneNumber,
       nickname: params.nickname,
       mobilePhoneNumber: params.mobilePhoneNumber,
       status: params.status,
