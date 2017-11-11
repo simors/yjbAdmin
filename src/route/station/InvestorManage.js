@@ -77,7 +77,7 @@ class InvestorManage extends React.Component {
         this.props.updateLoadingState({isLoading: false})
       }
     });
-    this.props.listUsersByRole({
+    this.props.fetchAdminsByRole({
       roleCode: ROLE_CODE.STATION_INVESTOR,
     });
   }
@@ -143,6 +143,14 @@ class InvestorManage extends React.Component {
     this.setState({
       stationId: value
     })
+  }
+
+  userChange(value){
+    console.log('value=====>',value)
+    this.props.fetchAdminsByRole({
+      roleCode: ROLE_CODE.STATION_INVESTOR,
+      nicknameOrMobilePhoneNumber: value,
+    });
   }
 
   renderSearchBar() {
@@ -300,6 +308,7 @@ class InvestorManage extends React.Component {
           setInvestorStatus={(value)=>{this.setStatus(value)}}
         />
         {this.state.createModalVisible? <CreateInvestorModal
+          userChange = {(value)=>{this.userChange(value)}}
           modalKey={this.state.modalKey}
           onOk={(data)=> {
             this.createInvestorSmsModal(data)
@@ -335,7 +344,7 @@ class InvestorManage extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let investors = stationSelector.selectInvestors(state)
-  let investorList = selector.selectUsersByRole(state, ROLE_CODE.STATION_INVESTOR)
+  let investorList = selector.selectAdminsByRole(state, ROLE_CODE.STATION_INVESTOR)
   let addVisible = selector.selectValidPermissions(state,[PERMISSION_CODE.STATION_INVESTOR_ADD])
   return {
     investors: investors,

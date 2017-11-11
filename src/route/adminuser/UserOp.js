@@ -13,11 +13,6 @@ class UserOp extends React.Component {
     this.props.showUserCreateModal({});
   };
 
-  onRefresh = () => {
-    this.props.resetFilter({});
-    this.props.listAdminUsers({limit: 1000, skipMyself: true,});
-  };
-
   render() {
     return (
       <Button.Group>

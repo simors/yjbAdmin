@@ -74,7 +74,7 @@ class AddStation extends React.Component {
   }
 
   componentWillMount() {
-    this.props.listUsersByRole({
+    this.props.fetchAdminsByRole({
       roleCode: ROLE_CODE.STATION_MANAGER,
       onFailure: (e)=>{console.log(e.message)}
     })
@@ -299,7 +299,7 @@ class AddStation extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   let partners = stationSelector.selectPartners(state)
-  let userList = selector.selectUsersByRole(state, ROLE_CODE.STATION_MANAGER)
+  let userList = selector.selectAdminsByRole(state, ROLE_CODE.STATION_MANAGER)
   return {
     station: station,
     partners: partners,

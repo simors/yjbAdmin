@@ -64,10 +64,10 @@ class EditStation extends React.Component {
       stationId: this.props.match.params.id, success: ()=> {
       }
     })
-    this.props.listUsersByRole({
+    this.props.fetchAdminsByRole({
       roleCode: ROLE_CODE.STATION_MANAGER,
       onFailure: (e)=>{console.log(e.message)},
-      onSuccess: ()=>{this.props.listUsersByRole({
+      onSuccess: ()=>{this.props.fetchAdminsByRole({
         roleCode: ROLE_CODE.STATION_PROVIDER,
         onFailure: (e)=>{console.log(e.message)}
       })}
@@ -473,8 +473,8 @@ class EditStation extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   let station = stationSelector.selectStation(state, ownProps.match.params.id)
   let partners = stationSelector.selectPartners(state)
-  let adminList = selector.selectUsersByRole(state, ROLE_CODE.STATION_MANAGER)
-  let partnerList = selector.selectUsersByRole(state, ROLE_CODE.STATION_PROVIDER)
+  let adminList = selector.selectAdminsByRole(state, ROLE_CODE.STATION_MANAGER)
+  let partnerList = selector.selectAdminsByRole(state, ROLE_CODE.STATION_PROVIDER)
 
   return {
     station: station,

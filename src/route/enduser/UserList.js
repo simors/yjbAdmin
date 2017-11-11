@@ -35,7 +35,7 @@ class UserList extends React.Component {
       title: '最近登录时间',
       render: (record) => {
         const {updatedAt} = record;
-        const updatedAtStr = moment(updatedAt).format('lll');
+        const updatedAtStr = moment(updatedAt).format('LLL');
         return (
           <span>
             {updatedAtStr}
@@ -68,7 +68,15 @@ class UserList extends React.Component {
               mpStatus: AUTH_USER_STATUS.MP_DISABLED,
             },
             onSuccess: () => {
-              this.props.listEndUsers({limit: 1000});
+              this.props.listEndUsers({
+                limit: 1000,
+                onStart: () => {
+                  this.props.changeLoading({loading: true});
+                },
+                onComplete: () => {
+                  this.props.changeLoading({loading: false});
+                },
+              });
             },
             onFailure: (code) => {
               message.error(`禁用用户失败, 错误：${code}`);
@@ -83,7 +91,15 @@ class UserList extends React.Component {
               mpStatus: AUTH_USER_STATUS.MP_NORMAL,
             },
             onSuccess: () => {
-              this.props.listEndUsers({limit: 1000});
+              this.props.listEndUsers({
+                limit: 1000,
+                onStart: () => {
+                  this.props.changeLoading({loading: true});
+                },
+                onComplete: () => {
+                  this.props.changeLoading({loading: false});
+                },
+              });
             },
             onFailure: (code) => {
               message.error(`启用用户失败, 错误：${code}`);
@@ -115,7 +131,15 @@ class UserList extends React.Component {
   }
 
   componentDidMount() {
-    this.props.listEndUsers({limit: 1000});
+    this.props.listEndUsers({
+      limit: 1000,
+      onStart: () => {
+        this.props.changeLoading({loading: true});
+      },
+      onComplete: () => {
+        this.props.changeLoading({loading: false});
+      },
+    });
   }
 
   rowKey = (record) => {
@@ -130,6 +154,7 @@ class UserList extends React.Component {
   };
 
   render() {
+    const {loading} = this.props;
     if (this.props.users === undefined)
       return null;
 
@@ -143,16 +168,19 @@ class UserList extends React.Component {
       <Table
              columns={this.columns} dataSource={this.props.users}
              rowKey={this.rowKey} rowSelection={rowSelection}
+             loading={loading}
       />
     );
   }
 }
 
 const mapStateToProps = (appState, ownProps) => {
+  const loading = selector.selectLoading(appState);
   const selectedUserIds = selector.selectSelectedUserIds(appState);
   const users = authSelector.selectEndUsers(appState);
 
   return {
+    loading,
     selectedUserIds,
     users,
   };

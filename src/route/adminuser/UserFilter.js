@@ -51,10 +51,16 @@ class UserFilter extends React.Component {
       const {nickname, mobilePhoneNumber, status} = values;
       this.props.listAdminUsers({
         limit: 1000,
+        skipMyself: true,
         nickname,
         mobilePhoneNumber,
         status: status && parseInt(status),
-        skipMyself: true,
+        onStart: () => {
+          this.props.changeLoading({loading: true});
+        },
+        onComplete: () => {
+          this.props.changeLoading({loading: false});
+        },
       });
     });
   };

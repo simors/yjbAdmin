@@ -65,7 +65,7 @@ class PartnerAccountManager extends React.Component {
       },
     })
     this.props.requestStations({})
-    this.props.listUsersByRole({
+    this.props.fetchAdminsByRole({
       roleCode: ROLE_CODE.STATION_PROVIDER
     })
   }
@@ -281,7 +281,7 @@ const mapStateToProps = (state, ownProps) => {
   let stations = stationSelector.selectStations(state)
   let accounts = accountSelector.selectPartnerAccounts(state)
   let accountsDetail = accountSelector.selectPartnerAccountsDetail(state)
-  let userList = authSelector.selectUsersByRole(state, ROLE_CODE.STATION_PROVIDER)
+  let userList = authSelector.selectAdminsByRole(state, ROLE_CODE.STATION_PROVIDER)
 
   return {
     partnerAccounts: accounts,

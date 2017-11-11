@@ -201,8 +201,8 @@ const LIST_END_USERS = 'AUTH/LIST_END_USERS';
 const LISTED_END_USERS = 'AUTH/LISTED_END_USERS';
 const LIST_ADMIN_USERS = 'AUTH/LIST_ADMIN_USERS';
 const LISTED_ADMIN_USERS = 'AUTH/LISTED_ADMIN_USERS';
-const LIST_ADMINS_BY_ROLE = 'AUTH/LIST_ADMINS_BY_ROLE';
-const LISTED_ADMINS_BY_ROLE = 'AUTH/LISTED_ADMINS_BY_ROLE';
+const FETCH_ADMINS_BY_ROLE = 'AUTH/FETCH_ADMINS_BY_ROLE';
+const SAVE_ADMINS_BY_ROLE = 'AUTH/SAVE_ADMINS_BY_ROLE';
 const FETCH_USER_BY_PHONE = 'AUTH/FETCH_USER_BY_PHONE';
 const CREATE_USER = 'AUTH/CREATE_USER';
 const DELETE_USER = 'AUTH/DELETE_USER';
@@ -228,7 +228,7 @@ export const action = {
   logout: createAction(LOGOUT),
   listEndUsers: createAction(LIST_END_USERS),
   listAdminUsers: createAction(LIST_ADMIN_USERS),
-  listUsersByRole: createAction(LIST_ADMINS_BY_ROLE),
+  fetchAdminsByRole: createAction(FETCH_ADMINS_BY_ROLE),
   fetchUserByPhone: createAction(FETCH_USER_BY_PHONE),
 
   createUser: createAction(CREATE_USER),
@@ -251,7 +251,7 @@ const loggedIn = createAction(LOGGED_IN);
 const loggedOut = createAction(LOGGED_OUT);
 const listedEndUsers = createAction(LISTED_END_USERS);
 const listedAdminUsers = createAction(LISTED_ADMIN_USERS);
-const listedAdminsByRole = createAction(LISTED_ADMINS_BY_ROLE);
+const saveAdminsByRole = createAction(SAVE_ADMINS_BY_ROLE);
 const saveAdminQrcode = createAction(SAVE_ADMIN_QRCODE);
 
 // --- saga
@@ -263,7 +263,7 @@ export const saga = [
 
   takeLatest(LIST_END_USERS, sagaListEndUsers),
   takeLatest(LIST_ADMIN_USERS, sagaListAdminUsers),
-  takeLatest(LIST_ADMINS_BY_ROLE, sagaListAdminsByRole),
+  takeLatest(FETCH_ADMINS_BY_ROLE, sagaFetchAdminsByRole),
   takeLatest(FETCH_USER_BY_PHONE, sagaFetchUserByPhone),
   takeLatest(CREATE_USER, sagaCreateUser),
   takeLatest(DELETE_USER, sagaDeleteUser),
@@ -412,6 +412,7 @@ function* sagaLogout(action) {
  *   province?: string,
  *   city?: string,
  *   mpStatus?: number,
+ *   onStart?,
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,
@@ -419,6 +420,10 @@ function* sagaLogout(action) {
  */
 function* sagaListEndUsers(action) {
   const payload = action.payload;
+
+  if (payload.onStart) {
+    payload.onStart();
+  }
 
   try {
     const params = {
@@ -472,6 +477,7 @@ function* sagaListEndUsers(action) {
  *   mobilePhoneNumber?: string,
  *   roles?: Array<number>, an array of role codes, e.g., [100, 200]
  *   status?: number,
+ *   onStart?,
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,
@@ -479,6 +485,10 @@ function* sagaListEndUsers(action) {
  */
 function* sagaListAdminUsers(action) {
   const payload = action.payload;
+
+  if (payload.onStart) {
+    payload.onStart();
+  }
 
   try {
     const params = {
@@ -524,21 +534,19 @@ function* sagaListAdminUsers(action) {
 }
 
 /**
- * List admin users by specified roles.
+ * Fetch all admin users by specified role.
  * @param action
  * payload = {
- *   skip?: number,
- *   limit?: number,
  *   nickname?: string,
  *   mobilePhoneNumber?: string,
  *   role?: number, role code
- *   status?: number
+ *   status?: number,
  *   onSuccess?,
  *   onFailure?,
  *   onComplete?,
  * }
  */
-function* sagaListAdminsByRole(action) {
+function* sagaFetchAdminsByRole(action) {
   const payload = action.payload;
 
   try {
@@ -546,9 +554,8 @@ function* sagaListAdminsByRole(action) {
     };
 
     ({
-      skip: params.skip,
-      limit: params.limit,
-      idName: params.idName,
+      nicknameOrMobilePhoneNumber: params.nicknameOrMobilePhoneNumber,
+      nickname: params.nickname,
       mobilePhoneNumber: params.mobilePhoneNumber,
       status: params.status,
     } = payload);
@@ -557,15 +564,13 @@ function* sagaListAdminsByRole(action) {
     params.roles = [role];
 
     // result = {
-    //   count,
     //   jsonUsers,
     // }
-    const result = yield call(api.listAdminUsers, params);
+    const result = yield call(api.fetchAdminsByRole, params);
 
-    const {count, jsonUsers} = result;
-    yield put(listedAdminsByRole({
+    const {jsonUsers} = result;
+    yield put(saveAdminsByRole({
       role,
-      count,
       jsonUsers
     }));
 
@@ -573,7 +578,7 @@ function* sagaListAdminsByRole(action) {
       payload.onSuccess();
     }
   } catch (e) {
-    logger.error('list admin users by role failed：', e);
+    logger.error('fetch admins by role failed：', e);
     logger.error('code: ', e.code);
 
     if (payload.onFailure) {
@@ -774,8 +779,8 @@ export function reducer(state=initialState, action) {
       return reduceListedEndUsers(state, action);
     case LISTED_ADMIN_USERS:
       return reduceListedAdminUsers(state, action);
-    case LISTED_ADMINS_BY_ROLE:
-      return reduceListedAdminsByRole(state, action);
+    case SAVE_ADMINS_BY_ROLE:
+      return reduceSaveAdminsByRole(state, action);
     case REHYDRATE:
       return reduceRehydrate(state, action);
     case SAVE_USER:
@@ -874,8 +879,8 @@ function reduceListedAdminUsers(state, action) {
   });
 }
 
-function reduceListedAdminsByRole(state, action) {
-  const {role, count, jsonUsers} = action.payload;
+function reduceSaveAdminsByRole(state, action) {
+  const {role, jsonUsers} = action.payload;
 
   return state.withMutations((m) => {
     const userIds = [];
@@ -1010,7 +1015,7 @@ export const selector = {
   selectUserRoleName,
   selectAdminUsers,
   selectUserById,
-  selectUsersByRole,
+  selectAdminsByRole,
   selectValidRoles,
   selectValidPermissions,
   selectAdminQrcode,
@@ -1100,12 +1105,12 @@ function selectUserRoleName(appState, roleCodes) {
 }
 
 /**
- * Get all users with the specified role code.
+ * Get all admins with the specified role code.
  * @param {Object} appState
  * @param {Number} roleCode
  * @returns {Array} an array of User object
  */
-function selectUsersByRole(appState, roleCode) {
+function selectAdminsByRole(appState, roleCode) {
   const users = [];
 
   const userIds = appState.AUTH.getIn(['adminsByRole', roleCode], new List());

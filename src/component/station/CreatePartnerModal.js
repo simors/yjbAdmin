@@ -6,6 +6,8 @@ import AV from 'leancloud-storage'
 import React, {PropTypes, Component} from 'react'
 import {Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
 import mathjs from 'mathjs'
+import AdminSelectByRole from '../../component/AdminSelectByRole'
+import {ROLE_CODE,PERMISSION_CODE} from '../../util/rolePermission'
 
 //import {checkBox} from '../../common/checkBox'
 const FormItem = Form.Item
@@ -133,9 +135,8 @@ class CreatePartnerModal extends Component {
                 }
               ]
             })(
-              <Select allowClear={true} style={{width: 200}}>
-                {this.userList()}
-              </Select>
+              <AdminSelectByRole roleCode={ROLE_CODE.STATION_PROVIDER} />
+
             )}
           </FormItem>
           <FormItem label='分成比例：' hasFeedback {...formItemLayout}>

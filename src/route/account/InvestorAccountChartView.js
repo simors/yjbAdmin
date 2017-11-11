@@ -15,6 +15,7 @@ import {PERMISSION_CODE, ROLE_CODE} from '../../util/rolePermission'
 import moment from 'moment'
 import {action as authAction, selector as authSelector} from '../../util/auth'
 import mathjs from 'mathjs'
+import AdminSelectByRole from '../../component/AdminSelectByRole'
 import StationSelect from '../station/StationSelect'
 
 const Option = Select.Option;
@@ -47,7 +48,7 @@ class InvestorAccountChartView extends React.Component {
 
   componentWillMount() {
 
-    this.props.listUsersByRole({
+    this.props.fetchAdminsByRole({
       roleCode: ROLE_CODE.STATION_INVESTOR,
       onSuccess: ()=> {
         console.log('this.props.userList[0].id======>', this.props.userList[0].id)
@@ -146,13 +147,8 @@ class InvestorAccountChartView extends React.Component {
           {getFieldDecorator("userId", {
             initialValue: this.props.userList&&this.props.userList.length?this.props.userList[0].id:undefined,
           })(
-            <Select style={{width: 120}} placeholder="选择分成方">
-              {
-                this.props.userList.map((user, index) => (
-                  <Option key={index} value={user.id}>{user.nickname + '  ' + user.mobilePhoneNumber}</Option>
-                ))
-              }
-            </Select>
+            <AdminSelectByRole roleCode={ROLE_CODE.STATION_INVESTOR} />
+
           )}
         </FormItem>
         <FormItem>
@@ -186,7 +182,7 @@ class InvestorAccountChartView extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  let userList = authSelector.selectUsersByRole(state, ROLE_CODE.STATION_INVESTOR)
+  let userList = authSelector.selectAdminsByRole(state, ROLE_CODE.STATION_INVESTOR)
   let accounts = accountSelector.selectInvestorAccountsDetail(state)
   let stationNameSet = new Set()
   let investProfitMap = new Map()

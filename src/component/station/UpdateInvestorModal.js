@@ -62,27 +62,7 @@ class UpdateInvestorModal extends Component {
   }
 
   componentDidMount() {
-    // this.props.form.validateFields((errors) => {
-    //   if (errors) {
-    //     return
-    //   }
-    //   // console.log('=======>',{...this.props.form.getFieldsValue()})
-    //   let data =this.props.form.getFieldsValue()
-    //   console.log('data======>',data)
-    //   // let count = this.state.count - 1
-    //   let user = {}
-    //   this.props.userList.forEach((item)=>{
-    //     if(item.id==data.userId){}
-    //     user = item
-    //   })
-    //   let station = {}
-    //   this.props.stationList.forEach((item)=>{
-    //     if(item.id==data.stationId){}
-    //     station = item
-    //   })
-    //   this.setState({user: user, station: station})
-    // })
-    // console.log('data', this.props.data
+
   }
 
   userList() {
@@ -130,7 +110,6 @@ class UpdateInvestorModal extends Component {
   }
 
   render() {
-    const { getFieldDecorator, getFieldsValue, getFieldsError } = this.props.form
     let investor = this.props.investor
     return (
       <Modal
