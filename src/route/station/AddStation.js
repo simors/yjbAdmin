@@ -111,7 +111,7 @@ class AddStation extends React.Component {
         },
         error: (err)=> {
           console.log(err.message)
-          message.error('提交失败')
+          message.error(err.message)
           this.props.updateLoadingState({isLoading: false})
         }
       }
