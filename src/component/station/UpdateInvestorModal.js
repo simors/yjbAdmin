@@ -23,8 +23,6 @@ import {
   Button,
   Select
 } from 'antd'
-import AdminSelectByRole from '../../component/AdminSelectByRole'
-import {ROLE_CODE,PERMISSION_CODE} from '../../util/rolePermission'
 
 //import {checkBox} from '../../common/checkBox'
 const FormItem = Form.Item
@@ -64,27 +62,7 @@ class UpdateInvestorModal extends Component {
   }
 
   componentDidMount() {
-    // this.props.form.validateFields((errors) => {
-    //   if (errors) {
-    //     return
-    //   }
-    //   // console.log('=======>',{...this.props.form.getFieldsValue()})
-    //   let data =this.props.form.getFieldsValue()
-    //   console.log('data======>',data)
-    //   // let count = this.state.count - 1
-    //   let user = {}
-    //   this.props.userList.forEach((item)=>{
-    //     if(item.id==data.userId){}
-    //     user = item
-    //   })
-    //   let station = {}
-    //   this.props.stationList.forEach((item)=>{
-    //     if(item.id==data.stationId){}
-    //     station = item
-    //   })
-    //   this.setState({user: user, station: station})
-    // })
-    // console.log('data', this.props.data
+
   }
 
   userList() {
@@ -132,7 +110,6 @@ class UpdateInvestorModal extends Component {
   }
 
   render() {
-    const { getFieldDecorator, getFieldsValue, getFieldsError } = this.props.form
     let investor = this.props.investor
     return (
       <Modal
@@ -171,8 +148,9 @@ class UpdateInvestorModal extends Component {
                 }
               ]
             })(
-              <AdminSelectByRole roleCode={ROLE_CODE.STATION_INVESTOR} />
-
+              <Select allowClear={true} style={{width: 200}} disabled = {true}>
+                {this.userList()}
+              </Select>
             )}
           </FormItem>
           <FormItem label='投资服务点：' hasFeedback {...formItemLayout}>

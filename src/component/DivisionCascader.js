@@ -5,6 +5,9 @@ import React, {PureComponent} from 'react'
 import provinces from 'china-division/dist/provinces.json'
 import cities from 'china-division/dist/cities.json'
 import areas from 'china-division/dist/areas.json'
+import {connect} from 'react-redux'
+import {selector as authSelector, action as authAction} from '../util/auth'
+
 import {
   Cascader,
 } from 'antd'
@@ -101,10 +104,27 @@ class DivisionCascader extends PureComponent {
     }
   }
 
+  componentWillMount() {
+    // console.log('curUserDivision?????????????????????========>',this.props.curUserDivision)
+    if(this.props.value&&this.props.value.length>0){
+      this.setState({value: this.props.value})
+    }else{
+      this.setState({value: this.props.curUserDivision})
+
+    }
+  }
+
+  // componentDidMount() {
+  //   this.setState({value: this.props.curUserDivision})
+  //
+  // }
+
   componentWillReceiveProps(nextProps) {
     if ('value' in nextProps) {
       const value = nextProps.value
-      this.setState({value: value})
+      if(value&&value.length>0){
+        this.setState({value: value})
+      }
     }
   }
 
@@ -121,9 +141,13 @@ class DivisionCascader extends PureComponent {
   }
 
   render() {
-    const {disabled, level, cascaderSize, width} = this.props
+    const {disabled, level, cascaderSize, width, curUserDivision} = this.props
+    console.log('curUserDivision========>',curUserDivision)
+    console.log('this.state.value========>',this.state.value)
+
     return (
       <Cascader
+                defaultValue={curUserDivision}
                 options={getOptionData(level)}
                 value={this.state.value}
                 placeholder={getPlaceholder(level)}
@@ -144,4 +168,27 @@ DivisionCascader.defaultProps = {
   width: '200px'
 }
 
-export default DivisionCascader
+const mapStateToProps = (appState, ownProps) => {
+  let curUser = authSelector.selectCurUser(appState)
+  let curUserDivision = []
+  if(curUser&&curUser.province){
+    curUserDivision[0] = curUser.province.value
+  }
+  if(curUser&&curUser.city){
+    curUserDivision[1] = curUser.city.value
+  }
+  if(curUser&&curUser.area){
+    curUserDivision[2] = curUser.area.value
+  }
+
+  return {
+    // curUser: curUser,
+    curUserDivision: curUserDivision
+  }
+}
+
+const mapDispatchToProps = {
+  ...authAction,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DivisionCascader)

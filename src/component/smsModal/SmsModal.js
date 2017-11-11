@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import {Form, Input, Modal, Row, Col} from 'antd'
+import {Form, Input, Modal, Row, Col, Popconfirm, Button} from 'antd'
 import SmsInput from './SmsInput'
 import {action as authAction,selector as authSelector} from '../../util/auth'
 import {connect} from 'react-redux'
@@ -95,6 +95,17 @@ class SmsModal extends React.Component {
         }
         wrapClassName='vertical-center-modal'
         key={this.props.key}
+             footer={[
+               <Button key="back" size="large" onClick={()=> {
+                 this.closeModal()
+               }}>取消</Button>,
+               <Popconfirm key='c' title={'确定'+this.props.op+'?'} onConfirm={()=> {
+                 this.handleOk()
+               }}>
+               <Button key="ok" size="large" style={{color: `blue`}}>确定</Button>
+               </Popconfirm>
+               ,
+             ]}
       >
         <Form style={{flex:1,flexDirection:'row'}}>
           <Row gutter={24}> <Col span={12}><FormItem label='验证码：' hasFeedback {...formItemLayout}>
