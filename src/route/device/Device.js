@@ -169,11 +169,6 @@ class Device extends PureComponent {
     ];
     return (
       <div className={style.content}>
-        <div className={style.operation}>
-          <ButtonGroup>
-            <Button icon="link" onClick={() => {}}>批量操作</Button>
-          </ButtonGroup>
-        </div>
         <Row>
           <DeviceSearchForm updateSearchParams={this.updateSearchParams}
                             onSearchStart={this.onSearchStart}
