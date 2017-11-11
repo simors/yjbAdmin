@@ -35,7 +35,7 @@ class UserList extends React.Component {
       title: '最近登录时间',
       render: (record) => {
         const {updatedAt} = record;
-        const updatedAtStr = moment(updatedAt).format('lll');
+        const updatedAtStr = moment(updatedAt).format('LLL');
         return (
           <span>
             {updatedAtStr}
