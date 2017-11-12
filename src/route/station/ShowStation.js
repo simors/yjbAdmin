@@ -17,6 +17,8 @@ import {ROLE_CODE, PERMISSION_CODE} from '../../util/rolePermission'
 import mathjs from 'mathjs'
 import {smsAction,smsSelector} from '../../component/smsModal'
 import {StationStatus} from './index'
+import * as errno from '../../errno'
+import AdminSelectByRole from '../../component/AdminSelectByRole'
 
 const Option = Select.Option;
 const FormItem = Form.Item
@@ -115,18 +117,18 @@ class ShowStation extends React.Component {
   }
 
   selectDivision(value, label) {
-    if (label.length == 3) {
+    if (label&&label.length == 3) {
       this.setState({
         province: {label: label[0].label, value: label[0].value},
         city: {label: label[1].label, value: label[1].value},
         area: {label: label[2].label, value: label[2].value},
       })
-    } else if (label.length == 2) {
+    } else if (label&&label.length == 2) {
       this.setState({
         province: {label: label[0].label, value: label[0].value},
         city: {label: label[1].label, value: label[1].value},
       })
-    } else if (label.length == 1) {
+    } else if (label&&label.length == 1) {
       this.setState({
         province: {label: label[0].label, value: label[0].value},
       })
@@ -239,7 +241,15 @@ class ShowStation extends React.Component {
         type: 'partner',
         success: ()=>{       this.props.updateSmsModal(payload)
         },
-        error: (err)=>{message.error('该服务点已存在该服务单位')}
+        error: (error)=>{
+          switch (error.code) {
+            case errno.ERROR_STATION_PARTNERREPEAT:
+              message.error("该服务点已有该服务单位")
+              break
+            default:
+              message.error(`创建服务单位失败, 错误：${error.code}`)
+          }
+        }
       }
       this.props.validProfitSharing(params)
     }
@@ -380,9 +390,7 @@ class ShowStation extends React.Component {
                     }
                   ]
                 })(
-                  <Select allowClear={true}  disabled={true}>
-                    {this.adminList()}
-                  </Select>
+                  <AdminSelectByRole roleCode={ROLE_CODE.STATION_MANAGER} disabled={true}/>
                 )}
               </FormItem>
             </Col>

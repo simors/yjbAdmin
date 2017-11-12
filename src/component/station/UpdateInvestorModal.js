@@ -61,10 +61,6 @@ class UpdateInvestorModal extends Component {
   componentWillReceiveProps(newProps) {
   }
 
-  componentDidMount() {
-
-  }
-
   userList() {
     if (this.props.userList && this.props.userList.length > 0) {
       let userList = this.props.userList.map((item, key)=> {
@@ -111,6 +107,8 @@ class UpdateInvestorModal extends Component {
 
   render() {
     let investor = this.props.investor
+    const { getFieldDecorator, getFieldsValue, getFieldsError } = this.props.form
+
     return (
       <Modal
         title='新建投资人'

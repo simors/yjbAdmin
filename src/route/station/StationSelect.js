@@ -93,6 +93,7 @@ class StationSelect extends React.Component {
                           onChange={this.onDivisionChange}
                           level = {3}
                           cascaderSize="large"
+                          showType = 'search'
 
         />
         <Select size='large' placeholder='请选择服务点' style={{width: 120}} notFoundContent="无服务点" value={this.state.stationId} disabled={this.props.disabled} onChange={this.onSelectChange}>

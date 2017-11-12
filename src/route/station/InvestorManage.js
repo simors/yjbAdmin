@@ -17,6 +17,7 @@ import LoadActivity, {loadAction} from '../../component/loadActivity'
 import {ROLE_CODE,PERMISSION_CODE} from '../../util/rolePermission'
 import {smsAction,smsSelector} from '../../component/smsModal'
 import StationSelect from './StationSelect'
+import * as errno from '../../errno'
 
 const Option = Select.Option;
 const ButtonGroup = Button.Group
@@ -85,7 +86,8 @@ class InvestorManage extends React.Component {
   refresh() {
     this.props.updateLoadingState({isLoading: true})
     this.props.requestInvestors({...this.state,success: ()=>{    this.props.updateLoadingState({isLoading: false})
-    }})
+    },error:()=>{this.props.updateLoadingState({isLoading: false})}
+    })
   }
 
   setStatus(value) {
@@ -251,8 +253,14 @@ class InvestorManage extends React.Component {
           this.refresh()
         })
       },
-      error: (err)=> {
-        message.error(err.message)
+      error: (error)=> {
+        switch (error.code) {
+          case errno.ERROR_STATION_INVESTORREPEAT:
+            message.error("该服务点已有该投资人")
+            break
+          default:
+            message.error(`创建投资人失败, 错误：${error.code}`)
+        }
         this.props.updateLoadingState({isLoading: false})
       }
     }
@@ -269,8 +277,14 @@ class InvestorManage extends React.Component {
           this.refresh()
         })
       },
-      error: (err)=> {
-        message.error(err.message)
+      error: (error)=> {
+        switch (error.code) {
+          case errno.ERROR_STATION_INVESTORREPEAT:
+            message.error("该服务点已有该投资人")
+            break
+          default:
+            message.error(`更新投资人失败, 错误：${error.code}`)
+        }
       }
     }
     this.props.updateInvestor(payload)
@@ -334,7 +348,6 @@ class InvestorManage extends React.Component {
           stationList={this.props.stations}
           modalVisible={this.state.updateModalVisible}
         /> : null}
-        <LoadActivity tip="正在提交..."/>
 
       </div>
     )

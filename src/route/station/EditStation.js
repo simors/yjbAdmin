@@ -16,6 +16,7 @@ import {action, selector} from '../../util/auth'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
 import {ROLE_CODE, PERMISSION_CODE} from '../../util/rolePermission'
 import mathjs from 'mathjs'
+import AdminSelectByRole from '../../component/AdminSelectByRole'
 
 const Option = Select.Option;
 const FormItem = Form.Item
@@ -112,18 +113,18 @@ class EditStation extends React.Component {
   }
 
   selectDivision(value, label) {
-    if (label.length == 3) {
+    if (label&&label.length == 3) {
       this.setState({
         province: {label: label[0].label, value: label[0].value},
         city: {label: label[1].label, value: label[1].value},
         area: {label: label[2].label, value: label[2].value},
       })
-    } else if (label.length == 2) {
+    } else if (label&&label.length == 2) {
       this.setState({
         province: {label: label[0].label, value: label[0].value},
         city: {label: label[1].label, value: label[1].value},
       })
-    } else if (label.length == 1) {
+    } else if (label&&label.length == 1) {
       this.setState({
         province: {label: label[0].label, value: label[0].value},
       })
@@ -278,8 +279,10 @@ class EditStation extends React.Component {
           // console.log(err.message)
         }
       }
+
+
       this.props.updateLoadingState({isLoading: true})
-      console.log('data======>', data)
+      console.log('payload======>', payload)
       this.props.updateStation(payload)
     })
   }
@@ -341,9 +344,7 @@ class EditStation extends React.Component {
                     }
                   ]
                 })(
-                  <Select allowClear={true}  >
-                    {this.adminList()}
-                  </Select>
+                  <AdminSelectByRole roleCode={ROLE_CODE.STATION_MANAGER} disabled={false}/>
                 )}
               </FormItem>
             </Col>

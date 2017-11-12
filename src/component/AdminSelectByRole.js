@@ -85,9 +85,9 @@ class AdminSelectByRole extends React.Component {
     return (
       <div style={{display: 'flex',flexDirection:'row',alignItems:'center'}}>
         <Select
-                size = 'large'
                 value = {this.state.userId}
                 onChange={this.onSelectChange}
+                disabled = {this.props.disabled}
                 showSearch = {true}
                 defaultActiveFirstOption={false}
                 showArrow={false}
@@ -103,11 +103,12 @@ class AdminSelectByRole extends React.Component {
 
 AdminSelectByRole.defaultProps = {
   roleCode: undefined,
+  disabled: false
 }
 
 const mapStateToProps = (appState, ownProps) => {
   let userList = authSelector.selectAdminsByRole(appState, ownProps.roleCode)
-  return {
+ return {
    userList: userList,
   }
 }

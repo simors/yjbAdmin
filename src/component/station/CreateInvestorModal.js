@@ -7,6 +7,7 @@ import React, {PropTypes, Component} from 'react'
 import {Form, Input, InputNumber, Radio, Modal, Checkbox, Upload, Table, Icon, Button, Select} from 'antd'
 import AdminSelectByRole from '../../component/AdminSelectByRole'
 import {ROLE_CODE,PERMISSION_CODE} from '../../util/rolePermission'
+import StationSelect from '../../route/station/StationSelect'
 
 //import {checkBox} from '../../common/checkBox'
 const FormItem = Form.Item
@@ -140,9 +141,7 @@ class CreateInvestorModal extends Component {
                   message: '投资服务点未选择'
                 }
               ]
-            })(<Select allowClear={true} style={{width: 200}}>
-              {this.stationList()}
-            </Select>)}
+            })(<StationSelect placeholder='请选择服务点' disabled={false}/>)}
           </FormItem>
           <FormItem label='投资金额：' hasFeedback {...formItemLayout}>
             {this.props.form.getFieldDecorator('investment', {
