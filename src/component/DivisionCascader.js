@@ -108,9 +108,10 @@ class DivisionCascader extends PureComponent {
     // console.log('curUserDivision?????????????????????========>',this.props.curUserDivision)
     if(this.props.value&&this.props.value.length>0){
       this.setState({value: this.props.value})
+      this.triggerChange(this.props.value)
     }else{
       this.setState({value: this.props.curUserDivision})
-
+      this.triggerChange(this.props.curUserDivision)
     }
   }
 
