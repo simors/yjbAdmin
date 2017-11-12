@@ -13,7 +13,7 @@ import {stationAction, stationSelector} from './redux';
 import CreateInvestorModal from '../../component/station/CreateInvestorModal'
 import UpdateInvestorModal from '../../component/station/UpdateInvestorModal'
 import {selector, action} from '../../util/auth'
-import LoadActivity, {loadAction} from '../../component/loadActivity'
+import  {loadAction} from '../../component/loadActivity'
 import {ROLE_CODE,PERMISSION_CODE} from '../../util/rolePermission'
 import {smsAction,smsSelector} from '../../component/smsModal'
 import StationSelect from './StationSelect'
