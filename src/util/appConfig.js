@@ -15,7 +15,7 @@ const LC_PRO_APP_KEY = 'E9kbn52mW5NL8u15c7Xywf2B'
 //微信
 var MP_CLIENT_DOMAIN = "http://yiijiabao.ngrok.io"              //微信公众号客户端域名
 const MP_CLIENT_DOMAIN_DEV = "http://yiijiabao.ngrok.io"
-const MP_CLIENT_DOMAIN_PRE = "http://dev.yiijiabao.com"
+const MP_CLIENT_DOMAIN_PRE = "http://stage.yiijiabao.com"
 const MP_CLIENT_DOMAIN_PRO = ""
 
 var MP_SERVER_DOMAIN = "http://local_mp.ngrok.io"               //leancloud云引擎域名
