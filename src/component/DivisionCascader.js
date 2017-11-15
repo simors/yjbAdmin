@@ -108,10 +108,13 @@ class DivisionCascader extends PureComponent {
     // console.log('curUserDivision?????????????????????========>',this.props.curUserDivision)
     if(this.props.value&&this.props.value.length>0){
       this.setState({value: this.props.value})
+      this.triggerChange(this.props.value)
     }else{
-      this.setState({value: this.props.curUserDivision})
-
-    }
+      if(this.props.showType=='create'){
+        this.setState({value: this.props.curUserDivision})
+        this.triggerChange(this.props.curUserDivision,this.props.curUserDivisionLabel)
+      }
+     }
   }
 
   // componentDidMount() {
@@ -142,8 +145,8 @@ class DivisionCascader extends PureComponent {
 
   render() {
     const {disabled, level, cascaderSize, width, curUserDivision} = this.props
-    console.log('curUserDivision========>',curUserDivision)
-    console.log('this.state.value========>',this.state.value)
+    // console.log('curUserDivision========>',curUserDivision)
+    // console.log('this.state.value========>',this.state.value)
 
     return (
       <Cascader
@@ -165,25 +168,33 @@ DivisionCascader.defaultProps = {
   disabled: false,
   onChange: () => {},
   cascaderSize: 'default',
-  width: '200px'
+  width: '200px',
+  showType: 'create'
 }
 
 const mapStateToProps = (appState, ownProps) => {
   let curUser = authSelector.selectCurUser(appState)
   let curUserDivision = []
+  let curUserDivisionLabel = []
   if(curUser&&curUser.province){
     curUserDivision[0] = curUser.province.value
+    curUserDivisionLabel[0] = curUser.province
   }
   if(curUser&&curUser.city){
     curUserDivision[1] = curUser.city.value
+    curUserDivisionLabel[1] = curUser.city
+
   }
   if(curUser&&curUser.area){
     curUserDivision[2] = curUser.area.value
+    curUserDivisionLabel[2] = curUser.area
+
   }
 
   return {
     // curUser: curUser,
-    curUserDivision: curUserDivision
+    curUserDivision: curUserDivision,
+    curUserDivisionLabel: curUserDivisionLabel
   }
 }
 

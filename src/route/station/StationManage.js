@@ -140,7 +140,7 @@ class StationManage extends React.Component {
             initialValue: [],
 
           })(
-            <DivisionCascader cascaderSize='large'/>
+            <DivisionCascader showType = 'search' cascaderSize='large'/>
           )}
         </FormItem>
         <FormItem>

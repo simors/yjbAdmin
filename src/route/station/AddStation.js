@@ -5,6 +5,7 @@
 import React from 'react';
 import {withRouter} from 'react-router'
 import {connect} from 'react-redux';
+import * as errno from '../../errno'
 import {Row, Col, Input, Select, Button, Form, InputNumber, message} from 'antd';
 import {stationAction, stationSelector} from './redux';
 import DivisionCascader from '../../component/DivisionCascader'
@@ -12,6 +13,7 @@ import {action , selector} from '../../util/auth'
 import LoadActivity, {loadAction} from '../../component/loadActivity'
 import {ROLE_CODE} from '../../util/rolePermission'
 import mathjs from 'mathjs'
+import AdminSelectByRole from '../../component/AdminSelectByRole'
 
 const Option = Select.Option;
 const FormItem = Form.Item
@@ -55,18 +57,18 @@ class AddStation extends React.Component {
 
   selectDivision(value, label) {
     console.log('vauelsas', value, label)
-    if (label.length == 3) {
+    if (label&&label.length == 3) {
       this.setState({
         province: {label: label[0].label, value: label[0].value},
         city: {label: label[1].label, value: label[1].value},
         area: {label: label[2].label, value: label[2].value},
       })
-    } else if (label.length == 2) {
+    } else if (label&&label.length == 2) {
       this.setState({
         province: {label: label[0].label, value: label[0].value},
         city: {label: label[1].label, value: label[1].value},
       })
-    } else if (label.length == 1) {
+    } else if (label&&label.length == 1) {
       this.setState({
         province: {label: label[0].label, value: label[0].value},
       })
@@ -109,13 +111,18 @@ class AddStation extends React.Component {
           this.props.updateLoadingState({isLoading: false})
           this.props.history.push({pathname: '/site_list/showStation/' + stationId})
         },
-        error: (err)=> {
-          console.log(err.message)
-          message.error('提交失败')
+        error: (error)=> {
+          switch (error.code) {
+            case errno.ERROR_STATION_REPEAT:
+              message.error("服务点名字重复")
+              break
+            default:
+              message.error(`创建服务点, 错误：${error.code}`)
+          }
           this.props.updateLoadingState({isLoading: false})
         }
       }
-      console.log('data====>',data.platformProp)
+      console.log('payload======>', payload)
       // console.log('typeOf====>',typeof(data.powerUnitPrice))
 
       this.props.createStation(payload)
@@ -166,9 +173,8 @@ class AddStation extends React.Component {
                     }
                   ]
                 })(
-                  <Select allowClear={true}  >
-                    {this.userList()}
-                  </Select>
+                  <AdminSelectByRole roleCode={ROLE_CODE.STATION_MANAGER} disabled={false}/>
+
                 )}
               </FormItem>
             </Col>

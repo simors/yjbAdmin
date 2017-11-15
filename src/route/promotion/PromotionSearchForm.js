@@ -52,7 +52,7 @@ class SearchForm extends PureComponent {
         start: values.rangeTimePicker? values.rangeTimePicker[0] : undefined,
         end: values.rangeTimePicker? values.rangeTimePicker[1] : undefined,
         region: values.region,
-        disabled: !values.disabled || values.disabled == 'all'? undefined : Boolean(Number(values.disabled)),
+        showType: values.showType,
       })
     })
   }
@@ -78,11 +78,13 @@ class SearchForm extends PureComponent {
           )}
         </FormItem>
         <FormItem>
-          {getFieldDecorator("disabled", {})(
+          {getFieldDecorator("showType", {})(
             <Select style={{width: 120}} placeholder="选择活动状态">
-              <Option value="all">全部</Option>
-              <Option value='1'>禁用</Option>
-              <Option value='0'>有效</Option>
+              <Option value="">全部</Option>
+              <Option value='disable'>禁用</Option>
+              <Option value='enable'>进行中</Option>
+              <Option value='isBefore'>已结束</Option>
+              <Option value='isAfter'>待触发</Option>
             </Select>
           )}
         </FormItem>

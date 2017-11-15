@@ -12,6 +12,7 @@ export async function fetchPromotionCategoriesApi(payload) {
 }
 
 export async function fetchPromotionsApi(payload) {
+  console.log('payload==========>',payload)
   return await AV.Cloud.run('promFetchPromotions', payload)
 }
 

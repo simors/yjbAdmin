@@ -138,7 +138,7 @@ class UpdatePartnerModal extends Component {
                 }
               ]
             })(
-              <AdminSelectByRole roleCode={ROLE_CODE.STATION_PROVIDER} />
+              <AdminSelectByRole roleCode={ROLE_CODE.STATION_PROVIDER} disabled={true}/>
 
             )}
           </FormItem>
