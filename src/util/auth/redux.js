@@ -408,6 +408,7 @@ function* sagaLogout(action) {
  * payload = {
  *   skip?,
  *   limit?,
+ *   nickname?: string,
  *   mobilePhoneNumber?: string,
  *   province?: string,
  *   city?: string,
@@ -432,6 +433,7 @@ function* sagaListEndUsers(action) {
     ({
       skip: params.skip,
       limit: params.limit,
+      nickname: params.nickname,
       mobilePhoneNumber: params.mobilePhoneNumber,
       province: params.province,
       city: params.city,
