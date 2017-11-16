@@ -121,7 +121,7 @@ class UserFilter extends React.Component {
         </Form.Item>
         <Form.Item className={style.area}>
           {getFieldDecorator('area', {})(
-            <Division level={2}/>
+            <Division showType='search' level={2}/>
           )}
         </Form.Item>
         <Form.Item className={style.status}>

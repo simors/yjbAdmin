@@ -114,7 +114,7 @@ class PromotionDetailModal extends PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>活动区域</Col>
             <Col span={10}>
-              <DivisionCascader disabled={true} value={promotion.region} />
+              <DivisionCascader showType='search' disabled={true} value={promotion.region} />
             </Col>
           </Row>
           {this.renderCategoryParams()}

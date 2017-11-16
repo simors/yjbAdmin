@@ -105,16 +105,12 @@ class DivisionCascader extends PureComponent {
   }
 
   componentWillMount() {
-    // console.log('curUserDivision?????????????????????========>',this.props.curUserDivision)
-    if(this.props.value&&this.props.value.length>0){
-      this.setState({value: this.props.value})
-      this.triggerChange(this.props.value)
-    }else{
+
       if(this.props.showType=='create'){
         this.setState({value: this.props.curUserDivision})
         this.triggerChange(this.props.curUserDivision,this.props.curUserDivisionLabel)
       }
-     }
+
   }
 
   // componentDidMount() {
@@ -124,9 +120,11 @@ class DivisionCascader extends PureComponent {
 
   componentWillReceiveProps(nextProps) {
     if ('value' in nextProps) {
-      const value = nextProps.value
-      if(value&&value.length>0){
-        this.setState({value: value})
+      if(this.state.value!= nextProps.value){
+        const value = nextProps.value
+        if(value&&value.length>0){
+          this.setState({value: value})
+        }
       }
     }
   }
@@ -150,7 +148,6 @@ class DivisionCascader extends PureComponent {
 
     return (
       <Cascader
-                defaultValue={curUserDivision}
                 options={getOptionData(level)}
                 value={this.state.value}
                 placeholder={getPlaceholder(level)}

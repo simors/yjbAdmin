@@ -104,7 +104,7 @@ class DeviceAssociateModal extends PureComponent {
           <Row className={style.modalItem} type='flex' gutter={16} align='middle'>
             <Col span={4}>服务点</Col>
             <Col span={8}>
-              <DivisionCascader disabled={false}
+              <DivisionCascader disabled={false} showType='search'
                                 onChange={this.onDivisionChange} />
             </Col>
             <Col span={6}>

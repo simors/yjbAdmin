@@ -86,6 +86,7 @@ class StationSelect extends React.Component {
   }
 
   render() {
+    console.log('this.state.stationId==>',this.state.stationId)
     return (
       <div style={{display: 'flex',flexDirection:'row',alignItems:'center'}}>
         <DivisionCascader disabled={this.props.disabled}

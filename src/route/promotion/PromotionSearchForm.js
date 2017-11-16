@@ -74,7 +74,7 @@ class SearchForm extends PureComponent {
           {getFieldDecorator("region", {
             rules: [{ type: 'array' }],
           })(
-            <DivisionCascader level={2}/>
+            <DivisionCascader showType='search' level={2}/>
           )}
         </FormItem>
         <FormItem>

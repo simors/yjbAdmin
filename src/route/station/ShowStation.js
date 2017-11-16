@@ -409,7 +409,7 @@ class ShowStation extends React.Component {
                         }
                       ]
                     })(
-                      <DivisionCascader onChange={(value, label)=> {
+                      <DivisionCascader showType='search' onChange={(value, label)=> {
                         this.selectDivision(value, label)
                       }} disabled={true} cascaderSize="large"/>
                     )}

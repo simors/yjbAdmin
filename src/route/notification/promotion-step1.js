@@ -69,7 +69,7 @@ class System extends React.Component {
                 style={{marginBottom: '0'}}
               > {
                 getFieldDecorator('area', {})(
-                  <Division level={2}/>
+                  <Division showType='search' level={2}/>
                 )
               }
               </Form.Item>

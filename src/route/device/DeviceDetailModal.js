@@ -54,7 +54,7 @@ class DeviceDetailModal extends React.PureComponent {
             <Col span={4}>服务点</Col>
             <Col span={10}>
               {
-                station ? <DivisionCascader disabled={true}
+                station ? <DivisionCascader disabled={true} showType='search'
                                             value={[station.province.value, station.city.value, station.area.value]} />
                   : <DivisionCascader disabled={true}/>
               }

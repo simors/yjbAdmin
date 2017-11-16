@@ -147,7 +147,7 @@ class EditForm extends  Component {
             rules: [{ type: 'array', required: true, message: '请输入活动生效区域' }],
             initialValue: promotion.region,
           })(
-            <DivisionCascader disabled={true} />
+            <DivisionCascader showType='search' disabled={true} />
           )}
         </FormItem>
         <FormItem hasFeedback {...formItemLayout} label="红包参数">
