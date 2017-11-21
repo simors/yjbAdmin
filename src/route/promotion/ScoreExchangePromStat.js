@@ -81,6 +81,7 @@ class ScoreExchangePromStat extends PureComponent {
       { title: '参与用户', dataIndex: 'mobilePhoneNumber', key: 'mobilePhoneNumber' },
       { title: '使用积分', dataIndex: 'metadata.scores', key: 'scores' },
       { title: '兑换礼品', dataIndex: 'metadata.gift', key: 'gift' },
+      { title: '预留用户姓名', dataIndex: 'metadata.name', key: 'name' },
       { title: '预留手机号码', dataIndex: 'metadata.phone', key: 'phone' },
       { title: '预留地址', dataIndex: 'metadata.addr', key: 'addr' },
       { title: '参与时间', dataIndex: 'createdAt', key: 'createdAt',
