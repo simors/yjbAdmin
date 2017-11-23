@@ -29,10 +29,23 @@ class DeviceDetailModal extends React.PureComponent {
   }
 
   downloadQRCode = () => {
-    let canvas = this.refs.qrcode._canvas
+    const {device} = this.props
     const a = document.getElementById('download')
-    let url = canvas.toDataURL()
-    a.setAttribute('href', url)
+    if(device.qrcode) {
+      a.setAttribute('href', device.qrcode)
+    } else {
+      let canvas = this.refs.qrcode._canvas
+      let url = canvas.toDataURL()
+      a.setAttribute('href', url)
+    }
+  }
+
+  renderQRcode(device) {
+    if(device.qrcode) {
+      return(<img ref="qrcode" src={device.qrcode} alt=""/>)
+    } else {
+      return(<QRCode ref="qrcode" value={appConfig.MP_CLIENT_DOMAIN + '/openDevice/' + device.deviceNo} />)
+    }
   }
 
   render() {
@@ -110,8 +123,8 @@ class DeviceDetailModal extends React.PureComponent {
           </Row>
           <Row className={style.modalItem} type='flex' gutter={16} >
             <Col span={4}>二维码</Col>
-            <Col span={6}>
-              <QRCode ref="qrcode" value={appConfig.MP_CLIENT_DOMAIN + '/openDevice/' + device.deviceNo} />
+            <Col span={8}>
+              {this.renderQRcode(device)}
             </Col>
             <Col>
               <a href="" id="download" download={device.deviceNo} onClick={this.downloadQRCode}>下载二维码</a>

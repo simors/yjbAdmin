@@ -18,6 +18,7 @@ const DeviceRecord = Record({
   onlineTime: undefined,            //上线日期
   createdAt: undefined,
   updatedAt: undefined,
+  qrcode: undefined,                //设备二维码
 }, 'DeviceRecord')
 
 class Device extends DeviceRecord {
@@ -34,6 +35,7 @@ class Device extends DeviceRecord {
       record.set('onlineTime', obj.onlineTime)
       record.set('createdAt', obj.createdAt)
       record.set('updatedAt', obj.updatedAt)
+      record.set('qrcode', obj.qrcode)
     })
   }
 }
