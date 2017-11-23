@@ -52,8 +52,14 @@ class Withdraw extends React.PureComponent {
             case errno.ERROR_NO_WECHAT:
               message.error('未绑定微信号，不能取现')
               break
+            case errno.ERROR_IN_WITHDRAW_PROCESS:
+              message.error('已经处于提现申请的状态中')
+              break
+            case errno.ERROR_NOT_ENOUGH_MONEY:
+              message.error('余额不足')
+              break
             default:
-              message.error('提交取现申请失败，请重试')
+              message.error('提交取现申请失败，请重试' + error.code)
           }
         }
       })
